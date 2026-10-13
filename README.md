@@ -50,3 +50,12 @@ Dutch numbers like `06…` are converted to `+316…`.
 
 ## Prep time
 Restaurants pick 10/15/20/30 or **Custom** (5–120 min, ±5 stepper), and can add **+5 / +10 min** until the order is ready (DB-enforced, `20261013070000_prep_time_and_sms.sql`).
+
+## v2 operations (pilot launch hardening)
+- **Delivery zone:** addresses are geocoded with PDOK Locatieserver (free, NL). Checkout shows suggestions and a live zone check; `create-payment` re-geocodes server-side and refuses addresses outside `settings.zone_radius_km` from the centre.
+- **Status rules:** `enforce_order_transition` trigger: no skipping steps, only the right party moves each step (restaurant: accept/ready/reject; rider: picked up/delivered; system: payment/assignment; admin: cancel).
+- **Timeouts (pg_cron `fp-timeouts`, every minute → `fp_run_timeouts()`):** unpaid orders expire (30 min); restaurant must accept within 5 min, else auto-cancel + refund + ops alert; no bid after the bid window → riders re-notified; no bid after 10 min → ops alert. All configurable in Admin → Settings.
+- **Refunds:** cancelling a paid order (restaurant reject, timeout, admin) calls the `order-refund` Edge Function (Mollie Refunds API, idempotent claim). Failures create an ops alert; admin can retry.
+- **Ratings** after delivery feed the Quality report. **Order history + reorder** at `/my-orders`.
+- **PWA:** manifest, icons, service worker (offline shell). **Alerts:** sound + vibration + system notification on restaurant/rider screens while the app is open.
+- **Legal:** `/privacy` (with JSON data export), `/terms`, `/cookies`; landing page `/welcome`.

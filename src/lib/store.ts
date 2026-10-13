@@ -7,7 +7,11 @@ import { getSupabase, hasSupabase } from "./supabase";
 import type { Bid, Earning, MenuItem, Order, OrderLine, OrderStatus, Restaurant, Role } from "./types";
 
 export interface Profile { id: string; email: string | null; role: Role; full_name: string | null; restaurant_id: string | null }
-export interface Settings { delivery_fee_cents: number; zone_radius_km: number; bid_window_seconds: number }
+export interface Settings {
+  delivery_fee_cents: number; zone_radius_km: number; bid_window_seconds: number;
+  restaurant_accept_minutes: number; zone_center_lat: number; zone_center_lng: number;
+}
+export interface Geo { lat: number; lng: number; label: string; distance_km: number }
 export interface State {
   settings: Settings;
   mode: "mock" | "supabase";
@@ -24,7 +28,7 @@ export interface State {
 const KEY = "foodporter-mock-v2";
 const CART_KEY = "foodporter-cart-v1";
 const initial: State = {
-  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: 3, bid_window_seconds: 180 },
+  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: 3, bid_window_seconds: 180, restaurant_accept_minutes: 5, zone_center_lat: 51.5576, zone_center_lng: 5.0913 },
   mode: hasSupabase ? "supabase" : "mock", ready: !hasSupabase, signedIn: null, profile: null,
   restaurants: hasSupabase ? [] : mockRestaurants, menuItems: hasSupabase ? [] : mockMenu,
   cart: { restaurant_id: null, qty: {} }, orders: [], earnings: hasSupabase ? [] : seedEarnings,
@@ -83,7 +87,10 @@ function mapOrder(o: Row): Order {
     lines, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number,
     address: o.address as string, phone: o.phone as string, prep_minutes: (o.prep_minutes as number) ?? null,
     ready_at: (o.ready_at as string) ?? null, bids, created_at: o.created_at as string, delivered_at: (o.delivered_at as string) ?? null,
-    accepted_at: (o.accepted_at as string) ?? null,
+    accepted_at: (o.accepted_at as string) ?? null, paid_at: (o.paid_at as string) ?? null,
+    lat: (o.lat as number) ?? null, lng: (o.lng as number) ?? null, distance_km: o.distance_km == null ? null : Number(o.distance_km),
+    cancel_reason: (o.cancel_reason as string) ?? null, refund_status: (o.refund_status as string) ?? null,
+    refund_cents: (o.refund_cents as number) ?? null, renotified_at: (o.renotified_at as string) ?? null,
   };
 }
 
@@ -92,11 +99,11 @@ async function loadCatalog() {
   const [r, m, st] = await Promise.all([
     sb.from("restaurants").select("*").eq("active", true).order("name"),
     sb.from("menu_items").select("*").eq("available", true),
-    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds").maybeSingle(),
+    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng").maybeSingle(),
   ]);
   set((s) => ({
     ...s, restaurants: (r.data as Restaurant[]) ?? [], menuItems: (m.data as MenuItem[]) ?? [],
-    settings: st.data ? { delivery_fee_cents: st.data.delivery_fee_cents, zone_radius_km: Number(st.data.zone_radius_km), bid_window_seconds: st.data.bid_window_seconds } : s.settings,
+    settings: st.data ? { ...st.data, zone_radius_km: Number(st.data.zone_radius_km) } as Settings : s.settings,
   }));
 }
 
@@ -191,7 +198,7 @@ export const actions = {
   },
 
   // --- customer ---
-  async placeOrder(address: string, phone: string): Promise<string> {
+  async placeOrder(address: string, phone: string, geo?: Geo | null): Promise<string> {
     const { restaurant_id, qty } = state.cart;
     const lines: OrderLine[] = Object.entries(qty).map(([item_id, q]) => {
       const it = state.menuItems.find((m) => m.id === item_id)!;
@@ -204,7 +211,7 @@ export const actions = {
       if (!uid) throw new Error("Please sign in first");
       const { data, error } = await sb.from("orders").insert({
         customer_id: uid, restaurant_id, subtotal_cents: subtotal, delivery_fee_cents: state.settings.delivery_fee_cents, address, phone,
-        status: "awaiting_payment",
+        status: "awaiting_payment", ...(geo ? { lat: geo.lat, lng: geo.lng, distance_km: Math.round(geo.distance_km * 100) / 100 } : {}),
       }).select("id").single();
       if (error) throw new Error(error.message);
       const { error: e2 } = await sb.from("order_items").insert(lines.map((l) => ({ order_id: data.id, menu_item_id: l.item_id, name: l.name, qty: l.qty, price_cents: l.price_cents })));
@@ -256,6 +263,12 @@ export const actions = {
     const sb = getSupabase();
     if (sb) return run(sb.from("orders").update(p).eq("id", Number(id)));
   },
+  /** Reject before accepting: the DB cancels the order and the order-refund function refunds it via Mollie. */
+  async rejectOrder(id: string) {
+    const sb = getSupabase();
+    if (sb) return run(sb.from("orders").update({ status: "cancelled", cancel_reason: "restaurant_rejected" }).eq("id", Number(id)));
+    patch(id, { status: "cancelled", cancel_reason: "restaurant_rejected" });
+  },
   async markReady(id: string) {
     const p = { status: "ready" as OrderStatus, ready_at: new Date().toISOString() };
     const sb = getSupabase();
@@ -269,7 +282,7 @@ export const actions = {
     if (sb) {
       const uid = state.profile?.id;
       if (!uid) throw new Error("Please sign in as a rider");
-      const { data, error } = await sb.from("bids").insert({ order_id: Number(id), rider_id: uid, eta_minutes: eta, rider_name: state.profile?.full_name ?? "Rider" }).select("id").single();
+      const { data, error } = await sb.from("bids").insert({ order_id: Number(id), rider_id: uid, eta_minutes: eta }).select("id").single();
       if (error) throw new Error(error.message);
       // Pilot rule: first valid bid wins immediately.
       return run(sb.rpc("accept_bid", { p_bid: data.id }));
@@ -303,6 +316,36 @@ export const actions = {
     });
   },
 
+  /** Put the (still available) items of a past order back in the cart. Returns how many lines were skipped. */
+  reorder(orderId: string) {
+    const o = state.orders.find((x) => x.id === orderId);
+    if (!o) throw new Error("Order not found");
+    if (!state.restaurants.some((r) => r.id === o.restaurant_id && r.active)) throw new Error("This restaurant is not available right now");
+    const qty: Record<string, number> = {};
+    let skipped = 0;
+    for (const l of o.lines) {
+      if (state.menuItems.some((m) => m.id === l.item_id)) qty[l.item_id] = (qty[l.item_id] ?? 0) + l.qty; else skipped++;
+    }
+    if (Object.keys(qty).length === 0) throw new Error("None of these items are available anymore");
+    set((s) => ({ ...s, cart: { restaurant_id: o.restaurant_id, qty } }));
+    return skipped;
+  },
+  async rate(orderId: string, food: number, rider: number | null, comment: string) {
+    const sb = getSupabase();
+    if (!sb) return;
+    const { error } = await sb.from("ratings").insert({ order_id: Number(orderId), food_stars: food, rider_stars: rider, comment: comment.trim() || null });
+    if (error) throw new Error(error.message.includes("duplicate") ? "You already rated this order" : error.message);
+    return true;
+  },
+  async setMyName(name: string) {
+    const sb = getSupabase();
+    const uid = state.profile?.id;
+    if (!sb || !uid) return;
+    const { error } = await sb.from("profiles").update({ full_name: name.trim() || null }).eq("id", uid);
+    if (error) throw new Error(error.message);
+    set((s) => ({ ...s, profile: s.profile ? { ...s.profile, full_name: name.trim() || null } : s.profile }));
+    return true;
+  },
   reloadCatalog() { if (state.mode === "supabase") void loadCatalog(); },
   reset() {
     if (state.mode === "mock") set(() => ({ ...initial }));

@@ -58,7 +58,7 @@ function Quality({ range }: { range: Range }) {
   const inc = (d?.incidents_by_type as Record<string, number>) ?? {};
   return (
     <Panel title={`Quality report · ${range.from} → ${range.to}`} actions={<Toolbar range={range} title="quality report" onCsv={() => downloadCsv(`quality_${range.from}_${range.to}.csv`, [
-      { restaurant: "ALL", orders: d?.orders, cancelled: d?.cancelled, payment_failed: d?.payment_failed, awaiting_payment: d?.awaiting_payment, prep_extensions: d?.prep_extensions, extension_minutes: d?.extension_minutes },
+      { restaurant: "ALL", orders: d?.orders, cancelled: d?.cancelled, payment_failed: d?.payment_failed, awaiting_payment: d?.awaiting_payment, prep_extensions: d?.prep_extensions, extension_minutes: d?.extension_minutes, refunds: d?.refunds, refund_cents: d?.refund_cents, ratings: d?.ratings, rating: d?.avg_food_rating, rider_rating: d?.avg_rider_rating },
       ...byR])} />}>
       <ErrorNote error={q.error} />
       <div className="mb-4 grid grid-cols-2 gap-2.5 md:grid-cols-4">
@@ -66,11 +66,16 @@ function Quality({ range }: { range: Range }) {
         <Kpi label="Cancelled" value={String(d?.cancelled ?? "…")} />
         <Kpi label="Payment failed" value={String(d?.payment_failed ?? "…")} hint={`${d?.awaiting_payment ?? 0} still unpaid`} />
         <Kpi label="Prep extensions" value={String(d?.prep_extensions ?? "…")} hint={`${d?.orders_extended ?? 0} orders · +${d?.extension_minutes ?? 0} min total`} />
+        <Kpi label="Avg food rating" value={d?.avg_food_rating != null ? `★ ${Number(d.avg_food_rating).toFixed(1)}` : "—"} hint={`${d?.ratings ?? 0} ratings`} />
+        <Kpi label="Avg delivery rating" value={d?.avg_rider_rating != null ? `★ ${Number(d.avg_rider_rating).toFixed(1)}` : "—"} />
+        <Kpi label="Refunds" value={String(d?.refunds ?? "…")} hint={`${eur(Number(d?.refund_cents ?? 0))}${Number(d?.refunds_failed) ? ` · ${d?.refunds_failed} failed` : ""}`} />
+        <Kpi label="No-bid alerts" value={String(d?.no_bid_alerts ?? "…")} />
       </div>
+      <p className="mb-3 text-sm"><b>Cancellation reasons:</b> {Object.keys((d?.cancel_reasons as Record<string, number>) ?? {}).length ? Object.entries(d!.cancel_reasons as Record<string, number>).map(([k, v]) => `${k.replace(/_/g, " ")}: ${v}`).join(" · ") : "none"}</p>
       <h3 className="mb-2 text-sm font-bold">Incidents / complaints by type</h3>
       <p className="mb-3 text-sm">{Object.keys(inc).length ? Object.entries(inc).map(([k, v]) => `${k.replace("_", " ")}: ${v}`).join(" · ") : "None logged."}</p>
-      <Table head={["Restaurant", "Paid orders", "Prep extensions", "Incidents", "Rating"]} empty={byR.length === 0}>
-        {byR.map((r) => <tr key={String(r.restaurant)}><Td>{String(r.restaurant)}</Td><Td>{String(r.orders)}</Td><Td>{String(r.extensions)}</Td><Td>{String(r.incidents)}</Td><Td className="text-muted">coming soon</Td></tr>)}
+      <Table head={["Restaurant", "Paid orders", "Cancelled", "Prep extensions", "Incidents", "Food rating"]} empty={byR.length === 0}>
+        {byR.map((r) => <tr key={String(r.restaurant)}><Td>{String(r.restaurant)}</Td><Td>{String(r.orders)}</Td><Td>{String(r.cancelled ?? 0)}</Td><Td>{String(r.extensions)}</Td><Td>{String(r.incidents)}</Td><Td>{r.rating != null ? `★ ${Number(r.rating).toFixed(1)} (${r.ratings})` : <span className="text-muted">no ratings</span>}</Td></tr>)}
       </Table>
     </Panel>
   );

@@ -5,6 +5,7 @@ import { Suspense, useState } from "react";
 import { ErrorNote, Field, inputCls, Panel, RangePicker, SmallBtn, StatusBadge, Table, Td } from "@/components/admin";
 import { downloadCsv, fmtDateTime, preset, sb, toIso, useAdminQuery, type Range, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
+import { act } from "@/lib/act";
 import { STATUS_LABEL, type OrderStatus } from "@/lib/types";
 
 const STATUSES: OrderStatus[] = ["awaiting_payment", "payment_failed", "placed", "accepted", "assigned", "ready", "picked_up", "delivered", "cancelled"];
@@ -24,13 +25,31 @@ function OrderDetail({ id }: { id: string }) {
     return { data: { o: { ...o.data, ...(f.data ?? {}), customer: cust.data }, events: ev.data ?? [], incidents: inc.data ?? [] }, error: null };
   }, [id]);
   const o = q.data?.o;
+  async function cancelOrder(oid: string, paid: boolean) {
+    if (!confirm(`Cancel order #${oid}?${paid ? " The customer is refunded in full via Mollie." : ""}`)) return;
+    const ok = await act((async () => { const { error } = await sb().from("orders").update({ status: "cancelled", cancel_reason: "admin_cancelled" }).eq("id", Number(oid)); if (error) throw new Error(error.message); return true; })(), paid ? "Cancelled · refund started" : "Cancelled");
+    if (ok) setTimeout(q.reload, 2500);
+  }
+  async function retryRefund(oid: string) {
+    const ok = await act((async () => {
+      const { error } = await sb().from("orders").update({ refund_status: null }).eq("id", Number(oid));
+      if (error) throw new Error(error.message);
+      const r = await sb().functions.invoke("order-refund", { body: { order_id: Number(oid) } });
+      if (r.error) throw new Error(r.error.message);
+      return true;
+    })(), "Refund retried");
+    if (ok) q.reload();
+  }
   return (
     <>
       <button className="no-print mb-3 text-sm text-muted" onClick={() => router.push("/admin/orders")}>← All orders</button>
       <ErrorNote error={q.error} />
       {o && (
         <div className="grid gap-4 md:grid-cols-2">
-          <Panel title={<>Order #{String(o.id)} <StatusBadge s={String(o.status)} /></>} actions={<SmallBtn onClick={() => window.print()}>🖨 Print</SmallBtn>}>
+          <Panel title={<>Order #{String(o.id)} <StatusBadge s={String(o.status)} /></>} actions={<>
+            {!["delivered", "cancelled"].includes(String(o.status)) && <SmallBtn tone="danger" onClick={() => cancelOrder(String(o.id), Boolean(o.paid_at))}>Cancel{o.paid_at ? " & refund" : ""}</SmallBtn>}
+            {o.refund_status === "failed" && <SmallBtn tone="brand" onClick={() => retryRefund(String(o.id))}>Retry refund</SmallBtn>}
+            <SmallBtn onClick={() => window.print()}>🖨 Print</SmallBtn></>}>
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
               <dt className="text-muted">Restaurant</dt><dd>{String((o.restaurants as Row)?.name ?? "")}</dd>
               <dt className="text-muted">Customer</dt><dd>{String((o.customer as Row)?.email ?? o.customer_id)}</dd>
@@ -41,6 +60,10 @@ function OrderDetail({ id }: { id: string }) {
               <dt className="text-muted">Payment</dt><dd>{String(o.payment_status ?? "—")} {o.mollie_payment_id ? `· ${o.mollie_payment_id}` : ""}</dd>
               <dt className="text-muted">Prep</dt><dd>{o.prep_minutes ? `${o.prep_minutes} min planned` : "—"}{o.actual_prep_minutes != null ? ` · ${o.actual_prep_minutes} min actual` : ""}{Number(o.prep_extensions) ? ` · extended ${o.prep_extensions}×` : ""}</dd>
               <dt className="text-muted">Rider bid</dt><dd>{o.bid_at ? `${o.rider_name ?? "rider"} · ETA ${o.eta_minutes} min · after ${o.bid_seconds}s` : "—"}</dd>
+              <dt className="text-muted">Distance</dt><dd>{o.distance_km != null ? `${Number(o.distance_km).toFixed(1)} km from centre` : "—"}</dd>
+              {o.status === "cancelled" && <><dt className="text-muted">Cancelled</dt><dd>{String(o.cancel_reason ?? "")} · {fmtDateTime(o.cancelled_at)}</dd>
+                <dt className="text-muted">Refund</dt><dd data-testid="admin-refund">{o.refund_status ? `${o.refund_status}${o.refund_cents ? ` · ${eur(Number(o.refund_cents))}` : ""}${o.refund_id ? ` · ${o.refund_id}` : ""}` : o.paid_at ? "starting…" : "not paid, nothing to refund"}</dd></>}
+              {o.food_stars != null && <><dt className="text-muted">Rating</dt><dd>food {"★".repeat(Number(o.food_stars))}{o.rider_stars ? ` · delivery ${"★".repeat(Number(o.rider_stars))}` : ""}</dd></>}
               <dt className="text-muted">Result</dt><dd>{o.delivered_at ? (o.on_time ? "✅ on time" : `⏰ ${o.minutes_late} min late`) : "—"}{o.fast_bid ? " · ⚡ fast bid" : ""}</dd>
             </dl>
             <h3 className="mt-3 text-sm font-bold">Items</h3>

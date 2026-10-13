@@ -1,4 +1,5 @@
 "use client";
+import { Footer } from "@/components/Footer";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, Card, Header } from "@/components/ui";
@@ -62,6 +63,7 @@ export default function LoginPage() {
         <p className="mt-3 text-center text-[13px] text-muted">
           {hasSupabase ? "Google/Apple need to be enabled in Supabase Auth first. " : "Mock sign-in (no Supabase keys). "}Facebook login coming later.
         </p>
+      <Footer />
       </main>
     </>
   );

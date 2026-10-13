@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { AlertsToggle, useOrderAlerts } from "@/components/OrderAlerts";
 import { RoleGate } from "@/components/RoleGate";
 import { act } from "@/lib/act";
 import { Button, Card, Empty, Header, Pill, Stat } from "@/components/ui";
@@ -8,6 +9,17 @@ import { hhmm } from "@/lib/format";
 import { eur } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
 import { STATUS_LABEL, type Order } from "@/lib/types";
+
+function Countdown({ from }: { from: string }) {
+  const mins = useStore().settings.restaurant_accept_minutes;
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
+  const left = Math.max(0, new Date(from).getTime() + mins * 60000 - now);
+  const m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
+  return <p className={`mt-2 text-center text-[13px] ${left < 60000 ? "font-bold text-red-600" : "text-muted"}`}>{left > 0 ? `Accept within ${m}:${String(s).padStart(2, "0")} or the order is cancelled and refunded automatically` : "Time's up — cancelling and refunding…"}</p>;
+}
+
+const alertBody = (n: number) => `${n} new order${n > 1 ? "s" : ""} waiting for you to accept`;
 
 function OrderCard({ o }: { o: Order }) {
   const [prep, setPrep] = useState(15);
@@ -24,7 +36,8 @@ function OrderCard({ o }: { o: Order }) {
           <p className="mb-2 mt-3 font-bold">Set preparation time</p>
           <PrepPicker value={prep} onChange={setPrep} />
           <Button variant="ok" onClick={() => act(actions.acceptOrder(o.id, prep), "Accepted · order published to riders")}>Accept order</Button>
-          <Button variant="ghost" onClick={() => act(Promise.resolve(), "Reject → Mollie refund (not wired yet)")}>Reject</Button>
+          <Countdown from={o.paid_at ?? o.created_at} />
+          <Button variant="ghost" onClick={() => { if (confirm(`Reject order #${o.id}? The customer is refunded in full.`)) void act(actions.rejectOrder(o.id), "Order rejected · customer refunded"); }}>Reject</Button>
         </>
       ) : (
         <>
@@ -49,6 +62,7 @@ export default function RestaurantPage() {
   const pct = Number(restaurants.find((r) => r.id === profile?.restaurant_id)?.commission_pct ?? 12);
   const mine = mode === "supabase" && profile?.role === "restaurant" ? orders.filter((o) => o.restaurant_id === profile.restaurant_id) : orders;
   const open = mine.filter((o) => ["placed", "accepted", "assigned"].includes(o.status));
+  useOrderAlerts(mine.filter((o) => o.status === "placed").map((o) => o.id), "Food Porter · new order", alertBody);
   const handed = mine.filter((o) => ["ready", "picked_up", "delivered"].includes(o.status));
   const revenue = handed.reduce((a, o) => a + o.subtotal_cents, 0);
   return (
@@ -56,6 +70,7 @@ export default function RestaurantPage() {
       <Header subtitle="Restaurant dashboard · Partner kitchen view" />
       <main className="p-4">
         <RoleGate role="restaurant">
+        <AlertsToggle />
         <div className="flex gap-2.5"><Stat value={String(handed.length)} label="Handed over" /><Stat value={eur(revenue)} label="Revenue" /><Stat value={eur(Math.round((revenue * pct) / 100))} label={`Commission ${pct}%`} /></div>
         <h2 className="mb-3 mt-4 text-lg font-bold">Incoming orders</h2>
         {open.length === 0 ? <Empty icon="🍳">No open orders right now.</Empty> : open.map((o) => <OrderCard key={o.id} o={o} />)}

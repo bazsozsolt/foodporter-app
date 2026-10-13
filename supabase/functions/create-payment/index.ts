@@ -11,6 +11,24 @@ const cors = {
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
+async function geocode(address: string) {
+  const q = address.replace(/^FP TEST\s*[:\-–]?\s*/i, "").trim();
+  if (q.length < 4) return null;
+  const u = `https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=${encodeURIComponent(q)}&fq=type:adres&rows=1&fl=weergavenaam,centroide_ll`;
+  try {
+    const r = await fetch(u);
+    if (!r.ok) return null;
+    const d = (await r.json())?.response?.docs?.[0];
+    const m = /POINT\(([\d.]+) ([\d.]+)\)/.exec(d?.centroide_ll ?? "");
+    return m ? { lng: Number(m[1]), lat: Number(m[2]), label: String(d.weergavenaam) } : null;
+  } catch { return null; }
+}
+function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number) {
+  const r = (x: number) => (x * Math.PI) / 180;
+  const a = Math.sin(r(lat2 - lat1) / 2) ** 2 + Math.cos(r(lat1)) * Math.cos(r(lat2)) * Math.sin(r(lng2 - lng1) / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(a));
+}
+
 const APP_URL = Deno.env.get("APP_URL") ?? "https://bazsozsolt.github.io/foodporter-app";
 
 Deno.serve(async (req) => {
@@ -32,7 +50,7 @@ Deno.serve(async (req) => {
 
   const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: order } = await admin.from("orders")
-    .select("id, customer_id, status, delivery_fee_cents, mollie_payment_id, order_items(qty, menu_item_id)")
+    .select("id, customer_id, status, address, delivery_fee_cents, mollie_payment_id, order_items(qty, menu_item_id)")
     .eq("id", orderId).maybeSingle();
   if (!order || order.customer_id !== user.id) return json({ error: "order not found" }, 404);
   if (order.status !== "awaiting_payment" && order.status !== "payment_failed") return json({ error: "order already paid" }, 409);
@@ -45,6 +63,15 @@ Deno.serve(async (req) => {
   if (items.some((i) => !price.has(i.menu_item_id))) return json({ error: "an item is no longer available" }, 409);
   const subtotal = items.reduce((a, i) => a + i.qty * price.get(i.menu_item_id)!, 0);
   const fee = Math.min(350, Math.max(250, order.delivery_fee_cents));
+
+  // Delivery zone: geocode the address server-side (PDOK Locatieserver, free NL geocoder) and check the radius.
+  const { data: s } = await admin.from("settings").select("zone_radius_km, zone_center_lat, zone_center_lng").maybeSingle();
+  const geo = await geocode(String(order.address ?? ""));
+  if (!geo) return json({ error: "We couldn't find that address. Please pick it from the suggestions (street + number, Tilburg)." }, 422);
+  const radius = Number(s?.zone_radius_km ?? 3);
+  const dist = distanceKm(Number(s?.zone_center_lat ?? 51.5576), Number(s?.zone_center_lng ?? 5.0913), geo.lat, geo.lng);
+  await admin.from("orders").update({ lat: geo.lat, lng: geo.lng, distance_km: Math.round(dist * 100) / 100 }).eq("id", order.id);
+  if (dist > radius) return json({ error: `Sorry, ${geo.label} is ${dist.toFixed(1)} km from the centre. During the pilot we deliver within ${radius} km of central Tilburg.` }, 422);
   const total = subtotal + fee;
 
   const res = await fetch("https://api.mollie.com/v2/payments", {

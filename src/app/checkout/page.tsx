@@ -1,16 +1,20 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, Card, Chips, Empty, Header } from "@/components/ui";
 import { act } from "@/lib/act";
 import { eur } from "@/lib/format";
-import { actions, useStore } from "@/lib/store";
+import { actions, useStore, type Geo } from "@/lib/store";
+import { AddressField } from "@/components/AddressField";
 import { hasSupabase } from "@/lib/supabase";
 import { orderHref } from "@/lib/orders";
 
 export default function CheckoutPage() {
-  const { cart, signedIn, menuItems } = useStore();
+  const { cart, signedIn, menuItems, settings } = useStore();
+  const [geo, setGeo] = useState<Geo | null>(null);
+  const center = useMemo(() => ({ lat: settings.zone_center_lat, lng: settings.zone_center_lng }), [settings.zone_center_lat, settings.zone_center_lng]);
+  const outOfZone = hasSupabase && (!geo || geo.distance_km > settings.zone_radius_km);
   const DELIVERY_FEE_CENTS = useStore().settings.delivery_fee_cents;
   const [busy, setBusy] = useState(false);
   const router = useRouter();
@@ -25,7 +29,7 @@ export default function CheckoutPage() {
   async function pay() {
     if (!signedIn) { router.push("/login?next=/checkout"); return; }
     setBusy(true);
-    const id = await act(actions.placeOrder(address, phone), hasSupabase ? undefined : `Order placed · Mollie ${method} payment is mocked (no Supabase)`);
+    const id = await act(actions.placeOrder(address, phone, geo), hasSupabase ? undefined : `Order placed · Mollie ${method} payment is mocked (no Supabase)`);
     if (!id) { setBusy(false); return; }
     if (!hasSupabase) { setBusy(false); router.push(orderHref(id)); return; }
     // Mollie hosted checkout (iDEAL / card are chosen there); amount is computed server-side.
@@ -42,8 +46,8 @@ export default function CheckoutPage() {
         <Link href="/cart" className="text-sm text-muted">← Back to cart</Link>
         <h2 className="my-3 text-lg font-bold">Checkout</h2>
         <Card>
-          <label className="text-[13px] text-muted">Delivery address (central Tilburg, ~3 km)</label>
-          <input className={input} value={address} onChange={(e) => setAddress(e.target.value)} />
+          <label className="text-[13px] text-muted">Delivery address</label>
+          <AddressField value={address} onChange={setAddress} geo={geo} onGeo={setGeo} center={center} radiusKm={settings.zone_radius_km} />
           <label className="text-[13px] text-muted">Phone (for SMS updates)</label>
           <input className={input} value={phone} onChange={(e) => setPhone(e.target.value)} />
         </Card>
@@ -53,7 +57,8 @@ export default function CheckoutPage() {
           <div className="mt-1 flex justify-between font-bold"><span>Total</span><span>{eur(sub + DELIVERY_FEE_CENTS)}</span></div>
         </Card>
         <Card><b>Pay with Mollie</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} value={method} onChange={setMethod} /></div></Card>
-        <Button onClick={pay} disabled={busy}>{busy ? "Redirecting to Mollie…" : signedIn ? `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}` : "Sign in to pay"}</Button>
+        <Button onClick={pay} disabled={busy || (Boolean(signedIn) && outOfZone)}>{busy ? "Redirecting to Mollie…" : signedIn ? `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}` : "Sign in to pay"}</Button>
+        <p className="mt-3 text-center text-xs text-muted">By paying you agree to our <Link className="underline" href="/terms">Terms</Link> and <Link className="underline" href="/privacy">Privacy policy</Link>. Cancelled orders are refunded in full.</p>
       </main>
     </>
   );

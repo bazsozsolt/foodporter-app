@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { AlertsToggle, useOrderAlerts } from "@/components/OrderAlerts";
+import { distanceKm } from "@/lib/geo";
 import { RoleGate } from "@/components/RoleGate";
 import { act } from "@/lib/act";
 import { Button, Card, Chips, Empty, Header, Pill } from "@/components/ui";
@@ -8,6 +10,8 @@ import { restaurantStyle } from "@/lib/mock-data";
 import { eur, hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
 import { STATUS_LABEL, type Order } from "@/lib/types";
+
+const riderBody = (n: number) => `${n} order${n > 1 ? "s" : ""} open for bids near you`;
 
 function BidCard({ o }: { o: Order }) {
   const prep = o.prep_minutes ?? 15;
@@ -19,6 +23,8 @@ function BidCard({ o }: { o: Order }) {
     <Card>
       <div className="flex items-center justify-between"><b>{restaurantStyle(o.restaurant_id).emoji} {r?.name}</b><Pill tone="ok">{eur(o.delivery_fee_cents)}</Pill></div>
       <div className="my-1.5 text-[13px] text-muted">Ready in ~{prep} min{o.ready_at ? ` (~${hhmm(new Date(o.ready_at))})` : ""} · {o.address}</div>
+      {r?.lat && o.lat ? <div data-testid="dropoff" className="text-[13px] font-semibold">🚲 {distanceKm({ lat: r.lat, lng: r.lng! }, { lat: o.lat, lng: o.lng! }).toFixed(1)} km drop-off from {r.area}</div> : null}
+      {o.renotified_at && <div className="mt-1 text-[13px] font-semibold text-brand">⏰ Still waiting for a rider — bid now</div>}
       <p className="mb-2 mt-3 font-bold">Bid your delivery time</p>
       <Chips options={opts} value={eta} onChange={setEta} render={(m) => `${m} min`} />
       <p className="mt-2 text-[13px] text-muted">Lowest realistic ETA wins · you keep the full fee</p>
@@ -30,12 +36,22 @@ function BidCard({ o }: { o: Order }) {
 export default function RiderPage() {
   const { orders, profile, mode } = useStore();
   const open = orders.filter((o) => o.status === "accepted" && !acceptedBid(o));
+  useOrderAlerts(open.map((o) => `${o.id}:${o.renotified_at ?? ""}`), "Food Porter · order to bid on", riderBody);
+  const [name, setName] = useState<string | null>(null);
   const active = orders.filter((o) => ["assigned", "ready", "picked_up"].includes(o.status) && (mode === "mock" || profile?.role === "admin" || acceptedBid(o)?.rider_id === profile?.id));
   return (
     <>
       <Header subtitle="Rider app · Tilburg Centrum" />
       <main className="p-4">
         <RoleGate role="rider">
+        <AlertsToggle />
+        {mode === "supabase" && profile && (
+          <div className="mb-3 flex gap-2">
+            <input aria-label="Your name" className="flex-1 rounded-xl border-[1.5px] border-[#e2ded8] p-2.5 text-sm" placeholder="Your first name (shown to customers)"
+              value={name ?? profile.full_name ?? ""} onChange={(e) => setName(e.target.value)} />
+            {name !== null && name !== (profile.full_name ?? "") && <button className="rounded-xl bg-ink px-3 text-sm font-bold text-white" onClick={async () => { if (await act(actions.setMyName(name), "Name saved") !== undefined) setName(null); }}>Save</button>}
+          </div>
+        )}
         {active.map((o) => {
           const bid = acceptedBid(o)!;
           return (

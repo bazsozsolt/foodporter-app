@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
   const p = await res.json();
 
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-  const { data: order } = await admin.from("orders").select("id, status, mollie_payment_id")
+  const { data: order } = await admin.from("orders").select("id, status, mollie_payment_id, refund_id")
     .eq("mollie_payment_id", id).maybeSingle();
   if (!order || String(p.metadata?.order_id) !== String(order.id)) return new Response("ok");
 
@@ -26,6 +26,11 @@ Deno.serve(async (req) => {
   if (unpaid && p.status === "paid") { patch.status = "placed"; patch.paid_at = p.paidAt ?? new Date().toISOString(); }
   else if (unpaid && ["failed", "expired", "canceled"].includes(p.status)) patch.status = "payment_failed";
 
+  // Refund status sync (Mollie calls the payment webhook when a refund changes)
+  if (order.refund_id) {
+    const rr = await fetch(`https://api.mollie.com/v2/payments/${id}/refunds/${order.refund_id}`, { headers: { Authorization: `Bearer ${mollieKey}` } });
+    if (rr.ok) patch.refund_status = (await rr.json()).status;
+  }
   await admin.from("orders").update(patch).eq("id", order.id);
   return new Response("ok");
 });

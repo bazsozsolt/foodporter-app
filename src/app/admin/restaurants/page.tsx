@@ -1,4 +1,5 @@
 "use client";
+import { geocode } from "@/lib/geo";
 import { useState } from "react";
 import { ErrorNote, Field, inputCls, Panel, SmallBtn, StatusBadge, Table, Td } from "@/components/admin";
 import { toast } from "@/components/Toaster";
@@ -23,7 +24,12 @@ function RestaurantForm({ initial, onDone }: { initial: RForm; onDone: () => voi
     if (!f.name.trim()) return toast("⚠️ Name is required");
     const id = f.id;
     const payload = { name: f.name.trim(), cuisine: f.cuisine || null, area: f.area || null, address: f.address || null,
-      avg_prep_minutes: Number(f.avg_prep_minutes), commission_pct: Number(f.commission_pct), active: f.active };
+      avg_prep_minutes: Number(f.avg_prep_minutes), commission_pct: Number(f.commission_pct), active: f.active } as Row;
+    // Geocode real addresses (PDOK) so riders see drop-off distances; example addresses keep their area pin.
+    if (f.address && !/^example/i.test(f.address)) {
+      const p = await geocode(f.address).catch(() => null);
+      if (p) { payload.lat = p.lat; payload.lng = p.lng; } else toast("⚠️ Address not found by PDOK; distance will be unknown");
+    }
     const ok = await act(id ? must(sb().from("restaurants").update(payload).eq("id", id)) : must(sb().from("restaurants").insert(payload)), id ? "Restaurant saved" : "Restaurant added");
     if (ok !== undefined) { actions.reloadCatalog(); onDone(); }
   }

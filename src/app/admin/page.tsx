@@ -1,32 +1,52 @@
 "use client";
 import Link from "next/link";
-import { ErrorNote, Kpi, Panel, StatusBadge, Table, Td } from "@/components/admin";
+import { useEffect } from "react";
+import { ErrorNote, Kpi, Panel, SmallBtn, StatusBadge, Table, Td } from "@/components/admin";
+import { act } from "@/lib/act";
 import { fmtDateTime, preset, sb, toIso, useAdminQuery, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
 
-interface Overview { today: Row; month: Row; pay: { restaurants: Row[]; riders: Row[] }; incidents: number; pending: number; recent: Row[] }
+interface Overview { today: Row; month: Row; pay: { restaurants: Row[]; riders: Row[] }; incidents: number; pending: number; recent: Row[]; alerts: Row[] }
 
 export default function AdminOverview() {
   const q = useAdminQuery<Overview>(async () => {
     const c = sb();
     const t = toIso(preset("today")), m = toIso(preset("30d"));
-    const [today, month, pay, inc, pend, recent] = await Promise.all([
+    const [today, month, pay, inc, pend, recent, alerts] = await Promise.all([
       c.rpc("report_delivery", t), c.rpc("report_delivery", m), c.rpc("report_payments", m),
       c.from("incidents").select("id", { count: "exact", head: true }).eq("status", "open"),
       c.from("profiles").select("id", { count: "exact", head: true }).eq("role", "rider").eq("status", "pending"),
       c.from("order_facts").select("id, created_at, status, restaurant_name, subtotal_cents, is_test").order("id", { ascending: false }).limit(8),
+      c.from("ops_alerts").select("*").is("resolved_at", null).order("created_at", { ascending: false }).limit(20),
     ]);
     const error = today.error ?? month.error ?? pay.error ?? recent.error;
-    return { data: error ? null : { today: today.data, month: month.data, pay: pay.data, incidents: inc.count ?? 0, pending: pend.count ?? 0, recent: recent.data ?? [] }, error };
+    return { data: error ? null : { today: today.data, month: month.data, pay: pay.data, incidents: inc.count ?? 0, pending: pend.count ?? 0, recent: recent.data ?? [], alerts: alerts.data ?? [] }, error };
   }, []);
   const d = q.data;
   const owedR = d?.pay.restaurants.reduce((a, r) => a + Number(r.owed_cents), 0) ?? 0;
   const owedD = d?.pay.riders.reduce((a, r) => a + Number(r.unpaid_cents), 0) ?? 0;
   const commission = d?.pay.restaurants.reduce((a, r) => a + Number(r.commission_cents), 0) ?? 0;
   const pct = (v: unknown) => (v == null ? "—" : `${v}%`);
+  useEffect(() => { const t = setInterval(q.reload, 30000); return () => clearInterval(t); }, [q.reload]);
+  async function resolve(id: unknown) {
+    const ok = await act((async () => { const { error } = await sb().from("ops_alerts").update({ resolved_at: new Date().toISOString() }).eq("id", Number(id)); if (error) throw new Error(error.message); return true; })(), "Alert resolved");
+    if (ok) q.reload();
+  }
   return (
     <>
       <ErrorNote error={q.error} />
+      {(d?.alerts.length ?? 0) > 0 && (
+        <Panel title={`🚨 Needs attention (${d!.alerts.length})`}>
+          <ul className="divide-y divide-[#eee] text-sm">
+            {d!.alerts.map((a) => (
+              <li key={String(a.id)} className="flex items-center gap-2 py-2">
+                <span className="flex-1"><b>{String(a.kind).replace(/_/g, " ")}</b>{a.order_id ? <> · <Link className="text-brand" href={`/admin/orders?id=${a.order_id}`}>#{String(a.order_id)}</Link></> : null} · {String(a.message)} <span className="text-xs text-muted">{fmtDateTime(a.created_at)}</span></span>
+                <SmallBtn onClick={() => resolve(a.id)}>Resolve</SmallBtn>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      )}
       <h2 className="mb-2 text-sm font-bold text-muted">Today</h2>
       <div className="mb-4 grid grid-cols-2 gap-2.5 md:grid-cols-4">
         <Kpi label="Paid orders" value={String(d?.today.orders ?? "…")} />

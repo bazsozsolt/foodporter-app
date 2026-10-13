@@ -4,7 +4,7 @@ export type OrderStatus = "awaiting_payment" | "payment_failed" | "placed" | "ac
 export interface MenuItem { id: string; restaurant_id: string; name: string; price_cents: number }
 export interface Restaurant {
   id: string; name: string; cuisine: string; area: string; emoji: string; color: string;
-  avg_prep_minutes: number; commission_pct: number; active: boolean;
+  avg_prep_minutes: number; commission_pct: number; active: boolean; lat?: number | null; lng?: number | null;
 }
 export interface OrderLine { item_id: string; name: string; qty: number; price_cents: number }
 export interface Bid { id: string; rider_id: string; rider_name: string; eta_minutes: number; accepted: boolean; created_at: string }
@@ -13,6 +13,8 @@ export interface Order {
   lines: OrderLine[]; subtotal_cents: number; delivery_fee_cents: number;
   address: string; phone: string; prep_minutes: number | null; ready_at: string | null;
   bids: Bid[]; created_at: string; delivered_at: string | null; accepted_at?: string | null;
+  paid_at?: string | null; lat?: number | null; lng?: number | null; distance_km?: number | null;
+  cancel_reason?: string | null; refund_status?: string | null; refund_cents?: number | null; renotified_at?: string | null;
 }
 export interface Earning { id: string; rider_id: string; order_id: string; restaurant_name: string; amount_cents: number; earned_at: string; payout_id: string | null }
 
@@ -20,4 +22,9 @@ export const STATUS_STEPS: OrderStatus[] = ["placed", "accepted", "assigned", "r
 export const STATUS_LABEL: Record<OrderStatus, string> = {
   awaiting_payment: "Waiting for payment", payment_failed: "Payment failed", placed: "Order placed & paid", accepted: "Restaurant accepted", assigned: "Rider assigned",
   ready: "Ready for pickup", picked_up: "On the way", delivered: "Delivered", cancelled: "Cancelled",
+};
+
+export const CANCEL_REASON: Record<string, string> = {
+  restaurant_rejected: "The restaurant couldn't take your order", restaurant_timeout: "The restaurant didn't confirm in time",
+  admin_cancelled: "Cancelled by Food Porter support", system: "Cancelled",
 };
