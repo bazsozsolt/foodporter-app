@@ -7,6 +7,7 @@ import { DELIVERY_FEE_CENTS } from "@/lib/mock-data";
 import { act } from "@/lib/act";
 import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
+import { hasSupabase } from "@/lib/supabase";
 
 export default function CheckoutPage() {
   const { cart, signedIn, menuItems } = useStore();
@@ -22,11 +23,15 @@ export default function CheckoutPage() {
 
   async function pay() {
     if (!signedIn) { router.push("/login?next=/checkout"); return; }
-    // TODO(Mollie): create payment server-side, redirect to checkout URL, confirm via webhook.
     setBusy(true);
-    const id = await act(actions.placeOrder(address, phone), `Order placed · Mollie ${method} payment is mocked for now`);
+    const id = await act(actions.placeOrder(address, phone), hasSupabase ? undefined : `Order placed · Mollie ${method} payment is mocked (no Supabase)`);
+    if (!id) { setBusy(false); return; }
+    if (!hasSupabase) { setBusy(false); router.push(`/orders/${id}`); return; }
+    // Mollie hosted checkout (iDEAL / card are chosen there); amount is computed server-side.
+    const checkoutUrl = await act(actions.startPayment(id));
     setBusy(false);
-    if (id) router.push(`/orders/${id}`);
+    if (checkoutUrl) window.location.href = checkoutUrl;
+    else router.push(`/orders/${id}`); // order exists unpaid; tracking page offers "Pay now"
   }
 
   return (
@@ -47,7 +52,7 @@ export default function CheckoutPage() {
           <div className="mt-1 flex justify-between font-bold"><span>Total</span><span>{eur(sub + DELIVERY_FEE_CENTS)}</span></div>
         </Card>
         <Card><b>Pay with Mollie</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} value={method} onChange={setMethod} /></div></Card>
-        <Button onClick={pay} disabled={busy}>{signedIn ? `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}` : "Sign in to pay"}</Button>
+        <Button onClick={pay} disabled={busy}>{busy ? "Redirecting to Mollie…" : signedIn ? `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}` : "Sign in to pay"}</Button>
       </main>
     </>
   );

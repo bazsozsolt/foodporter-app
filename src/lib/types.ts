@@ -1,5 +1,5 @@
 export type Role = "customer" | "rider" | "restaurant" | "admin";
-export type OrderStatus = "placed" | "accepted" | "assigned" | "ready" | "picked_up" | "delivered" | "cancelled";
+export type OrderStatus = "awaiting_payment" | "payment_failed" | "placed" | "accepted" | "assigned" | "ready" | "picked_up" | "delivered" | "cancelled";
 
 export interface MenuItem { id: string; restaurant_id: string; name: string; price_cents: number }
 export interface Restaurant {
@@ -18,6 +18,6 @@ export interface Earning { id: string; rider_id: string; order_id: string; resta
 
 export const STATUS_STEPS: OrderStatus[] = ["placed", "accepted", "assigned", "ready", "picked_up", "delivered"];
 export const STATUS_LABEL: Record<OrderStatus, string> = {
-  placed: "Order placed & paid", accepted: "Restaurant accepted", assigned: "Rider assigned",
+  awaiting_payment: "Waiting for payment", payment_failed: "Payment failed", placed: "Order placed & paid", accepted: "Restaurant accepted", assigned: "Rider assigned",
   ready: "Ready for pickup", picked_up: "On the way", delivered: "Delivered", cancelled: "Cancelled",
 };

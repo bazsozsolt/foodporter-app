@@ -195,9 +195,9 @@ export const actions = {
     if (sb) {
       const uid = state.profile?.id;
       if (!uid) throw new Error("Please sign in first");
-      // TODO(Mollie): create the payment server-side and only mark paid from the webhook.
       const { data, error } = await sb.from("orders").insert({
         customer_id: uid, restaurant_id, subtotal_cents: subtotal, delivery_fee_cents: DELIVERY_FEE_CENTS, address, phone,
+        status: "awaiting_payment",
       }).select("id").single();
       if (error) throw new Error(error.message);
       const { error: e2 } = await sb.from("order_items").insert(lines.map((l) => ({ order_id: data.id, menu_item_id: l.item_id, name: l.name, qty: l.qty, price_cents: l.price_cents })));
@@ -214,6 +214,20 @@ export const actions = {
     };
     set((s) => ({ ...s, orders: [...s.orders, order], cart: { restaurant_id: null, qty: {} } }));
     return id;
+  },
+
+  /** Supabase mode: create a Mollie payment server-side and return the checkout URL. */
+  async startPayment(orderId: string): Promise<string> {
+    const sb = getSupabase();
+    if (!sb) throw new Error("Payments need Supabase");
+    const { data, error } = await sb.functions.invoke("create-payment", { body: { order_id: Number(orderId) } });
+    if (error) {
+      let msg = error.message;
+      try { const ctx = (error as { context?: Response }).context; if (ctx) msg = (await ctx.json()).error ?? msg; } catch { /* ignore */ }
+      throw new Error(msg);
+    }
+    if (!data?.checkoutUrl) throw new Error("No checkout URL returned");
+    return data.checkoutUrl as string;
   },
 
   // --- restaurant ---

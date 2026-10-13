@@ -30,3 +30,8 @@ Roles: everyone signs up as `customer`; promote with the snippets in `seed.sql`.
 
 ## Static preview
 `STATIC_EXPORT=1 BASE_PATH=/foodporter-app npm run build` → `out/` (published to the `gh-pages` branch; `docs/github-pages-workflow.yml` can be moved to `.github/workflows/` once gh has the `workflow` scope).
+
+## Payments (Mollie)
+- Edge Functions in `supabase/functions/`: `create-payment` (JWT required; recomputes the amount from DB prices, creates a Mollie payment, returns `checkoutUrl`) and `mollie-webhook` (public; re-fetches the payment from Mollie and moves the order `awaiting_payment` -> `placed`, or -> `payment_failed`).
+- Migrations `20261013040000_payment_statuses.sql` + `20261013050000_mollie_payments.sql`: new statuses, `paid_at`/`payment_status`; restaurants never see unpaid orders.
+- Required secret: `MOLLIE_API_KEY` (use a `test_` key for testing). Optional: `APP_URL` (defaults to the GitHub Pages preview).
