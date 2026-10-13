@@ -21,7 +21,7 @@ npm run dev
 | Auth | `/login` Apple / Google / email (Facebook later) |
 
 ## Supabase
-1. SQL Editor: run `supabase/migrations/20261013000000_init.sql`, then `supabase/migrations/20261013010000_app_wiring.sql`.
+1. SQL Editor: run `supabase/migrations/20261013000000_init.sql`, then `supabase/migrations/20261013010000_app_wiring.sql`, then `supabase/migrations/20261013020000_hardening.sql`.
 2. SQL Editor: run `supabase/seed.sql` (example restaurants + menus; role snippets at the bottom).
 3. Auth -> URL Configuration: Site URL `https://bazsozsolt.github.io/foodporter-app/`, add redirect URLs for the preview and `http://localhost:3000/**`.
 4. Google / Apple: enable under Auth -> Providers with their client credentials.
