@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
       amount: { currency: "EUR", value: (total / 100).toFixed(2) },
       description: `Food Porter order #${order.id}`,
       method: ["ideal", "creditcard"],
-      redirectUrl: `${APP_URL}/orders/${order.id}/`,
+      redirectUrl: `${APP_URL}/order/?id=${order.id}`,
       webhookUrl: `${url}/functions/v1/mollie-webhook`,
       metadata: { order_id: order.id },
     }),

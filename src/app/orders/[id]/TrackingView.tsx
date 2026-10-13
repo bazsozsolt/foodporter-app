@@ -11,7 +11,7 @@ import { STATUS_LABEL, STATUS_STEPS } from "@/lib/types";
 const NEXT_ROLE: Record<string, string> = { placed: "Restaurant", accepted: "Rider", assigned: "Restaurant", ready: "Rider", picked_up: "Rider" };
 
 export function TrackingView({ id }: { id: string }) {
-  const { orders, restaurants, ready } = useStore();
+  const { orders, restaurants, ready, profile, mode } = useStore();
   const o = orders.find((x) => x.id === id);
   const [paying, setPaying] = useState(false);
   const unpaid = o?.status === "awaiting_payment";
@@ -27,7 +27,8 @@ export function TrackingView({ id }: { id: string }) {
     setPaying(false);
     if (url) window.location.href = url;
   }
-  if (!o) return <><Header /><main className="p-4"><Empty icon="🔎">{ready ? `Order #${id} not found (are you signed in?).` : "Loading…"}</Empty></main></>;
+  if (!o) return <><Header /><main className="p-4"><Empty icon="🔎">{!ready ? "Loading…" : !id ? "No order selected." : `Order #${id} not found. ${profile ? "It may belong to another account." : "Please sign in to see your orders."}`}</Empty></main></>;
+  const mine = mode === "mock" || o.customer_id === profile?.id;
   const r = restaurants.find((x) => x.id === o.restaurant_id);
   const bid = acceptedBid(o);
   const idx = STATUS_STEPS.indexOf(o.status);
@@ -39,8 +40,8 @@ export function TrackingView({ id }: { id: string }) {
       <main className="p-4">
         <Link href="/" className="text-sm text-muted">← Home</Link>
         <Card className="mt-2.5 text-center">
-          {o.status === "awaiting_payment" ? (<><div className="text-4xl">💳</div><h2 className="text-lg font-bold">Waiting for payment</h2><p className="text-sm text-muted">If you just paid, this updates in a few seconds.</p><Button onClick={payNow} disabled={paying}>{paying ? "Opening Mollie…" : "Pay now"}</Button></>)
-            : o.status === "payment_failed" ? (<><div className="text-4xl">⚠️</div><h2 className="text-lg font-bold">Payment failed or cancelled</h2><Button onClick={payNow} disabled={paying}>Try again</Button></>)
+          {o.status === "awaiting_payment" ? (<><div className="text-4xl">💳</div><h2 className="text-lg font-bold">Waiting for payment</h2><p className="text-sm text-muted">If you just paid, this updates in a few seconds.</p>{mine ? <Button onClick={payNow} disabled={paying}>{paying ? "Opening Mollie…" : "Pay now"}</Button> : <p className="mt-2 text-sm text-muted">Only the customer can pay this order.</p>}</>)
+            : o.status === "payment_failed" ? (<><div className="text-4xl">⚠️</div><h2 className="text-lg font-bold">Payment failed or cancelled</h2>{mine && <Button onClick={payNow} disabled={paying}>Try again</Button>}</>)
             : o.status === "delivered" ? (<><div className="text-5xl">🎉</div><h2 className="text-lg font-bold">Delivered!</h2><p className="text-sm text-muted">Enjoy your meal.</p></>)
             : bid ? (<><div className="text-sm text-muted">Arriving in about</div><div className="text-4xl font-extrabold text-brand">{bid.eta_minutes} min</div><div className="text-sm text-muted">by {etaAt} · rider {bid.rider_name} 🚲</div></>)
             : (<><div className="text-sm text-muted">Waiting for {idx < 1 ? "the restaurant" : "a rider bid"}…</div><div className="text-4xl">⏳</div></>)}

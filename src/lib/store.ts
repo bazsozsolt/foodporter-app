@@ -100,7 +100,7 @@ async function loadUserData() {
   const { data: p } = await sb.from("profiles").select("id, role, full_name, restaurant_id").eq("id", user.id).maybeSingle();
   const profile: Profile = { id: user.id, email: user.email ?? null, role: (p?.role as Role) ?? "customer", full_name: p?.full_name ?? null, restaurant_id: p?.restaurant_id ?? null };
   const [o, e] = await Promise.all([
-    sb.from("orders").select("*, order_items(*), bids(*)").order("id", { ascending: true }).limit(200),
+    sb.from("orders").select("*, order_items(*), bids(*)").order("id", { ascending: false }).limit(200),
     sb.from("earnings").select("*, orders(restaurant_id)").order("earned_at", { ascending: true }),
   ]);
   const names = new Map(state.restaurants.map((r) => [r.id, r.name.replace(" (example)", "")]));
@@ -109,7 +109,7 @@ async function loadUserData() {
     earned_at: x.earned_at as string, payout_id: (x.payout_id as string) ?? null,
     restaurant_name: names.get((x.orders as Row | null)?.restaurant_id as string) ?? "Order #" + x.order_id,
   }));
-  set((s) => ({ ...s, signedIn: user.email ?? "account", profile, orders: ((o.data as Row[]) ?? []).map(mapOrder), earnings, ready: true }));
+  set((s) => ({ ...s, signedIn: user.email ?? "account", profile, orders: ((o.data as Row[]) ?? []).map(mapOrder).reverse(), earnings, ready: true }));
 }
 
 let refetchTimer: ReturnType<typeof setTimeout> | undefined;

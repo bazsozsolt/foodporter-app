@@ -35,7 +35,8 @@ function OrderCard({ o }: { o: Order }) {
 }
 
 export default function RestaurantPage() {
-  const { orders, profile, mode } = useStore();
+  const { orders, profile, mode, restaurants } = useStore();
+  const pct = Number(restaurants.find((r) => r.id === profile?.restaurant_id)?.commission_pct ?? 12);
   const mine = mode === "supabase" && profile?.role === "restaurant" ? orders.filter((o) => o.restaurant_id === profile.restaurant_id) : orders;
   const open = mine.filter((o) => ["placed", "accepted", "assigned"].includes(o.status));
   const handed = mine.filter((o) => ["ready", "picked_up", "delivered"].includes(o.status));
@@ -45,7 +46,7 @@ export default function RestaurantPage() {
       <Header subtitle="Restaurant dashboard · Partner kitchen view" />
       <main className="p-4">
         <RoleGate role="restaurant">
-        <div className="flex gap-2.5"><Stat value={String(handed.length)} label="Handed over" /><Stat value={eur(revenue)} label="Revenue" /><Stat value={eur(Math.round(revenue * 0.12))} label="Commission 12%" /></div>
+        <div className="flex gap-2.5"><Stat value={String(handed.length)} label="Handed over" /><Stat value={eur(revenue)} label="Revenue" /><Stat value={eur(Math.round((revenue * pct) / 100))} label={`Commission ${pct}%`} /></div>
         <h2 className="mb-3 mt-4 text-lg font-bold">Incoming orders</h2>
         {open.length === 0 ? <Empty icon="🍳">No open orders right now.</Empty> : open.map((o) => <OrderCard key={o.id} o={o} />)}
         </RoleGate>

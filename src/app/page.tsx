@@ -5,10 +5,12 @@ import { DELIVERY_FEE_CENTS, restaurantStyle } from "@/lib/mock-data";
 import { eur } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { STATUS_LABEL } from "@/lib/types";
+import { orderHref } from "@/lib/orders";
 
 export default function Home() {
-  const { orders, signedIn, restaurants, ready } = useStore();
-  const active = [...orders].reverse().find((o) => o.status !== "delivered" && o.status !== "cancelled");
+  const { orders, signedIn, restaurants, ready, profile } = useStore();
+  // Show the signed-in customer's own latest open order (admins can see everyone's orders, so filter by owner)
+  const active = [...orders].reverse().find((o) => (!profile || o.customer_id === profile.id) && !["delivered", "cancelled", "payment_failed"].includes(o.status));
   return (
     <>
       <Header subtitle="Tilburg Centrum · local spots, riders bid to deliver fast" />
@@ -20,7 +22,7 @@ export default function Home() {
           </Card>
         )}
         {active && (
-          <Link href={`/orders/${active.id}`}><Card className="flex items-center justify-between bg-[#fff1ea]"><b>🛵 Track order #{active.id}</b><Pill>{STATUS_LABEL[active.status]}</Pill></Card></Link>
+          <Link href={orderHref(active.id)}><Card className="flex items-center justify-between bg-[#fff1ea]"><b>🛵 Track order #{active.id}</b><Pill>{STATUS_LABEL[active.status]}</Pill></Card></Link>
         )}
         <h2 className="mb-3 mt-1 text-lg font-bold">Restaurants near you</h2>
         {ready && restaurants.length === 0 && <p className="text-sm text-muted">No restaurants yet (seed the database).</p>}

@@ -14,7 +14,7 @@ npm run dev
 ## Routes
 | Role | Routes |
 |---|---|
-| Customer | `/` restaurants · `/r/[id]` menu · `/cart` · `/checkout` · `/orders/[id]` tracking |
+| Customer | `/` restaurants · `/r/[id]` menu · `/cart` · `/checkout` · `/order?id=N` tracking (legacy `/orders/[id]` kept) |
 | Restaurant | `/restaurant` accept, prep time, ready for pickup |
 | Rider | `/rider` feed + bids + active job · `/rider/earnings` |
 | Admin | `/admin` key metric, partners, payouts due |

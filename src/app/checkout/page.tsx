@@ -8,6 +8,7 @@ import { act } from "@/lib/act";
 import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
 import { hasSupabase } from "@/lib/supabase";
+import { orderHref } from "@/lib/orders";
 
 export default function CheckoutPage() {
   const { cart, signedIn, menuItems } = useStore();
@@ -26,12 +27,12 @@ export default function CheckoutPage() {
     setBusy(true);
     const id = await act(actions.placeOrder(address, phone), hasSupabase ? undefined : `Order placed · Mollie ${method} payment is mocked (no Supabase)`);
     if (!id) { setBusy(false); return; }
-    if (!hasSupabase) { setBusy(false); router.push(`/orders/${id}`); return; }
+    if (!hasSupabase) { setBusy(false); router.push(orderHref(id)); return; }
     // Mollie hosted checkout (iDEAL / card are chosen there); amount is computed server-side.
     const checkoutUrl = await act(actions.startPayment(id));
     setBusy(false);
     if (checkoutUrl) window.location.href = checkoutUrl;
-    else router.push(`/orders/${id}`); // order exists unpaid; tracking page offers "Pay now"
+    else router.push(orderHref(id)); // order exists unpaid; tracking page offers "Pay now"
   }
 
   return (
