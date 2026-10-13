@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Card, Header, Pill } from "@/components/ui";
-import { DELIVERY_FEE_CENTS, restaurantStyle } from "@/lib/mock-data";
+import { restaurantStyle } from "@/lib/mock-data";
 import { eur } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { STATUS_LABEL } from "@/lib/types";
@@ -9,6 +9,7 @@ import { orderHref } from "@/lib/orders";
 
 export default function Home() {
   const { orders, signedIn, restaurants, ready, profile } = useStore();
+  const DELIVERY_FEE_CENTS = useStore().settings.delivery_fee_cents;
   // Show the signed-in customer's own latest open order (admins can see everyone's orders, so filter by owner)
   const active = [...orders].reverse().find((o) => (!profile || o.customer_id === profile.id) && !["delivered", "cancelled", "payment_failed"].includes(o.status));
   return (

@@ -7,7 +7,9 @@ import { getSupabase, hasSupabase } from "./supabase";
 import type { Bid, Earning, MenuItem, Order, OrderLine, OrderStatus, Restaurant, Role } from "./types";
 
 export interface Profile { id: string; email: string | null; role: Role; full_name: string | null; restaurant_id: string | null }
+export interface Settings { delivery_fee_cents: number; zone_radius_km: number; bid_window_seconds: number }
 export interface State {
+  settings: Settings;
   mode: "mock" | "supabase";
   ready: boolean;
   signedIn: string | null;          // provider/email label, null = signed out
@@ -22,6 +24,7 @@ export interface State {
 const KEY = "foodporter-mock-v2";
 const CART_KEY = "foodporter-cart-v1";
 const initial: State = {
+  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: 3, bid_window_seconds: 180 },
   mode: hasSupabase ? "supabase" : "mock", ready: !hasSupabase, signedIn: null, profile: null,
   restaurants: hasSupabase ? [] : mockRestaurants, menuItems: hasSupabase ? [] : mockMenu,
   cart: { restaurant_id: null, qty: {} }, orders: [], earnings: hasSupabase ? [] : seedEarnings,
@@ -86,11 +89,15 @@ function mapOrder(o: Row): Order {
 
 async function loadCatalog() {
   const sb = getSupabase()!;
-  const [r, m] = await Promise.all([
+  const [r, m, st] = await Promise.all([
     sb.from("restaurants").select("*").eq("active", true).order("name"),
     sb.from("menu_items").select("*").eq("available", true),
+    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds").maybeSingle(),
   ]);
-  set((s) => ({ ...s, restaurants: (r.data as Restaurant[]) ?? [], menuItems: (m.data as MenuItem[]) ?? [] }));
+  set((s) => ({
+    ...s, restaurants: (r.data as Restaurant[]) ?? [], menuItems: (m.data as MenuItem[]) ?? [],
+    settings: st.data ? { delivery_fee_cents: st.data.delivery_fee_cents, zone_radius_km: Number(st.data.zone_radius_km), bid_window_seconds: st.data.bid_window_seconds } : s.settings,
+  }));
 }
 
 async function loadUserData() {
@@ -196,7 +203,7 @@ export const actions = {
       const uid = state.profile?.id;
       if (!uid) throw new Error("Please sign in first");
       const { data, error } = await sb.from("orders").insert({
-        customer_id: uid, restaurant_id, subtotal_cents: subtotal, delivery_fee_cents: DELIVERY_FEE_CENTS, address, phone,
+        customer_id: uid, restaurant_id, subtotal_cents: subtotal, delivery_fee_cents: state.settings.delivery_fee_cents, address, phone,
         status: "awaiting_payment",
       }).select("id").single();
       if (error) throw new Error(error.message);
@@ -209,7 +216,7 @@ export const actions = {
     const id = String(1040 + state.orders.length);
     const order: Order = {
       id, restaurant_id: restaurant_id!, customer_id: "customer-demo", status: "placed", lines, subtotal_cents: subtotal,
-      delivery_fee_cents: DELIVERY_FEE_CENTS, address, phone, prep_minutes: null, ready_at: null, bids: [],
+      delivery_fee_cents: state.settings.delivery_fee_cents, address, phone, prep_minutes: null, ready_at: null, bids: [],
       created_at: new Date().toISOString(), delivered_at: null, accepted_at: null,
     };
     set((s) => ({ ...s, orders: [...s.orders, order], cart: { restaurant_id: null, qty: {} } }));
@@ -296,6 +303,7 @@ export const actions = {
     });
   },
 
+  reloadCatalog() { if (state.mode === "supabase") void loadCatalog(); },
   reset() {
     if (state.mode === "mock") set(() => ({ ...initial }));
     else refetchSoon();

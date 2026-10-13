@@ -14,3 +14,8 @@ body {
   background: #e9e5df;
   color: var(--color-ink);
 }
+
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+}

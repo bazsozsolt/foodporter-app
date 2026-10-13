@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export function Header({ subtitle = "Tilburg Centrum" }: { subtitle?: string }) {
   return (
-    <header className="rounded-b-3xl bg-gradient-to-br from-brand to-[#ff8a3d] px-5 pb-5 pt-5 text-white">
+    <header className="print:hidden rounded-b-3xl bg-gradient-to-br from-brand to-[#ff8a3d] px-5 pb-5 pt-5 text-white">
       <Link href="/" className="text-[22px] font-bold tracking-tight">🛵 Food Porter</Link>
       <p className="mt-1 text-[13px] opacity-90">{subtitle}</p>
     </header>

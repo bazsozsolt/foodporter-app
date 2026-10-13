@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button, Card, Chips, Empty, Header } from "@/components/ui";
-import { DELIVERY_FEE_CENTS } from "@/lib/mock-data";
 import { act } from "@/lib/act";
 import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
@@ -12,6 +11,7 @@ import { orderHref } from "@/lib/orders";
 
 export default function CheckoutPage() {
   const { cart, signedIn, menuItems } = useStore();
+  const DELIVERY_FEE_CENTS = useStore().settings.delivery_fee_cents;
   const [busy, setBusy] = useState(false);
   const router = useRouter();
   const [address, setAddress] = useState("Heuvelstraat 12, 5038 AA Tilburg");

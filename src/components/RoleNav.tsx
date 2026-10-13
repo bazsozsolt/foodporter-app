@@ -12,7 +12,7 @@ const tabs = [
 export function RoleNav() {
   const path = usePathname();
   return (
-    <nav className="fixed bottom-0 left-1/2 z-40 flex w-full max-w-[420px] -translate-x-1/2 gap-1.5 border-t border-black/5 bg-white p-2">
+    <nav className="print:hidden fixed bottom-0 left-1/2 z-40 flex w-full max-w-[420px] -translate-x-1/2 gap-1.5 border-t border-black/5 bg-white p-2">
       {tabs.map((t) => (
         <Link key={t.href} href={t.href}
           className={`flex-1 rounded-xl px-1 py-2.5 text-center text-xs font-semibold ${t.match(path) ? "bg-ink text-white" : "bg-[#f3f1ee] text-muted"}`}>
