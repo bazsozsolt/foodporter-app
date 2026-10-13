@@ -21,7 +21,7 @@ export default function Home() {
         <InstallPrompt />
         <Card className="bg-ink text-white">
           <p className="text-[15px] font-bold leading-snug">Faster dinner delivery in Tilburg, driven by local riders who choose their own speed.</p>
-          <p className="mt-1 text-xs text-white/70">Riders bid their delivery time · flat {eur(DELIVERY_FEE_CENTS)} fee, 100% to the rider · within 3 km of the centre</p>
+          <p className="mt-1 text-xs text-white/70">Riders bid their delivery time · flat {eur(DELIVERY_FEE_CENTS)} fee, 100% to the rider · within {useStore().settings.zone_radius_km} km of the centre</p>
           <Link href="/welcome" className="mt-2 inline-block text-xs font-bold text-[#ffb08f] underline">How it works →</Link>
         </Card>
         {ready && !signedIn && (
@@ -43,7 +43,7 @@ export default function Home() {
               <div className="flex-1">
                 <h3 className="font-bold">{r.name}</h3>
                 <div className="text-[13px] text-muted">{r.cuisine} · {r.area}</div>
-                <div className="mt-1.5 flex gap-1.5"><Pill>~{r.avg_prep_minutes + 12} min</Pill><Pill tone="ok">{eur(DELIVERY_FEE_CENTS)} delivery</Pill></div>
+                <div className="mt-1.5 flex gap-1.5">{(r.rating_count ?? 0) > 0 && <Pill>★ {Number(r.rating_avg).toFixed(1)} ({r.rating_count})</Pill>}<Pill>~{r.avg_prep_minutes + 12} min</Pill><Pill tone="ok">{eur(DELIVERY_FEE_CENTS)} delivery</Pill></div>
               </div>
             </Card>
           </Link>

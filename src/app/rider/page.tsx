@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { AlertsToggle, useOrderAlerts } from "@/components/OrderAlerts";
+import { AlertsToggle, TestSoundButton, useOrderAlerts } from "@/components/OrderAlerts";
 import { distanceKm } from "@/lib/geo";
 import { RoleGate } from "@/components/RoleGate";
 import { act } from "@/lib/act";
@@ -10,6 +10,9 @@ import { restaurantStyle } from "@/lib/mock-data";
 import { eur, hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
 import { STATUS_LABEL, type Order } from "@/lib/types";
+import { mmss, useSecondsLeft } from "@/components/Countdown";
+import { LiveMap, type MapMarker } from "@/components/LiveMap";
+import { navUrl, osmNavUrl, useShareLocation } from "@/lib/location";
 
 const riderBody = (n: number) => `${n} order${n > 1 ? "s" : ""} open for bids near you`;
 
@@ -17,7 +20,9 @@ function BidCard({ o }: { o: Order }) {
   const prep = o.prep_minutes ?? 15;
   const opts = [prep + 8, prep + 12, prep + 18, prep + 25];
   const [eta, setEta] = useState(opts[1]);
-  const { restaurants } = useStore();
+  const { restaurants, profile } = useStore();
+  const mine = o.bids.find((b) => b.rider_id === profile?.id);
+  const left = useSecondsLeft(o.bid_window_closes_at);
   const r = restaurants.find((x) => x.id === o.restaurant_id);
   return (
     <Card>
@@ -25,26 +30,43 @@ function BidCard({ o }: { o: Order }) {
       <div className="my-1.5 text-[13px] text-muted">Ready in ~{prep} min{o.ready_at ? ` (~${hhmm(new Date(o.ready_at))})` : ""} · {o.address}</div>
       {r?.lat && o.lat ? <div data-testid="dropoff" className="text-[13px] font-semibold">🚲 {distanceKm({ lat: r.lat, lng: r.lng! }, { lat: o.lat, lng: o.lng! }).toFixed(1)} km drop-off from {r.area}</div> : null}
       {o.renotified_at && <div className="mt-1 text-[13px] font-semibold text-brand">⏰ Still waiting for a rider — bid now</div>}
-      <p className="mb-2 mt-3 font-bold">Bid your delivery time</p>
-      <Chips options={opts} value={eta} onChange={setEta} render={(m) => `${m} min`} />
-      <p className="mt-2 text-[13px] text-muted">Lowest realistic ETA wins · you keep the full fee</p>
-      <Button onClick={() => act(actions.placeBid(o.id, eta), `Bid accepted! Customer notified: ETA ${eta} min`)}>Place bid</Button>
+      {left != null && <p data-testid="auction" className="mt-2 text-[13px] font-semibold">⏱ Bidding closes in {mmss(left)}{left === 0 ? " · choosing the winner…" : ""}</p>}
+      {mine ? (
+        <p data-testid="my-bid" className="mt-3 rounded-xl bg-[#fff1ea] p-3 text-sm">Your bid: <b>{mine.eta_minutes} min</b>. Lowest ETA wins when the window closes (ties: earliest bid).</p>
+      ) : left === 0 ? null : (<>
+        <p className="mb-2 mt-3 font-bold">Bid your delivery time</p>
+        <Chips options={opts} value={eta} onChange={setEta} render={(m) => `${m} min`} />
+        <p className="mt-2 text-[13px] text-muted">{o.bid_window_closes_at ? "Bidding is open" : "First bid opens a 60 s window"} · lowest ETA wins, ties go to the earliest bid · you keep the full fee</p>
+        <Button onClick={() => act(actions.placeBid(o.id, eta), `Bid placed: ${eta} min. Winner is picked when the window closes.`)}>Place bid</Button>
+      </>)}
     </Card>
   );
 }
 
 export default function RiderPage() {
-  const { orders, profile, mode } = useStore();
+  const { orders, profile, mode, restaurants } = useStore();
   const open = orders.filter((o) => o.status === "accepted" && !acceptedBid(o));
   useOrderAlerts(open.map((o) => `${o.id}:${o.renotified_at ?? ""}`), "Food Porter · order to bid on", riderBody);
   const [name, setName] = useState<string | null>(null);
+  const job = mode === "supabase" ? orders.find((o) => ["assigned", "ready", "picked_up"].includes(o.status) && o.rider_id === profile?.id) : undefined;
+  const online = Boolean(profile?.online);
+  const { me, error: gpsError } = useShareLocation(profile?.id, mode === "supabase" && Boolean(profile?.location_consent_at) && (online || Boolean(job)), job?.id ?? null);
+  async function toggleOnline() {
+    if (!online && !profile?.location_consent_at) {
+      const ok = confirm("Share your location while you're online or on a delivery?\n\n• Admins see your position while you're online.\n• The customer and restaurant of your current order see it during that delivery only.\n• Sharing stops when you go offline and the delivery is done. Points are deleted after 7 days.");
+      if (!ok) return;
+      await act(actions.setOnline(true, true), "You're online · sharing location");
+      return;
+    }
+    await act(actions.setOnline(!online), online ? "You're offline · location sharing stopped" : "You're online · sharing location");
+  }
   const active = orders.filter((o) => ["assigned", "ready", "picked_up"].includes(o.status) && (mode === "mock" || profile?.role === "admin" || acceptedBid(o)?.rider_id === profile?.id));
   return (
     <>
       <Header subtitle="Rider app · Tilburg Centrum" />
       <main className="p-4">
         <RoleGate role="rider">
-        <AlertsToggle />
+        <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
         {mode === "supabase" && profile && (
           <div className="mb-3 flex gap-2">
             <input aria-label="Your name" className="flex-1 rounded-xl border-[1.5px] border-[#e2ded8] p-2.5 text-sm" placeholder="Your first name (shown to customers)"
@@ -52,12 +74,34 @@ export default function RiderPage() {
             {name !== null && name !== (profile.full_name ?? "") && <button className="rounded-xl bg-ink px-3 text-sm font-bold text-white" onClick={async () => { if (await act(actions.setMyName(name), "Name saved") !== undefined) setName(null); }}>Save</button>}
           </div>
         )}
+        {mode === "supabase" && profile && (
+          <div className="mb-3 flex items-center gap-2">
+            <button data-testid="online-toggle" onClick={toggleOnline}
+              className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-bold ${online ? "bg-ok text-white" : "bg-ink text-white"}`}>
+              {online ? "🟢 Online · tap to go offline" : "⚪ Offline · tap to go online"}</button>
+          </div>
+        )}
+        {(online || job) && <p data-testid="gps" className="-mt-1 mb-3 text-xs text-muted">{gpsError ? `⚠️ ${gpsError}` : me ? `📍 Sharing location (${me.lat.toFixed(4)}, ${me.lng.toFixed(4)}) every ~7 s` : "📍 Waiting for GPS…"}</p>}
         {active.map((o) => {
           const bid = acceptedBid(o)!;
+          const rest = restaurants.find((x) => x.id === o.restaurant_id);
+          const pickup = rest?.lat ? { lat: rest.lat, lng: rest.lng! } : null;
+          const drop = o.lat ? { lat: o.lat, lng: o.lng! } : null;
+          const target = o.status === "picked_up" ? drop : pickup;
+          const markers: MapMarker[] = [
+            ...(pickup ? [{ id: "r", ...pickup, kind: "restaurant" as const, label: `Pickup: ${rest?.name}` }] : []),
+            ...(drop ? [{ id: "d", ...drop, kind: "dropoff" as const, label: `Drop-off: ${o.address}` }] : []),
+            ...(me ? [{ id: "me", ...me, kind: "me" as const, label: "You" }] : []),
+          ];
           return (
             <Card key={o.id}>
               <div className="flex items-center justify-between"><b>Active · #{o.id}</b><Pill>{STATUS_LABEL[o.status]}</Pill></div>
               <p className="mt-1 text-[13px] text-muted">Your ETA {bid.eta_minutes} min · food ready ~{o.ready_at ? hhmm(new Date(o.ready_at)) : "?"} ({o.prep_minutes} min prep) · to {o.address}</p>
+              {markers.length > 0 && <div className="mt-2"><LiveMap markers={markers} /></div>}
+              {target && <div className="mt-2 flex gap-2 text-sm font-semibold">
+                <a data-testid="nav-link" className="flex-1 rounded-xl bg-[#1a73e8] py-2 text-center text-white" href={navUrl(target, me)} target="_blank" rel="noreferrer">🧭 Navigate to {o.status === "picked_up" ? "drop-off" : "pickup"}</a>
+                <a className="rounded-xl border-[1.5px] border-[#e2ded8] px-3 py-2 text-center" href={osmNavUrl(target, me)} target="_blank" rel="noreferrer">OSM</a>
+              </div>}
               {o.status === "assigned" && <Empty icon="⏳">Waiting for the restaurant to mark ready…</Empty>}
               {o.status === "ready" && <Button onClick={() => act(actions.pickUp(o.id), "Customer notified: your food is on the way")}>📦 Picked up</Button>}
               {o.status === "picked_up" && <Button variant="ok" onClick={() => act(actions.deliver(o.id), `Delivered ✅ · ${eur(o.delivery_fee_cents)} added to earnings`)}>✅ Delivered</Button>}

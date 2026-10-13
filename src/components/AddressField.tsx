@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { distanceKm, geocode, lookup, suggest, type Suggestion } from "@/lib/geo";
 import type { Geo } from "@/lib/store";
 
-/** Address input with PDOK suggestions and a live 3 km zone check. */
+/** Address input with PDOK suggestions and a live delivery-zone check. */
 export function AddressField({ value, onChange, geo, onGeo, center, radiusKm }: {
   value: string; onChange: (v: string) => void; geo: Geo | null; onGeo: (g: Geo | null) => void;
   center: { lat: number; lng: number }; radiusKm: number;

@@ -6,10 +6,10 @@ import { DELIVERY_FEE_CENTS, menuItems as mockMenu, restaurants as mockRestauran
 import { getSupabase, hasSupabase } from "./supabase";
 import type { Bid, Earning, MenuItem, Order, OrderLine, OrderStatus, Restaurant, Role } from "./types";
 
-export interface Profile { id: string; email: string | null; role: Role; full_name: string | null; restaurant_id: string | null }
+export interface Profile { id: string; email: string | null; role: Role; full_name: string | null; restaurant_id: string | null; online?: boolean; location_consent_at?: string | null }
 export interface Settings {
   delivery_fee_cents: number; zone_radius_km: number; bid_window_seconds: number;
-  restaurant_accept_minutes: number; zone_center_lat: number; zone_center_lng: number;
+  restaurant_accept_minutes: number; zone_center_lat: number; zone_center_lng: number; auction_seconds: number;
 }
 export interface Geo { lat: number; lng: number; label: string; distance_km: number }
 export interface State {
@@ -28,7 +28,7 @@ export interface State {
 const KEY = "foodporter-mock-v2";
 const CART_KEY = "foodporter-cart-v1";
 const initial: State = {
-  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: 3, bid_window_seconds: 180, restaurant_accept_minutes: 5, zone_center_lat: 51.5576, zone_center_lng: 5.0913 },
+  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: 15, bid_window_seconds: 180, auction_seconds: 60, restaurant_accept_minutes: 5, zone_center_lat: 51.5576, zone_center_lng: 5.0913 },
   mode: hasSupabase ? "supabase" : "mock", ready: !hasSupabase, signedIn: null, profile: null,
   restaurants: hasSupabase ? [] : mockRestaurants, menuItems: hasSupabase ? [] : mockMenu,
   cart: { restaurant_id: null, qty: {} }, orders: [], earnings: hasSupabase ? [] : seedEarnings,
@@ -91,6 +91,8 @@ function mapOrder(o: Row): Order {
     lat: (o.lat as number) ?? null, lng: (o.lng as number) ?? null, distance_km: o.distance_km == null ? null : Number(o.distance_km),
     cancel_reason: (o.cancel_reason as string) ?? null, refund_status: (o.refund_status as string) ?? null,
     refund_cents: (o.refund_cents as number) ?? null, renotified_at: (o.renotified_at as string) ?? null,
+    assigned_at: (o.assigned_at as string) ?? null, bid_window_closes_at: (o.bid_window_closes_at as string) ?? null,
+    rider_id: (o.rider_id as string) ?? null,
   };
 }
 
@@ -99,7 +101,7 @@ async function loadCatalog() {
   const [r, m, st] = await Promise.all([
     sb.from("restaurants").select("*").eq("active", true).order("name"),
     sb.from("menu_items").select("*").eq("available", true),
-    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng").maybeSingle(),
+    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds").maybeSingle(),
   ]);
   set((s) => ({
     ...s, restaurants: (r.data as Restaurant[]) ?? [], menuItems: (m.data as MenuItem[]) ?? [],
@@ -111,8 +113,8 @@ async function loadUserData() {
   const sb = getSupabase()!;
   const { data: { user } } = await sb.auth.getUser();
   if (!user) { set((s) => ({ ...s, signedIn: null, profile: null, orders: [], earnings: [], ready: true })); return; }
-  const { data: p } = await sb.from("profiles").select("id, role, full_name, restaurant_id").eq("id", user.id).maybeSingle();
-  const profile: Profile = { id: user.id, email: user.email ?? null, role: (p?.role as Role) ?? "customer", full_name: p?.full_name ?? null, restaurant_id: p?.restaurant_id ?? null };
+  const { data: p } = await sb.from("profiles").select("id, role, full_name, restaurant_id, online, location_consent_at").eq("id", user.id).maybeSingle();
+  const profile: Profile = { id: user.id, email: user.email ?? null, role: (p?.role as Role) ?? "customer", full_name: p?.full_name ?? null, restaurant_id: p?.restaurant_id ?? null, online: Boolean(p?.online), location_consent_at: p?.location_consent_at ?? null };
   const [o, e] = await Promise.all([
     sb.from("orders").select("*, order_items(*), bids(*)").order("id", { ascending: false }).limit(200),
     sb.from("earnings").select("*, orders(restaurant_id)").order("earned_at", { ascending: true }),
@@ -283,9 +285,9 @@ export const actions = {
       const uid = state.profile?.id;
       if (!uid) throw new Error("Please sign in as a rider");
       const { data, error } = await sb.from("bids").insert({ order_id: Number(id), rider_id: uid, eta_minutes: eta }).select("id").single();
-      if (error) throw new Error(error.message);
-      // Pilot rule: first valid bid wins immediately.
-      return run(sb.rpc("accept_bid", { p_bid: data.id }));
+      if (error) throw new Error(error.message.includes("row-level security") ? "Bidding for this order has closed" : error.message.includes("duplicate") ? "You already bid on this order" : error.message);
+      // Auction: the window closes 60 s after the first bid; lowest ETA wins (ties: earliest). Settled server-side.
+      return run(Promise.resolve({ error: null, data }));
     }
     set((s) => ({
       ...s,
@@ -335,6 +337,18 @@ export const actions = {
     if (!sb) return;
     const { error } = await sb.from("ratings").insert({ order_id: Number(orderId), food_stars: food, rider_stars: rider, comment: comment.trim() || null });
     if (error) throw new Error(error.message.includes("duplicate") ? "You already rated this order" : error.message);
+    return true;
+  },
+  /** Rider availability. Going online the first time records location-sharing consent. */
+  async setOnline(online: boolean, consent = false) {
+    const sb = getSupabase();
+    const uid = state.profile?.id;
+    if (!sb || !uid) return true;
+    const p: Record<string, unknown> = { online };
+    if (consent && !state.profile?.location_consent_at) p.location_consent_at = new Date().toISOString();
+    const { error } = await sb.from("profiles").update(p).eq("id", uid);
+    if (error) throw new Error(error.message);
+    set((s) => ({ ...s, profile: s.profile ? { ...s.profile, online, location_consent_at: (p.location_consent_at as string) ?? s.profile.location_consent_at } : s.profile }));
     return true;
   },
   async setMyName(name: string) {

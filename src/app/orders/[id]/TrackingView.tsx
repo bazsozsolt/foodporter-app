@@ -9,6 +9,9 @@ import { acceptedBid, actions, useStore } from "@/lib/store";
 import { CANCEL_REASON, STATUS_LABEL, STATUS_STEPS } from "@/lib/types";
 import { RateOrder } from "@/components/RateOrder";
 import { ReorderButton } from "@/components/ReorderButton";
+import { mmss, useSecondsLeft } from "@/components/Countdown";
+import { LiveMap, type MapMarker } from "@/components/LiveMap";
+import { useOrderLocation } from "@/lib/location";
 import { eur } from "@/lib/format";
 
 const NEXT_ROLE: Record<string, string> = { placed: "Restaurant", accepted: "Rider", assigned: "Restaurant", ready: "Rider", picked_up: "Rider" };
@@ -17,6 +20,9 @@ export function TrackingView({ id }: { id: string }) {
   const { orders, restaurants, ready, profile, mode } = useStore();
   const o = orders.find((x) => x.id === id);
   const [paying, setPaying] = useState(false);
+  const left = useSecondsLeft(o?.status === "accepted" ? o?.bid_window_closes_at : null);
+  const live = Boolean(o && ["assigned", "ready", "picked_up"].includes(o.status));
+  const loc = useOrderLocation(o?.id ?? null, live);
   const unpaid = o?.status === "awaiting_payment";
   // After returning from Mollie the webhook may take a moment; realtime updates the order, poll as a fallback.
   useEffect(() => {
@@ -35,7 +41,13 @@ export function TrackingView({ id }: { id: string }) {
   const r = restaurants.find((x) => x.id === o.restaurant_id);
   const bid = acceptedBid(o);
   const idx = STATUS_STEPS.indexOf(o.status);
-  const etaAt = bid ? hhmm(new Date(new Date(bid.created_at).getTime() + bid.eta_minutes * 60000)) : null;
+  const etaAt = bid ? hhmm(new Date(new Date(o.assigned_at ?? bid.created_at).getTime() + bid.eta_minutes * 60000)) : null;
+  const best = o.bids.length ? Math.min(...o.bids.map((b) => b.eta_minutes)) : null;
+  const markers: MapMarker[] = [
+    ...(r?.lat ? [{ id: "r", lat: r.lat, lng: r.lng!, kind: "restaurant" as const, label: r.name }] : []),
+    ...(o.lat ? [{ id: "d", lat: o.lat, lng: o.lng!, kind: "dropoff" as const, label: "Your address" }] : []),
+    ...(loc ? [{ id: "rider", lat: loc.lat, lng: loc.lng, kind: "rider" as const, label: `Rider ${bid?.rider_name ?? ""}` }] : []),
+  ];
 
   return (
     <>
@@ -49,8 +61,10 @@ export function TrackingView({ id }: { id: string }) {
                 {o.paid_at ? <p data-testid="refund" className="mt-1 text-sm">{o.refund_status === "failed" ? "Our team will refund you manually shortly." : o.refund_cents ? `Refund of ${eur(o.refund_cents)} ${o.refund_status === "refunded" ? "completed" : "on its way"} (1–3 working days for iDEAL/card).` : "Refund in progress…"}</p> : null}</>)
             : o.status === "delivered" ? (<><div className="text-5xl">🎉</div><h2 className="text-lg font-bold">Delivered!</h2><p className="text-sm text-muted">Enjoy your meal.</p></>)
             : bid ? (<><div className="text-sm text-muted">Arriving in about</div><div className="text-4xl font-extrabold text-brand">{bid.eta_minutes} min</div><div className="text-sm text-muted">by {etaAt} · rider {bid.rider_name} 🚲</div></>)
+            : o.status === "accepted" && left != null ? (<div data-testid="customer-auction"><div className="text-sm text-muted">{o.bids.length} rider{o.bids.length === 1 ? "" : "s"} bidding · best ETA so far</div><div className="text-4xl font-extrabold text-brand">{best} min</div><div className="text-sm text-muted">{left > 0 ? `Rider chosen in ${mmss(left)}` : "Choosing your rider…"}</div></div>)
             : (<><div className="text-sm text-muted">Waiting for {idx < 1 ? "the restaurant" : "a rider bid"}…</div><div className="text-4xl">⏳</div></>)}
         </Card>
+        {live && markers.length > 0 && <Card className="p-2"><LiveMap markers={markers} /><p className="mt-1.5 px-1 text-xs text-muted">{loc ? `Rider location updated ${hhmm(new Date(loc.created_at))}` : "Rider location appears once they share GPS."}</p></Card>}
         {o.status !== "cancelled" && <Card>
           <b>{r?.name}</b>
           <ul className="mt-2">

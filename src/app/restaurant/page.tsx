@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { AlertsToggle, useOrderAlerts } from "@/components/OrderAlerts";
+import { AlertsToggle, TestSoundButton, useOrderAlerts } from "@/components/OrderAlerts";
 import { RoleGate } from "@/components/RoleGate";
 import { act } from "@/lib/act";
 import { Button, Card, Empty, Header, Pill, Stat } from "@/components/ui";
@@ -9,6 +9,9 @@ import { hhmm } from "@/lib/format";
 import { eur } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
 import { STATUS_LABEL, type Order } from "@/lib/types";
+import { mmss, useSecondsLeft } from "@/components/Countdown";
+import { LiveMap } from "@/components/LiveMap";
+import { useOrderLocation } from "@/lib/location";
 
 function Countdown({ from }: { from: string }) {
   const mins = useStore().settings.restaurant_accept_minutes;
@@ -26,6 +29,8 @@ function OrderCard({ o }: { o: Order }) {
   const { restaurants } = useStore();
   const r = restaurants.find((x) => x.id === o.restaurant_id);
   const bid = acceptedBid(o);
+  const left = useSecondsLeft(o.status === "accepted" ? o.bid_window_closes_at : null);
+  const loc = useOrderLocation(o.id, ["assigned", "ready"].includes(o.status));
   return (
     <Card>
       <div className="flex items-center justify-between"><b>#{o.id} · {r?.name}</b><Pill>{o.status === "placed" ? "NEW" : STATUS_LABEL[o.status]}</Pill></div>
@@ -41,7 +46,8 @@ function OrderCard({ o }: { o: Order }) {
         </>
       ) : (
         <>
-          <p className="mt-3 text-sm">Prep time <b>{o.prep_minutes} min</b>{o.ready_at ? <> · ready ~<b>{hhmm(new Date(o.ready_at))}</b></> : null} · {bid ? <>rider <b>{bid.rider_name}</b> coming</> : "waiting for a rider bid"}</p>
+          <p className="mt-3 text-sm">Prep time <b>{o.prep_minutes} min</b>{o.ready_at ? <> · ready ~<b>{hhmm(new Date(o.ready_at))}</b></> : null} · {bid ? <>rider <b>{bid.rider_name}</b> coming</> : left != null ? `${o.bids.length} bid(s) · rider chosen in ${mmss(left)}` : "waiting for a rider bid"}</p>
+          {bid && r?.lat && <div className="mt-2"><LiveMap height={180} markers={[{ id: "r", lat: r.lat, lng: r.lng!, kind: "restaurant", label: r.name }, ...(loc ? [{ id: "rider", lat: loc.lat, lng: loc.lng, kind: "rider" as const, label: `Rider ${bid.rider_name}` }] : [])]} /></div>}
           <div className="mt-2 flex items-center gap-2">
             <span className="text-[13px] text-muted">Running late?</span>
             {[5, 10].map((m) => (
@@ -70,7 +76,7 @@ export default function RestaurantPage() {
       <Header subtitle="Restaurant dashboard · Partner kitchen view" />
       <main className="p-4">
         <RoleGate role="restaurant">
-        <AlertsToggle />
+        <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
         <div className="flex gap-2.5"><Stat value={String(handed.length)} label="Handed over" /><Stat value={eur(revenue)} label="Revenue" /><Stat value={eur(Math.round((revenue * pct) / 100))} label={`Commission ${pct}%`} /></div>
         <h2 className="mb-3 mt-4 text-lg font-bold">Incoming orders</h2>
         {open.length === 0 ? <Empty icon="🍳">No open orders right now.</Empty> : open.map((o) => <OrderCard key={o.id} o={o} />)}

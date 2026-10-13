@@ -5,18 +5,45 @@ import { useStore } from "@/lib/store";
 const KEY = "foodporter-alerts";
 let ctx: AudioContext | null = null;
 
-function beep() {
+/**
+ * Original synthesized "beep-beep" (cartoon style): two short chirps that bend upwards, layered square + triangle
+ * oscillators through a compressor so it is loud but not clipped. Generated in code, no audio files.
+ */
+export function beep() {
   try {
     ctx ??= new AudioContext();
     void ctx.resume();
-    const t = ctx.currentTime;
-    [0, 0.22].forEach((d, i) => {
-      const o = ctx!.createOscillator(), g = ctx!.createGain();
-      o.type = "sine"; o.frequency.value = i ? 1175 : 880;
-      g.gain.setValueAtTime(0.0001, t + d); g.gain.exponentialRampToValueAtTime(0.35, t + d + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.2);
-      o.connect(g).connect(ctx!.destination); o.start(t + d); o.stop(t + d + 0.21);
-    });
+    const c = ctx, t0 = c.currentTime + 0.02;
+    const comp = c.createDynamicsCompressor();
+    comp.threshold.value = -10; comp.ratio.value = 4;
+    const master = c.createGain(); master.gain.value = 0.9;
+    master.connect(comp).connect(c.destination);
+    const chirp = (start: number, f0: number, f1: number) => {
+      for (const [type, vol] of [["square", 0.35], ["triangle", 0.6]] as const) {
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = type;
+        o.frequency.setValueAtTime(f0, start);
+        o.frequency.exponentialRampToValueAtTime(f1, start + 0.11);   // upward "boing" bend
+        o.frequency.exponentialRampToValueAtTime(f1 * 0.97, start + 0.16);
+        g.gain.setValueAtTime(0.0001, start);
+        g.gain.exponentialRampToValueAtTime(vol, start + 0.012);
+        g.gain.setValueAtTime(vol, start + 0.12);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + 0.17);
+        o.connect(g).connect(master);
+        o.start(start); o.stop(start + 0.18);
+      }
+    };
+    chirp(t0, 740, 1180);          // "beep"
+    chirp(t0 + 0.22, 880, 1480);   // "beep!" (higher)
+    (window as unknown as { __fpBeeps?: number }).__fpBeeps = ((window as unknown as { __fpBeeps?: number }).__fpBeeps ?? 0) + 1;
   } catch { /* audio not available */ }
+}
+
+export function TestSoundButton() {
+  return (
+    <button data-testid="test-sound" onClick={() => { beep(); navigator.vibrate?.([120, 80, 120]); }}
+      className="mb-3 w-full rounded-xl border-[1.5px] border-[#e2ded8] bg-white px-3 py-2 text-sm font-semibold">🔊 Test alert sound</button>
+  );
 }
 
 async function notify(title: string, body: string) {

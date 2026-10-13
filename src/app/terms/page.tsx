@@ -11,7 +11,7 @@ export default function Terms() {
       <h2>2. Ordering &amp; prices</h2>
       <ul>
         <li>Prices shown include VAT. A flat delivery fee applies (currently €2.50–€3.50); riders keep 100% of it.</li>
-        <li>We deliver only within the pilot zone (about 3 km around central Tilburg). Addresses outside the zone can’t be ordered to.</li>
+        <li>We deliver only within the pilot zone (currently 15 km around central Tilburg; the exact radius is shown at checkout). Addresses outside the zone can’t be ordered to.</li>
         <li>Your order is confirmed when payment succeeds via Mollie (iDEAL or card).</li>
       </ul>
       <h2>3. Delivery time</h2>

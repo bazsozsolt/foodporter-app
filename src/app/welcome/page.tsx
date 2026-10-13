@@ -18,7 +18,7 @@ export default function Welcome() {
         <h1 className="mt-3 text-[28px] font-extrabold leading-tight">Faster dinner delivery in Tilburg, driven by local riders who choose their own speed.</h1>
         <p className="mt-3 text-white/90">Order from the city&apos;s favourite independent kitchens. Riders bid the delivery time they can really make, and you see it before your food leaves.</p>
         <Link href="/" className="mt-5 inline-block rounded-2xl bg-white px-5 py-3 font-extrabold text-brand shadow">Order now →</Link>
-        <p className="mt-3 text-xs text-white/80">Within 3 km of central Tilburg · Spoorzone, Piushaven, Heuvel, Korvel and around</p>
+        <p className="mt-3 text-xs text-white/80">Tilburg and surroundings · up to 15 km from the centre</p>
       </section>
       <section className="space-y-2.5 p-4">
         <h2 className="mt-2 text-lg font-bold">How it works</h2>

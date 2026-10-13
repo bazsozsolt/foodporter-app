@@ -9,6 +9,7 @@ const sections = [
   { href: "/admin/orders", label: "🧾 Orders" },
   { href: "/admin/restaurants", label: "🍳 Restaurants" },
   { href: "/admin/riders", label: "🚲 Riders" },
+  { href: "/admin/map", label: "🗺️ Live map" },
   { href: "/admin/customers", label: "👥 Customers" },
   { href: "/admin/reports", label: "📈 Reports" },
   { href: "/admin/settings", label: "⚙️ Settings" },

@@ -4,7 +4,7 @@ export type OrderStatus = "awaiting_payment" | "payment_failed" | "placed" | "ac
 export interface MenuItem { id: string; restaurant_id: string; name: string; price_cents: number }
 export interface Restaurant {
   id: string; name: string; cuisine: string; area: string; emoji: string; color: string;
-  avg_prep_minutes: number; commission_pct: number; active: boolean; lat?: number | null; lng?: number | null;
+  avg_prep_minutes: number; commission_pct: number; active: boolean; lat?: number | null; lng?: number | null; rating_avg?: number | null; rating_count?: number;
 }
 export interface OrderLine { item_id: string; name: string; qty: number; price_cents: number }
 export interface Bid { id: string; rider_id: string; rider_name: string; eta_minutes: number; accepted: boolean; created_at: string }
@@ -15,6 +15,7 @@ export interface Order {
   bids: Bid[]; created_at: string; delivered_at: string | null; accepted_at?: string | null;
   paid_at?: string | null; lat?: number | null; lng?: number | null; distance_km?: number | null;
   cancel_reason?: string | null; refund_status?: string | null; refund_cents?: number | null; renotified_at?: string | null;
+  assigned_at?: string | null; bid_window_closes_at?: string | null; rider_id?: string | null;
 }
 export interface Earning { id: string; rider_id: string; order_id: string; restaurant_name: string; amount_cents: number; earned_at: string; payout_id: string | null }
 
