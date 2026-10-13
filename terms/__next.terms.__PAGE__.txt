@@ -1,0 +1,43 @@
+1:"$Sreact.fragment"
+2:"/foodporter-app/_next/static/chunks/26g9ty-18wozr.js"
+3:I[49830,["$2"],"AppShell"]
+4:I[39756,["$2"],"default"]
+5:I[37457,["$2"],"default"]
+6:I[44735,["$2"],"RoleNav"]
+7:I[94437,["$2"],"Toaster"]
+e:I[22016,["$2"],""]
+1c:"ViewportBoundary"
+1d:I[97367,["$2"],"$1c"]
+1e:"MetadataBoundary"
+1f:I[97367,["$2"],"$1e"]
+20:"$Sreact.suspense"
+21:I[27201,["$2"],"IconMark"]
+:HL["/foodporter-app/_next/static/chunks/191clqn36uw0y.css","style"]
+9:X
+c:X
+c:C
+d:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[[["$","header",null,{"className":"print:hidden rounded-b-3xl bg-gradient-to-br from-brand to-[#ff8a3d] px-5 pb-5 pt-5 text-white","children":[["$","$Le",null,{"href":"/","className":"text-[22px] font-bold tracking-tight","children":"🛵 Food Porter"}],["$","p",null,{"className":"mt-1 text-[13px] opacity-90","children":"Terms of use"}]]}],["$","main",null,{"className":"p-4","children":[["$","$Le",null,{"href":"/","className":"text-sm text-muted","children":"← Home"}],["$","div",null,{"className":"mb-3 rounded-2xl bg-white p-4 shadow-[0_2px_10px_rgba(0,0,0,.05)] mt-2.5","children":[["$","h1",null,{"className":"text-xl font-extrabold","children":"Terms of use"}],["$","p",null,{"className":"mb-3 text-xs text-muted","children":["Last updated ","13 October 2026"," · Pilot version: to be reviewed by a lawyer before public launch."]}],["$","div",null,{"className":"legal space-y-3 text-sm leading-relaxed [&_h2]:mt-4 [&_h2]:font-bold [&_li]:ml-4 [&_li]:list-disc","children":[["$","p",null,{"children":"These terms apply to ordering through Food Porter during the Tilburg pilot."}],["$","h2",null,{"children":"1. What we do"}],["$","p",null,{"children":"Food Porter connects you with independent Tilburg restaurants and local riders. The restaurant prepares your food and is responsible for its quality, ingredients and allergen information. Independent riders bid a delivery time and deliver your order."}],["$","h2",null,{"children":"2. Ordering & prices"}],["$","ul",null,{"children":[["$","li",null,{"children":"Prices shown include VAT. A flat delivery fee applies (currently €2.50–€3.50); riders keep 100% of it."}],["$","li",null,{"children":"We deliver only within the pilot zone (about 3 km around central Tilburg). Addresses outside the zone can’t be ordered to."}],["$","li",null,{"children":"Your order is confirmed when payment succeeds via Mollie (iDEAL or card)."}]]}],["$","h2",null,{"children":"3. Delivery time"}],["$","p",null,{"children":"The ETA you see is the rider’s own estimate. We track how often riders deliver on time, but an ETA is not a guarantee."}],["$","h2",null,{"children":"4. Cancellations & refunds"}],["$","ul",null,{"children":[["$","li",null,{"children":"If the restaurant rejects your order or doesn’t confirm it within 5 minutes, it is cancelled and you get a full automatic refund."}],["$","li",null,{"children":"If no rider can be found, our team contacts you and refunds in full if we cancel."}],"$Lf","$L10"]}],"$L11","$L12","$L13","$L14","$L15","$L16","$L17","$L18"]}]]}],"$L19"]}]],null,"$L1a"]}],"p":"$@1b","v":null,"s":"$9"}}]]
+a:[["children",{"s":"terms","h":96,"d":{"r":["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","template":["$","$L5",null,{}]}]]}],"p":"$@b","v":"$c","s":"$9"},"c":"$Qd"}]]
+0:{"t":{"t":{"s":"","h":80,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/191clqn36uw0y.css","precedence":"next"}],["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/26g9ty-18wozr.js","async":true}]],["$","html",null,{"lang":"en","children":["$","body",null,{"className":"font-sans antialiased","children":["$","$L3",null,{"children":[["$","$L4",null,{"parallelRouterKey":"children","template":["$","$L5",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}],["$","$L6",null,{}],["$","$L7",null,{}]]}]}]}]]}],"p":"$@8","v":null,"s":"$9"},"c":"$Qa"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1d",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#ff5a1f"}]]}],["$","$L1f",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$20",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Terms · Food Porter"}],["$","meta","1",{"name":"description","content":"Local food delivery in Tilburg. Riders bid to bring it fast."}],["$","link","2",{"rel":"manifest","href":"/foodporter-app/manifest.webmanifest"}],["$","link","3",{"rel":"icon","href":"/foodporter-app/favicon.ico?favicon.117ezoe8m31dk.ico","sizes":"48x48","type":"image/x-icon"}],["$","link","4",{"rel":"apple-touch-icon","href":"/foodporter-app/apple-icon.png?apple-icon.1isdb6wdupf92.png","sizes":"180x180","type":"image/png"}],["$","$L21","5",{}]]}]}],null]}],null]}],"p":"$@22","v":null,"s":"$9"}},"a":"$@23","u":"$@24","b":"Dfr_NcxdZAYdmLK8h9g0G"}
+25:I[97367,["$2"],"OutletBoundary"]
+f:["$","li",null,{"children":"Once the restaurant has started preparing, you can’t cancel (food is perishable; the right of withdrawal doesn’t apply, art. 6:230p BW). Problems with your order? Contact us within 24 hours and we’ll make it right."}]
+10:["$","li",null,{"children":"Refunds go back to your original payment method, usually within 1–3 working days."}]
+11:["$","h2",null,{"children":"5. Alcohol & age"}]
+12:["$","p",null,{"children":"Alcohol is not sold during the pilot."}]
+13:["$","h2",null,{"children":"6. Your account"}]
+14:["$","p",null,{"children":"Keep your login safe. We may block accounts that misuse the service (e.g. fake orders, abuse of riders or restaurant staff)."}]
+15:["$","h2",null,{"children":"7. Liability"}]
+16:["$","p",null,{"children":"Our liability is limited to the amount of the order concerned, except in case of intent or gross negligence. Dutch law applies."}]
+17:["$","h2",null,{"children":"8. Contact"}]
+18:["$","p",null,{"children":"support@foodporter.nl (pilot contact, to be confirmed). Company details (KvK number, address) will be added before public launch."}]
+19:["$","footer",null,{"className":"mt-6 pb-4 text-center text-xs text-muted print:hidden","children":[["$","div",null,{"className":"flex justify-center gap-3","children":[["$","$Le",null,{"href":"/welcome","className":"underline","children":"About"}],["$","$Le",null,{"href":"/terms","className":"underline","children":"Terms"}],["$","$Le",null,{"href":"/privacy","className":"underline","children":"Privacy"}],["$","$Le",null,{"href":"/cookies","className":"underline","children":"Cookies"}]]}],["$","p",null,{"className":"mt-2","children":"Food Porter · Tilburg pilot · © 2026"}]]}]
+1a:["$","$L25",null,{"children":["$","$20",null,{"name":"Next.MetadataOutlet","children":"$@26"}]}]
+9:300
+26:null
+24:true
+9:C
+23:0
+b:"$undefined"
+8:"$undefined"
+22:"$undefined"
+1b:"$undefined"

@@ -1,0 +1,4 @@
+:HL["/foodporter-app/_next/static/chunks/191clqn36uw0y.css","style"]
+2:[["children",{"s":"__PAGE__","h":160}]]
+1:[["children",{"s":"cookies","h":96,"c":"$Q2"}]]
+0:{"b":"Dfr_NcxdZAYdmLK8h9g0G","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
