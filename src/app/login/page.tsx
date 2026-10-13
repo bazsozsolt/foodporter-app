@@ -8,7 +8,7 @@ import { actions, useStore } from "@/lib/store";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { signedIn, profile } = useStore();
+  const { signedIn, profile, ready } = useStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -23,6 +23,8 @@ export default function LoginPage() {
     if (msg) then?.(msg);
   }
   const afterAuth = (m: string) => { if (!m.startsWith("Check")) goNext(); };
+
+  if (!ready) return <><Header /><p className="p-6 text-center text-muted">Loading…</p></>;
 
   if (signedIn) {
     return (

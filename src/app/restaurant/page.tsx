@@ -2,7 +2,9 @@
 import { useState } from "react";
 import { RoleGate } from "@/components/RoleGate";
 import { act } from "@/lib/act";
-import { Button, Card, Chips, Empty, Header, Pill, Stat } from "@/components/ui";
+import { Button, Card, Empty, Header, Pill, Stat } from "@/components/ui";
+import { PREP_MAX, PrepPicker } from "@/components/PrepPicker";
+import { hhmm } from "@/lib/format";
 import { eur } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
 import { STATUS_LABEL, type Order } from "@/lib/types";
@@ -20,13 +22,21 @@ function OrderCard({ o }: { o: Order }) {
       {o.status === "placed" ? (
         <>
           <p className="mb-2 mt-3 font-bold">Set preparation time</p>
-          <Chips options={[10, 15, 20, 30]} value={prep} onChange={setPrep} render={(m) => `${m} min`} />
+          <PrepPicker value={prep} onChange={setPrep} />
           <Button variant="ok" onClick={() => act(actions.acceptOrder(o.id, prep), "Accepted · order published to riders")}>Accept order</Button>
           <Button variant="ghost" onClick={() => act(Promise.resolve(), "Reject → Mollie refund (not wired yet)")}>Reject</Button>
         </>
       ) : (
         <>
-          <p className="mt-3 text-sm">Prep time <b>{o.prep_minutes} min</b> · {bid ? <>rider <b>{bid.rider_name}</b> coming</> : "waiting for a rider bid"}</p>
+          <p className="mt-3 text-sm">Prep time <b>{o.prep_minutes} min</b>{o.ready_at ? <> · ready ~<b>{hhmm(new Date(o.ready_at))}</b></> : null} · {bid ? <>rider <b>{bid.rider_name}</b> coming</> : "waiting for a rider bid"}</p>
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-[13px] text-muted">Running late?</span>
+            {[5, 10].map((m) => (
+              <button key={m} disabled={(o.prep_minutes ?? 0) + m > PREP_MAX}
+                className="rounded-full border-[1.5px] border-[#e2ded8] bg-white px-3 py-1.5 text-sm font-semibold disabled:opacity-40"
+                onClick={() => act(actions.extendPrep(o.id, m), `Prep +${m} min · rider and customer updated`)}>+{m} min</button>
+            ))}
+          </div>
           <Button disabled={!bid} onClick={() => act(actions.markReady(o.id), "Rider notified: food is ready")}>✅ Mark ready for pickup</Button>
         </>
       )}

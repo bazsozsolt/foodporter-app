@@ -53,7 +53,7 @@ export function TrackingView({ id }: { id: string }) {
               <li key={s} className={`relative py-2 pl-7 ${j <= idx ? "font-semibold text-ink" : "text-muted"}`}>
                 <span className={`absolute left-1.5 top-3 h-3 w-3 rounded-full ${j <= idx ? "bg-ok" : j === idx + 1 ? "bg-brand ring-4 ring-brand/20" : "bg-[#ddd]"}`} />
                 {STATUS_LABEL[s]}
-                {s === "accepted" && o.prep_minutes ? ` · ${o.prep_minutes} min prep` : ""}
+                {s === "accepted" && o.prep_minutes ? ` · ${o.prep_minutes} min prep${o.ready_at && !["ready", "picked_up", "delivered"].includes(o.status) ? ` (ready ~${hhmm(new Date(o.ready_at))})` : ""}` : ""}
                 {s === "assigned" && bid ? ` · ${bid.rider_name}, ETA ${bid.eta_minutes} min` : ""}
               </li>
             ))}

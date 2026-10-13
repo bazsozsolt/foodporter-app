@@ -35,3 +35,18 @@ Roles: everyone signs up as `customer`; promote with the snippets in `seed.sql`.
 - Edge Functions in `supabase/functions/`: `create-payment` (JWT required; recomputes the amount from DB prices, creates a Mollie payment, returns `checkoutUrl`) and `mollie-webhook` (public; re-fetches the payment from Mollie and moves the order `awaiting_payment` -> `placed`, or -> `payment_failed`).
 - Migrations `20261013040000_payment_statuses.sql` + `20261013050000_mollie_payments.sql`: new statuses, `paid_at`/`payment_status`; restaurants never see unpaid orders.
 - Required secret: `MOLLIE_API_KEY` (use a `test_` key for testing). Optional: `APP_URL` (defaults to the GitHub Pages preview).
+
+## SMS updates (customer)
+Edge Function `order-sms` is called by a DB trigger (`pg_net`) when an order becomes **assigned**, **picked_up** or **delivered**.
+It re-reads the order, dedupes via `orders.sms_sent`, and sends via the configured provider. Without secrets it does nothing (`{"disabled":true}`).
+
+Secrets (Supabase → Edge Functions → Secrets):
+| Provider | Secrets |
+|---|---|
+| Twilio | `SMS_PROVIDER=twilio`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` (E.164 number or alphanumeric sender, e.g. `FoodPorter`) |
+| Bird (MessageBird) | `SMS_PROVIDER=bird`, `BIRD_ACCESS_KEY`, `BIRD_WORKSPACE_ID`, `BIRD_CHANNEL_ID` (SMS channel) |
+
+Dutch numbers like `06…` are converted to `+316…`.
+
+## Prep time
+Restaurants pick 10/15/20/30 or **Custom** (5–120 min, ±5 stepper), and can add **+5 / +10 min** until the order is ready (DB-enforced, `20261013070000_prep_time_and_sms.sql`).

@@ -238,6 +238,17 @@ export const actions = {
     if (sb) return run(sb.from("orders").update(p).eq("id", Number(id)));
     patch(id, p);
   },
+  /** Restaurant runs late: add minutes to prep (before "ready"); ready_at moves with it, realtime updates others. */
+  async extendPrep(id: string, addMinutes: number) {
+    const o = state.orders.find((x) => x.id === id);
+    if (!o) throw new Error("Order not found");
+    const prep = Math.min(120, (o.prep_minutes ?? 0) + addMinutes);
+    const base = new Date(o.accepted_at ?? o.created_at).getTime();
+    const p = { prep_minutes: prep, ready_at: new Date(base + prep * 60000).toISOString() };
+    patch(id, p); // optimistic: show the new time immediately
+    const sb = getSupabase();
+    if (sb) return run(sb.from("orders").update(p).eq("id", Number(id)));
+  },
   async markReady(id: string) {
     const p = { status: "ready" as OrderStatus, ready_at: new Date().toISOString() };
     const sb = getSupabase();

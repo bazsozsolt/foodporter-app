@@ -15,7 +15,7 @@ export default function Home() {
     <>
       <Header subtitle="Tilburg Centrum · local spots, riders bid to deliver fast" />
       <main className="p-4">
-        {!signedIn && (
+        {ready && !signedIn && (
           <Card className="flex items-center justify-between bg-[#fff1ea]">
             <span className="text-sm">Sign in to order</span>
             <Link href="/login" className="rounded-xl bg-brand px-3 py-2 text-sm font-bold text-white">Sign in</Link>

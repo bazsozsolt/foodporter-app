@@ -5,7 +5,7 @@ import { RoleGate } from "@/components/RoleGate";
 import { act } from "@/lib/act";
 import { Button, Card, Chips, Empty, Header, Pill } from "@/components/ui";
 import { restaurantStyle } from "@/lib/mock-data";
-import { eur } from "@/lib/format";
+import { eur, hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
 import { STATUS_LABEL, type Order } from "@/lib/types";
 
@@ -18,7 +18,7 @@ function BidCard({ o }: { o: Order }) {
   return (
     <Card>
       <div className="flex items-center justify-between"><b>{restaurantStyle(o.restaurant_id).emoji} {r?.name}</b><Pill tone="ok">{eur(o.delivery_fee_cents)}</Pill></div>
-      <div className="my-1.5 text-[13px] text-muted">Ready in ~{prep} min · {o.address}</div>
+      <div className="my-1.5 text-[13px] text-muted">Ready in ~{prep} min{o.ready_at ? ` (~${hhmm(new Date(o.ready_at))})` : ""} · {o.address}</div>
       <p className="mb-2 mt-3 font-bold">Bid your delivery time</p>
       <Chips options={opts} value={eta} onChange={setEta} render={(m) => `${m} min`} />
       <p className="mt-2 text-[13px] text-muted">Lowest realistic ETA wins · you keep the full fee</p>
@@ -41,7 +41,7 @@ export default function RiderPage() {
           return (
             <Card key={o.id}>
               <div className="flex items-center justify-between"><b>Active · #{o.id}</b><Pill>{STATUS_LABEL[o.status]}</Pill></div>
-              <p className="mt-1 text-[13px] text-muted">Your ETA {bid.eta_minutes} min · to {o.address}</p>
+              <p className="mt-1 text-[13px] text-muted">Your ETA {bid.eta_minutes} min · food ready ~{o.ready_at ? hhmm(new Date(o.ready_at)) : "?"} ({o.prep_minutes} min prep) · to {o.address}</p>
               {o.status === "assigned" && <Empty icon="⏳">Waiting for the restaurant to mark ready…</Empty>}
               {o.status === "ready" && <Button onClick={() => act(actions.pickUp(o.id), "Customer notified: your food is on the way")}>📦 Picked up</Button>}
               {o.status === "picked_up" && <Button variant="ok" onClick={() => act(actions.deliver(o.id), `Delivered ✅ · ${eur(o.delivery_fee_cents)} added to earnings`)}>✅ Delivered</Button>}
