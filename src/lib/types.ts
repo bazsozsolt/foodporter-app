@@ -12,7 +12,7 @@ export interface Order {
   id: string; restaurant_id: string; customer_id: string; status: OrderStatus;
   lines: OrderLine[]; subtotal_cents: number; delivery_fee_cents: number;
   address: string; phone: string; prep_minutes: number | null; ready_at: string | null;
-  bids: Bid[]; created_at: string; delivered_at: string | null;
+  bids: Bid[]; created_at: string; delivered_at: string | null; accepted_at?: string | null;
 }
 export interface Earning { id: string; rider_id: string; order_id: string; restaurant_name: string; amount_cents: number; earned_at: string; payout_id: string | null }
 

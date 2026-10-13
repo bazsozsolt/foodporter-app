@@ -2,14 +2,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "@/components/Toaster";
 import { Button, Card, Chips, Empty, Header } from "@/components/ui";
-import { DELIVERY_FEE_CENTS, menuItems } from "@/lib/mock-data";
+import { DELIVERY_FEE_CENTS } from "@/lib/mock-data";
+import { act } from "@/lib/act";
 import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
 
 export default function CheckoutPage() {
-  const { cart, signedIn } = useStore();
+  const { cart, signedIn, menuItems } = useStore();
+  const [busy, setBusy] = useState(false);
   const router = useRouter();
   const [address, setAddress] = useState("Heuvelstraat 12, 5038 AA Tilburg");
   const [phone, setPhone] = useState("+31 6 1234 5678");
@@ -19,12 +20,13 @@ export default function CheckoutPage() {
 
   if (sub === 0) return <><Header /><main className="p-4"><Empty icon="🛒">Nothing to check out. <Link className="text-brand" href="/">Browse</Link></Empty></main></>;
 
-  function pay() {
+  async function pay() {
     if (!signedIn) { router.push("/login?next=/checkout"); return; }
     // TODO(Mollie): create payment server-side, redirect to checkout URL, confirm via webhook.
-    const id = actions.placeOrder(address, phone);
-    toast(`Payment authorised via Mollie ${method} (mock) · SMS sent`);
-    router.push(`/orders/${id}`);
+    setBusy(true);
+    const id = await act(actions.placeOrder(address, phone), `Order placed · Mollie ${method} payment is mocked for now`);
+    setBusy(false);
+    if (id) router.push(`/orders/${id}`);
   }
 
   return (
@@ -45,7 +47,7 @@ export default function CheckoutPage() {
           <div className="mt-1 flex justify-between font-bold"><span>Total</span><span>{eur(sub + DELIVERY_FEE_CENTS)}</span></div>
         </Card>
         <Card><b>Pay with Mollie</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} value={method} onChange={setMethod} /></div></Card>
-        <Button onClick={pay}>{signedIn ? `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}` : "Sign in to pay"}</Button>
+        <Button onClick={pay} disabled={busy}>{signedIn ? `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}` : "Sign in to pay"}</Button>
       </main>
     </>
   );

@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import { Card, Empty, Header } from "@/components/ui";
-import { restaurants } from "@/lib/mock-data";
 import { hhmm } from "@/lib/format";
 import { acceptedBid, useStore } from "@/lib/store";
 import { STATUS_LABEL, STATUS_STEPS } from "@/lib/types";
@@ -9,10 +8,10 @@ import { STATUS_LABEL, STATUS_STEPS } from "@/lib/types";
 const NEXT_ROLE: Record<string, string> = { placed: "Restaurant", accepted: "Rider", assigned: "Restaurant", ready: "Rider", picked_up: "Rider" };
 
 export function TrackingView({ id }: { id: string }) {
-  const { orders } = useStore();
+  const { orders, restaurants, ready } = useStore();
   const o = orders.find((x) => x.id === id);
-  if (!o) return <><Header /><main className="p-4"><Empty icon="🔎">Order #{id} not found.</Empty></main></>;
-  const r = restaurants.find((x) => x.id === o.restaurant_id)!;
+  if (!o) return <><Header /><main className="p-4"><Empty icon="🔎">{ready ? `Order #${id} not found (are you signed in?).` : "Loading…"}</Empty></main></>;
+  const r = restaurants.find((x) => x.id === o.restaurant_id);
   const bid = acceptedBid(o);
   const idx = STATUS_STEPS.indexOf(o.status);
   const etaAt = bid ? hhmm(new Date(new Date(bid.created_at).getTime() + bid.eta_minutes * 60000)) : null;
@@ -28,7 +27,7 @@ export function TrackingView({ id }: { id: string }) {
             : (<><div className="text-sm text-muted">Waiting for {idx < 1 ? "the restaurant" : "a rider bid"}…</div><div className="text-4xl">⏳</div></>)}
         </Card>
         <Card>
-          <b>{r.name}</b>
+          <b>{r?.name}</b>
           <ul className="mt-2">
             {STATUS_STEPS.map((s, j) => (
               <li key={s} className={`relative py-2 pl-7 ${j <= idx ? "font-semibold text-ink" : "text-muted"}`}>

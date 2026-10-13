@@ -1,14 +1,14 @@
 "use client";
 import Link from "next/link";
 import { Card, Empty, Header } from "@/components/ui";
-import { DELIVERY_FEE_CENTS, menuItems, restaurants } from "@/lib/mock-data";
+import { DELIVERY_FEE_CENTS } from "@/lib/mock-data";
 import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
 
 export default function CartPage() {
-  const { cart } = useStore();
+  const { cart, restaurants, menuItems } = useStore();
   const r = restaurants.find((x) => x.id === cart.restaurant_id);
-  const lines = Object.entries(cart.qty).map(([id, q]) => ({ item: menuItems.find((m) => m.id === id)!, q }));
+  const lines = Object.entries(cart.qty).flatMap(([id, q]) => { const item = menuItems.find((m) => m.id === id); return item ? [{ item, q }] : []; });
   const sub = lines.reduce((a, l) => a + l.q * l.item.price_cents, 0);
   return (
     <>

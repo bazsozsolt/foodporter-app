@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { RoleGate } from "@/components/RoleGate";
 import { Card, Header, Stat } from "@/components/ui";
 import { eur } from "@/lib/format";
 import { useStore } from "@/lib/store";
@@ -13,6 +14,7 @@ export default function EarningsPage() {
       <Header subtitle="Rider app · Earnings" />
       <main className="p-4">
         <Link href="/rider" className="text-sm text-muted">← Order feed</Link>
+        <RoleGate role="rider">
         <div className="mt-2.5 flex gap-2.5"><Stat value={eur(total)} label="Unpaid · paid next Monday" /><Stat value={String(earnings.length)} label="Deliveries" /></div>
         <Card className="mt-3">
           {[...earnings].reverse().map((e) => (
@@ -23,6 +25,7 @@ export default function EarningsPage() {
           ))}
           <p className="mt-3 text-[13px] text-muted">💶 Each Monday, last week&apos;s earnings are paid out by bank transfer. You keep 100% of the delivery fee.</p>
         </Card>
+        </RoleGate>
       </main>
     </>
   );

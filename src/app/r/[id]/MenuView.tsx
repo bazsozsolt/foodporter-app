@@ -1,14 +1,14 @@
 "use client";
 import Link from "next/link";
 import { Card, Header } from "@/components/ui";
-import { menuItems, restaurants } from "@/lib/mock-data";
+import { restaurantStyle } from "@/lib/mock-data";
 import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
 
 export function MenuView({ id }: { id: string }) {
-  const { cart } = useStore();
+  const { cart, restaurants, menuItems, ready } = useStore();
   const r = restaurants.find((x) => x.id === id);
-  if (!r) return <><Header /><main className="p-4">Restaurant not found.</main></>;
+  if (!r) return <><Header /><main className="p-4">{ready ? "Restaurant not found." : "Loading…"}</main></>;
   const qty = cart.restaurant_id === id ? cart.qty : {};
   const items = menuItems.filter((m) => m.restaurant_id === id);
   const count = Object.values(qty).reduce((a, b) => a + b, 0);
@@ -19,7 +19,7 @@ export function MenuView({ id }: { id: string }) {
       <main className="p-4">
         <Link href="/" className="text-sm text-muted">← All restaurants</Link>
         <Card className="mt-2.5 flex items-center gap-3">
-          <div className="grid h-16 w-16 place-items-center rounded-2xl text-3xl" style={{ background: r.color }}>{r.emoji}</div>
+          <div className="grid h-16 w-16 place-items-center rounded-2xl text-3xl" style={{ background: restaurantStyle(r.id).color }}>{restaurantStyle(r.id).emoji}</div>
           <div><h3 className="font-bold">{r.name}</h3><div className="text-[13px] text-muted">{r.cuisine} · ~{r.avg_prep_minutes} min prep</div></div>
         </Card>
         {items.map((m) => (
