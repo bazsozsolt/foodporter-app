@@ -1,29 +1,33 @@
 1:"$Sreact.fragment"
-2:"/foodporter-app/_next/static/chunks/2g2q_p83y3ajh.js"
-3:I[39756,["$2"],"default"]
-4:I[37457,["$2"],"default"]
-5:I[44735,["$2"],"RoleNav"]
-6:I[94437,["$2"],"Toaster"]
-a:I[47257,["$2"],"ClientPageRoot"]
-b:"/foodporter-app/_next/static/chunks/42afrfib9xvas.js"
-c:"/foodporter-app/_next/static/chunks/3p61yd2i2_qg-.js"
-d:I[72906,["$2","$b","$c"],"default"]
-10:I[97367,["$2"],"OutletBoundary"]
-11:"$Sreact.suspense"
-13:"ViewportBoundary"
-14:I[97367,["$2"],"$13"]
-16:"MetadataBoundary"
-17:I[97367,["$2"],"$16"]
-19:I[68027,["$2"],"default",1]
-:HL["/foodporter-app/_next/static/chunks/15i68a49py9py.css","style"]
-8:X
-9:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":[["$","$La",null,{"Component":"$d","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@e","$@f"]}}],[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/42afrfib9xvas.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/foodporter-app/_next/static/chunks/3p61yd2i2_qg-.js","async":true,"nonce":"$undefined"}]],["$","$L10",null,{"children":["$","$11",null,{"name":"Next.MetadataOutlet","children":"$@12"}]}]]}],"p":false,"v":null}}]]
-7:[["children",{"s":"admin","h":512,"d":{"r":["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],"p":false,"v":"$8"},"c":"$Q9"}]]
-0:{"P":null,"c":["","admin",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/15i68a49py9py.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/2g2q_p83y3ajh.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"className":"font-sans antialiased","children":["$","div",null,{"className":"relative mx-auto min-h-screen max-w-[420px] bg-paper pb-24 shadow-2xl","children":[["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$L5",null,{}],["$","$L6",null,{}]]}]}]}]]}],"p":false,"v":null},"c":"$Q7"},"h":{"r":["$","$1","h",{"children":[null,["$","$L14",null,{"children":"$L15"}],["$","$L17",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$11",null,{"name":"Next.Metadata","children":"$L18"}]}],null]}],null]}],"p":false,"v":null}},"m":"$undefined","G":["$19",[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/15i68a49py9py.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"CFgcmyAXu_rJ5jWe9XjJx"}
-8:C
-e:{}
-f:"$9:0:1:d:r:props:children:0:props:serverProvidedParams:params"
-15:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#ff5a1f"}]]
-1a:I[27201,["$2"],"IconMark"]
-12:null
-18:[["$","title","0",{"children":"Food Porter"}],["$","meta","1",{"name":"description","content":"Local food delivery in Tilburg. Riders bid to bring it fast."}],["$","link","2",{"rel":"icon","href":"/foodporter-app/favicon.ico?favicon.117ezoe8m31dk.ico","sizes":"48x48","type":"image/x-icon"}],["$","$L1a","3",{}]]
+2:"/foodporter-app/_next/static/chunks/3an56d91k20fg.js"
+3:I[49830,["$2"],"AppShell"]
+4:I[39756,["$2"],"default"]
+5:I[37457,["$2"],"default"]
+6:I[44735,["$2"],"RoleNav"]
+7:I[94437,["$2"],"Toaster"]
+9:"ClientSegmentRoot"
+a:I[92825,["$2"],"$9"]
+b:"/foodporter-app/_next/static/chunks/2dfgszv-mg6zp.js"
+c:"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js"
+d:I[88760,["$2","$b","$c"],"default"]
+10:I[47257,["$2"],"ClientPageRoot"]
+11:"/foodporter-app/_next/static/chunks/1tb8olm6llpwx.js"
+12:I[72906,["$2","$b","$c","$11"],"default"]
+15:I[97367,["$2"],"OutletBoundary"]
+16:"$Sreact.suspense"
+18:"ViewportBoundary"
+19:I[97367,["$2"],"$18"]
+1b:"MetadataBoundary"
+1c:I[97367,["$2"],"$1b"]
+1e:I[68027,["$2"],"default",1]
+:HL["/foodporter-app/_next/static/chunks/0tdots2sxum29.css","style"]
+f:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":[["$","$L10",null,{"Component":"$12","serverProvidedParams":{"searchParams":{},"params":"$8:0:1:d:r:props:children:1:props:serverProvidedParams:params","promises":["$@13","$@14"]}}],[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/1tb8olm6llpwx.js","async":true,"nonce":"$undefined"}]],["$","$L15",null,{"children":["$","$16",null,{"name":"Next.MetadataOutlet","children":"$@17"}]}]]}],"p":false,"v":null}}]]
+8:[["children",{"s":"admin","h":512,"d":{"r":["$","$1","c",{"children":[[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/2dfgszv-mg6zp.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js","async":true,"nonce":"$undefined"}]],["$","$La",null,{"Component":"$d","slots":{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]},"serverProvidedParams":{"params":{},"promises":["$@e"]}}]]}],"p":false,"v":null},"c":"$Qf"}]]
+0:{"P":null,"c":["","admin",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/0tdots2sxum29.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/3an56d91k20fg.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"className":"font-sans antialiased","children":["$","$L3",null,{"children":[["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$L6",null,{}],["$","$L7",null,{}]]}]}]}]]}],"p":false,"v":null},"c":"$Q8"},"h":{"r":["$","$1","h",{"children":[null,["$","$L19",null,{"children":"$L1a"}],["$","$L1c",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$16",null,{"name":"Next.Metadata","children":"$L1d"}]}],null]}],null]}],"p":false,"v":null}},"m":"$undefined","G":["$1e",[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/0tdots2sxum29.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"dxuSzEdn1KZNCNh-ohtw8"}
+e:"$8:0:1:d:r:props:children:1:props:serverProvidedParams:params"
+13:{}
+14:"$8:0:1:d:r:props:children:1:props:serverProvidedParams:params"
+1a:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#ff5a1f"}]]
+1f:I[27201,["$2"],"IconMark"]
+17:null
+1d:[["$","title","0",{"children":"Food Porter"}],["$","meta","1",{"name":"description","content":"Local food delivery in Tilburg. Riders bid to bring it fast."}],["$","link","2",{"rel":"icon","href":"/foodporter-app/favicon.ico?favicon.117ezoe8m31dk.ico","sizes":"48x48","type":"image/x-icon"}],["$","$L1f","3",{}]]

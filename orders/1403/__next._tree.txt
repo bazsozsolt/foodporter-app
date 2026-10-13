@@ -1,5 +1,5 @@
-:HL["/foodporter-app/_next/static/chunks/15i68a49py9py.css","style"]
+:HL["/foodporter-app/_next/static/chunks/0tdots2sxum29.css","style"]
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"id","t":"d","k":"1403","s":[]},"h":96,"c":"$Q3"}]]
 1:[["children",{"s":"orders","h":96,"c":"$Q2"}]]
-0:{"b":"CFgcmyAXu_rJ5jWe9XjJx","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"dxuSzEdn1KZNCNh-ohtw8","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
