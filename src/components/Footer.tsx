@@ -10,6 +10,7 @@ export function Footer() {
         <Link href="/cookies" className="underline">Cookies</Link>
       </div>
       <p className="mt-2">Food Porter · Tilburg pilot · © 2026</p>
+      <p className="mt-1" data-testid="osm-attribution">Maps and test restaurant data © <a className="underline" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a> (ODbL) · Addresses: PDOK/BAG</p>
     </footer>
   );
 }

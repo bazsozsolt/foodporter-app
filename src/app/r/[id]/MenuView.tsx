@@ -20,7 +20,7 @@ export function MenuView({ id }: { id: string }) {
         <Link href="/" className="text-sm text-muted">← All restaurants</Link>
         <Card className="mt-2.5 flex items-center gap-3">
           <div className="grid h-16 w-16 place-items-center rounded-2xl text-3xl" style={{ background: restaurantStyle(r.id).color }}>{restaurantStyle(r.id).emoji}</div>
-          <div><h3 className="font-bold">{r.name}</h3><div className="text-[13px] text-muted">{r.cuisine} · ~{r.avg_prep_minutes} min prep</div></div>
+          <div><h3 className="font-bold">{r.name}</h3><div className="text-[13px] text-muted">{r.cuisine} · ~{r.avg_prep_minutes} min prep</div>{r.address && <div className="text-[12px] text-muted">{r.address}</div>}{r.is_test && <div className="mt-1 rounded-lg bg-amber-50 px-2 py-1 text-[12px] font-semibold text-amber-800" data-testid="test-label">🧪 {r.description ?? "Test data, not a partner"} · example menu and prices · © OpenStreetMap contributors (ODbL)</div>}</div>
         </Card>
         {items.map((m) => (
           <Card key={m.id} className="flex items-center justify-between">

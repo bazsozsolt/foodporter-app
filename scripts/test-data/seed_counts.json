@@ -1,0 +1,15 @@
+{
+ "delivered": 84,
+ "rating_ok": 54,
+ "pay_failed": 5,
+ "late": 12,
+ "paid_after_cancel": 3,
+ "pay_expired": 4,
+ "no_bid_alert": 3,
+ "timeout": 6,
+ "rating_low": 4,
+ "rejected": 7,
+ "prep_extended": 14,
+ "incidents": 5,
+ "live_in_progress": 3
+}

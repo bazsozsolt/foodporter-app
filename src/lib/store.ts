@@ -99,8 +99,17 @@ function mapOrder(o: Row): Order {
 async function loadCatalog() {
   const sb = getSupabase()!;
   const [r, m, st] = await Promise.all([
-    sb.from("restaurants").select("*").eq("active", true).order("name"),
-    sb.from("menu_items").select("*").eq("available", true),
+    sb.from("restaurants").select("*").eq("active", true).order("is_test").order("name").range(0, 1999),
+    (async () => {
+      const all: MenuItem[] = [];
+      for (let from = 0; from < 20000; from += 1000) {
+        const { data, error } = await sb.from("menu_items").select("*").eq("available", true).order("id").range(from, from + 999);
+        if (error) return { data: all.length ? all : null };
+        all.push(...((data as MenuItem[]) ?? []));
+        if (!data || data.length < 1000) break;
+      }
+      return { data: all };
+    })(),
     sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds").maybeSingle(),
   ]);
   set((s) => ({

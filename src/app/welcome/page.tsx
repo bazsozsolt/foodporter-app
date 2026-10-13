@@ -39,6 +39,7 @@ export default function Welcome() {
         </div>
       </section>
       <div className="px-4"><Footer /></div>
+      <p className="mt-4 px-4 text-xs text-muted">Testing mode: restaurants marked 🧪 are test data imported from OpenStreetMap (© OpenStreetMap contributors, ODbL, openstreetmap.org/copyright). They are not Food Porter partners; menus and prices are examples.</p>
     </main>
   );
 }

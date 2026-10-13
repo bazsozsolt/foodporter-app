@@ -1,0 +1,5731 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-06-01T08:52:28Z",
+    "timestamp_areas_base": "2026-06-01T08:52:28Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 596248265,
+  "lat": 51.5789830,
+  "lon": 5.1356051,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "1",
+    "addr:postcode": "5056ED",
+    "addr:street": "'t Zwaantje",
+    "amenity": "restaurant",
+    "cuisine": "tapas",
+    "name": "Onsz",
+    "phone": "+31 13 533 1239",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.onsz-restaurant.nl/berkel-enschot/"
+  }
+},
+{
+  "type": "node",
+  "id": 883456897,
+  "lat": 51.5904126,
+  "lon": 5.0787195,
+  "tags": {
+    "amenity": "fast_food",
+    "name": "Verdi Snackcorner"
+  }
+},
+{
+  "type": "node",
+  "id": 1189501893,
+  "lat": 51.5700258,
+  "lon": 5.0919447,
+  "tags": {
+    "amenity": "fast_food",
+    "name": "smullerij",
+    "opening_hours": "Mo-Fr 12:00-21:00; Sa,Su 12:00-20:00"
+  }
+},
+{
+  "type": "node",
+  "id": 1709224645,
+  "lat": 51.5573274,
+  "lon": 5.0925513,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "3",
+    "addr:postcode": "5038CN",
+    "addr:street": "Heuvel",
+    "amenity": "restaurant",
+    "cuisine": "indonesian",
+    "name": "Gember & Sereh",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "http://www.gemberensereh.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 1716385525,
+  "lat": 51.5550669,
+  "lon": 5.0843459,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "8",
+    "addr:postcode": "5038TJ",
+    "addr:street": "Oude Markt",
+    "amenity": "restaurant",
+    "name": "Anvers",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "toilets:wheelchair": "yes",
+    "website": "https://www.anvers.nl",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1716528747,
+  "lat": 51.5566840,
+  "lon": 5.0909422,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "turkish",
+    "name": "Cafetaria Tropical"
+  }
+},
+{
+  "type": "node",
+  "id": 1723406781,
+  "lat": 51.5507897,
+  "lon": 5.1001783,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "burger",
+    "name": "De Bengel"
+  }
+},
+{
+  "type": "node",
+  "id": 2038204338,
+  "lat": 51.5576425,
+  "lon": 5.0556963,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housename": "La Cabaña",
+    "addr:housenumber": "73",
+    "addr:postcode": "5037EV",
+    "addr:street": "Academielaan",
+    "amenity": "restaurant",
+    "name": "Nomadas",
+    "source": "survey",
+    "website": "https://nomadas-gastrobar.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2354519890,
+  "lat": 51.5625289,
+  "lon": 5.0435372,
+  "tags": {
+    "amenity": "fast_food",
+    "name": "Döner Company"
+  }
+},
+{
+  "type": "node",
+  "id": 2354519896,
+  "lat": 51.5625122,
+  "lon": 5.0436928,
+  "tags": {
+    "amenity": "fast_food",
+    "name": "Top Croque"
+  }
+},
+{
+  "type": "node",
+  "id": 2354519897,
+  "lat": 51.5627355,
+  "lon": 5.0433712,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Mensa"
+  }
+},
+{
+  "type": "node",
+  "id": 2840172060,
+  "lat": 51.6206609,
+  "lon": 5.1247468,
+  "tags": {
+    "addr:city": "Udenhout",
+    "addr:housenumber": "37",
+    "addr:postcode": "5071RC",
+    "addr:street": "Schoorstraat",
+    "amenity": "restaurant",
+    "name": "De Baron",
+    "phone": "+31 13 590 9604",
+    "source": "BAG",
+    "source:date": "2014-03-24",
+    "website": "https://www.debaron-udenhout.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2840200463,
+  "lat": 51.5834765,
+  "lon": 5.1461431,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "1",
+    "addr:postcode": "5056CR",
+    "addr:street": "Generaal Eisenhowerweg",
+    "amenity": "restaurant",
+    "name": "Boerderij Denissen",
+    "opening_hours": "Tu-Su 17:00-24:00",
+    "phone": "+31 13 533 4218",
+    "source": "BAG",
+    "source:date": "2014-03-24",
+    "website": "https://boerderijdenissen.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2840204550,
+  "lat": 51.5906527,
+  "lon": 5.1439426,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "2",
+    "addr:postcode": "5056JC",
+    "addr:street": "Molenstraat",
+    "amenity": "restaurant",
+    "name": "Eeterij de Bron",
+    "source": "BAG",
+    "source:date": "2014-03-24"
+  }
+},
+{
+  "type": "node",
+  "id": 2840205057,
+  "lat": 51.5930658,
+  "lon": 5.1703271,
+  "tags": {
+    "addr:city": "Udenhout",
+    "addr:housenumber": "300",
+    "addr:postcode": "5071ND",
+    "addr:street": "Kreitenmolenstraat",
+    "amenity": "fast_food",
+    "brand": "McDonald's",
+    "brand:wikidata": "Q38076",
+    "brand:wikipedia": "en:McDonald's",
+    "cuisine": "burger",
+    "name": "McDonald's",
+    "source": "BAG",
+    "source:date": "2014-03-24",
+    "takeaway": "yes",
+    "website": "https://www.mcdonalds.com/nl/nl-nl/location/udenhout/mcdonalds-udenhout/kreitenmolenstraat-300/850243.html"
+  }
+},
+{
+  "type": "node",
+  "id": 2840208271,
+  "lat": 51.5906182,
+  "lon": 5.1444242,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "5",
+    "addr:postcode": "5056HX",
+    "addr:street": "Burgemeester Brendersstraat",
+    "amenity": "fast_food",
+    "name": "De Oude Raadskelder",
+    "source": "BAG",
+    "source:date": "2014-03-24"
+  }
+},
+{
+  "type": "node",
+  "id": 2840650355,
+  "lat": 51.5582244,
+  "lon": 5.1076833,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "42",
+    "addr:postcode": "5018CT",
+    "addr:street": "Jan Pieterszoon Coenstraat",
+    "amenity": "restaurant",
+    "cuisine": "friture",
+    "name": "Eetsalon Van Gool",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2840650376,
+  "lat": 51.5581482,
+  "lon": 5.1075058,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "44",
+    "addr:postcode": "5018CT",
+    "addr:street": "Jan Pieterszoon Coenstraat",
+    "amenity": "fast_food",
+    "cuisine": "chinese",
+    "name": "Chopin",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2840802885,
+  "lat": 51.5440900,
+  "lon": 5.0945124,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "168",
+    "addr:postcode": "5022CA",
+    "addr:street": "Broekhovenseweg",
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "drive_through": "no",
+    "name": "Döner World",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.donerworldtilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2841726740,
+  "lat": 51.5749497,
+  "lon": 5.1378567,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "34a",
+    "addr:postcode": "5056AC",
+    "addr:street": "Kerkstraat",
+    "amenity": "fast_food",
+    "name": "Van Riemsdijk",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2841727022,
+  "lat": 51.5819047,
+  "lon": 5.1290615,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "38",
+    "addr:postcode": "5056EJ",
+    "addr:street": "Rauwbrakenweg",
+    "amenity": "restaurant",
+    "name": "Arbie's Beachhouse",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.arbies.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2841728488,
+  "lat": 51.5782019,
+  "lon": 5.1360730,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "7a",
+    "addr:postcode": "5056AA",
+    "addr:street": "Kerkstraat",
+    "amenity": "fast_food",
+    "cuisine": "pizza;kebab;shawarma",
+    "delivery": "yes",
+    "drive_through": "no",
+    "name": "De Piramide",
+    "outdoor_seating": "no",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2841833235,
+  "lat": 51.6122320,
+  "lon": 5.1408929,
+  "tags": {
+    "addr:city": "Udenhout",
+    "addr:housenumber": "2",
+    "addr:postcode": "5071RA",
+    "addr:street": "Schoorstraat",
+    "amenity": "restaurant",
+    "name": "Theeschenkerij 't Rectoraat",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://facebook.com/theeschenkerijudenhout"
+  }
+},
+{
+  "type": "node",
+  "id": 2843544080,
+  "lat": 51.6099583,
+  "lon": 5.1394822,
+  "tags": {
+    "addr:city": "Udenhout",
+    "addr:housenumber": "29",
+    "addr:postcode": "5071EG",
+    "addr:street": "Slimstraat",
+    "amenity": "restaurant",
+    "cuisine": "chinese",
+    "name": "Diamant",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://diamantudenhout.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2843545044,
+  "lat": 51.6058950,
+  "lon": 5.1374500,
+  "tags": {
+    "addr:city": "Udenhout",
+    "addr:housenumber": "12",
+    "addr:postcode": "5071VP",
+    "addr:street": "Berkelseweg",
+    "amenity": "fast_food",
+    "name": "Eeterij De Stoofpot",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2843545076,
+  "lat": 51.6112589,
+  "lon": 5.1401547,
+  "tags": {
+    "addr:city": "Udenhout",
+    "addr:housenumber": "12",
+    "addr:postcode": "5071EK",
+    "addr:street": "Slimstraat",
+    "amenity": "restaurant",
+    "cuisine": "sushi",
+    "name": "Sushi & More",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.sushimore.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2843547410,
+  "lat": 51.6110068,
+  "lon": 5.1399184,
+  "tags": {
+    "addr:city": "Udenhout",
+    "addr:housenumber": "20",
+    "addr:postcode": "5071EK",
+    "addr:street": "Slimstraat",
+    "amenity": "restaurant",
+    "cuisine": "indonesian",
+    "name": "Mama Usi",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.mamausi.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2843549635,
+  "lat": 51.5949356,
+  "lon": 5.1288441,
+  "tags": {
+    "addr:city": "Udenhout",
+    "addr:housenumber": "44",
+    "addr:postcode": "5071RM",
+    "addr:street": "Molenhoefstraat",
+    "amenity": "restaurant",
+    "name": "Brasserie Valentijn",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://brasserie-valentijn.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2843617637,
+  "lat": 51.5679812,
+  "lon": 5.1087092,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "85",
+    "addr:postcode": "5015AL",
+    "addr:street": "Kapitein Nemostraat",
+    "amenity": "fast_food",
+    "cuisine": "cafetaria",
+    "name": "Tommy's",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2844553249,
+  "lat": 51.5393507,
+  "lon": 5.0763868,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "20",
+    "addr:postcode": "5022DM",
+    "addr:street": "Professor Goossenslaan",
+    "amenity": "fast_food",
+    "brand": "Subway",
+    "brand:wikidata": "Q244457",
+    "brand:wikipedia": "en:Subway (restaurant)",
+    "cuisine": "sandwich",
+    "name": "Subway",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2844602728,
+  "lat": 51.5373551,
+  "lon": 5.0420495,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "4",
+    "addr:postcode": "5032ME",
+    "addr:street": "Mina Krusemanweg",
+    "amenity": "fast_food",
+    "brand": "McDonald's",
+    "brand:wikidata": "Q38076",
+    "brand:wikipedia": "en:McDonald's",
+    "cuisine": "burger",
+    "name": "McDonald's",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://www.mcdonalds.com"
+  }
+},
+{
+  "type": "node",
+  "id": 2844779637,
+  "lat": 51.5450226,
+  "lon": 5.0468760,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "17",
+    "addr:postcode": "5032AZ",
+    "addr:street": "Amer",
+    "amenity": "fast_food",
+    "cuisine": "friture;snackbar",
+    "name": "Bokkies",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://bokkies.eu/"
+  }
+},
+{
+  "type": "node",
+  "id": 2844780538,
+  "lat": 51.5451320,
+  "lon": 5.0466177,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "32a",
+    "addr:postcode": "5032RT",
+    "addr:street": "Grebbe",
+    "amenity": "fast_food",
+    "cuisine": "shawarma;kebab",
+    "drive_through": "no",
+    "name": "De Vlinder",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://devlinder-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2845078537,
+  "lat": 51.5493927,
+  "lon": 5.0443485,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1",
+    "addr:postcode": "5032WL",
+    "addr:street": "Dussenpad",
+    "amenity": "restaurant",
+    "name": "Hofstede de Blaak",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://hofstededeblaak.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2846302055,
+  "lat": 51.5493251,
+  "lon": 4.9946527,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "400",
+    "addr:postcode": "5032VC",
+    "addr:street": "Gilzerbaan",
+    "amenity": "restaurant",
+    "name": "Prise d'eau Gasterij",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://prisedeau-golf.nl/eten-en-drinken/de-gasterij/"
+  }
+},
+{
+  "type": "node",
+  "id": 2847044882,
+  "lat": 51.5522448,
+  "lon": 5.0545866,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "43",
+    "addr:postcode": "5037MT",
+    "addr:street": "Zouavenlaan",
+    "amenity": "fast_food",
+    "drive_through": "no",
+    "name": "Maxi Food",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2847046753,
+  "lat": 51.5506930,
+  "lon": 5.0574896,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "48",
+    "addr:postcode": "5037PK",
+    "addr:street": "Burgemeester van de Mortelplein",
+    "amenity": "restaurant",
+    "cuisine": "chinese",
+    "name": "Rose Garden",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://rosegardentilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2847202782,
+  "lat": 51.5624666,
+  "lon": 5.0494385,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "281",
+    "addr:postcode": "5037DN",
+    "addr:street": "Professor de Moorplein",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "Cafetaria Franske",
+    "opening_hours": "Mo-Fr 11:00-20:30; Sa-Su 13:00-20:30",
+    "phone": "+31 13 467 9542",
+    "smoking": "outside",
+    "source": "BAG",
+    "source:date": "2017-02-25",
+    "website": "http://www.cafetariafranske.nl/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2847207479,
+  "lat": 51.5622024,
+  "lon": 5.0501322,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "491",
+    "addr:postcode": "5037DR",
+    "addr:street": "Professor de Moorplein",
+    "amenity": "fast_food",
+    "branch": "Tilburg",
+    "brand": "Taco Mundo",
+    "brand:website": "https://www.tacomundo.com",
+    "brand:wikidata": "Q108923671",
+    "cuisine": "mexican",
+    "name": "Taco Mundo",
+    "opening_hours": "Mo-We 16:00-22:00; Th-Su 16:00-24:00",
+    "smoking": "outside",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://www.tacomundo.com/vestigingen/tilburg",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2847209818,
+  "lat": 51.5626910,
+  "lon": 5.0502315,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "431",
+    "addr:postcode": "5037DR",
+    "addr:street": "Professor de Moorplein",
+    "amenity": "fast_food",
+    "brand": "Subway",
+    "brand:wikidata": "Q244457",
+    "brand:wikipedia": "en:Subway (restaurant)",
+    "capacity": "50",
+    "cuisine": "sandwich",
+    "name": "Subway",
+    "opening_hours": "Mo-Fr 09:30-19:30; Sa,Su 10:00-19:30",
+    "phone": "+31 13 468 4644",
+    "smoking": "outside",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://www.subway.nl",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2847284753,
+  "lat": 51.5606072,
+  "lon": 5.0763130,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "333",
+    "addr:postcode": "5038LX",
+    "addr:street": "Talent Square",
+    "amenity": "restaurant",
+    "check_date": "2024-09-24",
+    "cuisine": "turkish",
+    "name": "Masal",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://masalrestaurant.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2847285301,
+  "lat": 51.5605427,
+  "lon": 5.0830169,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "41",
+    "addr:postcode": "5038CB",
+    "addr:street": "Spoorlaan",
+    "amenity": "fast_food",
+    "brand": "The Döner Company",
+    "brand:wikidata": "Q108923682",
+    "check_date:opening_hours": "2024-08-05",
+    "cuisine": "kebab",
+    "name": "The Döner Company",
+    "opening_hours:signed": "no",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2847326479,
+  "lat": 51.5557404,
+  "lon": 5.0719382,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "137",
+    "addr:postcode": "5038NC",
+    "addr:street": "Bredaseweg",
+    "amenity": "restaurant",
+    "cuisine": "javaans;surinaams",
+    "name": "Eethuis Bamboe",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://www.eethuisbamboe.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2847327231,
+  "lat": 51.5558820,
+  "lon": 5.0704570,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "177",
+    "addr:postcode": "5038ND",
+    "addr:street": "Bredaseweg",
+    "amenity": "restaurant",
+    "cuisine": "turkish",
+    "name": "La Rocha",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2847328900,
+  "lat": 51.5554861,
+  "lon": 5.0753420,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "49a",
+    "addr:postcode": "5038NA",
+    "addr:street": "Bredaseweg",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "Oranje Eetcafé",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2847328990,
+  "lat": 51.5597431,
+  "lon": 5.0685592,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "40",
+    "addr:postcode": "5038MA",
+    "addr:street": "Beukenstraat",
+    "amenity": "restaurant",
+    "name": "Karakter",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://karaktertilburg.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2847329241,
+  "lat": 51.5554711,
+  "lon": 5.0755518,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "47",
+    "addr:postcode": "5038NA",
+    "addr:street": "Bredaseweg",
+    "amenity": "fast_food",
+    "cuisine": "kebab;pizza",
+    "name": "Kebab & Go",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.kebabgotilburg.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2847329486,
+  "lat": 51.5582485,
+  "lon": 5.0774916,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "59",
+    "addr:postcode": "5038GB",
+    "addr:street": "Noordhoekring",
+    "amenity": "restaurant",
+    "cuisine": "surinamese",
+    "name": "Gio's",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://giossurinaamseethuis.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2847329727,
+  "lat": 51.5557600,
+  "lon": 5.0731035,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "6",
+    "addr:postcode": "5038PM",
+    "addr:street": "Zilverlindestraat",
+    "amenity": "restaurant",
+    "cuisine": "chinese",
+    "name": "I Pin Ke",
+    "phone": "+31 13 5434105",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.backtrackbothies.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 2847522245,
+  "lat": 51.5749450,
+  "lon": 5.0383568,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "10",
+    "addr:postcode": "5044JB",
+    "addr:street": "Paletplein",
+    "amenity": "fast_food",
+    "cuisine": "pizza;kebab;shawarma;turkish",
+    "diet:halal": "yes",
+    "diet:meat": "yes",
+    "drive_through": "no",
+    "name": "Eethuis Paletplein",
+    "source": "BAG;local knowledge",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2847522986,
+  "lat": 51.5749944,
+  "lon": 5.0383861,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "11",
+    "addr:postcode": "5044JB",
+    "addr:street": "Paletplein",
+    "amenity": "restaurant",
+    "cuisine": "chinese",
+    "name": "Afhaalcentrum Welkom",
+    "phone": "+31 13 467 37 07",
+    "source": "BAG;local knowledge",
+    "source:date": "2014-05-07",
+    "website": "https://afhaalcentrumwelkom.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2847527041,
+  "lat": 51.5752489,
+  "lon": 5.0383378,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "5",
+    "addr:postcode": "5044JB",
+    "addr:street": "Paletplein",
+    "amenity": "restaurant",
+    "name": "Thelma's",
+    "operator": "Surinaams",
+    "source": "BAG",
+    "source:date": "2017-08-19",
+    "website": "https://www.thelmas-tilburg.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2847531668,
+  "lat": 51.5750510,
+  "lon": 5.0382106,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "9",
+    "addr:postcode": "5044JB",
+    "addr:street": "Paletplein",
+    "amenity": "fast_food",
+    "brand": "Domino's",
+    "brand:wikidata": "Q839466",
+    "cuisine": "pizza",
+    "drive_through": "no",
+    "name": "Domino's",
+    "source": "BAG;local knowledge",
+    "source:date": "2014-05-07",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2847833575,
+  "lat": 51.5938604,
+  "lon": 5.0920503,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "14",
+    "addr:postcode": "5011XG",
+    "addr:street": "Pater Dondersstraat",
+    "amenity": "restaurant",
+    "name": "Peerke Donders",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "toilets:wheelchair": "yes",
+    "website": "https://bijpeerkedonders.nl/",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 2847837030,
+  "lat": 51.5956377,
+  "lon": 5.0839690,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "75",
+    "addr:postcode": "5011XK",
+    "addr:street": "Kalverstraat",
+    "amenity": "restaurant",
+    "cuisine": "asian",
+    "name": "Familie Wok",
+    "opening_hours": "Tu-Th 16:30-22:00; Fr-Su 16:30-22:30",
+    "phone": "+31 13 455 8083",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://familiewok.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848040849,
+  "lat": 51.5790735,
+  "lon": 4.9974366,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "13",
+    "addr:postcode": "5045NZ",
+    "addr:street": "Campenhoefdreef",
+    "amenity": "restaurant",
+    "check_date": "2023-10-08",
+    "cuisine": "pancake",
+    "indoor_seating": "yes",
+    "name": "Pannenkoeken Paradijs Tilburg",
+    "outdoor_seating": "yes",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.pannenkoeken-paradijs.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2848182164,
+  "lat": 51.5638995,
+  "lon": 5.0908981,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "104a",
+    "addr:postcode": "5014HM",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "name": "Sofram",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://soframeethuis.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848186953,
+  "lat": 51.5601746,
+  "lon": 5.0920285,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "10",
+    "addr:postcode": "5014DA",
+    "addr:street": "NS Plein",
+    "amenity": "restaurant",
+    "cuisine": "thai;bubble_tea",
+    "name": "Aim Aroy",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.aimaroy-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848188814,
+  "lat": 51.5626904,
+  "lon": 5.0930318,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "131",
+    "addr:postcode": "5014EC",
+    "addr:street": "Koestraat",
+    "amenity": "restaurant",
+    "name": "De Carpacciobar",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://decarpacciobar.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848191521,
+  "lat": 51.5671240,
+  "lon": 5.0887212,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "2",
+    "addr:postcode": "5014HL",
+    "addr:street": "Besterdring",
+    "amenity": "restaurant",
+    "cuisine": "afghan",
+    "name": "Sarban",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://sarban.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848191859,
+  "lat": 51.5615106,
+  "lon": 5.0927971,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "38",
+    "addr:postcode": "5014DC",
+    "addr:street": "NS Plein",
+    "amenity": "restaurant",
+    "name": "Myzo",
+    "phone": "+31 13 3699218",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://restaurantmyzo.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848191888,
+  "lat": 51.5616227,
+  "lon": 5.0928485,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "39",
+    "addr:postcode": "5014DC",
+    "addr:street": "NS Plein",
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "name": "Aly Baba",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848193149,
+  "lat": 51.5644808,
+  "lon": 5.0910722,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "30",
+    "addr:postcode": "5014HP",
+    "addr:street": "Besterdplein",
+    "amenity": "fast_food",
+    "cuisine": "sandwich",
+    "name": "Verzot",
+    "opening_hours": "We-Fr 10:00-18:00; Sa 10:00-17:00",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.eetwinkelverzot.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848193507,
+  "lat": 51.5666085,
+  "lon": 5.0950149,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "31",
+    "addr:postcode": "5014EA",
+    "addr:street": "Koestraat",
+    "amenity": "restaurant",
+    "cuisine": "lunch",
+    "name": "Pix",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://pixbrunch.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848193589,
+  "lat": 51.5611586,
+  "lon": 5.0926838,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "33",
+    "addr:postcode": "5014DC",
+    "addr:street": "NS Plein",
+    "amenity": "restaurant",
+    "name": "Kok Verhoeven",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.kokverhoeven.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848194882,
+  "lat": 51.5666062,
+  "lon": 5.0953156,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "8",
+    "addr:postcode": "5014ED",
+    "addr:street": "Koestraat",
+    "amenity": "fast_food",
+    "cuisine": "shoarma",
+    "name": "Master Kebab",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848197229,
+  "lat": 51.5653053,
+  "lon": 5.0900310,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "82",
+    "addr:postcode": "5014HM",
+    "addr:street": "Besterdring",
+    "amenity": "restaurant",
+    "cuisine": "sushi",
+    "name": "Akisushi",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848197254,
+  "lat": 51.5652676,
+  "lon": 5.0900581,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "84",
+    "addr:postcode": "5014HM",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "name": "So Delish",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.sodelish-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848197460,
+  "lat": 51.5642896,
+  "lon": 5.0907313,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "94",
+    "addr:postcode": "5014HM",
+    "addr:street": "Besterdring",
+    "amenity": "restaurant",
+    "cuisine": "sushi",
+    "name": "Hayai Sushi",
+    "opening_hours": "Mo-Su 12:00-22:00",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.hayaisushi.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848237167,
+  "lat": 51.5772052,
+  "lon": 5.0095680,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "18",
+    "addr:postcode": "5043EW",
+    "addr:street": "Huibevendreef",
+    "amenity": "fast_food",
+    "contact:facebook": "https://www.facebook.com/DeFrietbergh",
+    "name": "De Frietbergh",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848241621,
+  "lat": 51.5768256,
+  "lon": 5.0091433,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "20",
+    "addr:postcode": "5043EW",
+    "addr:street": "Huibevendreef",
+    "amenity": "restaurant",
+    "cuisine": "chinese",
+    "name": "Royal Palace",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.royalpalacetilburg.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2848241716,
+  "lat": 51.5769625,
+  "lon": 5.0086220,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "22",
+    "addr:postcode": "5043EW",
+    "addr:street": "Huibevendreef",
+    "amenity": "restaurant",
+    "cuisine": "italian",
+    "name": "Giardino",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.giardino-d-italia.com"
+  }
+},
+{
+  "type": "node",
+  "id": 2848242204,
+  "lat": 51.5777278,
+  "lon": 5.0046600,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "27",
+    "addr:postcode": "5043RA",
+    "addr:street": "Heyhoefpromenade",
+    "amenity": "restaurant",
+    "check_date": "2023-10-04",
+    "name": "De Groene Vlinder",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.degroenevlinder.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2848244234,
+  "lat": 51.5785871,
+  "lon": 5.0041491,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "55",
+    "addr:postcode": "5043RA",
+    "addr:street": "Heyhoefpromenade",
+    "amenity": "restaurant",
+    "name": "Melati Dua",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://melatidua.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848244326,
+  "lat": 51.5786971,
+  "lon": 5.0043400,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "61",
+    "addr:postcode": "5043RA",
+    "addr:street": "Heyhoefpromenade",
+    "amenity": "fast_food",
+    "brand": "Domino's",
+    "brand:wikidata": "Q839466",
+    "cuisine": "pizza",
+    "name": "Domino's",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes",
+    "website": "https://www.dominos.nl/winkel/nl-tilburg-reeshof-30723"
+  }
+},
+{
+  "type": "node",
+  "id": 2848244352,
+  "lat": 51.5785129,
+  "lon": 5.0035243,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "67",
+    "addr:postcode": "5043RB",
+    "addr:street": "Heyhoefpromenade",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "Snackbar Heyhoef",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.snackbar-heyhoef.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2848245121,
+  "lat": 51.5780378,
+  "lon": 5.0041745,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "87",
+    "addr:postcode": "5043RB",
+    "addr:street": "Heyhoefpromenade",
+    "amenity": "fast_food",
+    "branch": "Tilburg",
+    "brand": "Kipperij",
+    "brand:website": "https://www.kipperij.nl",
+    "brand:wikidata": "Q134722152",
+    "cuisine": "chicken",
+    "name": "Kipperij",
+    "phone": "+31 13 2078069",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.kipperij.nl/vestiging/kipperij-tilburg/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848316992,
+  "lat": 51.5722836,
+  "lon": 5.0723782,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "145",
+    "addr:postcode": "5046LK",
+    "addr:street": "Hasseltstraat",
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "name": "Doner Hoekje",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848319945,
+  "lat": 51.5687091,
+  "lon": 5.0740032,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "269",
+    "addr:postcode": "5046LL",
+    "addr:street": "Hasseltstraat",
+    "amenity": "restaurant",
+    "name": "Poké and More",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848320927,
+  "lat": 51.5730032,
+  "lon": 5.0732989,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "32",
+    "addr:postcode": "5046RJ",
+    "addr:street": "Textielplein",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "Frituur Den Belg",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848858487,
+  "lat": 51.5830523,
+  "lon": 4.9845859,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "42",
+    "addr:postcode": "5035KL",
+    "addr:street": "Dalempromenade",
+    "amenity": "fast_food",
+    "branch": "de Vallei",
+    "brand": "Kwalitaria",
+    "brand:wikidata": "Q108923597",
+    "cuisine": "friture",
+    "email": "devallei@kwalitaria.nl",
+    "name": "Kwalitaria",
+    "operator": "Kwalitaria",
+    "outdoor_seating": "yes",
+    "phone": "+31 13 570 4560",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes",
+    "website": "https://kwalitaria.nl/tilburg/devallei"
+  }
+},
+{
+  "type": "node",
+  "id": 2848973258,
+  "lat": 51.5681813,
+  "lon": 5.0858101,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "117",
+    "addr:postcode": "5046XA",
+    "addr:street": "Groeseindstraat",
+    "amenity": "restaurant",
+    "cuisine": "indonesian;surinamese",
+    "name": "Hing Ta",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848975068,
+  "lat": 51.5675738,
+  "lon": 5.0884776,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "111",
+    "addr:postcode": "5014NC",
+    "addr:street": "Molenstraat",
+    "amenity": "fast_food",
+    "name": "Afhaalcentrum Melisa",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848979166,
+  "lat": 51.5722673,
+  "lon": 5.0930664,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "15",
+    "addr:postcode": "5014MS",
+    "addr:street": "Van Alphenstraat",
+    "amenity": "restaurant",
+    "cuisine": "sushi",
+    "name": "De Ijsspecialist",
+    "opening_hours": "We-Fr,Su 12:00-22:00; Sa 12:00-21:00; Mo 16:00-22:00",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.ijsspecialist-edma.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848979699,
+  "lat": 51.5714838,
+  "lon": 5.0845835,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "37",
+    "addr:postcode": "5046DH",
+    "addr:street": "Houtstraat",
+    "amenity": "fast_food",
+    "name": "Friture De Houtsnip",
+    "opening_hours": "We-Fr,Su,Mo 12:00-21:00; Sa 12:00-20:00",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848980951,
+  "lat": 51.5703268,
+  "lon": 5.0911431,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "181",
+    "addr:postcode": "5014NK",
+    "addr:street": "Hoefstraat",
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "name": "Çigköfte Point",
+    "source": "BAG",
+    "source:date": "2017-03-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2848987846,
+  "lat": 51.5739412,
+  "lon": 5.0814123,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "46",
+    "addr:postcode": "5046GL",
+    "addr:street": "Goirkestraat",
+    "amenity": "fast_food",
+    "cuisine": "chinese;indian",
+    "name": "China Fan",
+    "name:nl": "China Fan",
+    "opening_hours": "Tu-Th 16:00-21:00; Fr-Su 13:00-21:00",
+    "source": "BAG-viewer",
+    "website": "https://www.chinafan-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848988861,
+  "lat": 51.5736636,
+  "lon": 5.0812791,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "52",
+    "addr:postcode": "5046GL",
+    "addr:street": "Goirkestraat",
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "image": "https://photos.app.goo.gl/3QomnGHNFVUzamTT9",
+    "name": "Super Döner",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.super-doner.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848989028,
+  "lat": 51.5736263,
+  "lon": 5.0812175,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "54",
+    "addr:postcode": "5046GL",
+    "addr:street": "Goirkestraat",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "Cafetaria De Vriendschapnef",
+    "name:nl": "Cafetaria De Vriendschapnef",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2848990202,
+  "lat": 51.5678589,
+  "lon": 5.0846574,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "61",
+    "addr:postcode": "5041BB",
+    "addr:street": "Veldhovenring",
+    "amenity": "fast_food",
+    "cuisine": "shawarma",
+    "name": "Efes",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://efesgrillroom.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2848990442,
+  "lat": 51.5678152,
+  "lon": 5.0843760,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "67a",
+    "addr:postcode": "5041BB",
+    "addr:street": "Veldhovenring",
+    "amenity": "restaurant",
+    "cuisine": "turkish",
+    "name": "'t Veld Pro",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.tveldpro.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2848992908,
+  "lat": 51.5689443,
+  "lon": 5.0875652,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "80",
+    "addr:postcode": "5014LX",
+    "addr:street": "Groeseindstraat",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "Eetcafé Brands",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2849372716,
+  "lat": 51.5571199,
+  "lon": 5.0897181,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1",
+    "addr:postcode": "5038AA",
+    "addr:street": "Heuvelstraat",
+    "amenity": "fast_food",
+    "brand": "Bram Ladage",
+    "brand:wikidata": "Q2216467",
+    "cuisine": "friture",
+    "drive_through": "no",
+    "name": "Bram Ladage",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://bramladage.nl/vestigingen/bram-ladage-tilburg-centrum/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849372724,
+  "lat": 51.5561607,
+  "lon": 5.0899648,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1",
+    "addr:postcode": "5038WL",
+    "addr:street": "Piusplein",
+    "amenity": "fast_food",
+    "brand": "Subway",
+    "brand:wikidata": "Q244457",
+    "cuisine": "sandwich",
+    "name": "Subway",
+    "opening_hours": "Mo 10:00-19:00; Tu,We 09:00-19:00; Th 09:00-21:00; Fr,Sa 09:00-20:00; Su 10:00-20:00",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://restaurants.subway.com/nl/nederland/tilburg/piusplein-1"
+  }
+},
+{
+  "type": "node",
+  "id": 2849372732,
+  "lat": 51.5585237,
+  "lon": 5.0899143,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1",
+    "addr:postcode": "5038BL",
+    "addr:street": "Telegraafstraat",
+    "amenity": "restaurant",
+    "brand": "La Cubanita",
+    "brand:website": "https://lacubanita.nl/",
+    "brand:wikidata": "Q108920601",
+    "cuisine": "tapas",
+    "email": "tilburg@lacubanita.nl",
+    "name": "La Cubanita",
+    "phone": "+31 13 2117719",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://lacubanita.nl/tapas-tilburg"
+  }
+},
+{
+  "type": "node",
+  "id": 2849376483,
+  "lat": 51.5584855,
+  "lon": 5.0864957,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "25",
+    "addr:postcode": "5038BA",
+    "addr:street": "Willem II-straat",
+    "amenity": "restaurant",
+    "cuisine": "korean",
+    "email": "info@inzas.nl",
+    "name": "Inza's Seoulkitchen",
+    "opening_hours": "Tu 15:00-21:30; Fr-Su 13:00-21:30",
+    "phone": "+31 6 21928547",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.inzas.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2849377008,
+  "lat": 51.5551534,
+  "lon": 5.0834376,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "120",
+    "addr:postcode": "5038AH",
+    "addr:street": "Heuvelstraat",
+    "amenity": "fast_food",
+    "name": "De Couscousbar",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.decouscousbar.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849377024,
+  "lat": 51.5551540,
+  "lon": 5.0833742,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "122",
+    "addr:postcode": "5038AH",
+    "addr:street": "Heuvelstraat",
+    "amenity": "restaurant",
+    "description": "Opening August 16th 2019.",
+    "diet:vegan": "only",
+    "diet:vegetarian": "only",
+    "email": "info@focusfoodbar.com",
+    "name": "Focus Foodbar",
+    "opening_date": "2019-08-16",
+    "opening_hours": "Mo,We,Th,Su 17:00-21:30; Fr,Sa 17:00-22:00",
+    "outdoor_seating": "yes",
+    "phone": "+31 6 23981025",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.focusfoodbar.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849377044,
+  "lat": 51.5574336,
+  "lon": 5.0813327,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "125",
+    "addr:postcode": "5038EH",
+    "addr:street": "Noordstraat",
+    "amenity": "restaurant",
+    "check_date": "2025-08-03",
+    "email": "info@stadcafedespaarbank.nl",
+    "indoor_seating": "yes",
+    "name": "Spaarbank",
+    "opening_hours": "Mo-Su 10:00-22:00",
+    "opening_hours:kitchen": "Mo-Su 10:00-20:00",
+    "outdoor_seating": "yes",
+    "phone": "+31 13 543 8331",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "toilets:wheelchair": "yes",
+    "website": "https://www.stadscafedespaarbank.nl",
+    "wheelchair": "yes",
+    "wheelchair:description": "De hoofdingang is niet toegankelijk, maar via de achteringang (via de tuin) kun je prima naar binnen. Ook met een elektrische rolstoel."
+  }
+},
+{
+  "type": "node",
+  "id": 2849377051,
+  "lat": 51.5551210,
+  "lon": 5.0830608,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "126",
+    "addr:postcode": "5038AH",
+    "addr:street": "Heuvelstraat",
+    "amenity": "restaurant",
+    "brand": "Happy Italy",
+    "brand:wikidata": "Q107669916",
+    "cuisine": "italian",
+    "name": "Happy Italy",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "toilets:wheelchair": "yes",
+    "website": "https://www.happyitaly.nl",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 2849377095,
+  "lat": 51.5552660,
+  "lon": 5.0895534,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "13",
+    "addr:postcode": "5038WD",
+    "addr:street": "Paleisring",
+    "amenity": "restaurant",
+    "cuisine": "surinamese",
+    "name": "Ricanau",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.ricanau.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849377339,
+  "lat": 51.5551251,
+  "lon": 5.0813010,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "155",
+    "addr:postcode": "5038TW",
+    "addr:street": "Schouwburgring",
+    "amenity": "restaurant",
+    "brand": "Hungree",
+    "name": "Hungree",
+    "phone": "+31 13 5903613",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://hungree.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849377458,
+  "lat": 51.5576960,
+  "lon": 5.0899725,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "18",
+    "addr:postcode": "5038CN",
+    "addr:street": "Heuvel",
+    "amenity": "restaurant",
+    "name": "Kitch",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://kitchtilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849378027,
+  "lat": 51.5579852,
+  "lon": 5.0892920,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "168",
+    "addr:postcode": "5038BW",
+    "addr:street": "Pieter Vreedeplein",
+    "amenity": "restaurant",
+    "cuisine": "hawaiian",
+    "level": "0",
+    "name": "Hawaiian Poké Bowl",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://app.hawaiianpokebowl.be/hawaiian-tilburg/nl/products"
+  }
+},
+{
+  "type": "node",
+  "id": 2849378086,
+  "lat": 51.5579701,
+  "lon": 5.0897317,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "172",
+    "addr:postcode": "5038BW",
+    "addr:street": "Pieter Vreedeplein",
+    "amenity": "fast_food",
+    "cuisine": "asian",
+    "name": "Drip",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.drip-asianstreetfood.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849378651,
+  "lat": 51.5575075,
+  "lon": 5.0899103,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "21",
+    "addr:postcode": "5038CP",
+    "addr:street": "Heuvel",
+    "amenity": "fast_food",
+    "cuisine": "friture;burger",
+    "name": "Lucky Hill",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.luckyhill.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2849379324,
+  "lat": 51.5577390,
+  "lon": 5.0896751,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "2",
+    "addr:postcode": "5038BP",
+    "addr:street": "Pieter Vreedeplein",
+    "amenity": "fast_food",
+    "cuisine": "sandwich",
+    "name": "Broodje van Loontje",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.broodjevanloontje.nl/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2849379349,
+  "lat": 51.5575525,
+  "lon": 5.0899313,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "20",
+    "addr:postcode": "5038CP",
+    "addr:street": "Heuvel",
+    "amenity": "restaurant",
+    "cuisine": "international",
+    "email": "info@thetalk.nl",
+    "name": "The Talk",
+    "opening_hours": "Mo-Th,Su 09:00-00:00; Fr-Sa 09:00-01:00",
+    "phone": "+31 13 581 0223",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.thetalk.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2849379897,
+  "lat": 51.5563575,
+  "lon": 5.0898277,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "23",
+    "addr:postcode": "5038AM",
+    "addr:street": "Juliana van Stolbergstraat",
+    "amenity": "restaurant",
+    "cuisine": "asian",
+    "name": "iWok & go",
+    "opening_hours": "Mo-Sa 12:00-21:30; Su 15:00-21:30",
+    "phone": "+31 13 580 0379",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.iwoktilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849380007,
+  "lat": 51.5588964,
+  "lon": 5.0823216,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "23",
+    "addr:postcode": "5038EA",
+    "addr:street": "Stationsstraat",
+    "amenity": "restaurant",
+    "cuisine": "indonesian",
+    "indoor_seating": "yes",
+    "name": "Selamat",
+    "opening_hours": "Tu-Th 16:00-21:30; Fr 15:00-21:30; Sa 13:00-22:00; Su 17:00-22:00",
+    "outdoor_seating": "yes",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://tilburg.com/bedrijf/restaurant-toko-selamat"
+  }
+},
+{
+  "type": "node",
+  "id": 2849381275,
+  "lat": 51.5577246,
+  "lon": 5.0816673,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "51a",
+    "addr:postcode": "5038EC",
+    "addr:street": "Stationsstraat",
+    "amenity": "restaurant",
+    "cuisine": "tapas",
+    "name": "Tubo",
+    "opening_hours": "Mo,We,Th 15:00-23:00; Fr, Sa 15:00-24:30; Su 14:00-23:00;",
+    "source": "BAG",
+    "website": "https://tubotilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849381811,
+  "lat": 51.5571937,
+  "lon": 5.0897569,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "27",
+    "addr:postcode": "5038CP",
+    "addr:street": "Heuvel",
+    "amenity": "restaurant",
+    "cuisine": "grill",
+    "name": "Maide",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.tiktok.com/@maidetilburg"
+  }
+},
+{
+  "type": "node",
+  "id": 2849381876,
+  "lat": 51.5565393,
+  "lon": 5.0820501,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "28",
+    "addr:postcode": "5038SN",
+    "addr:street": "Nieuwlandstraat",
+    "amenity": "restaurant",
+    "name": "Pig & Rye Bakkerij lunch",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.pigandrye.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849382015,
+  "lat": 51.5570932,
+  "lon": 5.0895489,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "3",
+    "addr:postcode": "5038AA",
+    "addr:street": "Heuvelstraat",
+    "amenity": "fast_food",
+    "name": "Frietboetiek",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2849382022,
+  "lat": 51.5550464,
+  "lon": 5.0840097,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "3",
+    "addr:postcode": "5038TJ",
+    "addr:street": "Oude Markt",
+    "amenity": "restaurant",
+    "branch": "Tilburg Oude Markt",
+    "brand": "Pizza Beppe",
+    "brand:website": "https://www.pizzabeppe.nl",
+    "brand:wikidata": "Q138975625",
+    "cuisine": "pizza",
+    "drive_through": "no",
+    "name": "Pizza Beppe",
+    "opening_hours": "Mo-Th,Su 17:00-21:30; Fr-Sa 17:00-22:00",
+    "phone": "+31 13 2040153",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.pizzabeppe.nl/locaties/tilburg/oude-markt"
+  }
+},
+{
+  "type": "node",
+  "id": 2849382023,
+  "lat": 51.5576056,
+  "lon": 5.0899460,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "3",
+    "addr:postcode": "5038BP",
+    "addr:street": "Pieter Vreedeplein",
+    "alt_name": "Kentucky Fried Chicken",
+    "amenity": "fast_food",
+    "brand": "KFC",
+    "brand:wikidata": "Q524757",
+    "brand:wikipedia": "en:KFC",
+    "cuisine": "chicken",
+    "name": "KFC",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2849382117,
+  "lat": 51.5555358,
+  "lon": 5.0879088,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "320",
+    "addr:postcode": "5038TH",
+    "addr:street": "Stadhuisplein",
+    "amenity": "fast_food",
+    "cuisine": "asian;bubble_tea",
+    "name": "Mini Wok",
+    "source": "BAG",
+    "source:date": "2017-03-07",
+    "website": "https://www.mini-wok-stadhuisplein.nl/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2849382154,
+  "lat": 51.5570262,
+  "lon": 5.0901832,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "33",
+    "addr:postcode": "5038CP",
+    "addr:street": "Heuvel",
+    "amenity": "restaurant",
+    "cuisine": "tex-mex",
+    "diet:vegan": "yes",
+    "diet:vegetarian": "yes",
+    "lunch": "Mo-Su 12:00-16:00",
+    "name": "The Nacho Bar",
+    "opening_hours": "Su-Th 12:00-23:00; Fr-Sa 12:00-00:00",
+    "opening_hours:kitchen": "Su-Th 12:00-22:00; Fr-Sa 12:00-23:00",
+    "payment:v_pay": "yes",
+    "phone": "+31 13 410 0000",
+    "reservation": "yes",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "toilets": "yes",
+    "toilets:access": "customers",
+    "toilets:female": "yes",
+    "toilets:male": "yes",
+    "website": "https://thenachobars.com/",
+    "website:menu": "https://thenachobars.com/menukaart/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849382155,
+  "lat": 51.5591410,
+  "lon": 5.0907888,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "33",
+    "addr:postcode": "5038CJ",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "cuisine": "greek",
+    "name": "Agora",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.agora-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849382369,
+  "lat": 51.5570515,
+  "lon": 5.0905127,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "35",
+    "addr:postcode": "5038CP",
+    "addr:street": "Heuvel",
+    "amenity": "fast_food",
+    "brand": "Taco Bell",
+    "brand:wikidata": "Q752941",
+    "cuisine": "tex-mex",
+    "name": "Taco Bell",
+    "source": "BAG",
+    "source:date": "2018-02-03",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2849382377,
+  "lat": 51.5574850,
+  "lon": 5.0861292,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "35",
+    "addr:postcode": "5038DA",
+    "addr:street": "Tuinstraat",
+    "amenity": "fast_food",
+    "cuisine": "sushi",
+    "delivery": "yes",
+    "name": "Mr. Sushi",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://mrsushi.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849382806,
+  "lat": 51.5556080,
+  "lon": 5.0870547,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "354",
+    "addr:postcode": "5038TH",
+    "addr:street": "Stadhuisplein",
+    "amenity": "fast_food",
+    "drive_through": "no",
+    "name": "De Koning Sandwich",
+    "opening_hours": "Mo 12:00-20:00; Th-Su 12:00-21:30",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.dekoningsandwich-tilburg.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2849383648,
+  "lat": 51.5598074,
+  "lon": 5.0857720,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "380",
+    "addr:postcode": "5038CD",
+    "addr:street": "Spoorlaan",
+    "amenity": "restaurant",
+    "cuisine": "greek",
+    "name": "Sirtaki",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.sirtaki.eu/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849383661,
+  "lat": 51.5589833,
+  "lon": 5.0906699,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "39",
+    "addr:postcode": "5038CJ",
+    "addr:street": "Heuvelring",
+    "amenity": "fast_food",
+    "delivery": "yes",
+    "drive_through": "no",
+    "name": "Heuvel Chicken",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://heuvelchicken.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849384709,
+  "lat": 51.5593700,
+  "lon": 5.0866097,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "5",
+    "addr:postcode": "5038BA",
+    "addr:street": "Willem II-straat",
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "diet:vegan": "yes",
+    "diet:vegetarian": "yes",
+    "name": "Pizzabar Rijslust",
+    "old_name": "Frank en Vrij",
+    "opening_hours": "Mo-Tu 16:30-23:00; We 12:00-23:00; Th-Sa 12:00-24:00; Su 12:00-23:00",
+    "opening_hours:signed": "no",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://pizzabarrijslust.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849384714,
+  "lat": 51.5560736,
+  "lon": 5.0873195,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "50",
+    "addr:postcode": "5038AG",
+    "addr:street": "Heuvelstraat",
+    "amenity": "fast_food",
+    "brand": "FEBO",
+    "brand:wikidata": "Q582245",
+    "cuisine": "friture",
+    "name": "FEBO",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://www.febo.nl/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2849384738,
+  "lat": 51.5586172,
+  "lon": 5.0903985,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "51",
+    "addr:postcode": "5038CJ",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "cuisine": "korean",
+    "name": "K. Streetfood Club",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.kstreetfoodclub-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849384741,
+  "lat": 51.5555486,
+  "lon": 5.0827834,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "51",
+    "addr:postcode": "5038SM",
+    "addr:street": "Nieuwlandstraat",
+    "amenity": "restaurant",
+    "check_date": "2025-08-03",
+    "name": "Brasserie-Café Noir",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.noir.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2849384830,
+  "lat": 51.5558334,
+  "lon": 5.0907300,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "75",
+    "addr:postcode": "5038WP",
+    "addr:street": "Piusplein",
+    "amenity": "fast_food",
+    "brand": "McDonald's",
+    "brand:wikidata": "Q38076",
+    "cuisine": "burger",
+    "internet_access": "wlan",
+    "name": "McDonald's",
+    "opening_hours": "Mo-We 09:00-23:00; Th 09:00-01:00; Fr-Sa 09:00-02:00; Su 10:00-23:00",
+    "phone": "+31 13 580 2634",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2849384908,
+  "lat": 51.5574789,
+  "lon": 5.0844288,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "53",
+    "addr:postcode": "5038DA",
+    "addr:street": "Tuinstraat",
+    "amenity": "restaurant",
+    "name": "Bij Maud",
+    "opening_hours": "\"by appointment\"",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.bijmaud.nl/workshop-uitje-brabant-tilburg"
+  }
+},
+{
+  "type": "node",
+  "id": 2849384940,
+  "lat": 51.5585377,
+  "lon": 5.0903154,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "55",
+    "addr:postcode": "5038CJ",
+    "addr:street": "Heuvelring",
+    "amenity": "fast_food",
+    "drive_through": "no",
+    "name": "Eats No 7",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.eatsno7-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849384944,
+  "lat": 51.5554513,
+  "lon": 5.0828918,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "55",
+    "addr:postcode": "5038SM",
+    "addr:street": "Nieuwlandstraat",
+    "amenity": "restaurant",
+    "name": "Barrio55",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2849385040,
+  "lat": 51.5554849,
+  "lon": 5.0831499,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "58a",
+    "addr:postcode": "5038SP",
+    "addr:street": "Nieuwlandstraat",
+    "amenity": "restaurant",
+    "name": "Jack & Jacky's",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://jackandjackys.nl/vestigingen/tilburg/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849385051,
+  "lat": 51.5575075,
+  "lon": 5.0840803,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "59",
+    "addr:postcode": "5038DB",
+    "addr:street": "Tuinstraat",
+    "amenity": "restaurant",
+    "cuisine": "indian;pakistaans",
+    "name": "Biryani Tandoori",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.biryanitandoorisweets.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849385077,
+  "lat": 51.5567221,
+  "lon": 5.0897992,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "6",
+    "addr:postcode": "5038AM",
+    "addr:street": "Juliana van Stolbergstraat",
+    "amenity": "restaurant",
+    "cuisine": "french",
+    "name": "Le Bistro",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://lebistro.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849385081,
+  "lat": 51.5551993,
+  "lon": 5.0855903,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "6",
+    "addr:postcode": "5038AR",
+    "addr:street": "Monumentstraat",
+    "amenity": "restaurant",
+    "branch": "Tilburg",
+    "brand": "'t Zusje",
+    "brand:website": "https://zusje.nl/",
+    "brand:wikidata": "Q108920510",
+    "cuisine": "tapas",
+    "name": "'t Zusje",
+    "opening_hours": "Mo-Su 12:00-23:00",
+    "phone": "+31 13 720 0899",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://zusje.nl/onze-zusjes/tilburg/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849385087,
+  "lat": 51.5576896,
+  "lon": 5.0892130,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "6",
+    "addr:postcode": "5038BP",
+    "addr:street": "Pieter Vreedeplein",
+    "amenity": "restaurant",
+    "branch": "Tilburg",
+    "brand": "Brownies&downieS",
+    "brand:website": "https://www.browniesanddownies.nl",
+    "brand:wikidata": "Q100142778",
+    "check_date": "2025-03-30",
+    "email": "tilburg@browniesanddownies.nl",
+    "name": "Brownies&downieS",
+    "phone": "+31 13 590 47 99",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.browniesanddownies.nl/tilburg"
+  }
+},
+{
+  "type": "node",
+  "id": 2849385193,
+  "lat": 51.5554836,
+  "lon": 5.0840808,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "65",
+    "addr:postcode": "5038SC",
+    "addr:street": "Langestraat",
+    "amenity": "restaurant",
+    "name": "Gist Tilburg",
+    "opening_hours": "Mo-Fr 17:00-22:00; Sa,Su 12:00-15:00,17:00-22:00",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://gisttilburg.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2849385222,
+  "lat": 51.5574852,
+  "lon": 5.0866001,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "66",
+    "addr:postcode": "5038BH",
+    "addr:street": "Willem II-straat",
+    "amenity": "restaurant",
+    "contact:facebook": "https://www.facebook.com/la.nonna.tilburg?fref=ts",
+    "cuisine": "italian",
+    "name": "La Nonna",
+    "opening_hours": "Tu-Su 16:30-21:00",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://lanonna.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2849385228,
+  "lat": 51.5581849,
+  "lon": 5.0902391,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "67",
+    "addr:postcode": "5038CJ",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "cuisine": "asian",
+    "name": "Xu Noodle Bar",
+    "opening_hours": "Mo off; Tu-Fr 17:00-21:00; Sa,Su: 12:00-21:00",
+    "phone": "+31 13 785 6061",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.xunoodlebar.com/tilburg/"
+  }
+},
+{
+  "type": "node",
+  "id": 2849385334,
+  "lat": 51.5549650,
+  "lon": 5.0841090,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "7",
+    "addr:postcode": "5038TJ",
+    "addr:street": "Oude Markt",
+    "amenity": "restaurant",
+    "name": "Restaria De Buffel",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2850120020,
+  "lat": 51.5681952,
+  "lon": 5.0745079,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "285",
+    "addr:postcode": "5041MA",
+    "addr:street": "Hasseltstraat",
+    "amenity": "fast_food",
+    "name": "Massilia Pizza",
+    "name:nl": "Massilia Pizza",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850120483,
+  "lat": 51.5640258,
+  "lon": 5.0720935,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "33",
+    "addr:postcode": "5041KH",
+    "addr:street": "Pieter Postplein",
+    "amenity": "restaurant",
+    "cuisine": "chinese",
+    "name": "Ho-Ho Afhaalcentrum",
+    "phone": "+31 13 536 5886",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.ho-ho.eu/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850161892,
+  "lat": 51.5656983,
+  "lon": 5.0506412,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "2",
+    "addr:postcode": "5042PZ",
+    "addr:street": "Vijverlaan",
+    "amenity": "restaurant",
+    "name": "Boerke Mutsaers",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.boerkemutsaers.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2850162506,
+  "lat": 51.5664742,
+  "lon": 5.0564135,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "32",
+    "addr:postcode": "5042PD",
+    "addr:street": "Wandelboslaan",
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "name": "Doner Corner",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://donercornertilburg.com"
+  }
+},
+{
+  "type": "node",
+  "id": 2850162513,
+  "lat": 51.5664870,
+  "lon": 5.0563176,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "34",
+    "addr:postcode": "5042PD",
+    "addr:street": "Wandelboslaan",
+    "amenity": "fast_food",
+    "cuisine": "chinese",
+    "name": "Paradijs",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.paradijs-bestellen.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850162518,
+  "lat": 51.5665076,
+  "lon": 5.0562376,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "36",
+    "addr:postcode": "5042PD",
+    "addr:street": "Wandelboslaan",
+    "amenity": "fast_food",
+    "brand": "New York Pizza",
+    "brand:wikidata": "Q2639128",
+    "cuisine": "pizza",
+    "name": "New York Pizza",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2850162525,
+  "lat": 51.5665193,
+  "lon": 5.0561368,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "38",
+    "addr:postcode": "5042PD",
+    "addr:street": "Wandelboslaan",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "Lucullus",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850428398,
+  "lat": 51.5539611,
+  "lon": 5.1043098,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "2",
+    "addr:postcode": "5017AE",
+    "addr:street": "Hoevenseweg",
+    "amenity": "restaurant",
+    "email": "info@villa-la-vida.nl",
+    "name": "Villa la Vida",
+    "phone": "+31 13 211 9040",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://villa-la-vida.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850432208,
+  "lat": 51.5497745,
+  "lon": 5.0950628,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "43",
+    "addr:postcode": "5021CE",
+    "addr:street": "Leenherenstraat",
+    "amenity": "fast_food",
+    "name": "Snackbar De Smulhoek",
+    "opening_hours": "Mo,Th 16:00-19:30; Sa,Su 12:00-19:30; Fr 12:00-19:30",
+    "phone": "+31 13 543 6339",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2850433119,
+  "lat": 51.5472250,
+  "lon": 5.0910387,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "56",
+    "addr:postcode": "5021LG",
+    "addr:street": "Broekhovenseweg",
+    "amenity": "fast_food",
+    "name": "Kibboets",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2850433293,
+  "lat": 51.5527384,
+  "lon": 5.1061338,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "62",
+    "addr:postcode": "5017AE",
+    "addr:street": "Hoevenseweg",
+    "amenity": "restaurant",
+    "cuisine": "italian",
+    "name": "Babbo",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://www.babbo.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2850433300,
+  "lat": 51.5473146,
+  "lon": 5.0909200,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "62",
+    "addr:postcode": "5021GD",
+    "addr:street": "Sevenhoekstraat",
+    "amenity": "fast_food",
+    "cuisine": "steak_house",
+    "drive_through": "no",
+    "name": "Argentina",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "website": "https://argentina-steakhouse-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850434315,
+  "lat": 51.5496750,
+  "lon": 5.0959865,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "76",
+    "addr:postcode": "5021CD",
+    "addr:street": "Hertogstraat",
+    "amenity": "fast_food",
+    "cuisine": "cafetaria",
+    "name": "Del Mondo",
+    "source": "BAG",
+    "source:date": "2014-05-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2850709558,
+  "lat": 51.5704316,
+  "lon": 5.0535953,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "10",
+    "addr:postcode": "5042MC",
+    "addr:street": "Westermarkt",
+    "amenity": "restaurant",
+    "cuisine": "polish",
+    "name": "Mevrouw Polka",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.mevrouwpolka.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850711106,
+  "lat": 51.5700876,
+  "lon": 5.0535504,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "113",
+    "addr:postcode": "5042SX",
+    "addr:street": "Westermarkt",
+    "amenity": "fast_food",
+    "branch": "Tilburg - Westermarkt",
+    "brand": "Kippie",
+    "brand:website": "https://www.kippie.nl",
+    "brand:wikidata": "Q65970311",
+    "cuisine": "chicken",
+    "name": "Kippie",
+    "opening_hours": "Mo 09:00-18:00; Tu-Fr 08:30-18:00; Sa 08:30-17:00; Su off",
+    "phone": "+31 13 4634969",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes",
+    "website": "https://www.kippie.nl/winkels/tilburg-westermarkt"
+  }
+},
+{
+  "type": "node",
+  "id": 2850711452,
+  "lat": 51.5694001,
+  "lon": 5.0530621,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "125",
+    "addr:postcode": "5042SZ",
+    "addr:street": "Westermarkt",
+    "amenity": "restaurant",
+    "name": "Lunchroom Panache",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.lunchroom-panache-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850712394,
+  "lat": 51.5685635,
+  "lon": 5.0524526,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "140",
+    "addr:postcode": "5042SZ",
+    "addr:street": "Westermarkt",
+    "amenity": "fast_food",
+    "name": "Hizmet",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850722323,
+  "lat": 51.5695083,
+  "lon": 5.0538786,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "4",
+    "addr:postcode": "5042MX",
+    "addr:street": "Daniël Josephus Jittastraat",
+    "amenity": "restaurant",
+    "name": "Ballie Brood & lekkers",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.balliebroodlekkers-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850726215,
+  "lat": 51.5702944,
+  "lon": 5.0530602,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "5",
+    "addr:postcode": "5042MC",
+    "addr:street": "Westermarkt",
+    "amenity": "restaurant",
+    "name": "Tuinhuis Culinair",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.tuinhuisculinair.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850733712,
+  "lat": 51.5528665,
+  "lon": 5.0978525,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1",
+    "addr:postcode": "5017AN",
+    "addr:street": "Piushaven",
+    "amenity": "restaurant",
+    "name": "De Graanhandel",
+    "opening_hours": "Tu-Th 08:30-00:00; Fr 08:30-25:00; Sa 09:30-25:00; Su 09:30-21:30",
+    "phone": "+31 13 2032694",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://degraanhandel.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850733743,
+  "lat": 51.5551869,
+  "lon": 5.1028188,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "10",
+    "addr:postcode": "5017GC",
+    "addr:street": "Prinsenhoeven",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "Cafetaria Prinsenhoeven",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850733767,
+  "lat": 51.5585026,
+  "lon": 5.0909017,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "102",
+    "addr:postcode": "5038CL",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "name": "Klopa",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850733957,
+  "lat": 51.5581709,
+  "lon": 5.0907542,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "112",
+    "addr:postcode": "5038CL",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "cuisine": "asian",
+    "name": "Silk Road",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://silkroad.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850734012,
+  "lat": 51.5579789,
+  "lon": 5.0907639,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "118",
+    "addr:postcode": "5038CL",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "name": "Bistro St. Sjaak",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.stsjaak.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850734053,
+  "lat": 51.5579059,
+  "lon": 5.0907786,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "120",
+    "addr:postcode": "5038CL",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "cuisine": "argentinian",
+    "name": "Rodeo",
+    "opening_hours": "Mo-Su 16:00-23:00",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://tilburg.restaurant-rodeo.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850734073,
+  "lat": 51.5574119,
+  "lon": 5.0911163,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "126",
+    "addr:postcode": "5038CL",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "cuisine": "sushi",
+    "name": "Susi Koi",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://sushi-koi.nl/restaurant-sushi-koi-tilburg/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850734265,
+  "lat": 51.5570315,
+  "lon": 5.0930861,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "136",
+    "addr:postcode": "5017GL",
+    "addr:street": "Sint Josephstraat",
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "name": "Tredici",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.tredicitilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850734275,
+  "lat": 51.5570835,
+  "lon": 5.0929600,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "138",
+    "addr:postcode": "5017GL",
+    "addr:street": "Sint Josephstraat",
+    "amenity": "restaurant",
+    "name": "Hooked",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.hooked-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850735059,
+  "lat": 51.5527096,
+  "lon": 5.0951407,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "17",
+    "addr:postcode": "5017AN",
+    "addr:street": "Piushaven",
+    "amenity": "restaurant",
+    "check_date": "2023-09-25",
+    "cuisine": "japanese",
+    "name": "Shinzo",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.shinzo.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2850735186,
+  "lat": 51.5539839,
+  "lon": 5.0906081,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "2",
+    "addr:postcode": "5038WS",
+    "addr:street": "Piusstraat",
+    "amenity": "fast_food",
+    "cuisine": "sushi",
+    "drive_through": "no",
+    "name": "I Love Sushi",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://ilovesushi.nl/location/i-love-sushi-tilburg-2/",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 2850736830,
+  "lat": 51.5526819,
+  "lon": 5.0947197,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "20b",
+    "addr:postcode": "5017AN",
+    "addr:street": "Piushaven",
+    "amenity": "restaurant",
+    "name": "Pulcinos",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://pulcinos.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850736853,
+  "lat": 51.5527532,
+  "lon": 5.0942462,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "21",
+    "addr:postcode": "5017AN",
+    "addr:street": "Piushaven",
+    "amenity": "restaurant",
+    "name": "Jaxx Marina",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://jaxxmarina.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2850736892,
+  "lat": 51.5563717,
+  "lon": 5.0914815,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "220",
+    "addr:postcode": "5038CL",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "name": "Ibiza",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.ibizatilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850736894,
+  "lat": 51.5563074,
+  "lon": 5.0914529,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "222",
+    "addr:postcode": "5038CL",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "name": "Saints Poolcenter",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://poolenintilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850736895,
+  "lat": 51.5562506,
+  "lon": 5.0914278,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "224",
+    "addr:postcode": "5038CL",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "cuisine": "greek",
+    "name": "Minos Pallas",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://minospallas.net/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850738263,
+  "lat": 51.5534013,
+  "lon": 5.0902102,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "26",
+    "addr:postcode": "5038WS",
+    "addr:street": "Piusstraat",
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "name": "De Haven",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://pizzariadehaven-tilburg.nl/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2850739641,
+  "lat": 51.5571435,
+  "lon": 5.0915279,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "39",
+    "addr:postcode": "5038CS",
+    "addr:street": "Heuvel",
+    "amenity": "restaurant",
+    "cuisine": "french",
+    "email": "info@lorangerietilburg.nl",
+    "name": "L'Orangerie",
+    "opening_hours": "We-Sa 17:00-22:00; Su 16:00-22:00",
+    "phone": "+31 13 543 1132",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "toilets:wheelchair": "no",
+    "website": "https://lorangerietilburg.nl",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 2850740365,
+  "lat": 51.5571445,
+  "lon": 5.0923188,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "47",
+    "addr:postcode": "5038CS",
+    "addr:street": "Heuvel",
+    "amenity": "restaurant",
+    "name": "Corta Colina Streetfood",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.cortacolina.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850740402,
+  "lat": 51.5571090,
+  "lon": 5.0926026,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "49",
+    "addr:postcode": "5038CS",
+    "addr:street": "Heuvel",
+    "amenity": "restaurant",
+    "name": "Mr. Meat",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://mrmeattilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850740443,
+  "lat": 51.5527602,
+  "lon": 5.0964887,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "5",
+    "addr:postcode": "5017AN",
+    "addr:street": "Piushaven",
+    "amenity": "restaurant",
+    "name": "Satiata",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850741017,
+  "lat": 51.5550045,
+  "lon": 5.0908188,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "54",
+    "addr:postcode": "5038WN",
+    "addr:street": "Piusplein",
+    "amenity": "fast_food",
+    "brand": "Wok To Go",
+    "brand:wikidata": "Q125169083",
+    "cuisine": "asian",
+    "drive_through": "no",
+    "name": "Wok To Go",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes",
+    "website": "https://www.wok-to-go-tilburg.nl/",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 2850741031,
+  "lat": 51.5550953,
+  "lon": 5.0908486,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "55",
+    "addr:postcode": "5038WP",
+    "addr:street": "Piusplein",
+    "amenity": "fast_food",
+    "drive_through": "no",
+    "name": "Hizmet",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.hizmetpiusplein-tilburg.nl/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2850743793,
+  "lat": 51.5538804,
+  "lon": 5.0905375,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "8",
+    "addr:postcode": "5038WS",
+    "addr:street": "Piusstraat",
+    "amenity": "fast_food",
+    "drive_through": "no",
+    "name": "Fuxing",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2850816081,
+  "lat": 51.5848926,
+  "lon": 5.0855777,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "30",
+    "addr:postcode": "5011LP",
+    "addr:street": "Wagnerplein",
+    "amenity": "fast_food",
+    "brand": "Subway",
+    "brand:wikidata": "Q244457",
+    "cuisine": "sandwich",
+    "name": "Subway",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2850818524,
+  "lat": 51.5844527,
+  "lon": 5.0855408,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "45",
+    "addr:postcode": "5011LR",
+    "addr:street": "Wagnerplein",
+    "amenity": "fast_food",
+    "branch": "Tilburg - Wagnerplein",
+    "brand": "Kippie",
+    "brand:website": "https://www.kippie.nl",
+    "brand:wikidata": "Q65970311",
+    "cuisine": "chicken",
+    "name": "Kippie",
+    "phone": "+31 13 7370088",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes",
+    "website": "https://www.kippie.nl/winkels/tilburg-wagnerplein"
+  }
+},
+{
+  "type": "node",
+  "id": 2850819300,
+  "lat": 51.5840089,
+  "lon": 5.0850740,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "55",
+    "addr:postcode": "5011LR",
+    "addr:street": "Wagnerplein",
+    "amenity": "fast_food",
+    "cuisine": "vietnamese",
+    "name": "Tran Nhu Y",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850821072,
+  "lat": 51.5847530,
+  "lon": 5.0865253,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "63",
+    "addr:postcode": "5011LR",
+    "addr:street": "Wagnerplein",
+    "amenity": "fast_food",
+    "cuisine": "kebab;grill",
+    "name": "Oranje kebab & Grill",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850821207,
+  "lat": 51.5847206,
+  "lon": 5.0866751,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "65",
+    "addr:postcode": "5011LR",
+    "addr:street": "Wagnerplein",
+    "amenity": "fast_food",
+    "name": "Lamsah",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://eethuis-lamsah-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850821225,
+  "lat": 51.5847084,
+  "lon": 5.0867381,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "66",
+    "addr:postcode": "5011LR",
+    "addr:street": "Wagnerplein",
+    "amenity": "restaurant",
+    "cuisine": "sushi",
+    "name": "Sushi Habibi",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.sushihabibi.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850822072,
+  "lat": 51.5868256,
+  "lon": 5.0875483,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "76a",
+    "addr:postcode": "5011KD",
+    "addr:street": "Leharstraat",
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "name": "Vlammm Shawarma",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850934649,
+  "lat": 51.5674177,
+  "lon": 5.0881174,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1",
+    "addr:postcode": "5014HG",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "name": "Tacos & Ribz",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.tacosandribz.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850935646,
+  "lat": 51.5651036,
+  "lon": 5.0897816,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "103",
+    "addr:postcode": "5014HJ",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "cuisine": "turkish",
+    "name": "Yansin Tik Tok Döner",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850936025,
+  "lat": 51.5648455,
+  "lon": 5.0899677,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "115",
+    "addr:postcode": "5014HJ",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "name": "Döner King Tilburg",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850936040,
+  "lat": 51.5647668,
+  "lon": 5.0900243,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "119",
+    "addr:postcode": "5014HJ",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "cuisine": "asian;fast_food;bubble_tea",
+    "fast_food": "cafeteria",
+    "name": "Den Besterd",
+    "opening_hours": "Tu-Su 16:00-20:00",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850936088,
+  "lat": 51.5673156,
+  "lon": 5.0826918,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "122",
+    "addr:postcode": "5041BE",
+    "addr:street": "Veldhovenring",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "La Toscana",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://toscanatilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850937263,
+  "lat": 51.5637177,
+  "lon": 5.0906188,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "155",
+    "addr:postcode": "5014HK",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "cuisine": "sandwich",
+    "name": "'t Kaasbolleke",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://kaasbolleke.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850938127,
+  "lat": 51.5619660,
+  "lon": 5.0762377,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1708",
+    "addr:postcode": "5041SH",
+    "addr:street": "Burgemeester Brokxlaan",
+    "amenity": "fast_food",
+    "brand": "Subway",
+    "brand:wikidata": "Q244457",
+    "cuisine": "sandwich",
+    "name": "Subway",
+    "opening_hours": "Mo-Su,PH 09:00-21:00",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2850938161,
+  "lat": 51.5632384,
+  "lon": 5.0907447,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "175",
+    "addr:postcode": "5014HK",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "name": "Kebab House",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850939227,
+  "lat": 51.5674922,
+  "lon": 5.0880167,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "2",
+    "addr:postcode": "5041BC",
+    "addr:street": "Veldhovenring",
+    "amenity": "fast_food",
+    "cuisine": "burger",
+    "name": "Burger Company",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850941667,
+  "lat": 51.5665358,
+  "lon": 5.0887513,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "41",
+    "addr:postcode": "5014HG",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "name": "Didim Döner",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850943363,
+  "lat": 51.5666467,
+  "lon": 5.0806801,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "66",
+    "addr:postcode": "5041ED",
+    "addr:street": "Wilhelminapark",
+    "amenity": "restaurant",
+    "cuisine": "polish",
+    "mobile": "+31 6 58 72 36 06",
+    "name": "HollaPolla",
+    "old_name": "Mimi",
+    "opening_hours": "Tu-Fr 15:30-22:00; Sa 12:00-00:00; Su 12:00-22:00",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://hollapolla.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850943936,
+  "lat": 51.5658971,
+  "lon": 5.0892432,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "71",
+    "addr:postcode": "5014HH",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "name": "Yammie by Pims",
+    "source": "BAG",
+    "source:date": "2017-03-01",
+    "website": "https://yammiebypims.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2850943961,
+  "lat": 51.5623888,
+  "lon": 5.0897335,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "74",
+    "addr:postcode": "5041DG",
+    "addr:street": "Lange Nieuwstraat",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "'t Wolfke",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850943990,
+  "lat": 51.5655968,
+  "lon": 5.0894137,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "79",
+    "addr:postcode": "5014HH",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "name": "Hoki Poke Tilburg",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2850944539,
+  "lat": 51.5655199,
+  "lon": 5.0894837,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "83",
+    "addr:postcode": "5014HH",
+    "addr:street": "Besterdring",
+    "amenity": "fast_food",
+    "name": "çiğköfte",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2851032762,
+  "lat": 51.5857606,
+  "lon": 4.9971332,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1",
+    "addr:postcode": "5045MC",
+    "addr:street": "Nijkerkstraat",
+    "amenity": "restaurant",
+    "name": "Peerkes Hoeve",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://peerkeshoeve.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2851130399,
+  "lat": 51.5514106,
+  "lon": 5.0753502,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "123",
+    "addr:postcode": "5025JC",
+    "addr:street": "Korvelseweg",
+    "amenity": "restaurant",
+    "cuisine": "turkish",
+    "name": "Echt Berliner Döner",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2851131737,
+  "lat": 51.5483450,
+  "lon": 5.0667928,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1",
+    "addr:postcode": "5025VJ",
+    "addr:street": "Laarstraat",
+    "amenity": "fast_food",
+    "brand": "Domino's",
+    "brand:wikidata": "Q839466",
+    "cuisine": "pizza",
+    "name": "Domino's",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes",
+    "website": "https://www.dominos.nl/winkel/netherlands-tilburglaarstraat-30563"
+  }
+},
+{
+  "type": "node",
+  "id": 2851132592,
+  "lat": 51.5494176,
+  "lon": 5.0622498,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "101",
+    "addr:postcode": "5025VD",
+    "addr:street": "Berkdijksestraat",
+    "amenity": "restaurant",
+    "cuisine": "indonesian",
+    "name": "Oni Oki",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "only",
+    "website": "https://www.onioki.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2851132643,
+  "lat": 51.5514498,
+  "lon": 5.0755371,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "119",
+    "addr:postcode": "5025JB",
+    "addr:street": "Korvelseweg",
+    "amenity": "restaurant",
+    "cuisine": "snackbar",
+    "name": "De Friet Fabrique",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://defrietfabrique.com/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2851133429,
+  "lat": 51.5516173,
+  "lon": 5.0650959,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "129",
+    "addr:postcode": "5025PP",
+    "addr:street": "Korenbloemstraat",
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "name": "Pizza Italia",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.pizza-italia.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2851138259,
+  "lat": 51.5489193,
+  "lon": 5.0677804,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "195",
+    "addr:postcode": "5025JX",
+    "addr:street": "Korvelplein",
+    "amenity": "restaurant",
+    "cuisine": "chicken",
+    "name": "Chicken Square",
+    "note": "homepage seems unreachable to me; is this restaurant still around?",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.chickensquare.nl/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2851143406,
+  "lat": 51.5502735,
+  "lon": 5.0701435,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "241",
+    "addr:postcode": "5025JG",
+    "addr:street": "Korvelseweg",
+    "amenity": "restaurant",
+    "cuisine": "asian",
+    "name": "Tensum",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.tensum.nl/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2851143409,
+  "lat": 51.5502528,
+  "lon": 5.0700549,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "243",
+    "addr:postcode": "5025JG",
+    "addr:street": "Korvelseweg",
+    "amenity": "restaurant",
+    "cuisine": "indian",
+    "name": "Indian Palace",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.indianpalace.nl/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2851151738,
+  "lat": 51.5518256,
+  "lon": 5.0691298,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "39",
+    "addr:postcode": "5025MP",
+    "addr:street": "Diepenstraat",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "Cafetaria Timmy",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2851439473,
+  "lat": 51.5466336,
+  "lon": 5.0771990,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "189",
+    "addr:postcode": "5021WG",
+    "addr:street": "Trouwlaan",
+    "amenity": "restaurant",
+    "cuisine": "international",
+    "name": "Kolektivo",
+    "opening_hours": "Mo-Su 10:00-22:00",
+    "phone": "+31 13 822 9499",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://kolektivotilburg.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 2851455096,
+  "lat": 51.5469700,
+  "lon": 5.0797521,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "88",
+    "addr:postcode": "5021TW",
+    "addr:street": "Oerlesestraat",
+    "alt_name": "Alp Döner Kebab",
+    "amenity": "fast_food",
+    "cuisine": "kebab;pizza;turkish",
+    "name": "Alp Döner",
+    "phone": "+31 13 542 1153",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes",
+    "website": "https://www.alpdoner.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2851557442,
+  "lat": 51.5513037,
+  "lon": 5.0756501,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "108",
+    "addr:postcode": "5025JK",
+    "addr:street": "Korvelseweg",
+    "amenity": "restaurant",
+    "cuisine": "chinese",
+    "name": "San Kee",
+    "note": "closed since june 2025 according to the website",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.sankee.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2851558513,
+  "lat": 51.5503560,
+  "lon": 5.0797915,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "124",
+    "addr:postcode": "5021WX",
+    "addr:street": "Nieuwstraat",
+    "amenity": "fast_food",
+    "cuisine": "snackbar",
+    "email": "info@robbiesfriethuys.nl",
+    "name": "Robbie's Friethuys",
+    "opening_hours": "We-Mo 16:00-20:00",
+    "phone": "+31 6 21968111",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.robbiesfriethuys.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 2851560036,
+  "lat": 51.5499121,
+  "lon": 5.0695072,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "202a",
+    "addr:postcode": "5025JM",
+    "addr:street": "Korvelseweg",
+    "amenity": "fast_food",
+    "cuisine": "sandwich",
+    "name": "The Tosti Corner",
+    "opening_hours": "Mo-Sa 11:00-20:00,Su 12:00-20:00",
+    "phone": "+31 13 850 2255",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.thetosticorner-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2851561083,
+  "lat": 51.5473043,
+  "lon": 5.0749036,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "171",
+    "addr:postcode": "5025DB",
+    "addr:street": "Oerlesestraat",
+    "amenity": "fast_food",
+    "cuisine": "pizza;kebab;turkish",
+    "name": "Almeria",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.almeria-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2851562904,
+  "lat": 51.5487283,
+  "lon": 5.0881425,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "2",
+    "addr:postcode": "5021SE",
+    "addr:street": "Voltstraat",
+    "amenity": "fast_food",
+    "cuisine": "argentinian;burger;steak_house",
+    "name": "Crazy Mix",
+    "phone": "+31 13 542 5127",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2851563559,
+  "lat": 51.5468624,
+  "lon": 5.0823327,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "23",
+    "addr:postcode": "5021TS",
+    "addr:street": "Oerlesestraat",
+    "alt_name": "Big Snack",
+    "amenity": "fast_food",
+    "cuisine": "snackbar;ice_cream",
+    "name": "Big Snack Landsmeer",
+    "opening_hours": "Mo 16:00-22:00, Tu 16:00-23:00, We-Su 12:00-23:00",
+    "operator": "Big Snack",
+    "phone": "+31 13 543 4940",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://www.bigsnack.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 2851564401,
+  "lat": 51.5459334,
+  "lon": 5.0845592,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "262",
+    "addr:postcode": "5021LP",
+    "addr:street": "Groenstraat",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "'t Smoske",
+    "source": "BAG",
+    "source:date": "2014-05-07"
+  }
+},
+{
+  "type": "node",
+  "id": 2851568163,
+  "lat": 51.5480386,
+  "lon": 5.0888588,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "39",
+    "addr:postcode": "5021LB",
+    "addr:street": "Broekhovenseweg",
+    "amenity": "fast_food",
+    "cuisine": "snackbar",
+    "name": "Eetcafé Chi",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "https://eetcafe-chi.business.site"
+  }
+},
+{
+  "type": "node",
+  "id": 2851569539,
+  "lat": 51.5479751,
+  "lon": 5.0889491,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "43",
+    "addr:postcode": "5021LB",
+    "addr:street": "Broekhovenseweg",
+    "amenity": "restaurant",
+    "cuisine": "chinese;indonesian",
+    "name": "Chinees Indisch Restaurant Po Kan",
+    "opening_hours": "Tu-Sa 16:00-21:00; Su,PH 14:00-21:00",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "website": "http://www.pokan.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 3530878524,
+  "lat": 51.5859963,
+  "lon": 5.0286217,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "18",
+    "addr:postcode": "5047TW",
+    "addr:street": "Aphroditestraat",
+    "amenity": "fast_food",
+    "brand": "McDonald's",
+    "brand:wikidata": "Q38076",
+    "brand:wikipedia": "en:McDonald's",
+    "cuisine": "burger",
+    "name": "McDonald's",
+    "source": "BAG",
+    "source:date": "2014-05-07",
+    "takeaway": "yes",
+    "website": "https://mcdonaldsrestaurant.nl/tilburg-reeshof"
+  }
+},
+{
+  "type": "node",
+  "id": 4181988504,
+  "lat": 51.5583429,
+  "lon": 5.0902652,
+  "tags": {
+    "amenity": "fast_food",
+    "brand": "SushiPoint",
+    "brand:wikidata": "Q108923610",
+    "cuisine": "sushi",
+    "name": "SushiPoint",
+    "takeaway": "yes",
+    "website": "https://www.sushipoint.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 4398924446,
+  "lat": 51.5742622,
+  "lon": 4.9938658,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "43",
+    "addr:postcode": "5045NE",
+    "addr:street": "Ketelhavenplein",
+    "amenity": "restaurant",
+    "cuisine": "sandwich;bubble_tea",
+    "indoor_seating": "yes",
+    "name": "Da's Andere Koek",
+    "outdoor_seating": "yes",
+    "source": "BAG",
+    "source:date": "2016-09-13",
+    "website": "https://www.dasanderekoek.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 4398924448,
+  "lat": 51.5741827,
+  "lon": 4.9943908,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "45",
+    "addr:postcode": "5045NE",
+    "addr:street": "Ketelhavenplein",
+    "amenity": "restaurant",
+    "cuisine": "friture",
+    "indoor_seating": "yes",
+    "name": "Perron 3",
+    "outdoor_seating": "yes",
+    "source": "BAG",
+    "source:date": "2016-09-13",
+    "website": "https://www.perron3-reeshof.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 4398924449,
+  "lat": 51.5742047,
+  "lon": 4.9942524,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "46",
+    "addr:postcode": "5045NE",
+    "addr:street": "Ketelhavenplein",
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "indoor_seating": "yes",
+    "name": "Sphinx",
+    "outdoor_seating": "no",
+    "source": "BAG",
+    "source:date": "2016-09-13",
+    "website": "https://www.sphinxreeshof-tilburg.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 4398924451,
+  "lat": 51.5742484,
+  "lon": 4.9939636,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "48",
+    "addr:postcode": "5045NE",
+    "addr:street": "Ketelhavenplein",
+    "amenity": "restaurant",
+    "cuisine": "sushi",
+    "indoor_seating": "no",
+    "name": "Sushi To Be",
+    "outdoor_seating": "no",
+    "source": "BAG",
+    "source:date": "2016-09-13",
+    "takeaway": "only",
+    "website": "https://www.sushitobe.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 4398924452,
+  "lat": 51.5742813,
+  "lon": 4.9937381,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "49",
+    "addr:postcode": "5045NE",
+    "addr:street": "Ketelhavenplein",
+    "amenity": "restaurant",
+    "cuisine": "italian",
+    "indoor_seating": "yes",
+    "name": "Farci",
+    "outdoor_seating": "yes",
+    "source": "BAG",
+    "source:date": "2016-09-13",
+    "website": "https://farci.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 4427411635,
+  "lat": 51.5871496,
+  "lon": 5.1369496,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "76",
+    "addr:postcode": "5057DJ",
+    "addr:street": "Trappistinnentuin",
+    "amenity": "restaurant",
+    "cuisine": "japanese;mediterranean;dutch;indonesian;french",
+    "indoor_seating": "yes",
+    "name": "Hemels Eten en Drinken",
+    "outdoor_seating": "yes",
+    "source": "BAG",
+    "source:date": "2016-10-02",
+    "toilets:wheelchair": "yes",
+    "website": "https://www.hemelsetenendrinken.nl",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 4525298391,
+  "lat": 51.5557868,
+  "lon": 5.0911807,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "64",
+    "addr:postcode": "5038WP",
+    "addr:street": "Piusplein",
+    "amenity": "restaurant",
+    "cuisine": "korean",
+    "name": "Jinsang",
+    "source": "BAG",
+    "source:date": "2016-11-27",
+    "website": "https://www.jinsangbbqtilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 4528907590,
+  "lat": 51.5608498,
+  "lon": 5.0871964,
+  "tags": {
+    "addr:street": "Burgemeester Brokxlaan",
+    "amenity": "restaurant",
+    "diet:vegetarian": "yes",
+    "name": "Raw",
+    "opening_hours": "Mo 12:00-24:00; Tu-Th 10:00-24:00; Fr-Sa 10:00-25:00; Su 10:00-23:00",
+    "website": "https://www.raw013.nl",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4616213728,
+  "lat": 51.5769409,
+  "lon": 5.0026103,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "62",
+    "addr:postcode": "5043RM",
+    "addr:street": "Heyhoefpromenade",
+    "air_conditioning": "yes",
+    "amenity": "fast_food",
+    "brand": "Subway",
+    "brand:wikidata": "Q244457",
+    "brand:wikipedia": "en:Subway (restaurant)",
+    "cuisine": "sandwich",
+    "diet:vegetarian": "yes",
+    "fixme": "Volgens website op huisnummer 60 i.p.v. 62",
+    "indoor_seating": "yes",
+    "name": "Subway",
+    "opening_hours": "Mo-Th 09:00-20:00; Fr 09:00-21:00; Sa,Su 09:00-20:00",
+    "outdoor_seating": "yes",
+    "smoking": "no",
+    "source": "BAG",
+    "source:date": "2017-01-18",
+    "takeaway": "yes",
+    "website": "https://www.openingstijden.com/o4765050/subway-reeshof-heyhoefpromenade-60-tilburg/"
+  }
+},
+{
+  "type": "node",
+  "id": 4692663723,
+  "lat": 51.5754347,
+  "lon": 5.0834783,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "28",
+    "addr:postcode": "5046GB",
+    "addr:street": "Julianapark",
+    "amenity": "fast_food",
+    "name": "Charm Thai Takeaway",
+    "opening_hours": "Mo-Su 12:00-21:00",
+    "source": "BAG",
+    "source:date": "2017-02-18"
+  }
+},
+{
+  "type": "node",
+  "id": 4692663728,
+  "lat": 51.5755194,
+  "lon": 5.0835827,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "27",
+    "addr:postcode": "5046GB",
+    "addr:street": "Julianapark",
+    "amenity": "restaurant",
+    "brand": "Shabu Shabu",
+    "brand:wikidata": "Q123466802",
+    "cuisine": "sushi",
+    "name": "Shabu To Go",
+    "opening_hours": "Mo-Su 12:00-21:00",
+    "phone": "+31 13 2044040",
+    "source": "BAG",
+    "source:date": "2017-02-18",
+    "website": "https://www.shabutogo.nl/sushi-bestellen-tilburg",
+    "website:menu": "https://www.shabutogo.nl/sushi-bestellen-tilburg/menu"
+  }
+},
+{
+  "type": "node",
+  "id": 4701153443,
+  "lat": 51.5665243,
+  "lon": 5.0560396,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "40a",
+    "addr:postcode": "5042PD",
+    "addr:street": "Wandelboslaan",
+    "amenity": "fast_food",
+    "cuisine": "sandwich",
+    "name": "Mixx Broodjes",
+    "source": "BAG",
+    "source:date": "2017-02-23",
+    "website": "https://mixxbroodjes.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 4701283071,
+  "lat": 51.5844283,
+  "lon": 5.0863307,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "92",
+    "addr:postcode": "5011LR",
+    "addr:street": "Wagnerplein",
+    "amenity": "fast_food",
+    "brand": "New York Pizza",
+    "brand:wikidata": "Q2639128",
+    "cuisine": "pizza",
+    "name": "New York Pizza",
+    "source": "BAG",
+    "source:date": "2017-02-23",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4701283105,
+  "lat": 51.5834783,
+  "lon": 5.0859630,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "112",
+    "addr:postcode": "5011LR",
+    "addr:street": "Wagnerplein",
+    "amenity": "fast_food",
+    "brand": "Domino's",
+    "brand:wikidata": "Q839466",
+    "cuisine": "pizza",
+    "name": "Domino's",
+    "source": "BAG",
+    "source:date": "2017-02-23",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4701283110,
+  "lat": 51.5839744,
+  "lon": 5.0846317,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "119",
+    "addr:postcode": "5011LR",
+    "addr:street": "Wagnerplein",
+    "amenity": "restaurant",
+    "cuisine": "sushi;bubble_tea",
+    "name": "Sushi Crush",
+    "source": "BAG",
+    "source:date": "2017-02-23",
+    "website": "https://www.sushicrush-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 4701283118,
+  "lat": 51.5837847,
+  "lon": 5.0845227,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "118",
+    "addr:postcode": "5011LR",
+    "addr:street": "Wagnerplein",
+    "amenity": "fast_food",
+    "cuisine": "friture;sandwich",
+    "drive_through": "no",
+    "name": "Kwalitaria Délifrance",
+    "opening_hours": "We-Sa 09:30-21:00; Su 12:00-21:00",
+    "source": "BAG;survey",
+    "source:date": "2017-02-23",
+    "website": "https://www.kwalitaria.nl/vestiging/%2Fkwalitaria-delifrance-wagnerplein"
+  }
+},
+{
+  "type": "node",
+  "id": 4708319138,
+  "lat": 51.5517357,
+  "lon": 5.0763467,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "95",
+    "addr:postcode": "5025JB",
+    "addr:street": "Korvelseweg",
+    "amenity": "fast_food",
+    "brand": "New York Pizza",
+    "brand:website": "https://www.newyorkpizza.nl/",
+    "brand:wikidata": "Q2639128",
+    "brand:wikipedia": "nl:New York Pizza",
+    "cuisine": "pizza",
+    "name": "New York Pizza",
+    "source": "BAG",
+    "source:date": "2017-02-27",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4708319724,
+  "lat": 51.5589856,
+  "lon": 5.0682335,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "62",
+    "addr:postcode": "5038MB",
+    "addr:street": "Beukenstraat",
+    "amenity": "restaurant",
+    "cuisine": "sushi",
+    "name": "Osushi",
+    "source": "BAG",
+    "source:date": "2017-02-27"
+  }
+},
+{
+  "type": "node",
+  "id": 4709843487,
+  "lat": 51.5606201,
+  "lon": 5.0840258,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "6",
+    "addr:postcode": "5038CA",
+    "addr:street": "Stationspassage",
+    "amenity": "fast_food",
+    "cuisine": "sandwich",
+    "name": "backWERK",
+    "opening_hours": "Mo-Fr 07:00-17:00",
+    "source": "BAG",
+    "source:date": "2017-02-28"
+  }
+},
+{
+  "type": "node",
+  "id": 4709843595,
+  "lat": 51.5614290,
+  "lon": 5.0826024,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "208",
+    "addr:postcode": "5041SC",
+    "addr:street": "Burgemeester Stekelenburgplein",
+    "amenity": "restaurant",
+    "check_date": "2025-03-08",
+    "check_date:opening_hours": "2025-03-08",
+    "name": "Central Station",
+    "opening_hours": "Tu-Th 12:00-23:00, Fr,Sa 12:00-24:00, Su 12:00-23:00; Mo off",
+    "source": "BAG",
+    "source:date": "2017-02-28",
+    "website": "https://gourmetmarket.nl/centralstation"
+  }
+},
+{
+  "type": "node",
+  "id": 4711344991,
+  "lat": 51.5618919,
+  "lon": 5.0749591,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "42",
+    "addr:postcode": "5041GB",
+    "addr:street": "Jan Heijnsstraat",
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "name": "Popi Pizza",
+    "source": "BAG",
+    "source:date": "2017-03-01",
+    "website": "https://popipizza.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 4718052905,
+  "lat": 51.5552323,
+  "lon": 5.0901834,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1",
+    "addr:postcode": "5038WD",
+    "addr:street": "Paleisring",
+    "amenity": "fast_food",
+    "brand": "Domino's",
+    "brand:wikidata": "Q839466",
+    "brand:wikipedia": "nl:Domino's Pizza",
+    "cuisine": "pizza",
+    "name": "Domino's",
+    "opening_hours": "Mo-We 12:00-22:00; Th 12:00-01:00; Fr 12:00-02:00; Sa 13:00-02:00; Su 13:00-22:00",
+    "phone": "+31 13 210 0199",
+    "short_name": "Domino's",
+    "source": "BAG",
+    "source:date": "2017-03-05",
+    "takeaway": "yes",
+    "website": "https://www.dominos.nl/winkel/nl-tilburgcentrum-30748"
+  }
+},
+{
+  "type": "node",
+  "id": 4718052983,
+  "lat": 51.5579672,
+  "lon": 5.0894090,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "170",
+    "addr:postcode": "5038BW",
+    "addr:street": "Pieter Vreedeplein",
+    "amenity": "fast_food",
+    "cuisine": "burger",
+    "level": "0",
+    "name": "WawBurger",
+    "source": "BAG",
+    "source:date": "2017-03-05",
+    "website": "https://www.wawburgertilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 4875455034,
+  "lat": 51.5619656,
+  "lon": 5.0824896,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1039",
+    "addr:postcode": "5041RP",
+    "addr:street": "Burgemeester Brokxlaan",
+    "amenity": "restaurant",
+    "check_date": "2024-09-24",
+    "description": "Oud treinstel, omgetoverd tot eetbar.",
+    "diet:vegan": "yes",
+    "diet:vegetarian": "yes",
+    "name": "Eetbar de Wagon",
+    "opening_hours": "Mo-Su 12:00-24:00",
+    "source": "BAG",
+    "source:date": "2017-07-23",
+    "website": "https://eetbardewagon.com",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 5011294528,
+  "lat": 51.5620826,
+  "lon": 5.0810912,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "De Houtloods",
+    "opening_hours": "Mo-Su 11:00-23:00",
+    "website": "https://houtloods.com"
+  }
+},
+{
+  "type": "node",
+  "id": 5044520916,
+  "lat": 51.5753653,
+  "lon": 5.0383074,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "3",
+    "addr:postcode": "5044JB",
+    "addr:street": "Paletplein",
+    "amenity": "fast_food",
+    "name": "Snackbar Paletplein",
+    "source": "BAG",
+    "source:date": "2017-08-19",
+    "website": "https://en.eet.nu/tilburg/snackbar-paletplein"
+  }
+},
+{
+  "type": "node",
+  "id": 5125530749,
+  "lat": 51.5540647,
+  "lon": 5.0796588,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "10",
+    "addr:postcode": "5038TS",
+    "addr:street": "Lieve-Vrouweplein",
+    "amenity": "restaurant",
+    "cuisine": "asian",
+    "delivery": "yes",
+    "name": "Sate Kid",
+    "shop": "pastry",
+    "source": "BAG",
+    "source:date": "2017-09-24",
+    "takeaway": "yes",
+    "website": "https://www.sate-kid.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5208929399,
+  "lat": 51.5494922,
+  "lon": 5.0882172,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "154",
+    "addr:postcode": "5021JD",
+    "addr:street": "Piusstraat",
+    "amenity": "restaurant",
+    "cuisine": "pizza;kebab;turkish",
+    "name": "Öz Side",
+    "opening_hours": "Mo-We 15:00-02:00, Th-Sa 15:00-03:00, Su 15:00-02:00",
+    "phone": "+31 13 889 8179;+31 13 544 7498",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "takeaway": "yes",
+    "website": "https://www.oz-side-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5216297298,
+  "lat": 51.5531801,
+  "lon": 5.0789268,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "25",
+    "addr:postcode": "5038TV",
+    "addr:street": "Sint Annaplein",
+    "amenity": "fast_food",
+    "cuisine": "snackbar",
+    "name": "Cafetaria d'n Engel",
+    "opening_hours": "Tu-Sa 12:00-21:00; Su 14:00-21:00"
+  }
+},
+{
+  "type": "node",
+  "id": 5221624072,
+  "lat": 51.5521334,
+  "lon": 5.0773506,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "58-02",
+    "addr:postcode": "5025JJ",
+    "addr:street": "Korvelseweg",
+    "alt_name": "Jullie BBQ",
+    "amenity": "restaurant",
+    "cuisine": "kebab;middle_eastern",
+    "name": "Mashawicom",
+    "website": "https://www.libanees-restaurant-nawaf-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5222239231,
+  "lat": 51.5526680,
+  "lon": 5.0781997,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "26",
+    "addr:postcode": "5025JH",
+    "addr:street": "Korvelseweg",
+    "alt_name": "Eethuis Kabila",
+    "amenity": "restaurant",
+    "cuisine": "mediterranean",
+    "name": "Broodjeszaak Kabila",
+    "website": "https://www.broodjeszaakkabila-tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5222239234,
+  "lat": 51.5528581,
+  "lon": 5.0781272,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "33",
+    "addr:postcode": "5025JB",
+    "addr:street": "Korvelseweg",
+    "amenity": "restaurant",
+    "cuisine": "turkish;pizza",
+    "name": "Shoarma Antalya",
+    "website": "https://www.shoarma-antalya.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5228396811,
+  "lat": 51.5543518,
+  "lon": 5.0796408,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "13",
+    "addr:postcode": "5038TS",
+    "addr:street": "Lieve-Vrouweplein",
+    "amenity": "fast_food",
+    "cuisine": "burger;snackbar",
+    "indoor_seating": "yes",
+    "name": "Burger Business",
+    "opening_hours": "Mo-Su 17:00-22:00",
+    "outdoor_seating": "no",
+    "smoking": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5228397431,
+  "lat": 51.5550222,
+  "lon": 5.0788137,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "190",
+    "addr:postcode": "5038TM",
+    "addr:street": "Schouwburgring",
+    "amenity": "restaurant",
+    "cuisine": "moroccan",
+    "name": "al-Maclaa",
+    "website": "https://almaclaa.nl/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5259222432,
+  "lat": 51.5599328,
+  "lon": 5.0840812,
+  "tags": {
+    "amenity": "restaurant",
+    "branch": "Fine Eastern Restaurants Nederland",
+    "cuisine": "chinese;japanese",
+    "name": "Jade",
+    "website": "https://www.restaurantjade.com"
+  }
+},
+{
+  "type": "node",
+  "id": 5313191942,
+  "lat": 51.5777865,
+  "lon": 5.0045636,
+  "tags": {
+    "amenity": "fast_food",
+    "check_date": "2023-10-04",
+    "name": "De Groene Vlinder",
+    "website": "https://www.degroenevlinder.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 5336761783,
+  "lat": 51.5500804,
+  "lon": 5.0700654,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "188",
+    "addr:postcode": "5025JM",
+    "addr:street": "Korvelseweg",
+    "amenity": "restaurant",
+    "cuisine": "turkish;kebab;pizza",
+    "name": "Restaurant Grillhouse Bosporus",
+    "note": "Homepage does not resolve. Is this restaurant still around?",
+    "website": "https://www.grillroombosporustilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5383057968,
+  "lat": 51.5562404,
+  "lon": 5.0909285,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "155",
+    "addr:postcode": "5038CJ",
+    "addr:street": "Heuvelring",
+    "amenity": "fast_food",
+    "brand": "Burger King",
+    "brand:wikidata": "Q177054",
+    "cuisine": "burger",
+    "name": "Burger King",
+    "source": "BAG",
+    "source:date": "2018-02-03",
+    "website": "https://www.burgerking.nl/store-locator/store/restaurant_87961",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5414433946,
+  "lat": 51.5588194,
+  "lon": 5.0904789,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Broodjeszaak De Ritz",
+    "website": "https://ritz-broodjes.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5414847328,
+  "lat": 51.5604434,
+  "lon": 5.0825593,
+  "tags": {
+    "amenity": "restaurant",
+    "internet_access": "wlan",
+    "name": "Breexz",
+    "website": "https://breexz.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 5436162145,
+  "lat": 51.5555328,
+  "lon": 5.0695976,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "204-08",
+    "addr:postcode": "5038NK",
+    "addr:street": "Bredaseweg",
+    "amenity": "restaurant",
+    "award:michelin": "1",
+    "cuisine": "french;international;lunch;diner",
+    "email": "info@monarh.nl",
+    "name": "Monarh",
+    "opening_hours": "We-Fr 12:00-14:00,18:00-21:30; Tu,Sa 18:00-21:30",
+    "outdoor_seating": "yes",
+    "phone": "+31 13 536 5805",
+    "website": "https://www.monarh.nl",
+    "wikidata": "Q63385661",
+    "wikipedia": "nl:Restaurant Monarh"
+  }
+},
+{
+  "type": "node",
+  "id": 5491592390,
+  "lat": 51.5757550,
+  "lon": 5.0909449,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "indonesian",
+    "name": "De kleine Indo",
+    "website": "http://www.dekleine-indo.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5491643323,
+  "lat": 51.5607278,
+  "lon": 5.0924532,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "19",
+    "addr:street": "NS Plein",
+    "amenity": "restaurant",
+    "cuisine": "thai",
+    "description": "KvK en website zeggen allebei NS Plein 19, maar daar zit toch echt een tattoo-shop (die ook #19 hanteert). Geplaatst op de fysieke locatie.",
+    "name": "Jiriwat",
+    "website": "https://www.jirawattilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5545481189,
+  "lat": 51.5512264,
+  "lon": 5.1029500,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "45",
+    "addr:postcode": "5021AV",
+    "addr:street": "AaBe-straat",
+    "amenity": "restaurant",
+    "level": "0",
+    "name": "Het Ketelhuis",
+    "opening_hours": "Mo-Th, Su 10:00-17:00; Fr,Sa 10:00-20:00",
+    "source": "BAG",
+    "source:date": "2018-04-11",
+    "website": "https://hetketelhuistilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5641217412,
+  "lat": 51.5631747,
+  "lon": 5.0756004,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "18",
+    "addr:postcode": "5041GB",
+    "addr:street": "Jan Heijnsstraat",
+    "amenity": "restaurant",
+    "cuisine": "asian;poke",
+    "name": "Poké You",
+    "opening_hours": "Mo 12:00-20:00; Tu-Su 11:30-20:30",
+    "phone": "+31 6 38493801",
+    "source": "BAG",
+    "source:date": "2017-02-23;2017-07-23",
+    "website": "https://pokeyou.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5732293303,
+  "lat": 51.5859871,
+  "lon": 5.1348835,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "126",
+    "addr:postcode": "5057DL",
+    "addr:street": "Koningsoord",
+    "amenity": "fast_food",
+    "name": "d'n Boom",
+    "source": "BAG",
+    "source:date": "2018-07-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5732293726,
+  "lat": 51.5868196,
+  "lon": 5.1351623,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "132",
+    "addr:postcode": "5057DL",
+    "addr:street": "Koningsoord",
+    "amenity": "fast_food",
+    "branch": "Berkel-Enschot",
+    "brand": "Sushi 8",
+    "brand:website": "https://www.sushi-eight.nl/",
+    "brand:wikidata": "Q134398513",
+    "cuisine": "sushi",
+    "name": "Sushi 8",
+    "phone": "+31 6 44075051",
+    "source": "BAG",
+    "source:date": "2018-07-01",
+    "takeaway": "yes",
+    "website": "https://enschot.sushi-eight.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 5784117366,
+  "lat": 51.5590168,
+  "lon": 5.0912849,
+  "tags": {
+    "amenity": "restaurant",
+    "branch": "Tilburg",
+    "brand": "MOJO",
+    "cuisine": "japanese",
+    "name": "Mojo sushi en grill",
+    "website": "https://mo-jo.eu/location/tilburg/",
+    "website:en": "https://mo-jo.eu/en/location/tilburg/",
+    "website:nl": "https://mo-jo.eu/location/tilburg/"
+  }
+},
+{
+  "type": "node",
+  "id": 5784138942,
+  "lat": 51.5578876,
+  "lon": 5.0866484,
+  "tags": {
+    "amenity": "restaurant",
+    "diet:vegan": "yes",
+    "diet:vegetarian": "yes",
+    "name": "Waanzinnig",
+    "opening_hours": "We-Fr 12:00-15:00; We-Th 17:30-22:00; Sa 12:00-16:00; Fr-Sa 17:30-23:00",
+    "outdoor_seating": "yes",
+    "toilets:wheelchair": "yes",
+    "website": "https://restaurantwaanzinnig.nl",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5825411958,
+  "lat": 51.5521223,
+  "lon": 5.0952547,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "249",
+    "addr:postcode": "5017EP",
+    "addr:street": "Hopliedenkade",
+    "amenity": "restaurant",
+    "cuisine": "international",
+    "email": "info@restaurantrak.nl",
+    "name": "Restaurant RAK",
+    "phone": "+31 13 203 6610",
+    "source": "BAG",
+    "source:date": "2018-08-08",
+    "website": "https://restaurantrak.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 6380216985,
+  "lat": 51.5570229,
+  "lon": 5.0909148,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "37",
+    "addr:postcode": "5038CP",
+    "addr:street": "Heuvel",
+    "amenity": "restaurant",
+    "cuisine": "international",
+    "email": "info@taste-tilburg.nl",
+    "name": "Restaurant Taste!",
+    "opening_hours": "Tu-Sa 17:30-22:00",
+    "outdoor_seating": "no",
+    "phone": "+31 13 535 3296",
+    "website": "https://taste-tilburg.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 6481450780,
+  "lat": 51.5526789,
+  "lon": 5.0926933,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "31",
+    "addr:postcode": "5017AN",
+    "addr:street": "Piushaven",
+    "amenity": "restaurant",
+    "cuisine": "fish",
+    "name": "Smit Vis aan de Haven",
+    "source": "BAG",
+    "source:date": "2022-03-22",
+    "website": "https://www.smitvisaandehaven.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 6511350397,
+  "lat": 51.5610808,
+  "lon": 5.0845236,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "199",
+    "addr:postcode": "5041SC",
+    "addr:street": "Burgemeester Stekelenburgplein",
+    "amenity": "restaurant",
+    "check_date:opening_hours": "2025-09-06",
+    "name": "Mood",
+    "opening_hours": "12:00-22:00",
+    "phone": "+31 13 208 8000",
+    "source": "BAG",
+    "source:date": "2019-05-30",
+    "website": "https://www.mood.nl/tilburg"
+  }
+},
+{
+  "type": "node",
+  "id": 7178216449,
+  "lat": 51.5679026,
+  "lon": 5.0605730,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "37a",
+    "addr:postcode": "5042HA",
+    "addr:street": "Thomas van Aquinostraat",
+    "amenity": "fast_food",
+    "brand": "Domino's",
+    "brand:wikidata": "Q839466",
+    "brand:wikipedia": "nl:Domino's Pizza",
+    "cuisine": "pizza",
+    "name": "Domino's",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7299912230,
+  "lat": 51.5559520,
+  "lon": 5.0893105,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "55",
+    "addr:postcode": "5038AZ",
+    "addr:street": "Frederikstraat",
+    "amenity": "restaurant",
+    "name": "BAM!",
+    "source": "BAG",
+    "source:date": "2020-03-16",
+    "website": "https://bamtilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 7512097740,
+  "lat": 51.5576981,
+  "lon": 5.0893637,
+  "tags": {
+    "amenity": "fast_food",
+    "brand": "Johnny's Burger Company",
+    "brand:wikidata": "Q108920805",
+    "cuisine": "burger",
+    "delivery": "yes",
+    "name": "Johnny's Burger Company",
+    "takeaway": "yes",
+    "website": "https://www.johnnys.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 7513987995,
+  "lat": 51.5487005,
+  "lon": 5.0806016,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "lunch",
+    "name": "GGz Breburg",
+    "opening_hours": "12:00-13:30"
+  }
+},
+{
+  "type": "node",
+  "id": 7600965810,
+  "lat": 51.5583583,
+  "lon": 5.0804140,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "De Burgerij",
+    "website": "https://deburgerij.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 7710076132,
+  "lat": 51.5452102,
+  "lon": 5.0813498,
+  "tags": {
+    "alt_name": "Restaurant Binnen",
+    "amenity": "restaurant",
+    "name": "Binnen bij Parcours",
+    "website": "https://www.parcourstilburg.nl/restaurant-binnen/"
+  }
+},
+{
+  "type": "node",
+  "id": 7734829179,
+  "lat": 51.5473229,
+  "lon": 5.0873665,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "buffet",
+    "name": "Voltkids Adventure",
+    "operator": "Voltkids Adventure",
+    "website": "https://www.voltkids.nl/food-en-drinks/buffet-laan"
+  }
+},
+{
+  "type": "node",
+  "id": 7734886507,
+  "lat": 51.5468896,
+  "lon": 5.0879277,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "De Voltage",
+    "website": "https://www.devoltage.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 7757596919,
+  "lat": 51.5496484,
+  "lon": 5.0619655,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "117",
+    "addr:postcode": "5025VD",
+    "addr:street": "Berkdijksestraat",
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "drive_through": "no",
+    "name": "De Dijk",
+    "source": "BAG",
+    "source:date": "2020-07-27"
+  }
+},
+{
+  "type": "node",
+  "id": 9137306335,
+  "lat": 51.5846433,
+  "lon": 5.0865335,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "79",
+    "addr:postcode": "5011LR",
+    "addr:street": "Wagnerplein",
+    "amenity": "fast_food",
+    "cuisine": "sandwich",
+    "name": "Le French Taco",
+    "source": "BAG",
+    "source:date": "2021-10-01",
+    "website": "https://www.lefrenchtaco.nl"
+  }
+},
+{
+  "type": "node",
+  "id": 9421115009,
+  "lat": 51.5551150,
+  "lon": 5.0813614,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "153",
+    "addr:postcode": "5038TW",
+    "addr:street": "Schouwburgring",
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "name": "PizzaBar Rijslust",
+    "source": "BAG",
+    "source:date": "2022-01-14",
+    "website": "https://www.pizzabarrijslust.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 10048794255,
+  "lat": 51.5560125,
+  "lon": 5.0892620,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "53",
+    "addr:postcode": "5038AZ",
+    "addr:street": "Frederikstraat",
+    "amenity": "fast_food",
+    "drive_through": "no",
+    "name": "Fat Phill's",
+    "source": "BAG",
+    "source:date": "2022-09-24",
+    "website": "https://fatphillsdiner.com/fat-phills-tilburg/"
+  }
+},
+{
+  "type": "node",
+  "id": 10175420545,
+  "lat": 51.5567317,
+  "lon": 5.0885478,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "24",
+    "addr:postcode": "5038AZ",
+    "addr:street": "Frederikstraat",
+    "amenity": "fast_food",
+    "cuisine": "chicken",
+    "drive_through": "no",
+    "name": "Brine & Batter",
+    "source": "BAG",
+    "source:date": "2022-11-11"
+  }
+},
+{
+  "type": "node",
+  "id": 10231712765,
+  "lat": 51.5583673,
+  "lon": 5.0864587,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Ristobar29",
+    "operator": "Cinecitta",
+    "website": "https://cinecitta.nl/film-food/"
+  }
+},
+{
+  "type": "node",
+  "id": 10282715743,
+  "lat": 51.5765403,
+  "lon": 5.0914593,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "47-05",
+    "addr:postcode": "5013BJ",
+    "addr:street": "Lovensekanaaldijk",
+    "amenity": "restaurant",
+    "diet:vegan": "yes",
+    "diet:vegetarian": "yes",
+    "name": "As Good As It Gets",
+    "opening_hours": "Tu-Sa 11:00-16:00",
+    "source": "BAG",
+    "source:date": "2022-12-23",
+    "website": "https://www.asgoodasitgetscafe.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 11077002370,
+  "lat": 51.5462825,
+  "lon": 5.1365702,
+  "tags": {
+    "addr:city": "Berkel-Enschot",
+    "addr:housenumber": "12-02",
+    "addr:postcode": "5056RP",
+    "addr:street": "Eindhovenseweg",
+    "amenity": "restaurant",
+    "name": "Bij Broeders Brasserij",
+    "source": "BAG",
+    "source:date": "2023-07-30",
+    "website": "https://www.bij-broeders.nl/brasserij"
+  }
+},
+{
+  "type": "node",
+  "id": 11107659902,
+  "lat": 51.5748006,
+  "lon": 5.0818884,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "16c",
+    "addr:postcode": "5046GK",
+    "addr:street": "Goirkestraat",
+    "amenity": "fast_food",
+    "cuisine": "sushi",
+    "name": "Sushi Quen",
+    "source": "BAG",
+    "source:date": "2023-08-11",
+    "website": "https://www.sushiqueentilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 11279842301,
+  "lat": 51.5577279,
+  "lon": 5.0895611,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "3",
+    "addr:postcode": "5038BP",
+    "addr:street": "Pieter Vreedeplein",
+    "amenity": "fast_food",
+    "cuisine": "chicken",
+    "name": "Chico",
+    "source": "BAG",
+    "source:date": "2023-10-21",
+    "website": "https://www.chicofood.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 12092915375,
+  "lat": 51.5605507,
+  "lon": 5.0828540,
+  "tags": {
+    "amenity": "restaurant",
+    "brand": "eazie",
+    "brand:website": "https://eazie.nl",
+    "brand:wikidata": "Q123412939",
+    "name": "Eazie",
+    "website": "https://eazie.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 12092918532,
+  "lat": 51.5604483,
+  "lon": 5.0831910,
+  "tags": {
+    "amenity": "fast_food",
+    "brand": "Smullers",
+    "brand:website": "https://smullers.nl/",
+    "brand:wikidata": "Q92552501",
+    "name": "Smullers",
+    "opening_hours": "Mo-Fr 12:00-21:00; Sa,Su 12:00-20:00"
+  }
+},
+{
+  "type": "node",
+  "id": 12871417711,
+  "lat": 51.5561533,
+  "lon": 5.0913794,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "226",
+    "addr:postcode": "5038CL",
+    "addr:street": "Heuvelring",
+    "amenity": "fast_food",
+    "cuisine": "sandwich",
+    "name": "Broodega",
+    "opening_hours": "Mo-Su 08:30-13:30",
+    "phone": "+31 13 737 0207",
+    "website": "https://broodega.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 12988497211,
+  "lat": 51.5791910,
+  "lon": 4.9977624,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "11b",
+    "addr:postcode": "5045NZ",
+    "addr:street": "Campenhoefdreef",
+    "amenity": "restaurant",
+    "name": "Fifty50 bar & BBQ",
+    "website": "https://www.fifty50tilburg.nl/"
+  }
+},
+{
+  "type": "node",
+  "id": 13158298601,
+  "lat": 51.5726697,
+  "lon": 5.0834442,
+  "tags": {
+    "addr:housenumber": "11",
+    "addr:street": "Pastoriestraat",
+    "amenity": "restaurant",
+    "name": "Greek Cafetaria artemis"
+  }
+},
+{
+  "type": "node",
+  "id": 13159851801,
+  "lat": 51.5636857,
+  "lon": 5.0733308,
+  "tags": {
+    "addr:housenumber": "3",
+    "addr:street": "Jan Heijnsstraat",
+    "amenity": "fast_food",
+    "name": "De rotonde",
+    "opening_hours": "Sa-Th 16:00-20:00; Fr 12:00-20:00"
+  }
+},
+{
+  "type": "node",
+  "id": 13456100312,
+  "lat": 51.5525443,
+  "lon": 5.0968224,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "1d",
+    "addr:postcode": "5017AN",
+    "addr:street": "Piushaven",
+    "amenity": "restaurant",
+    "name": "Teds",
+    "website": "https://teds-place.nl/locations/tilburg/"
+  }
+},
+{
+  "type": "node",
+  "id": 13516858501,
+  "lat": 51.5583502,
+  "lon": 5.0908135,
+  "tags": {
+    "addr:city": "Tilburg",
+    "addr:housenumber": "108",
+    "addr:postcode": "5038CL",
+    "addr:street": "Heuvelring",
+    "amenity": "restaurant",
+    "name": "Dadawan"
+  }
+},
+{
+  "type": "way",
+  "id": 279828093,
+  "center": {
+    "lat": 51.6355505,
+    "lon": 5.1120416
+  },
+  "tags": {
+    "addr:city": "Udenhout",
+    "addr:country": "NL",
+    "addr:housenumber": "1",
+    "addr:postcode": "5071RP",
+    "addr:street": "Oude Bosschebaan",
+    "alt_name": "Landgoed Bosch en Duin",
+    "amenity": "restaurant",
+    "building": "yes",
+    "name": "Landgoed Bosch & Duin",
+    "ref:bag": "0855100000462592",
+    "source": "3dShapes",
+    "source:date": "2014-03-24",
+    "start_date": "1959",
+    "website": "https://www.bosch-duin.nl/"
+  }
+},
+{
+  "type": "way",
+  "id": 280529465,
+  "center": {
+    "lat": 51.5599429,
+    "lon": 5.0176650
+  },
+  "tags": {
+    "amenity": "restaurant",
+    "building": "yes",
+    "name": "Villa Vredelust",
+    "ref:bag": "0855100000201235",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "start_date": "1884",
+    "website": "https://villa-vredelust.nl"
+  }
+},
+{
+  "type": "way",
+  "id": 280596533,
+  "center": {
+    "lat": 51.5597092,
+    "lon": 5.0350404
+  },
+  "tags": {
+    "amenity": "restaurant",
+    "building": "yes",
+    "cuisine": "fine_dining",
+    "name": "La Nouvelle Auberge",
+    "ref:bag": "0855100000043885",
+    "source": "BAG",
+    "source:date": "2014-05-01",
+    "start_date": "1940",
+    "website": "https://www.bonheurhorecagroep.nl/auberge-du-bonheur/nl/la-nouvelle-auberge"
+  }
+},
+{
+  "type": "way",
+  "id": 280771716,
+  "center": {
+    "lat": 51.5672828,
+    "lon": 5.0888347
+  },
+  "tags": {
+    "amenity": "restaurant",
+    "building": "yes",
+    "name": "Jasmine Thai",
+    "ref:bag": "0855100000020559",
+    "source": "BAG",
+    "source:date": "2017-02-28",
+    "start_date": "1906"
+  }
+},
+{
+  "type": "way",
+  "id": 731212078,
+  "center": {
+    "lat": 51.5616162,
+    "lon": 5.0691561
+  },
+  "tags": {
+    "amenity": "restaurant",
+    "building": "yes",
+    "name": "T-Huis",
+    "ref:bag": "0855100000713340",
+    "source": "BAG",
+    "source:date": "2019-05-30",
+    "start_date": "2019",
+    "website": "https://t-huis-spoorpark.nl"
+  }
+}
+
+  ]
+}

@@ -5,6 +5,7 @@ export interface MenuItem { id: string; restaurant_id: string; name: string; pri
 export interface Restaurant {
   id: string; name: string; cuisine: string; area: string; emoji: string; color: string;
   avg_prep_minutes: number; commission_pct: number; active: boolean; lat?: number | null; lng?: number | null; rating_avg?: number | null; rating_count?: number;
+  is_test?: boolean; description?: string | null; address?: string | null;
 }
 export interface OrderLine { item_id: string; name: string; qty: number; price_cents: number }
 export interface Bid { id: string; rider_id: string; rider_name: string; eta_minutes: number; accepted: boolean; created_at: string }

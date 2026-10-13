@@ -54,7 +54,7 @@ function Delivery({ range }: { range: Range }) {
 function Quality({ range }: { range: Range }) {
   const q = useReport("report_quality", range);
   const d = q.data;
-  const byR = (d?.by_restaurant as Row[]) ?? [];
+  const byR = ((d?.by_restaurant as Row[]) ?? []).filter((r) => Number(r.orders) > 0 || Number(r.cancelled ?? 0) > 0 || Number(r.incidents) > 0);
   const inc = (d?.incidents_by_type as Record<string, number>) ?? {};
   return (
     <Panel title={`Quality report · ${range.from} → ${range.to}`} actions={<Toolbar range={range} title="quality report" onCsv={() => downloadCsv(`quality_${range.from}_${range.to}.csv`, [
@@ -144,7 +144,7 @@ function Safety({ range }: { range: Range }) {
 
 function Payments({ range }: { range: Range }) {
   const q = useReport("report_payments", range);
-  const rs = (q.data?.restaurants as Row[]) ?? [];
+  const rs = ((q.data?.restaurants as Row[]) ?? []).filter((r) => Number(r.orders) > 0 || Number(r.owed_cents) > 0);
   const rd = (q.data?.riders as Row[]) ?? [];
   async function mark(kind: "rider" | "restaurant", id: string, name: string, owed: number) {
     const ref = prompt(`Mark ${eur(owed)} as paid to ${name} for ${range.from} → ${range.to}?\nOptional bank reference:`);

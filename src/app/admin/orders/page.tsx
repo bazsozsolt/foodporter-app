@@ -119,7 +119,7 @@ function OrderList() {
         <Field label="Rider"><select className={inputCls} value={rider} onChange={(e) => setRider(e.target.value)}><option value="">All</option>{(riders.data ?? []).map((r) => <option key={String(r.id)} value={String(r.id)}>{String(r.full_name ?? r.email)}</option>)}</select></Field>
         <Field label="Order #"><input className={inputCls} inputMode="numeric" placeholder="e.g. 1046" value={search} onChange={(e) => setSearch(e.target.value)} /></Field>
       </div>
-      <label className="no-print mb-2 flex items-center gap-2 text-sm text-muted"><input type="checkbox" checked={hideTest} onChange={(e) => setHideTest(e.target.checked)} /> Hide test orders</label>
+      <label className="no-print mb-2 flex items-center gap-2 text-sm text-muted"><input type="checkbox" data-testid="include-test" checked={!hideTest} onChange={(e) => setHideTest(!e.target.checked)} /> Include test orders 🧪</label>
       <ErrorNote error={q.error} />
       <Table head={["#", "Created", "Restaurant", "Rider", "Food", "Prep", "Bid", "Result", "Status"]} empty={!q.loading && rows.length === 0}>
         {rows.map((o) => (
