@@ -96,7 +96,7 @@ def crawl(ctx, role, url, lang, view):
     pg.close()
 
 views = {"mobile": dict(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True, device_scale_factor=2), "desktop": dict(viewport={"width": 1280, "height": 900})}
-combos = [("mobile", "nl"), ("desktop", "en")] if QUICK else [("mobile", "nl"), ("mobile", "en"), ("desktop", "nl"), ("desktop", "en")]
+combos = [("mobile", "nl"), ("mobile", "en")] if "--mobile" in sys.argv else [("mobile", "nl"), ("desktop", "en")] if QUICK else [("mobile", "nl"), ("mobile", "en"), ("desktop", "nl"), ("desktop", "en")]
 t0 = time.time()
 with sync_playwright() as p:
     b = p.chromium.launch()
