@@ -2,7 +2,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { tx } from "@/lib/i18n";
-import { act } from "@/lib/act";
+import { toast } from "@/components/Toaster";
+import { localizeError } from "@/lib/act";
 import { CATEGORIES, catLabel, createTicket, type SupportRole } from "@/lib/support";
 
 const FAQ: [string, string, string, string][] = [
@@ -20,12 +21,20 @@ export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role
   const [refund, setRefund] = useState<"none" | "partial" | "full">("none");
   const [amount, setAmount] = useState("");
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
   const refundable = role === "customer" && !!orderTotalCents && CATEGORIES.customer.find((c) => c[0] === cat)?.[3];
   const euros = Math.round(Number(amount.replace(",", ".")) * 100);
   async function submit() {
-    setBusy(true);
+    setBusy(true); setErr(null);
     const refundCents = refundable ? (refund === "full" ? orderTotalCents : refund === "partial" && euros > 0 ? euros : null) : null;
-    const id = await act(createTicket({ category: cat!, body, order: orderId ?? null, refundCents, photo }), tx("Melding verstuurd, we reageren zo snel mogelijk", "Sent, we'll get back to you as soon as possible"));
+    let id: number | undefined;
+    try {
+      id = await createTicket({ category: cat!, body, order: orderId ?? null, refundCents, photo });
+      toast(tx("Melding verstuurd, we reageren zo snel mogelijk", "Sent, we'll get back to you as soon as possible"));
+    } catch (e) {
+      const m = localizeError(e instanceof Error ? e.message : String(e));
+      setErr(m); toast("⚠️ " + m);
+    }
     setBusy(false);
     if (id) { onClose(); router.push(`/support/?id=${id}`); }
   }
@@ -71,6 +80,7 @@ export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role
                 <p className="mt-1 text-[12px] text-muted">{tx("Ons team beoordeelt je verzoek, meestal binnen een paar uur.", "Our team reviews your request, usually within a few hours.")}</p>
               </fieldset>
             )}
+            {err && <p role="alert" data-testid="support-error" className="rounded-xl bg-red-50 p-3 text-sm font-semibold text-brand">⚠️ {tx("Melding niet verstuurd", "Report not sent")}: {err}</p>}
             <button data-testid="support-submit" disabled={busy || body.trim().length < 3 || (refund === "partial" && refundable && !(euros > 0))} onClick={submit}
               className="rounded-xl bg-brand px-4 py-3 font-bold text-white disabled:opacity-50">{busy ? tx("Versturen…", "Sending…") : tx("Versturen", "Send")}</button>
           </div>

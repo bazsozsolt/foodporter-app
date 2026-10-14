@@ -17,6 +17,7 @@ import { LiveMap, type MapMarker } from "@/components/LiveMap";
 import { useOrderLocation } from "@/lib/location";
 import { eur } from "@/lib/format";
 import { getSupabase } from "@/lib/supabase";
+import { CallButton, OrderChat } from "@/components/OrderChat";
 
 const NEXT_ROLE: Record<string, string> = { placed: "Restaurant", accepted: "Rider", assigned: "Restaurant", ready: "Rider", picked_up: "Rider" };
 
@@ -62,6 +63,13 @@ export function TrackingView({ id }: { id: string }) {
       <main id="main" className="p-4">
         {mine && o.paid_at && !["delivered", "cancelled"].includes(o.status) && <CustomerPushCard />}
         {mine && o.status !== "awaiting_payment" && <div className="mb-2 flex justify-end"><HelpButton role="customer" orderId={Number(o.id)} orderTotalCents={o.paid_at ? o.subtotal_cents + o.delivery_fee_cents - (o.refund_cents ?? 0) : null} /></div>}
+        {mine && ["placed", "accepted", "assigned", "ready", "picked_up", "delivered"].includes(o.status) && (
+          <div className="mb-2 space-y-2" data-testid="contact-box">
+            {o.rider_id && <div className="flex justify-end"><CallButton orderId={Number(o.id)} status={o.status} side="customer" /></div>}
+            {o.rider_id && <OrderChat orderId={Number(o.id)} channel="rider" side="customer" />}
+            <OrderChat orderId={Number(o.id)} channel="restaurant" side="customer" />
+          </div>
+        )}
         <Link href="/" className="text-sm text-muted">← Home</Link>
         <Card className="mt-2.5 text-center">
           {o.status === "awaiting_payment" ? (<><div className="text-4xl">💳</div><h2 className="text-lg font-bold">{tr("Wacht op betaling", "Waiting for payment")}</h2><p className="text-sm text-muted">{tx("Net betaald? Dit wordt binnen een paar seconden bijgewerkt.", "If you just paid, this updates in a few seconds.")}</p>{mine ? <Button onClick={payNow} disabled={paying}>{paying ? tx("Mollie openen…", "Opening Mollie…") : tx("Nu betalen", "Pay now")}</Button> : <p className="mt-2 text-sm text-muted">{tx("Alleen de klant kan deze bestelling betalen.", "Only the customer can pay this order.")}</p>}</>)
@@ -81,7 +89,7 @@ export function TrackingView({ id }: { id: string }) {
               <li key={s} className={`relative py-2 pl-7 ${j <= idx ? "font-semibold text-ink" : "text-muted"}`}>
                 <span className={`absolute left-1.5 top-3 h-3 w-3 rounded-full ${j <= idx ? "bg-ok" : j === idx + 1 ? "bg-brand ring-4 ring-brand/20" : "bg-[#ddd]"}`} />
                 {SL[s]}
-                {s === "accepted" && o.prep_minutes ? ` · ${o.prep_minutes} min prep${o.ready_at && !["ready", "picked_up", "delivered"].includes(o.status) ? ` (ready ~${hhmm(new Date(o.ready_at))})` : ""}` : ""}
+                {s === "accepted" && o.prep_minutes ? ` · ${o.prep_minutes} ${tx("min bereiding", "min prep")}${o.ready_at && !["ready", "picked_up", "delivered"].includes(o.status) ? ` (${tx("klaar", "ready")} ~${hhmm(new Date(o.ready_at))})` : ""}` : ""}
                 {s === "assigned" && bid ? ` · ${bid.rider_name}, ETA ${bid.eta_minutes} min` : ""}
               </li>
             ))}
@@ -103,7 +111,7 @@ function SmsNote({ id, fallback }: { id: string; fallback: string }) {
     if (!sb) return;
     sb.rpc("order_phone", { p_order: Number(id) }).then(({ data }) => { if (data) setPhone(String(data)); });
   }, [id]);
-  return <Card className="text-sm text-muted">📱 SMS updates go to {phone ?? "your phone"} at each step.</Card>;
+  return <Card className="text-sm text-muted">📱 {tx(`Bij elke stap sturen we een sms naar ${phone ?? "je telefoon"}.`, `SMS updates go to ${phone ?? "your phone"} at each step.`)}</Card>;
 }
 
 /** Stacked orders: how many stops the rider makes before this customer's drop-off (refreshes every 20 s). */

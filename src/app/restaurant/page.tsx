@@ -1,4 +1,5 @@
 "use client";
+import { RestaurantPhotos } from "@/components/PhotoUpload";
 import { useT , tx } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { AlertsToggle, TestSoundButton, useOrderAlerts } from "@/components/OrderAlerts";
@@ -15,6 +16,7 @@ import { STATUS_LABEL, STATUS_LABEL_NL, type Order } from "@/lib/types";
 import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap } from "@/components/LiveMap";
 import { useOrderLocation } from "@/lib/location";
+import { OrderChat } from "@/components/OrderChat";
 
 function Countdown({ from }: { from: string }) {
   const mins = useStore().settings.restaurant_accept_minutes;
@@ -48,6 +50,7 @@ function OrderCard({ o }: { o: Order }) {
       ) : <div className="my-1.5 text-[13px] text-muted">{o.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}</div>}
       <div className="text-[13px] text-muted">{t("Bezorgen op", "Deliver to")} {o.address}</div>
       <div className="mt-1 flex flex-wrap gap-2"><ItemUnavailable o={o} /><HelpButton role="restaurant" orderId={Number(o.id)} label={t("Probleem melden", "Report a problem")} /></div>
+      {o.status !== "placed" && <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="restaurant" side="restaurant" /></div>}
       {o.status === "placed" ? (
         <>
           <p className="mb-2 mt-3 font-bold">{t("Bereidingstijd instellen", "Set preparation time")}</p>
@@ -93,6 +96,7 @@ export default function RestaurantPage() {
         <div className="flex gap-2.5"><Stat value={String(handed.length)} label={tx("Overgedragen", "Handed over")} /><Stat value={eur(revenue)} label={tx("Omzet", "Revenue")} /><Stat value={eur(Math.round((revenue * pct) / 100))} label={tx(`Commissie ${pct}%`, `Commission ${pct}%`)} /></div>
         <h2 className="mb-3 mt-4 text-lg font-bold">{t("Binnenkomende bestellingen", "Incoming orders")}</h2>
         {open.length === 0 ? <Empty icon="🍳">{t("Op dit moment geen open bestellingen.", "No open orders right now.")}</Empty> : open.map((o) => <OrderCard key={o.id} o={o} />)}
+        {profile?.restaurant_id && <div className="mt-4"><RestaurantPhotos restaurantId={profile.restaurant_id} /></div>}
         </RoleGate>
       </main>
     </>

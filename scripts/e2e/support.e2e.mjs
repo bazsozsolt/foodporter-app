@@ -3,6 +3,7 @@ import { client, login, ok, sleep, summary, SB_URL, ANON } from "./common.mjs";
 const anon = client();
 const admin = await login("ADMIN"), c1 = await login("SIMC1"), c2 = await login("SIMC2"), staff = await login("STAFF"), rider = await login("SIMR1"), out = await login("OUTSIDER");
 const err = (r) => r.error?.message ?? null;
+await admin.sb.rpc("fp_test_reset_rate_limits"); // repeated runs would otherwise hit the 6/hour limit
 const delivered = async (u) => (await admin.sb.from("orders").select("id, subtotal_cents, delivery_fee_cents, restaurant_id, rider_id").eq("customer_id", u.id).eq("status", "delivered").like("mollie_payment_id", "tr_sim_%").order("id", { ascending: false }).limit(1).single()).data;
 const o1 = await delivered(c1), o2 = await delivered(c2);
 ok("test orders found", !!o1 && !!o2, `${o1?.id} ${o2?.id}`);

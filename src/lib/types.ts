@@ -1,11 +1,11 @@
 export type Role = "customer" | "rider" | "restaurant" | "admin";
 export type OrderStatus = "awaiting_payment" | "payment_failed" | "placed" | "accepted" | "assigned" | "ready" | "picked_up" | "delivered" | "cancelled";
 
-export interface MenuItem { id: string; restaurant_id: string; name: string; price_cents: number }
+export interface MenuItem { id: string; restaurant_id: string; name: string; price_cents: number; image_url?: string | null; image_credit?: string | null; description?: string | null }
 export interface Restaurant {
   id: string; name: string; cuisine: string; area: string; emoji: string; color: string;
   avg_prep_minutes: number; commission_pct: number; active: boolean; lat?: number | null; lng?: number | null; rating_avg?: number | null; rating_count?: number;
-  is_test?: boolean; description?: string | null; address?: string | null;
+  is_test?: boolean; description?: string | null; address?: string | null; image_url?: string | null; logo_url?: string | null; image_credit?: string | null;
 }
 export interface OrderLine { item_id: string; name: string; qty: number; price_cents: number; guest_name?: string | null; line_id?: string }
 export interface Bid { id: string; rider_id: string; rider_name: string; eta_minutes: number; accepted: boolean; created_at: string }

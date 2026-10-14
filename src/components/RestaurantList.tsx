@@ -1,4 +1,5 @@
 "use client";
+import { cuisineLabel } from "@/lib/format";
 import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -6,6 +7,7 @@ import { Card, Pill } from "@/components/ui";
 import { restaurantStyle } from "@/lib/mock-data";
 import { eur } from "@/lib/format";
 import type { Order, Restaurant } from "@/lib/types";
+import { Photo } from "@/components/Photo";
 
 const PAGE = 20;
 const km = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
@@ -69,7 +71,7 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
         value={q} onChange={(e) => setQ(e.target.value)} />
       <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1" data-testid="cuisine-chips">
         <button className={chip(!cuisine)} onClick={() => setCuisine(null)}>{t("Alles", "All")}</button>
-        {chips.map((c) => <button key={c} className={chip(cuisine === c)} onClick={() => setCuisine(cuisine === c ? null : c)}>{c}</button>)}
+        {chips.map((c) => <button key={c} className={chip(cuisine === c)} onClick={() => setCuisine(cuisine === c ? null : c)}>{cuisineLabel(c)}</button>)}
       </div>
       <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-muted">
         <span data-testid="result-count">{list.length} restaurant{list.length === 1 ? "" : "s"}</span>
@@ -79,13 +81,13 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
         {!origin && <button className="font-semibold text-brand underline" onClick={locate}>{t("gebruik mijn locatie", "use my location")}</button>}
       </div>
       {list.length === 0 && <p className="text-sm text-muted">{t("Geen restaurants gevonden voor", "No restaurants match")} “{q}”.</p>}
-      {list.slice(0, shown).map(({ r, d }) => (
+      {list.slice(0, shown).map(({ r, d }, i) => (
         <Link key={r.id} href={`/r?id=${r.id}`}>
           <Card className="flex items-center gap-3">
-            <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl text-3xl" style={{ background: restaurantStyle(r.id).color }}>{restaurantStyle(r.id).emoji}</div>
+            <Photo src={r.image_url} alt={r.name} emoji={restaurantStyle(r.id).emoji} className="w-24 shrink-0 rounded-2xl text-xl" sizes="96px" eager={i < 3} />
             <div className="min-w-0 flex-1">
               <h3 className="font-bold">{r.name}</h3>
-              <div className="text-[13px] text-muted">{r.cuisine} · {r.area}{d != null ? ` · ${d.toFixed(1)} km` : ""}</div>
+              <div className="text-[13px] text-muted">{cuisineLabel(r.cuisine)} · {r.area}{d != null ? ` · ${d.toFixed(1)} km` : ""}</div>
               {r.is_test ? <div className="text-[11px] font-semibold text-[#8a5a00]" data-testid="test-label">🧪 {t("Testdata van OpenStreetMap, geen partner", "Test data from OpenStreetMap, not a partner")}</div>
                 : <div className="text-[11px] font-semibold text-emerald-700" data-testid="partner-label">✓ {t("Pilotpartner", "Pilot partner")}</div>}
               <div className="mt-1.5 flex flex-wrap gap-1.5">{(r.rating_count ?? 0) > 0 && <Pill>★ {Number(r.rating_avg).toFixed(1)} ({r.rating_count})</Pill>}<Pill>~{r.avg_prep_minutes + 12} min</Pill><Pill tone="ok">{eur(fee)} {t("bezorging", "delivery")}</Pill></div>

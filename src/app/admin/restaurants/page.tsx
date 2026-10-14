@@ -1,4 +1,5 @@
 "use client";
+import { RestaurantPhotos } from "@/components/PhotoUpload";
 import { geocode } from "@/lib/geo";
 import { useState } from "react";
 import { ErrorNote, Field, inputCls, Panel, SmallBtn, StatusBadge, Table, Td } from "@/components/admin";
@@ -64,6 +65,7 @@ function Menu({ restaurantId }: { restaurantId: string }) {
   return (
     <div className="mt-3 rounded-xl bg-paper p-3">
       <ErrorNote error={q.error} />
+      <div className="mb-2"><RestaurantPhotos restaurantId={restaurantId} english /></div>
       <Table head={["Item", "Price", "Available", ""]} empty={q.data?.length === 0}>
         {(q.data ?? []).map((m) => (
           <tr key={String(m.id)}>

@@ -80,7 +80,10 @@ export async function createTicket(a: { category: string; body: string; order?: 
   const sb = getSupabase(); if (!sb) throw new Error("offline");
   const photo = a.photo ? await uploadPhoto(a.photo) : null;
   const { data, error } = await sb.rpc("support_create", { p_category: a.category, p_body: a.body, p_order: a.order ?? null, p_refund_cents: a.refundCents ?? null, p_photo_path: photo, p_lat: a.lat ?? null, p_lng: a.lng ?? null });
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (photo) void sb.storage.from("support-photos").remove([photo]); // no orphan photos when the ticket is refused
+    throw new Error(error.message || tx("Melding kon niet worden verstuurd", "Report could not be sent"));
+  }
   return data as number;
 }
 

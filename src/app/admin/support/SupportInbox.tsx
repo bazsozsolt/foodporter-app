@@ -1,4 +1,5 @@
 "use client";
+import { AdminOrderContact } from "@/components/OrderChat";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -172,6 +173,7 @@ function Detail({ id }: { id: number }) {
             </select>
           </div>
         </Panel>
+        {t.order_id && <Panel title="Order chat & calls"><AdminOrderContact orderId={t.order_id} /></Panel>}
         {t.order_id && (
           <Panel title="Refund">
             <p className="text-sm">Requested: <b>{t.refund_requested_cents ? `€${(t.refund_requested_cents / 100).toFixed(2)}` : "—"}</b>{t.refund_status ? ` · ${t.refund_status}` : ""}{t.refund_cents ? ` · refunded €${(t.refund_cents / 100).toFixed(2)}` : ""}</p>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Card, Empty, Header } from "@/components/ui";
 import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
+import { Photo } from "@/components/Photo";
 
 export default function CartPage() {
   const t = useT();
@@ -23,7 +24,7 @@ export default function CartPage() {
               <b>{r.name}</b>
               {lines.map(({ item, q }) => (
                 <div key={item.id} className="mt-2 flex items-center justify-between">
-                  <span>{q}× {item.name}</span>
+                  <span className="flex min-w-0 items-center gap-2"><Photo src={item.image_url} alt={item.name} className="w-12 shrink-0 rounded-lg text-sm" sizes="48px" /><span>{q}× {item.name}</span></span>
                   <span className="flex items-center gap-2">{eur(q * item.price_cents)}
                     <button className="text-muted" aria-label={tx("Item verwijderen", "Remove item")} onClick={() => actions.setQty(r.id, item.id, 0)}>✕</button></span>
                 </div>

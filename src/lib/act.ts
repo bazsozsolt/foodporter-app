@@ -16,10 +16,26 @@ const NL_ERRORS: [RegExp, string][] = [
   [/^this group is full/i, "Deze groep is vol (25 personen)"], [/^item not found$/i, "Item niet gevonden"],
   [/^unlock the basket first$/i, "Open de mand eerst weer"], [/^this group order is already checked out$/i, "Deze groepsbestelling is al afgerekend"],
   [/^None of these items are available anymore$/i, "Geen van deze items is nog beschikbaar"],
+  [/^not signed in$/i, "Je bent niet ingelogd"], [/^invalid photo$/i, "Foto kon niet worden gekoppeld, probeer opnieuw"], [/^offline$/i, "Geen verbinding. Probeer opnieuw."],
   [/^Failed to fetch$|NetworkError|Load failed/i, "Geen verbinding. Controleer je internet en probeer opnieuw."],
 ];
+/** English versions of the Dutch messages the server raises (support, rate limit, chat, call). */
+const EN_ERRORS: [RegExp, string][] = [
+  [/^Te veel verzoeken/i, "Too many requests, please try again later"], [/^Onbekende categorie/i, "This category is not available for your account"],
+  [/^Beschrijf het probleem/i, "Describe the problem in a few words"], [/^Bericht is te lang/i, "Message is too long (max 2000 characters)"],
+  [/^Deze bestelling hoort niet bij jouw account/i, "This order does not belong to your account"], [/^Kies de bestelling/i, "Choose the order this is about"],
+  [/^Terugbetaling kan alleen/i, "A refund is only possible for a paid order"], [/^Bedrag is hoger/i, "The amount is more than you paid"],
+  [/^Je bent niet ingelogd/i, "You are not signed in"], [/^Foto kon niet/i, "The photo could not be attached, try again"],
+  [/^Je account kan geen melding/i, "Your account cannot create a report"], [/^Chat is gesloten/i, "This chat is closed"],
+  [/^Je hebt geen toegang tot deze chat/i, "You don't have access to this chat"], [/^Bellen kan alleen/i, "Calling is only possible during an active delivery"],
+  [/^Geen telefoonnummer/i, "No phone number available"], [/^Bericht is leeg/i, "Message is empty"],
+];
 export function localizeError(msg: string) {
-  if (tx("nl", "en") === "en") return /Failed to fetch|NetworkError|Load failed/i.test(msg) ? "No connection. Check your internet and try again." : msg;
+  if (tx("nl", "en") === "en") {
+    if (/Failed to fetch|NetworkError|Load failed/i.test(msg)) return "No connection. Check your internet and try again.";
+    for (const [re, en] of EN_ERRORS) if (re.test(msg)) return en;
+    return msg;
+  }
   for (const [re, nl] of NL_ERRORS) { const m = msg.match(re); if (m) return nl.replace("$1", m[1] ?? ""); }
   return msg;
 }

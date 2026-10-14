@@ -1,3 +1,4 @@
+// v13: + order chat messages ({ chat_message_id }) -> push to the other party.
 // Web push for Food Porter. Called by a DB trigger (pg_net) with { order_id }. The body is only a hint: we re-read
 // the order with the service role, derive the event from its current state, and dedupe through push_log, so spoofed
 // or repeated calls can't send extra pushes. Events:
@@ -86,6 +87,25 @@ async function supportEvents(messageId: number): Promise<Push[]> {
   return [{ key: `sup:${m.id}`, to: (admins ?? []).map((a) => a.id), title: `${sos ? "🚨 " : ""}[${t.priority}] ${t.subject}`, body: short, url: `/admin/support/?id=${t.id}`, tag: `fp-sup-${t.id}`, ttl: sos ? 600 : 3600, urgency: sos ? "high" : "normal" }];
 }
 
+// Order chat: push the new message to the other party of that channel (never to the author).
+async function chatEvents(messageId: number): Promise<Push[]> {
+  const { data: m } = await db.from("order_messages").select("id, order_id, channel, author_id, author_role, body").eq("id", messageId).maybeSingle();
+  if (!m) return [];
+  const { data: o } = await db.from("orders").select("id, customer_id, rider_id, restaurant_id, restaurants(name)").eq("id", m.order_id).single();
+  const short = m.body.length > 120 ? m.body.slice(0, 117) + "…" : m.body;
+  let to: string[] = [], url = `/order/?id=${o.id}`, who = "";
+  if (m.author_role === "customer") {
+    if (m.channel === "rider") { to = o.rider_id ? [o.rider_id] : []; url = "/rider/"; }
+    else { const { data: staff } = await db.from("profiles").select("id").eq("restaurant_id", o.restaurant_id).eq("role", "restaurant"); to = (staff ?? []).map((s) => s.id); url = "/restaurant/"; }
+    who = "Klant";
+  } else {
+    to = [o.customer_id];
+    who = m.author_role === "rider" ? "Je bezorger" : ((o.restaurants as unknown as { name?: string } | null)?.name ?? "Het restaurant");
+  }
+  to = to.filter((id) => id && id !== m.author_id);
+  return [{ key: `chat:${o.id}:${m.id}`, to, title: `💬 ${who} · #${o.id}`, body: short, url, tag: `fp-chat-${o.id}-${m.channel}`, ttl: 900, urgency: "high" }];
+}
+
 async function send(p: Push) {
   const oid = p.key.startsWith("sup:") ? null : Number(p.key.split(":")[1]) || null;
   const { error: dup } = await db.from("push_log").insert({ event_key: p.key, order_id: oid });
@@ -110,12 +130,18 @@ async function send(p: Push) {
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
-  let id = 0, hint: string | undefined, sup = 0;
-  try { const b = await req.json(); id = Number(b.order_id); sup = Number(b.support_message_id); hint = typeof b.status === "string" ? b.status : undefined; } catch { /* ignore */ }
+  let id = 0, hint: string | undefined, sup = 0, chat = 0;
+  try { const b = await req.json(); id = Number(b.order_id); sup = Number(b.support_message_id); chat = Number(b.chat_message_id); hint = typeof b.status === "string" ? b.status : undefined; } catch { /* ignore */ }
   if (Number.isInteger(sup) && sup > 0) {
     await vapid();
     const results = [];
     for (const p of await supportEvents(sup)) results.push(await send(p));
+    return json({ ok: true, results });
+  }
+  if (Number.isInteger(chat) && chat > 0) {
+    await vapid();
+    const results = [];
+    for (const p of await chatEvents(chat)) results.push(await send(p));
     return json({ ok: true, results });
   }
   if (!Number.isInteger(id) || id <= 0) return json({ error: "order_id required" }, 400);

@@ -59,11 +59,11 @@ export default function LoginPage() {
             ✉️ {tx("Stuur me liever een inloglink", "Email me a magic link instead")}
           </button>
         </Card>
-        <div className="my-3 text-center text-xs text-muted">or</div>
+        <div className="my-3 text-center text-xs text-muted">{tx("of", "or")}</div>
         <Button variant="dark" disabled={busy} onClick={() => go(actions.oauth("apple"), afterAuth)}> {tx("Doorgaan met Apple", "Continue with Apple")}</Button>
         <Button variant="ghost" disabled={busy} onClick={() => go(actions.oauth("google"), afterAuth)}><span className="text-[#4285f4]">G</span> {tx("Doorgaan met Google", "Continue with Google")}</Button>
         <p className="mt-3 text-center text-[13px] text-muted">
-          {hasSupabase ? "Google/Apple need to be enabled in Supabase Auth first. " : "Mock sign-in (no Supabase keys). "}Facebook login coming later.
+          {hasSupabase ? "" : tx("Demo-inlog (geen Supabase-sleutels). ", "Mock sign-in (no Supabase keys). ")}{tx("Inloggen met Facebook volgt later.", "Facebook login coming later.")}
         </p>
       <Footer />
       </main>

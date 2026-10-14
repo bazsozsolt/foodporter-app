@@ -1,4 +1,5 @@
 "use client";
+import { AdminOrderContact } from "@/components/OrderChat";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
@@ -71,6 +72,7 @@ function OrderDetail({ id }: { id: string }) {
             <h3 className="mt-3 text-sm font-bold">Items</h3>
             <ul className="text-sm">{((o.order_items as Row[]) ?? []).map((l) => <li key={String(l.id)}>{String(l.qty)}× {String(l.name)} · {eur(Number(l.price_cents) * Number(l.qty))}</li>)}</ul>
           </Panel>
+          <Panel title="Customer contact"><AdminOrderContact orderId={Number(o.id)} /></Panel>
           <Panel title="Timeline">
             <ol className="relative ml-2 border-l-2 border-[#eee] pl-4 text-sm">
               {q.data!.events.map((e) => (

@@ -18,6 +18,7 @@ import { STATUS_LABEL, STATUS_LABEL_NL, type Order } from "@/lib/types";
 import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap, type MapMarker } from "@/components/LiveMap";
 import { navUrl, osmNavUrl, useShareLocation } from "@/lib/location";
+import { CallButton, OrderChat } from "@/components/OrderChat";
 
 const riderBody = (n: number) => tx(`${n} ${n > 1 ? "bestellingen" : "bestelling"} in de buurt: bied nu je bezorgtijd`, `${n} order${n > 1 ? "s" : ""} open for bids near you`);
 
@@ -46,7 +47,7 @@ function BidCard({ o, activeCount }: { o: Order; activeCount: number }) {
   return (
     <Card>
       <div className="flex items-center justify-between"><b>{restaurantStyle(o.restaurant_id).emoji} {r?.name}</b><Pill tone="ok">{eur(o.delivery_fee_cents)}</Pill></div>
-      <div className="my-1.5 text-[13px] text-muted">Ready in ~{prep} min{o.ready_at ? ` (~${hhmm(new Date(o.ready_at))})` : ""} · {o.address}</div>
+      <div className="my-1.5 text-[13px] text-muted">{tx("Klaar over ~", "Ready in ~")}{prep} min{o.ready_at ? ` (~${hhmm(new Date(o.ready_at))})` : ""} · {o.address}</div>
       {r?.lat && o.lat ? <div data-testid="dropoff" className="text-[13px] font-semibold">🚲 {distanceKm({ lat: r.lat, lng: r.lng! }, { lat: o.lat, lng: o.lng! }).toFixed(1)} km {tx("naar de klant vanaf", "drop-off from")} {r.area}</div> : null}
       {o.renotified_at && <div className="mt-1 text-[13px] font-semibold text-brand">⏰ {tx("Wacht nog op een rider — bied nu", "Still waiting for a rider — bid now")}</div>}
       {left != null && <p data-testid="auction" className="mt-2 text-[13px] font-semibold">⏱ {tx("Bieden sluit over", "Bidding closes in")} {mmss(left)}{left === 0 ? tx(" · winnaar wordt gekozen…", " · choosing the winner…") : ""}</p>}
@@ -129,7 +130,7 @@ export default function RiderPage() {
           </Card>
         )}
         {active.map((o) => {
-          const bid = acceptedBid(o)!;
+          const bid = acceptedBid(o); // null when an admin assigned the rider manually
           const rest = restaurants.find((x) => x.id === o.restaurant_id);
           const pickup = rest?.lat ? { lat: rest.lat, lng: rest.lng! } : null;
           const drop = o.lat ? { lat: o.lat, lng: o.lng! } : null;
@@ -142,7 +143,7 @@ export default function RiderPage() {
           return (
             <Card key={o.id}>
               <div className="flex items-center justify-between"><b>{t("Actief", "Active")} · #{o.id}</b><Pill>{SL[o.status]}</Pill></div>
-              <p className="mt-1 text-[13px] text-muted">{tx("Jouw tijd", "Your ETA")} {bid.eta_minutes} min · {tx("eten klaar", "food ready")} ~{o.ready_at ? hhmm(new Date(o.ready_at)) : "?"} ({o.prep_minutes} min {tx("bereiding", "prep")}) · {tx("naar", "to")} {o.address}</p>
+              <p className="mt-1 text-[13px] text-muted">{tx("Jouw tijd", "Your ETA")} {bid?.eta_minutes ?? "?"} min · {tx("eten klaar", "food ready")} ~{o.ready_at ? hhmm(new Date(o.ready_at)) : "?"} ({o.prep_minutes} min {tx("bereiding", "prep")}) · {tx("naar", "to")} {o.address}</p>
               {markers.length > 0 && active.length === 1 && <div className="mt-2"><LiveMap markers={markers} /></div>}
               {target && <div className="mt-2 flex gap-2 text-sm font-semibold">
                 <a data-testid="nav-link" className="flex-1 rounded-xl bg-[#1a73e8] py-2 text-center text-white" href={navUrl(target, me)} target="_blank" rel="noreferrer">🧭 {o.status === "picked_up" ? tx("Navigeer naar de klant", "Navigate to drop-off") : tx("Navigeer naar het restaurant", "Navigate to pickup")}</a>
@@ -150,7 +151,8 @@ export default function RiderPage() {
               </div>}
               {o.status === "assigned" && <Empty icon="⏳">{t("Wachten tot het restaurant de bestelling klaar meldt…", "Waiting for the restaurant to mark ready…")}</Empty>}
               {o.status === "ready" && <Button onClick={() => act(actions.pickUp(o.id), t("Klant geïnformeerd: je eten is onderweg", "Customer notified: your food is on the way"))}>{t("Opgehaald", "Picked up")}</Button>}
-              <div className="mt-2 flex justify-end"><HelpButton role="rider" orderId={Number(o.id)} label={tx("Probleem melden", "Report a problem")} /></div>
+              <div className="mt-2 flex flex-wrap justify-end gap-2"><CallButton orderId={Number(o.id)} status={o.status} side="rider" /><HelpButton role="rider" orderId={Number(o.id)} label={tx("Probleem melden", "Report a problem")} /></div>
+              <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="rider" side="rider" /></div>
               {o.status === "picked_up" && <Button variant="ok" onClick={() => act(actions.deliver(o.id), tx(`Bezorgd ✅ · ${eur(o.delivery_fee_cents)} bij je verdiensten`, `Delivered ✅ · ${eur(o.delivery_fee_cents)} added to earnings`))}>{t("Bezorgd", "Delivered")}</Button>}
             </Card>
           );
