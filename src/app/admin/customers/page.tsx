@@ -45,12 +45,12 @@ export default function CustomersAdmin() {
             <tr key={String(p.id)}>
               <Td><b>{String(p.full_name ?? "—")}</b><div className="text-xs text-muted">{String(p.email ?? "")}</div></Td>
               <Td>
-                <select aria-label="Role" className={`${inputCls} w-32`} value={String(p.role)} disabled={p.role === "admin"}
+                <select data-persist aria-label="Role" className={`${inputCls} w-32`} value={String(p.role)} disabled={p.role === "admin"}
                   onChange={async (e) => { if (await act(update(String(p.id), { role: e.target.value, status: e.target.value === "rider" ? "pending" : p.status }), "Role updated") !== undefined) q.reload(); }}>
                   {["customer", "rider", "restaurant", "admin"].map((r) => <option key={r} value={r} disabled={r === "admin"}>{r}</option>)}
                 </select>
                 {p.role === "restaurant" && (
-                  <select aria-label="Restaurant" className={`${inputCls} mt-1 w-40`} value={String(p.restaurant_id ?? "")}
+                  <select data-persist aria-label="Restaurant" className={`${inputCls} mt-1 w-40`} value={String(p.restaurant_id ?? "")}
                     onChange={async (e) => { if (await act(update(String(p.id), { restaurant_id: e.target.value || null }), "Restaurant linked") !== undefined) q.reload(); }}>
                     <option value="">— link restaurant —</option>
                     {(q.data?.rest ?? []).map((r) => <option key={String(r.id)} value={String(r.id)}>{String(r.name)}</option>)}

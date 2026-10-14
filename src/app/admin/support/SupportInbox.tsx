@@ -168,7 +168,7 @@ function Detail({ id }: { id: number }) {
           <div className="mt-3 flex flex-wrap gap-2">
             <SmallBtn onClick={() => upd({ p_assign: profile?.id }, "Assigned to you")}>Assign to me</SmallBtn>
             {t.status !== "resolved" ? <SmallBtn tone="ok" onClick={() => upd({ p_status: "resolved" }, "Resolved")}>Resolve</SmallBtn> : <SmallBtn onClick={() => upd({ p_status: "open" }, "Reopened")}>Reopen</SmallBtn>}
-            <select aria-label="Priority" className="rounded-lg border px-2 py-1 text-sm" value={t.priority} onChange={(e) => upd({ p_priority: e.target.value }, "Priority changed")}>
+            <select data-persist aria-label="Priority" className="rounded-lg border px-2 py-1 text-sm" value={t.priority} onChange={(e) => upd({ p_priority: e.target.value }, "Priority changed")}>
               {["urgent", "high", "normal", "low"].map((p) => <option key={p}>{p}</option>)}
             </select>
           </div>

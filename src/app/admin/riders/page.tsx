@@ -41,7 +41,7 @@ export default function RidersAdmin() {
   };
   async function invite() {
     const e = email.trim().toLowerCase();
-    if (!e) return;
+    if (!e) return toast("⚠️ Enter the rider's email first");
     const { data, error } = await sb().from("profiles").select("id, role").ilike("email", e).maybeSingle();
     if (error || !data) return toast("⚠️ No account with that email. Ask the rider to sign up first.");
     if (data.role === "admin") return toast("⚠️ That account is an admin");
