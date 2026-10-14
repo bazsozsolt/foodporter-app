@@ -1,4 +1,4 @@
-:HL["/foodporter-app/_next/static/chunks/3_71y949-u_ie.css","style"]
+:HL["/foodporter-app/_next/static/chunks/10l-hs-6nkccb.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":"/_not-found","h":96,"c":"$Q2"}]]
-0:{"b":"5LBZ8ouvZYb11_w-miyWV","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"gvzSPCn6-gaCVIS_wk66R","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
