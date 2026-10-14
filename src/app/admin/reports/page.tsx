@@ -106,7 +106,7 @@ function Groups({ range }: { range: Range }) {
       <ErrorNote error={q.error} />
       <div className="mb-4 grid grid-cols-2 gap-2.5 md:grid-cols-4" data-testid="group-report">
         <Kpi label="Groups started" value={<span data-testid="groups-count">{String(d?.groups ?? "…")}</span>} hint={`${st.open ?? 0} open · ${st.locked ?? 0} locked · ${st.cancelled ?? 0} cancelled`} />
-        <Kpi label="Conversion to paid order" value={<span data-testid="groups-conversion">{pct(d?.conversion_pct)}</span>} hint={`${String(d?.paid ?? 0)} paid of ${String(d?.checked_out ?? 0)} checked out`} />
+        <Kpi label="Conversion to paid order" value={<span data-testid="groups-conversion">{pct(d?.conversion_pct)}</span>} hint={`${String(d?.paid ?? 0)} paid of ${String(d?.groups ?? 0)} groups · ${String(d?.checked_out ?? 0)} checked out`} />
         <Kpi label="Average group size" value={d?.avg_members == null ? "—" : `${String(d.avg_members)} people`} hint={`paid groups: ${String(d?.avg_members_paid ?? "—")}`} />
         <Kpi label="Average group basket" value={money(d?.avg_basket_cents)} hint={`${money(d?.avg_per_person_cents)} per person · solo orders ${money(d?.avg_solo_basket_cents)}`} />
         <Kpi label="Time to checkout" value={d?.avg_minutes_to_checkout == null ? "—" : `${String(d.avg_minutes_to_checkout)} min`} />
