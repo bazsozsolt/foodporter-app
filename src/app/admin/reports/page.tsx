@@ -8,7 +8,7 @@ import { act } from "@/lib/act";
 import { downloadCsv, fmtDateTime, preset, sb, toIso, useAdminQuery, type Range, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
 
-const TABS = [["delivery", "🚀 Delivery"], ["quality", "⭐ Quality"], ["safety", "🦺 Safety"], ["payments", "💶 Payments"]] as const;
+const TABS = [["key", "🎯 Key metric"], ["delivery", "🚀 Delivery"], ["quality", "⭐ Quality"], ["safety", "🦺 Safety"], ["payments", "💶 Payments"]] as const;
 type Tab = (typeof TABS)[number][0];
 const pct = (v: unknown) => (v == null ? "—" : `${v}%`);
 
@@ -49,6 +49,47 @@ function Delivery({ range }: { range: Range }) {
       <Table head={["Order", "Restaurant", "Rider", "ETA", "Late by", "Delivered"]} empty={late.length === 0}>
         {late.map((l) => <tr key={String(l.id)}><Td><Link className="text-brand" href={`/admin/orders?id=${l.id}`}>#{String(l.id)}</Link></Td><Td>{String(l.restaurant ?? "")}</Td><Td>{String(l.rider ?? "")}</Td><Td>{String(l.eta)} min</Td><Td>{String(l.minutes_late)} min{l.stacked ? " 🧩" : ""}</Td><Td>{fmtDateTime(l.delivered_at)}</Td></tr>)}
       </Table>
+    </Panel>
+  );
+}
+
+function KeyMetric({ range }: { range: Range }) {
+  const [real, setReal] = useState(false);
+  const q = useAdminQuery<Row>(async () => sb().rpc("report_key_metric", { ...toIso(range), p_include_test: !real }), [range.from, range.to, real]);
+  const d = q.data;
+  const days = (d?.by_day as Row[]) ?? [], rs = (d?.by_restaurant as Row[]) ?? [], riders = (d?.by_rider as Row[]) ?? [];
+  const target = Number(d?.target_pct ?? 80);
+  const tone = (v: unknown) => (v == null ? "text-muted" : Number(v) >= target ? "text-ok" : Number(v) >= target / 2 ? "text-amber-600" : "text-red-600");
+  return (
+    <Panel title={`Pilot key metric · ${range.from} → ${range.to}`} actions={<div className="flex items-center gap-2">
+      <label className="flex items-center gap-1 text-xs"><input type="checkbox" checked={real} onChange={(e) => setReal(e.target.checked)} /> Real orders only</label>
+      <SmallBtn onClick={() => downloadCsv(`key_metric_${range.from}_${range.to}.csv`, [...days.map((x) => ({ level: "day", name: x.day, paid: x.paid, hits: x.hits, pct: x.pct })), ...rs.map((x) => ({ level: "restaurant", name: x.restaurant, paid: x.paid, hits: x.hits, pct: x.pct })), ...riders.map((x) => ({ level: "rider", name: x.rider, paid: x.jobs, hits: x.hits, pct: x.pct }))])}>⬇ CSV</SmallBtn></div>}>
+      <ErrorNote error={q.error} />
+      <p className="mb-3 text-sm text-muted">Share of <b>paid</b> orders that got an accepted rider bid within 3 minutes of the restaurant accepting <b>and</b> arrived on or before the bid ETA. Paid orders that were later cancelled (no bid, restaurant timeout) count as misses. Target {target}%.</p>
+      <div className="mb-4 grid grid-cols-2 gap-2.5 md:grid-cols-4" data-testid="key-metric">
+        <Kpi label="Key metric" value={<span className={tone(d?.pct)} data-testid="key-metric-pct">{pct(d?.pct)}</span>} hint={`${String(d?.hits ?? 0)} of ${String(d?.paid ?? 0)} paid orders`} />
+        <Kpi label="Bid within 3 min" value={pct(d?.pct_fast_bid)} />
+        <Kpi label="On time (delivered)" value={pct(d?.pct_on_time)} />
+        <Kpi label="Paid but never got a bid" value={String(d?.no_bid ?? "…")} hint={`${String(d?.cancelled_after_payment ?? 0)} cancelled after payment`} />
+      </div>
+      <h3 className="mb-2 text-sm font-bold">Per day</h3>
+      {days.length === 0 ? <p className="mb-4 text-sm text-muted">No paid orders in this period.</p> : (
+        <div className="mb-4 flex h-36 items-end gap-1 overflow-x-auto rounded-xl bg-[#faf8f5] p-2" role="img" aria-label="Key metric per day" tabIndex={0}>
+          {days.map((x) => <div key={String(x.day)} className="flex min-w-7 flex-1 flex-col items-center justify-end gap-1" title={`${String(x.day)}: ${pct(x.pct)} (${String(x.hits)}/${String(x.paid)})`}>
+            <span className="text-[10px] text-muted">{x.pct == null ? "" : `${Math.round(Number(x.pct))}`}</span>
+            <div className={`w-full rounded-t ${Number(x.pct) >= target ? "bg-ok" : "bg-brand"}`} style={{ height: `${Math.max(2, Number(x.pct ?? 0))}%` }} />
+            <span className="text-[10px] text-muted">{String(x.day).slice(5)}</span></div>)}
+        </div>)}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="min-w-0"><h3 className="mb-2 text-sm font-bold">Per restaurant</h3>
+          <Table head={["Restaurant", "Paid", "Hits", "Key %", "Avg bid"]} empty={rs.length === 0}>
+            {rs.map((x) => <tr key={String(x.restaurant)}><Td>{String(x.restaurant)}</Td><Td>{String(x.paid)}</Td><Td>{String(x.hits)}</Td><Td><span className={tone(x.pct)}>{pct(x.pct)}</span></Td><Td>{x.avg_bid_seconds == null ? "—" : `${String(x.avg_bid_seconds)}s`}</Td></tr>)}
+          </Table></div>
+        <div className="min-w-0"><h3 className="mb-2 text-sm font-bold">Per rider</h3>
+          <Table head={["Rider", "Jobs", "Hits", "Key %", "On time"]} empty={riders.length === 0}>
+            {riders.map((x) => <tr key={String(x.rider)}><Td>{String(x.rider)}</Td><Td>{String(x.jobs)}</Td><Td>{String(x.hits)}</Td><Td><span className={tone(x.pct)}>{pct(x.pct)}</span></Td><Td>{String(x.on_time)}</Td></tr>)}
+          </Table></div>
+      </div>
     </Panel>
   );
 }
@@ -194,7 +235,7 @@ function Payments({ range }: { range: Range }) {
 function Reports() {
   const params = useSearchParams();
   const router = useRouter();
-  const tab = (params.get("tab") as Tab) || "delivery";
+  const tab = (params.get("tab") as Tab) || "key";
   const [range, setRange] = useState<Range>(preset("30d"));
   return (
     <>
@@ -206,6 +247,7 @@ function Reports() {
       </div>
       <div className="mb-3"><RangePicker value={range} onChange={(r) => { if (r.from > r.to) return toast("⚠️ From must be before To"); setRange(r); }} /></div>
       <p className="mb-3 hidden text-sm print:block">Food Porter · {tab} report · {range.from} → {range.to} · printed {new Date().toLocaleString("en-GB")}</p>
+      {tab === "key" && <KeyMetric range={range} />}
       {tab === "delivery" && <Delivery range={range} />}
       {tab === "quality" && <Quality range={range} />}
       {tab === "safety" && <Safety range={range} />}

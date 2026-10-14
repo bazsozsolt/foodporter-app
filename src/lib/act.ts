@@ -1,5 +1,28 @@
 "use client";
 import { toast } from "@/components/Toaster";
+import { tx } from "@/lib/i18n";
+
+/** Dutch versions of the error messages the server and auth send most often. */
+const NL_ERRORS: [RegExp, string][] = [
+  [/^please sign in( first)?$/i, "Log eerst in"], [/^please sign in as a rider$/i, "Log in als rider"],
+  [/^invalid login credentials$/i, "Onjuist e-mailadres of wachtwoord"], [/^user already registered$/i, "Er bestaat al een account met dit e-mailadres"],
+  [/^password should be at least (\d+) characters/i, "Het wachtwoord moet minstens $1 tekens hebben"],
+  [/^order not found$/i, "Bestelling niet gevonden"], [/^restaurant not available$/i, "Restaurant niet beschikbaar"],
+  [/^group( order)? not found$/i, "Groepsbestelling niet gevonden"], [/^this group order is locked$/i, "Deze groepsbestelling is vergrendeld"],
+  [/^the deadline for this group order has passed$/i, "De deadline van deze groepsbestelling is voorbij"],
+  [/^only the host can do this$/i, "Alleen de host kan dit doen"], [/^item not on this menu$/i, "Dit item staat niet op het menu"],
+  [/^an item is no longer available$/i, "Een item is niet meer beschikbaar"], [/^the basket is empty$/i, "De mand is leeg"],
+  [/^address or phone invalid$/i, "Adres of telefoonnummer ongeldig"], [/^invalid quantity$/i, "Ongeldig aantal"],
+  [/^this group is full/i, "Deze groep is vol (25 personen)"], [/^item not found$/i, "Item niet gevonden"],
+  [/^unlock the basket first$/i, "Open de mand eerst weer"], [/^this group order is already checked out$/i, "Deze groepsbestelling is al afgerekend"],
+  [/^None of these items are available anymore$/i, "Geen van deze items is nog beschikbaar"],
+  [/^Failed to fetch$|NetworkError|Load failed/i, "Geen verbinding. Controleer je internet en probeer opnieuw."],
+];
+export function localizeError(msg: string) {
+  if (tx("nl", "en") === "en") return /Failed to fetch|NetworkError|Load failed/i.test(msg) ? "No connection. Check your internet and try again." : msg;
+  for (const [re, nl] of NL_ERRORS) { const m = msg.match(re); if (m) return nl.replace("$1", m[1] ?? ""); }
+  return msg;
+}
 
 /** Run an async action and toast success or the error message. */
 export async function act<T>(p: Promise<T>, ok?: string | ((v: T) => string)): Promise<T | undefined> {
@@ -9,7 +32,7 @@ export async function act<T>(p: Promise<T>, ok?: string | ((v: T) => string)): P
     if (msg) toast(msg);
     return v;
   } catch (e) {
-    toast("⚠️ " + (e instanceof Error ? e.message : String(e)));
+    toast("⚠️ " + localizeError(e instanceof Error ? e.message : String(e)));
     return undefined;
   }
 }

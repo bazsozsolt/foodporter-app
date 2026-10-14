@@ -38,8 +38,8 @@ export function FeedbackButton() {
           <div className="w-full max-w-[400px] rounded-2xl bg-white p-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="mb-1 font-bold">{t("Feedback geven", "Give feedback")}</h3>
             <p className="mb-2 text-xs text-muted">{t("Wat werkte, wat was onduidelijk, wat ging mis? Dit gaat direct naar het Food Porter-team.", "What worked, what was confusing, what broke? This goes straight to the Food Porter team.")}</p>
-            <div className="mb-2 flex gap-1" aria-label="How was it?">
-              {[1, 2, 3, 4, 5].map((n) => <button key={n} aria-label={`${n} stars`} onClick={() => setRating(n)} className={`text-2xl ${rating && n <= rating ? "" : "opacity-30"}`}>★</button>)}
+            <div className="mb-2 flex gap-1" aria-label={t("Hoe was het?", "How was it?")}>
+              {[1, 2, 3, 4, 5].map((n) => <button key={n} aria-label={t(`${n} sterren`, `${n} stars`)} onClick={() => setRating(n)} className={`text-2xl ${rating && n <= rating ? "" : "opacity-30"}`}>★</button>)}
             </div>
             <textarea data-testid="feedback-message" className="mb-2 h-28 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-2.5 text-sm" maxLength={4000}
               placeholder={t("Je feedback…", "Your feedback…")} value={msg} onChange={(e) => setMsg(e.target.value)} />

@@ -21,3 +21,9 @@ export function useT() {
   const l = useLang();
   return (nl: string, en: string) => (l === "en" ? en : nl);
 }
+
+/** Current language for render-time strings outside hooks. AppShell sets it on every render (before its
+ *  children render) and remounts the tree when the language changes, so tx() is always in sync. */
+let current: Lang = "nl";
+export function setCurrentLang(l: Lang) { current = l; }
+export const tx = (nl: string, en: string) => (current === "en" ? en : nl);

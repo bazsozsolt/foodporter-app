@@ -1,4 +1,5 @@
 "use client";
+import { tx } from "@/lib/i18n";
 import { useRouter } from "next/navigation";
 import { toast } from "./Toaster";
 import { actions } from "@/lib/store";
@@ -11,9 +12,9 @@ export function ReorderButton({ id, className }: { id: string; className?: strin
         e.preventDefault();
         try {
           const skipped = actions.reorder(id);
-          toast(skipped ? `Added to cart · ${skipped} item(s) no longer available` : "Added to your cart");
+          toast(skipped ? tx(`Toegevoegd aan winkelmand · ${skipped} item(s) niet meer beschikbaar`, `Added to cart · ${skipped} item(s) no longer available`) : tx("Toegevoegd aan je winkelmand", "Added to your cart"));
           router.push("/cart");
         } catch (err) { toast("⚠️ " + (err as Error).message); }
-      }}>🔁 Order again</button>
+      }}>🔁 {tx("Opnieuw bestellen", "Order again")}</button>
   );
 }

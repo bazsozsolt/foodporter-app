@@ -1,4 +1,5 @@
 "use client";
+import { tx } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import { distanceKm, geocode, lookup, suggest, type Suggestion } from "@/lib/geo";
 import type { Geo } from "@/lib/store";
@@ -45,7 +46,7 @@ export function AddressField({ value, onChange, geo, onGeo, center, radiusKm }: 
   return (
     <div className="relative">
       <input data-testid="address" className="mb-1 mt-1 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-3" value={value} autoComplete="street-address"
-        placeholder="Street + number, Tilburg"
+        placeholder={tx("Straat + huisnummer, Tilburg", "Street + number, Tilburg")} aria-label={tx("Bezorgadres", "Delivery address")}
         onChange={(e) => { onChange(e.target.value); onGeo(null); setOpen(true); }} onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 200)} />
       {open && list.length > 0 && (
@@ -56,10 +57,10 @@ export function AddressField({ value, onChange, geo, onGeo, center, radiusKm }: 
         </ul>
       )}
       <p data-testid="zone" className={`mb-2.5 text-[13px] ${inZone === false ? "font-semibold text-red-600" : inZone ? "text-ok" : "text-muted"}`}>
-        {checking ? "Checking address…"
-          : inZone === null ? `We deliver within ${radiusKm} km of central Tilburg.`
-          : inZone ? `✓ ${geo!.label} · ${geo!.distance_km.toFixed(1)} km from the centre`
-          : `✗ ${geo!.label} is ${geo!.distance_km.toFixed(1)} km away. During the pilot we deliver within ${radiusKm} km of central Tilburg.`}
+        {checking ? tx("Adres controleren…", "Checking address…")
+          : inZone === null ? tx(`We bezorgen binnen ${radiusKm} km van het centrum van Tilburg.`, `We deliver within ${radiusKm} km of central Tilburg.`)
+          : inZone ? tx(`✓ ${geo!.label} · ${geo!.distance_km.toFixed(1)} km van het centrum`, `✓ ${geo!.label} · ${geo!.distance_km.toFixed(1)} km from the centre`)
+          : tx(`✗ ${geo!.label} ligt ${geo!.distance_km.toFixed(1)} km weg. Tijdens de pilot bezorgen we binnen ${radiusKm} km van het centrum van Tilburg.`, `✗ ${geo!.label} is ${geo!.distance_km.toFixed(1)} km away. During the pilot we deliver within ${radiusKm} km of central Tilburg.`)}
       </p>
     </div>
   );

@@ -1,4 +1,5 @@
 "use client";
+import { tx } from "@/lib/i18n";
 import { useState } from "react";
 
 export const PREP_MIN = 5;
@@ -18,18 +19,18 @@ export function PrepPicker({ value, onChange }: { value: number; onChange: (v: n
         {PRESETS.map((m) => (
           <button key={m} className={chip(!custom && value === m)} onClick={() => { setCustom(false); onChange(m); }}>{m} min</button>
         ))}
-        <button className={chip(custom)} onClick={() => setCustom(true)}>⏱ Custom</button>
+        <button className={chip(custom)} onClick={() => setCustom(true)}>⏱ {tx("Anders", "Custom")}</button>
       </div>
       {custom && (
         <div className="mt-3 flex items-center justify-between rounded-2xl border-[1.5px] border-[#e2ded8] bg-white p-2">
-          <button aria-label="5 minutes less" className={step} disabled={value <= PREP_MIN} onClick={() => onChange(clamp(value - 5))}>−5</button>
+          <button aria-label={tx("5 minuten minder", "5 minutes less")} className={step} disabled={value <= PREP_MIN} onClick={() => onChange(clamp(value - 5))}>−5</button>
           <label className="flex items-baseline gap-1">
-            <input aria-label="Custom prep minutes" type="number" inputMode="numeric" min={PREP_MIN} max={PREP_MAX} step={5}
+            <input aria-label={tx("Eigen bereidingstijd in minuten", "Custom prep minutes")} type="number" inputMode="numeric" min={PREP_MIN} max={PREP_MAX} step={5}
               className="w-20 bg-transparent text-center text-3xl font-extrabold outline-none"
               value={value} onChange={(e) => onChange(clamp(Number(e.target.value) || PREP_MIN))} />
             <span className="text-muted">min</span>
           </label>
-          <button aria-label="5 minutes more" className={step} disabled={value >= PREP_MAX} onClick={() => onChange(clamp(value + 5))}>+5</button>
+          <button aria-label={tx("5 minuten meer", "5 minutes more")} className={step} disabled={value >= PREP_MAX} onClick={() => onChange(clamp(value + 5))}>+5</button>
         </div>
       )}
     </div>

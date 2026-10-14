@@ -70,7 +70,7 @@ export function Field({ label, children }: { label: string; children: ReactNode 
 
 export function Table({ head, children, empty }: { head: string[]; children: ReactNode; empty?: boolean }) {
   return (
-    <div className="-mx-4 overflow-x-auto px-4">
+    <div className="-mx-4 overflow-x-auto px-4" tabIndex={0} role="region" aria-label={head.join(", ")}>
       <table className="w-full min-w-[560px] text-left text-sm">
         <thead><tr className="border-b border-[#eee] text-xs text-muted">{head.map((h) => <th key={h} className="py-2 pr-3 font-semibold">{h}</th>)}</tr></thead>
         <tbody>{children}</tbody>

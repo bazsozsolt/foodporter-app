@@ -1,5 +1,5 @@
 "use client";
-import { useT } from "@/lib/i18n";
+import { useT , tx } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { AlertsToggle, TestSoundButton, useOrderAlerts } from "@/components/OrderAlerts";
 import { RoleGate } from "@/components/RoleGate";
@@ -20,7 +20,7 @@ function Countdown({ from }: { from: string }) {
   useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
   const left = Math.max(0, new Date(from).getTime() + mins * 60000 - now);
   const m = Math.floor(left / 60000), s = Math.floor((left % 60000) / 1000);
-  return <p className={`mt-2 text-center text-[13px] ${left < 60000 ? "font-bold text-red-600" : "text-muted"}`}>{left > 0 ? `Accept within ${m}:${String(s).padStart(2, "0")} or the order is cancelled and refunded automatically` : "Time's up — cancelling and refunding…"}</p>;
+  return <p className={`mt-2 text-center text-[13px] ${left < 60000 ? "font-bold text-red-600" : "text-muted"}`}>{left > 0 ? tx(`Accepteer binnen ${m}:${String(s).padStart(2, "0")}, anders wordt de bestelling automatisch geannuleerd en terugbetaald`, `Accept within ${m}:${String(s).padStart(2, "0")} or the order is cancelled and refunded automatically`) : tx("Tijd om — wordt geannuleerd en terugbetaald…", "Time's up — cancelling and refunding…")}</p>;
 }
 
 const alertBody = (n: number) => `${n} new order${n > 1 ? "s" : ""} waiting for you to accept`;
@@ -55,14 +55,14 @@ function OrderCard({ o }: { o: Order }) {
         </>
       ) : (
         <>
-          <p className="mt-3 text-sm">Prep time <b>{o.prep_minutes} min</b>{o.ready_at ? <> · ready ~<b>{hhmm(new Date(o.ready_at))}</b></> : null} · {bid ? <>rider <b>{bid.rider_name}</b> coming</> : left != null ? `${o.bids.length} bid(s) · rider chosen in ${mmss(left)}` : "waiting for a rider bid"}</p>
+          <p className="mt-3 text-sm">{tx("Bereidingstijd", "Prep time")} <b>{o.prep_minutes} min</b>{o.ready_at ? <> · {tx("klaar", "ready")} ~<b>{hhmm(new Date(o.ready_at))}</b></> : null} · {bid ? <>rider <b>{bid.rider_name}</b> {tx("komt eraan", "coming")}</> : left != null ? tx(`${o.bids.length} bod/biedingen · rider gekozen over ${mmss(left)}`, `${o.bids.length} bid(s) · rider chosen in ${mmss(left)}`) : tx("wacht op een bod van een rider", "waiting for a rider bid")}</p>
           {bid && r?.lat && <div className="mt-2"><LiveMap height={180} markers={[{ id: "r", lat: r.lat, lng: r.lng!, kind: "restaurant", label: r.name }, ...(loc ? [{ id: "rider", lat: loc.lat, lng: loc.lng, kind: "rider" as const, label: `Rider ${bid.rider_name}` }] : [])]} /></div>}
           <div className="mt-2 flex items-center gap-2">
-            <span className="text-[13px] text-muted">Running late?</span>
+            <span className="text-[13px] text-muted">{tx("Loop je uit?", "Running late?")}</span>
             {[5, 10].map((m) => (
               <button key={m} disabled={(o.prep_minutes ?? 0) + m > PREP_MAX}
                 className="rounded-full border-[1.5px] border-[#e2ded8] bg-white px-3 py-1.5 text-sm font-semibold disabled:opacity-40"
-                onClick={() => act(actions.extendPrep(o.id, m), `Prep +${m} min · rider and customer updated`)}>+{m} min</button>
+                onClick={() => act(actions.extendPrep(o.id, m), tx(`Bereiding +${m} min · rider en klant bijgewerkt`, `Prep +${m} min · rider and customer updated`))}>+{m} min</button>
             ))}
           </div>
           <Button disabled={!bid} onClick={() => act(actions.markReady(o.id), t("Rider geïnformeerd: eten is klaar", "Rider notified: food is ready"))}>{t("Klaar voor ophalen", "Mark ready for pickup")}</Button>
@@ -84,10 +84,10 @@ export default function RestaurantPage() {
   return (
     <>
       <Header subtitle={t("Restaurantdashboard · keukenoverzicht", "Restaurant dashboard · Partner kitchen view")} />
-      <main className="p-4">
+      <main id="main" className="p-4">
         <RoleGate role="restaurant">
         <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
-        <div className="flex gap-2.5"><Stat value={String(handed.length)} label="Handed over" /><Stat value={eur(revenue)} label="Revenue" /><Stat value={eur(Math.round((revenue * pct) / 100))} label={`Commission ${pct}%`} /></div>
+        <div className="flex gap-2.5"><Stat value={String(handed.length)} label={tx("Overgedragen", "Handed over")} /><Stat value={eur(revenue)} label={tx("Omzet", "Revenue")} /><Stat value={eur(Math.round((revenue * pct) / 100))} label={tx(`Commissie ${pct}%`, `Commission ${pct}%`)} /></div>
         <h2 className="mb-3 mt-4 text-lg font-bold">{t("Binnenkomende bestellingen", "Incoming orders")}</h2>
         {open.length === 0 ? <Empty icon="🍳">{t("Op dit moment geen open bestellingen.", "No open orders right now.")}</Empty> : open.map((o) => <OrderCard key={o.id} o={o} />)}
         </RoleGate>

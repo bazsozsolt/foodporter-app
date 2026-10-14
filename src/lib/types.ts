@@ -33,6 +33,13 @@ export const STATUS_LABEL_NL: Record<OrderStatus, string> = {
   ready: "Klaar voor ophalen", picked_up: "Onderweg", delivered: "Bezorgd", cancelled: "Geannuleerd",
 };
 
+import { tx } from "./i18n";
+export const statusLabel = (s: OrderStatus) => tx(STATUS_LABEL_NL[s], STATUS_LABEL[s]);
+const CANCEL_REASON_NL: Record<string, string> = {
+  restaurant_rejected: "Het restaurant kon je bestelling niet aannemen", restaurant_timeout: "Het restaurant heeft niet op tijd bevestigd",
+  admin_cancelled: "Geannuleerd door Food Porter support", system: "Geannuleerd",
+};
+export const cancelReason = (r: string | null | undefined) => tx(CANCEL_REASON_NL[r ?? "system"] ?? "Geannuleerd", CANCEL_REASON[r ?? "system"] ?? "Cancelled");
 export const CANCEL_REASON: Record<string, string> = {
   restaurant_rejected: "The restaurant couldn't take your order", restaurant_timeout: "The restaurant didn't confirm in time",
   admin_cancelled: "Cancelled by Food Porter support", system: "Cancelled",

@@ -61,7 +61,7 @@ export function Pill({ children, tone = "brand" }: { children: ReactNode; tone?:
 }
 
 export function Empty({ icon, children }: { icon: string; children: ReactNode }) {
-  return <div className="px-3 py-10 text-center text-muted"><div className="text-3xl">{icon}</div>{children}</div>;
+  return <div className="px-3 py-10 text-center text-muted [&_a]:underline"><div className="text-3xl">{icon}</div>{children}</div>;
 }
 
 export function Stat({ value, label }: { value: string; label: string }) {

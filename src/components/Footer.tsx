@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useT } from "@/lib/i18n";
+import { useT, tx } from "@/lib/i18n";
 
 export function Footer() {
   const t = useT();
@@ -13,7 +13,7 @@ export function Footer() {
         <Link href="/cookies" className="underline">Cookies</Link>
       </div>
       <p className="mt-2">Food Porter · {t("Tilburg-pilot", "Tilburg pilot")} · © 2026</p>
-      <p className="mt-1" data-testid="osm-attribution">Maps and test restaurant data © <a className="underline" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a> (ODbL) · Addresses: PDOK/BAG</p>
+      <p className="mt-1" data-testid="osm-attribution">{tx("Kaarten en testrestaurantdata ©", "Maps and test restaurant data ©")} <a className="underline" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">{tx("OpenStreetMap-bijdragers", "OpenStreetMap contributors")}</a> (ODbL) · {tx("Adressen", "Addresses")}: PDOK/BAG</p>
     </footer>
   );
 }

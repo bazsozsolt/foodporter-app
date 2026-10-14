@@ -8,9 +8,9 @@
   --color-gold: #fad228;
   --color-gold-soft: #fff6cc;
   --color-ink: #1d1b24;
-  --color-muted: #7a7686;
+  --color-muted: #5f5b6b; /* ≥4.5:1 on paper and white (WCAG AA) */
   --color-paper: #f6f4f1;
-  --color-ok: #14a36b;
+  --color-ok: #0b7a4e; /* AA on white and on #e3f7ee */
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: var(--font-bebas), "Oswald", "Arial Narrow", sans-serif;
 }
@@ -24,6 +24,11 @@ body {
   body { background: #fff; }
   .no-print { display: none !important; }
 }
+
+/* Accessibility: visible keyboard focus, respect reduced motion */
+:focus-visible { outline: 3px solid var(--color-gold); outline-offset: 2px; border-radius: 6px; }
+.bg-gold :focus-visible, .bg-gold-soft :focus-visible { outline-color: var(--color-brand); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
 
 /* Condensed headings echo the FOODPORTER wordmark */
 h1, h2, .font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: .02em; }

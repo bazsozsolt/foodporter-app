@@ -1,4 +1,5 @@
 "use client";
+import { tx } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { act } from "@/lib/act";
 import { actions } from "@/lib/store";
@@ -30,16 +31,16 @@ export function RateOrder({ orderId, hasRider }: { orderId: string; hasRider: bo
     void sb.from("ratings").select("order_id").eq("order_id", Number(orderId)).maybeSingle().then(({ data }) => setDone(Boolean(data)));
   }, [orderId]);
   if (done === null) return null;
-  if (done) return <Card className="text-center text-sm text-muted">⭐ Thanks for rating this order!</Card>;
+  if (done) return <Card className="text-center text-sm text-muted">⭐ {tx("Bedankt voor je beoordeling!", "Thanks for rating this order!")}</Card>;
   return (
     <Card>
-      <b>How was it?</b>
+      <b>{tx("Hoe was het?", "How was it?")}</b>
       <div className="mt-2">
-        <Stars label="Food" value={food} onChange={setFood} />
-        {hasRider && <Stars label="Delivery" value={rider} onChange={setRider} />}
+        <Stars label={tx("Eten", "Food")} value={food} onChange={setFood} />
+        {hasRider && <Stars label={tx("Bezorging", "Delivery")} value={rider} onChange={setRider} />}
         <textarea className="mt-1 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-2.5 text-sm" rows={2} maxLength={500}
-          placeholder="Anything we should know? (optional)" value={comment} onChange={(e) => setComment(e.target.value)} />
-        <Button disabled={!food} onClick={async () => { if (await act(actions.rate(orderId, food, rider || null, comment), "Thanks for your feedback!")) setDone(true); }}>Send rating</Button>
+          placeholder={tx("Nog iets wat we moeten weten? (optioneel)", "Anything we should know? (optional)")} value={comment} onChange={(e) => setComment(e.target.value)} />
+        <Button disabled={!food} onClick={async () => { if (await act(actions.rate(orderId, food, rider || null, comment), tx("Bedankt voor je feedback!", "Thanks for your feedback!"))) setDone(true); }}>{tx("Beoordeling versturen", "Send rating")}</Button>
       </div>
     </Card>
   );

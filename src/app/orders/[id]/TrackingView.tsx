@@ -1,5 +1,5 @@
 "use client";
-import { useT } from "@/lib/i18n";
+import { useT, tx } from "@/lib/i18n";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
@@ -7,7 +7,7 @@ import { act } from "@/lib/act";
 import { Card, Empty, Header } from "@/components/ui";
 import { hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
-import { CANCEL_REASON, STATUS_LABEL, STATUS_LABEL_NL, STATUS_STEPS } from "@/lib/types";
+import { cancelReason, STATUS_LABEL, STATUS_LABEL_NL, STATUS_STEPS } from "@/lib/types";
 import { RateOrder } from "@/components/RateOrder";
 import { ReorderButton } from "@/components/ReorderButton";
 import { mmss, useSecondsLeft } from "@/components/Countdown";
@@ -41,7 +41,7 @@ export function TrackingView({ id }: { id: string }) {
     setPaying(false);
     if (url) window.location.href = url;
   }
-  if (!o) return <><Header /><main className="p-4"><Empty icon="🔎">{!ready ? "Loading…" : !id ? "No order selected." : `Order #${id} not found. ${profile ? "It may belong to another account." : "Please sign in to see your orders."}`}</Empty></main></>;
+  if (!o) return <><Header /><main id="main" className="p-4"><Empty icon="🔎">{!ready ? tx("Laden…", "Loading…") : !id ? tx("Geen bestelling gekozen.", "No order selected.") : tx(`Bestelling #${id} niet gevonden. ${profile ? "Mogelijk hoort die bij een ander account." : "Log in om je bestellingen te zien."}`, `Order #${id} not found. ${profile ? "It may belong to another account." : "Please sign in to see your orders."}`)}</Empty></main></>;
   const mine = mode === "mock" || o.customer_id === profile?.id;
   const r = restaurants.find((x) => x.id === o.restaurant_id);
   const bid = acceptedBid(o);
@@ -50,26 +50,26 @@ export function TrackingView({ id }: { id: string }) {
   const best = o.bids.length ? Math.min(...o.bids.map((b) => b.eta_minutes)) : null;
   const markers: MapMarker[] = [
     ...(r?.lat ? [{ id: "r", lat: r.lat, lng: r.lng!, kind: "restaurant" as const, label: r.name }] : []),
-    ...(o.lat ? [{ id: "d", lat: o.lat, lng: o.lng!, kind: "dropoff" as const, label: "Your address" }] : []),
+    ...(o.lat ? [{ id: "d", lat: o.lat, lng: o.lng!, kind: "dropoff" as const, label: tx("Jouw adres", "Your address") }] : []),
     ...(loc ? [{ id: "rider", lat: loc.lat, lng: loc.lng, kind: "rider" as const, label: `Rider ${bid?.rider_name ?? ""}` }] : []),
   ];
 
   return (
     <>
       <Header subtitle={`${tr("Bestelling", "Order")} #${o.id}`} />
-      <main className="p-4">
+      <main id="main" className="p-4">
         <Link href="/" className="text-sm text-muted">← Home</Link>
         <Card className="mt-2.5 text-center">
-          {o.status === "awaiting_payment" ? (<><div className="text-4xl">💳</div><h2 className="text-lg font-bold">{tr("Wacht op betaling", "Waiting for payment")}</h2><p className="text-sm text-muted">If you just paid, this updates in a few seconds.</p>{mine ? <Button onClick={payNow} disabled={paying}>{paying ? "Opening Mollie…" : "Pay now"}</Button> : <p className="mt-2 text-sm text-muted">Only the customer can pay this order.</p>}</>)
-            : o.status === "payment_failed" ? (<><div className="text-4xl">⚠️</div><h2 className="text-lg font-bold">{tr("Betaling mislukt of geannuleerd", "Payment failed or cancelled")}</h2>{mine && <Button onClick={payNow} disabled={paying}>Try again</Button>}</>)
-            : o.status === "cancelled" ? (<><div className="text-4xl">↩️</div><h2 className="text-lg font-bold">{tr("Bestelling geannuleerd", "Order cancelled")}</h2><p className="text-sm text-muted">{CANCEL_REASON[o.cancel_reason ?? "system"] ?? "Cancelled"}.</p>
-                {o.paid_at ? <p data-testid="refund" className="mt-1 text-sm">{o.refund_status === "failed" ? "Our team will refund you manually shortly." : o.refund_cents ? `Refund of ${eur(o.refund_cents)} ${o.refund_status === "refunded" ? "completed" : "on its way"} (1–3 working days for iDEAL/card).` : "Refund in progress…"}</p> : null}</>)
+          {o.status === "awaiting_payment" ? (<><div className="text-4xl">💳</div><h2 className="text-lg font-bold">{tr("Wacht op betaling", "Waiting for payment")}</h2><p className="text-sm text-muted">{tx("Net betaald? Dit wordt binnen een paar seconden bijgewerkt.", "If you just paid, this updates in a few seconds.")}</p>{mine ? <Button onClick={payNow} disabled={paying}>{paying ? tx("Mollie openen…", "Opening Mollie…") : tx("Nu betalen", "Pay now")}</Button> : <p className="mt-2 text-sm text-muted">{tx("Alleen de klant kan deze bestelling betalen.", "Only the customer can pay this order.")}</p>}</>)
+            : o.status === "payment_failed" ? (<><div className="text-4xl">⚠️</div><h2 className="text-lg font-bold">{tr("Betaling mislukt of geannuleerd", "Payment failed or cancelled")}</h2>{mine && <Button onClick={payNow} disabled={paying}>{tx("Opnieuw proberen", "Try again")}</Button>}</>)
+            : o.status === "cancelled" ? (<><div className="text-4xl">↩️</div><h2 className="text-lg font-bold">{tr("Bestelling geannuleerd", "Order cancelled")}</h2><p className="text-sm text-muted">{cancelReason(o.cancel_reason)}.</p>
+                {o.paid_at ? <p data-testid="refund" className="mt-1 text-sm">{o.refund_status === "failed" ? tx("Ons team betaalt je binnenkort handmatig terug.", "Our team will refund you manually shortly.") : o.refund_cents ? tx(`Terugbetaling van ${eur(o.refund_cents)} ${o.refund_status === "refunded" ? "voltooid" : "onderweg"} (1–3 werkdagen voor iDEAL/kaart).`, `Refund of ${eur(o.refund_cents)} ${o.refund_status === "refunded" ? "completed" : "on its way"} (1–3 working days for iDEAL/card).`) : tx("Terugbetaling wordt verwerkt…", "Refund in progress…")}</p> : null}</>)
             : o.status === "delivered" ? (<><div className="text-5xl">🎉</div><h2 className="text-lg font-bold">{tr("Bezorgd!", "Delivered!")}</h2><p className="text-sm text-muted">{tr("Eet smakelijk.", "Enjoy your meal.")}</p></>)
             : bid ? (<><div className="text-sm text-muted">{tr("Bezorgd over ongeveer", "Arriving in about")}</div><div className="text-4xl font-extrabold text-brand">{bid.eta_minutes} min</div><div className="text-sm text-muted">{tr("rond", "by")} {etaAt} · rider {bid.rider_name}</div>{stopsBefore ? <div data-testid="stops-before" className="mt-2 inline-block rounded-full bg-brand-soft px-3 py-1 text-[13px] font-semibold text-brand">{tr(`Je rider heeft nog ${stopsBefore} ${stopsBefore > 1 ? "stops" : "stop"} vóór jou`, `Your rider has ${stopsBefore} stop${stopsBefore > 1 ? "s" : ""} before you`)}</div> : null}</>)
-            : o.status === "accepted" && left != null ? (<div data-testid="customer-auction"><div className="text-sm text-muted">{o.bids.length} rider{o.bids.length === 1 ? "" : "s"} bidding · best ETA so far</div><div className="text-4xl font-extrabold text-brand">{best} min</div><div className="text-sm text-muted">{left > 0 ? `Rider chosen in ${mmss(left)}` : "Choosing your rider…"}</div></div>)
-            : (<><div className="text-sm text-muted">Waiting for {idx < 1 ? "the restaurant" : "a rider bid"}…</div><div className="text-4xl">⏳</div></>)}
+            : o.status === "accepted" && left != null ? (<div data-testid="customer-auction"><div className="text-sm text-muted">{tx(`${o.bids.length} rider${o.bids.length === 1 ? "" : "s"} biedt · beste tijd tot nu toe`, `${o.bids.length} rider${o.bids.length === 1 ? "" : "s"} bidding · best ETA so far`)}</div><div className="text-4xl font-extrabold text-brand">{best} min</div><div className="text-sm text-muted">{left > 0 ? tx(`Rider gekozen over ${mmss(left)}`, `Rider chosen in ${mmss(left)}`) : tx("Je rider wordt gekozen…", "Choosing your rider…")}</div></div>)
+            : (<><div className="text-sm text-muted">{idx < 1 ? tx("Wacht op het restaurant…", "Waiting for the restaurant…") : tx("Wacht op een bod van een rider…", "Waiting for a rider bid…")}</div><div className="text-4xl">⏳</div></>)}
         </Card>
-        {live && markers.length > 0 && <Card className="p-2"><LiveMap markers={markers} /><p className="mt-1.5 px-1 text-xs text-muted">{loc ? `Rider location updated ${hhmm(new Date(loc.created_at))}` : "Rider location appears once they share GPS."}</p></Card>}
+        {live && markers.length > 0 && <Card className="p-2"><LiveMap markers={markers} /><p className="mt-1.5 px-1 text-xs text-muted">{loc ? tx(`Locatie rider bijgewerkt ${hhmm(new Date(loc.created_at))}`, `Rider location updated ${hhmm(new Date(loc.created_at))}`) : tx("De locatie van de rider verschijnt zodra die GPS deelt.", "Rider location appears once they share GPS.")}</p></Card>}
         {o.status !== "cancelled" && <Card>
           <b>{r?.name}</b>
           <ul className="mt-2">
@@ -86,7 +86,7 @@ export function TrackingView({ id }: { id: string }) {
         {o.status === "delivered" && mine && mode === "supabase" && <RateOrder orderId={o.id} hasRider={Boolean(bid)} />}
         {o.status === "delivered" && mine && <ReorderButton id={o.id} />}
         {mine && <SmsNote id={o.id} fallback={o.phone} />}
-        {!["delivered", "awaiting_payment", "payment_failed", "cancelled"].includes(o.status) && <p className="text-center text-sm text-muted">Demo: switch to <b>{NEXT_ROLE[o.status]}</b> below to move the order forward.</p>}
+        {!["delivered", "awaiting_payment", "payment_failed", "cancelled"].includes(o.status) && <p className="text-center text-sm text-muted">{tx("Demo: schakel hieronder naar", "Demo: switch to")} <b>{NEXT_ROLE[o.status]}</b> {tx("om de bestelling verder te zetten.", "below to move the order forward.")}</p>}
       </main>
     </>
   );

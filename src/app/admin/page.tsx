@@ -40,7 +40,7 @@ export default function AdminOverview() {
           <ul className="divide-y divide-[#eee] text-sm">
             {d!.alerts.map((a) => (
               <li key={String(a.id)} className="flex items-center gap-2 py-2">
-                <span className="flex-1"><b>{String(a.kind).replace(/_/g, " ")}</b>{a.order_id ? <> · <Link className="text-brand" href={`/admin/orders?id=${a.order_id}`}>#{String(a.order_id)}</Link></> : null} · {String(a.message)} <span className="text-xs text-muted">{fmtDateTime(a.created_at)}</span></span>
+                <span className="flex-1"><b>{String(a.kind).replace(/_/g, " ")}</b>{a.order_id ? <> · <Link className="text-brand underline" href={`/admin/orders?id=${a.order_id}`}>#{String(a.order_id)}</Link></> : null} · {String(a.message)} <span className="text-xs text-muted">{fmtDateTime(a.created_at)}</span></span>
                 <SmallBtn onClick={() => resolve(a.id)}>Resolve</SmallBtn>
               </li>
             ))}

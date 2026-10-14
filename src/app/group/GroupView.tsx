@@ -58,6 +58,18 @@ export function GroupView() {
   const [geo, setGeo] = useState<Geo | null>(null);
   const center = useMemo(() => ({ lat: settings.zone_center_lat, lng: settings.zone_center_lng }), [settings.zone_center_lat, settings.zone_center_lng]);
 
+  const [myGroups, setMyGroups] = useState<(Group & { created_at: string; members: number; items: number })[] | null>(null);
+  const loadMine = useCallback(async () => {
+    const sb = getSupabase(); if (!sb || !profile) return;
+    const { data } = await sb.from("group_members").select("group_orders(id, code, host_id, restaurant_id, status, deadline, order_id, created_at, group_members(count), group_items(count))")
+      .eq("user_id", profile.id).order("joined_at", { ascending: false }).limit(20);
+    setMyGroups(((data ?? []) as unknown as { group_orders: Record<string, unknown> }[]).map((r) => r.group_orders).filter(Boolean).map((g) => ({
+      ...(g as unknown as Group & { created_at: string }),
+      members: ((g.group_members as { count: number }[]) ?? [])[0]?.count ?? 0, items: ((g.group_items as { count: number }[]) ?? [])[0]?.count ?? 0,
+    })));
+  }, [profile]);
+  useEffect(() => { if (code || !profile) return; const h = setTimeout(() => void loadMine(), 0); return () => clearTimeout(h); }, [code, profile, loadMine]);
+
   const load = useCallback(async () => {
     const sb = getSupabase(); if (!sb || !code) return;
     const pv = await sb.rpc("group_preview", { p_code: code });
@@ -118,33 +130,48 @@ export function GroupView() {
   // ---- no code: start / enter a code
   if (!code) return (
     <><Header subtitle={t("Groepsbestelling", "Group order")} />
-      <main className="p-4">
+      <main id="main" className="p-4">
         <h2 className="font-display mb-2 text-2xl">{t("Samen bestellen", "Order together")}</h2>
         <Card>
           <p className="text-sm text-muted">{t("Open een restaurant en tik op “Groepsbestelling starten”, of vul hieronder de code in die je hebt gekregen.", "Open a restaurant and tap “Start group order”, or enter the code you received below.")}</p>
-          <input data-testid="group-code-input" className={input + " uppercase tracking-[0.3em]"} maxLength={6} placeholder="ABC234" value={codeInput} onChange={(e) => setCodeInput(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))} />
+          <input data-testid="group-code-input" className={input + " uppercase tracking-[0.3em]"} maxLength={6} placeholder="ABC234" aria-label={t("Groepscode", "Group code")} value={codeInput} onChange={(e) => setCodeInput(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))} />
           <Button disabled={codeInput.length !== 6} onClick={() => router.push(`/group?code=${codeInput}`)}>{t("Meedoen", "Join")}</Button>
         </Card>
-        <Link href="/" className="text-sm text-brand">← {t("Kies een restaurant", "Pick a restaurant")}</Link>
+        {signedIn && (
+          <section data-testid="my-groups">
+            <h3 className="font-display mb-2 mt-4 text-xl">{t("Mijn groepen", "My groups")}</h3>
+            {myGroups === null ? <p className="text-sm text-muted">{t("Laden…", "Loading…")}</p>
+              : myGroups.length === 0 ? <Empty icon="👥">{t("Je zit nog in geen enkele groep. Start er een vanuit een restaurant.", "You're not in any group yet. Start one from a restaurant.")}</Empty>
+              : myGroups.map((g) => (
+                <Link key={g.id} href={`/group?code=${g.code}`}>
+                  <Card className="flex items-center justify-between">
+                    <div><b>{restaurants.find((r) => r.id === g.restaurant_id)?.name ?? t("Restaurant", "Restaurant")}</b>
+                      <div className="text-[12px] text-muted">{g.code} · {g.members} {t(g.members === 1 ? "persoon" : "personen", g.members === 1 ? "person" : "people")} · {g.items} item{g.items === 1 ? "" : "s"}{g.host_id === profile?.id ? " · host" : ""}</div></div>
+                    <Pill tone={g.status === "open" ? "ok" : "brand"}>{({ open: t("OPEN", "OPEN"), locked: t("VERGRENDELD", "LOCKED"), checked_out: t("BESTELD", "ORDERED"), cancelled: t("GEANNULEERD", "CANCELLED") })[g.status]}</Pill>
+                  </Card>
+                </Link>))}
+          </section>
+        )}
+        <Link href="/" className="mt-2 inline-block text-sm text-brand">← {t("Kies een restaurant", "Pick a restaurant")}</Link>
       </main></>
   );
 
   if (ready && !signedIn) return (
     <><Header subtitle={t("Groepsbestelling", "Group order")} />
-      <main className="p-4"><Card>
+      <main id="main" className="p-4"><Card>
         <h2 className="font-display text-2xl">{t("Je bent uitgenodigd 👥", "You're invited 👥")}</h2>
         <p className="my-2 text-sm text-muted">{t("Log in om mee te doen met groepsbestelling", "Sign in to join group order")} <b className="tracking-widest text-ink">{code}</b>.</p>
         <Button onClick={() => router.push(`/login?next=${encodeURIComponent(`/group?code=${code}`)}`)}>{t("Inloggen om mee te doen", "Sign in to join")}</Button>
       </Card></main></>
   );
 
-  if (preview === undefined) return <><Header /><p className="p-6 text-center text-muted">Loading…</p></>;
-  if (preview === null) return <><Header /><main className="p-4"><Empty icon="🔎">{t("Deze groepsbestelling bestaat niet.", "This group order doesn't exist.")} <Link className="text-brand" href="/group">{t("Andere code", "Try another code")}</Link></Empty></main></>;
+  if (preview === undefined) return <><Header /><p className="p-6 text-center text-muted">{t("Laden…", "Loading…")}</p></>;
+  if (preview === null) return <><Header /><main id="main" className="p-4"><Empty icon="🔎">{t("Deze groepsbestelling bestaat niet.", "This group order doesn't exist.")} <Link className="text-brand" href="/group">{t("Andere code", "Try another code")}</Link></Empty></main></>;
 
   // ---- not a member yet: join screen
   if (!group) return (
     <><Header subtitle={t("Groepsbestelling", "Group order")} />
-      <main className="p-4"><Card data-testid="group-join">
+      <main id="main" className="p-4"><Card data-testid="group-join">
         <h2 className="font-display text-2xl">{preview.restaurant_name}</h2>
         <p className="mb-3 text-sm text-muted">{t(`${preview.host_name} nodigt je uit · ${preview.members} ${preview.members === 1 ? "persoon" : "personen"} doen al mee`, `${preview.host_name} invited you · ${preview.members} ${preview.members === 1 ? "person" : "people"} already in`)}</p>
         {preview.status === "open" ? <>
@@ -162,7 +189,7 @@ export function GroupView() {
 
   return (
     <><Header subtitle={t("Groepsbestelling", "Group order")} />
-      <main className="p-4">
+      <main id="main" className="p-4">
         <Card data-testid="group-header">
           <div className="flex items-start justify-between gap-2">
             <div><h2 className="font-display text-2xl leading-none">{restaurant?.name ?? preview.restaurant_name}</h2>
@@ -188,9 +215,9 @@ export function GroupView() {
               <div key={m.id} className="flex items-center justify-between border-b border-[#f1ede8] py-2 last:border-0">
                 <div><div className="font-semibold">{m.name}</div><div className="text-[13px] text-muted">{eur(m.price_cents)}</div></div>
                 <div className="flex items-center gap-2.5">
-                  {it && <button aria-label="Remove" className="h-8 w-8 rounded-full bg-[#f1ede8] font-bold" disabled={busy} onClick={() => run(rpc("group_set_qty", { p_item: it.id, p_qty: it.qty - 1 }))}>−</button>}
+                  {it && <button aria-label={t("Eén minder", "Remove one")} className="h-8 w-8 rounded-full bg-[#f1ede8] font-bold" disabled={busy} onClick={() => run(rpc("group_set_qty", { p_item: it.id, p_qty: it.qty - 1 }))}>−</button>}
                   {it && <b>{it.qty}</b>}
-                  <button aria-label="Add" data-testid="group-add" className="h-8 w-8 rounded-full bg-brand font-bold text-white" disabled={busy} onClick={() => run(rpc("group_add_item", { p_group: group.id, p_menu_item: m.id, p_qty: 1 }))}>+</button>
+                  <button aria-label={t(`${m.name} toevoegen`, `Add ${m.name}`)} data-testid="group-add" className="h-8 w-8 rounded-full bg-brand font-bold text-white" disabled={busy} onClick={() => run(rpc("group_add_item", { p_group: group.id, p_menu_item: m.id, p_qty: 1 }))}>+</button>
                 </div>
               </div>); })}
           </Card>
@@ -207,7 +234,7 @@ export function GroupView() {
                   <span>{i.qty}× {i.name}</span>
                   <span className="flex items-center gap-2">{eur(i.qty * i.price_cents)}
                     {((isHost && ["open", "locked"].includes(group.status)) || (i.user_id === profile?.id && editable)) &&
-                      <button aria-label="Delete" data-testid="group-remove" className="text-muted" onClick={() => run(rpc("group_remove_item", { p_item: i.id }))}>✕</button>}</span>
+                      <button aria-label={t(`${i.name} verwijderen`, `Remove ${i.name}`)} data-testid="group-remove" className="text-muted" onClick={() => run(rpc("group_remove_item", { p_item: i.id }))}>✕</button>}</span>
                 </div>))}
             </div>))}
           <div className="mt-3 border-t border-[#f1ede8] pt-2 text-sm">

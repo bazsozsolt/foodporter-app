@@ -1,5 +1,5 @@
 "use client";
-import { useT } from "@/lib/i18n";
+import { useT , tx } from "@/lib/i18n";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
@@ -45,17 +45,17 @@ function BidCard({ o, activeCount }: { o: Order; activeCount: number }) {
       <div className="flex items-center justify-between"><b>{restaurantStyle(o.restaurant_id).emoji} {r?.name}</b><Pill tone="ok">{eur(o.delivery_fee_cents)}</Pill></div>
       <div className="my-1.5 text-[13px] text-muted">Ready in ~{prep} min{o.ready_at ? ` (~${hhmm(new Date(o.ready_at))})` : ""} · {o.address}</div>
       {r?.lat && o.lat ? <div data-testid="dropoff" className="text-[13px] font-semibold">🚲 {distanceKm({ lat: r.lat, lng: r.lng! }, { lat: o.lat, lng: o.lng! }).toFixed(1)} km drop-off from {r.area}</div> : null}
-      {o.renotified_at && <div className="mt-1 text-[13px] font-semibold text-brand">⏰ Still waiting for a rider — bid now</div>}
+      {o.renotified_at && <div className="mt-1 text-[13px] font-semibold text-brand">⏰ {tx("Wacht nog op een rider — bied nu", "Still waiting for a rider — bid now")}</div>}
       {left != null && <p data-testid="auction" className="mt-2 text-[13px] font-semibold">⏱ Bidding closes in {mmss(left)}{left === 0 ? " · choosing the winner…" : ""}</p>}
       {activeCount > 0 && !mine && (reason === null
         ? <p data-testid="stack-ok" className="mt-2 rounded-xl bg-emerald-50 p-2 text-[13px] font-semibold text-emerald-800">🧩 On your route: stack it with your current job. Bid the time until this customer gets their food (after your other stop{activeCount > 1 ? "s" : ""}).</p>
         : reason ? <p data-testid="stack-no" className="mt-2 rounded-xl bg-[#f1ede8] p-2 text-[13px] text-muted">🚫 Can&apos;t stack: {reason}</p> : null)}
       {mine ? (
-        <p data-testid="my-bid" className="mt-3 rounded-xl bg-brand-soft p-3 text-sm">Your bid: <b>{mine.eta_minutes} min</b>. Lowest ETA wins when the window closes (ties: earliest bid).</p>
+        <p data-testid="my-bid" className="mt-3 rounded-xl bg-brand-soft p-3 text-sm">{tx("Jouw bod", "Your bid")}: <b>{mine.eta_minutes} min</b>. {tx("Laagste tijd wint als het venster sluit (gelijk: vroegste bod).", "Lowest ETA wins when the window closes (ties: earliest bid).")}</p>
       ) : left === 0 || (activeCount > 0 && reason !== null) ? null : (<>
         <p className="mb-2 mt-3 font-bold">{t("Bied je bezorgtijd", "Bid your delivery time")}</p>
         <Chips options={opts} value={eta} onChange={setEta} render={(m) => `${m} min`} />
-        <p className="mt-2 text-[13px] text-muted">{o.bid_window_closes_at ? "Bidding is open" : "First bid opens a 60 s window"} · lowest ETA wins, ties go to the earliest bid · you keep the full fee</p>
+        <p className="mt-2 text-[13px] text-muted">{o.bid_window_closes_at ? tx("Bieden is open", "Bidding is open") : tx("Eerste bod opent een venster van 60 s", "First bid opens a 60 s window")} · {tx("laagste tijd wint, bij gelijkspel het vroegste bod · je houdt de volledige vergoeding", "lowest ETA wins, ties go to the earliest bid · you keep the full fee")}</p>
         <Button onClick={() => act(actions.placeBid(o.id, eta), t(`Bod geplaatst: ${eta} min. De winnaar wordt gekozen als de biedtijd sluit.`, `Bid placed: ${eta} min. Winner is picked when the window closes.`))}>{t("Bod plaatsen", "Place bid")}</Button>
       </>)}
     </Card>
@@ -76,24 +76,24 @@ export default function RiderPage() {
     if (!online && !profile?.location_consent_at) {
       const ok = confirm("Share your location while you're online or on a delivery?\n\n• Admins see your position while you're online.\n• The customer and restaurant of your current order see it during that delivery only.\n• Sharing stops when you go offline and the delivery is done. Points are deleted after 7 days.");
       if (!ok) return;
-      await act(actions.setOnline(true, true), "You're online · sharing location");
+      await act(actions.setOnline(true, true), tx("Je bent online · locatie wordt gedeeld", "You're online · sharing location"));
       return;
     }
-    await act(actions.setOnline(!online), online ? "You're offline · location sharing stopped" : "You're online · sharing location");
+    await act(actions.setOnline(!online), online ? tx("Je bent offline · locatie delen gestopt", "You're offline · location sharing stopped") : tx("Je bent online · locatie wordt gedeeld", "You're online · sharing location"));
   }
   const active = orders.filter((o) => ["assigned", "ready", "picked_up"].includes(o.status) && (mode === "mock" || profile?.role === "admin" || (o.rider_id ?? acceptedBid(o)?.rider_id) === profile?.id));
   const stops = useMyStops(mode === "supabase" ? active.map((o) => `${o.id}:${o.status}`).join(",") : "");
   return (
     <>
       <Header tagline={t("Jouw tijd, jouw regels, jouw verdiensten", "Your time, your rules, your earnings")} subtitle={t("Rider-app · Tilburg Centrum", "Rider app · Tilburg Centrum")} />
-      <main className="p-4">
+      <main id="main" className="p-4">
         <RoleGate role="rider">
         <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
         {mode === "supabase" && profile && (
           <div className="mb-3 flex gap-2">
-            <input aria-label="Your name" className="flex-1 rounded-xl border-[1.5px] border-[#e2ded8] p-2.5 text-sm" placeholder="Your first name (shown to customers)"
+            <input aria-label={tx("Jouw naam", "Your name")} className="flex-1 rounded-xl border-[1.5px] border-[#e2ded8] p-2.5 text-sm" placeholder={tx("Je voornaam (zichtbaar voor klanten)", "Your first name (shown to customers)")}
               value={name ?? profile.full_name ?? ""} onChange={(e) => setName(e.target.value)} />
-            {name !== null && name !== (profile.full_name ?? "") && <button className="rounded-xl bg-ink px-3 text-sm font-bold text-white" onClick={async () => { if (await act(actions.setMyName(name), "Name saved") !== undefined) setName(null); }}>Save</button>}
+            {name !== null && name !== (profile.full_name ?? "") && <button className="rounded-xl bg-ink px-3 text-sm font-bold text-white" onClick={async () => { if (await act(actions.setMyName(name), tx("Naam opgeslagen", "Name saved")) !== undefined) setName(null); }}>{tx("Opslaan", "Save")}</button>}
           </div>
         )}
         {mode === "supabase" && profile && (
@@ -109,7 +109,7 @@ export default function RiderPage() {
             <div className="flex items-center justify-between"><b>{t("Jouw route", "Your route")}{active.length > 1 ? t(` · ${active.length} bestellingen gecombineerd`, ` · ${active.length} orders stacked`) : ""}</b><Pill>{stops.length} stop{stops.length > 1 ? "s" : ""}</Pill></div>
             <div className="mt-2"><LiveMap height={240} markers={[
               ...stops.filter((x) => x.lat != null).map((x) => ({ id: `${x.kind}-${x.order_id}`, lat: x.lat!, lng: x.lng!, kind: x.kind === "pickup" ? "restaurant" as const : "dropoff" as const, label: `${x.seq}. ${x.kind === "pickup" ? "Pickup" : "Drop-off"} #${x.order_id}: ${x.label}` })),
-              ...(me ? [{ id: "me", ...me, kind: "me" as const, label: "You" }] : []),
+              ...(me ? [{ id: "me", ...me, kind: "me" as const, label: tx("Jij", "You") }] : []),
             ]} /></div>
             <ol className="mt-2 space-y-1.5" data-testid="stop-list">
               {stops.map((x, i) => (
@@ -131,7 +131,7 @@ export default function RiderPage() {
           const markers: MapMarker[] = [
             ...(pickup ? [{ id: "r", ...pickup, kind: "restaurant" as const, label: `Pickup: ${rest?.name}` }] : []),
             ...(drop ? [{ id: "d", ...drop, kind: "dropoff" as const, label: `Drop-off: ${o.address}` }] : []),
-            ...(me ? [{ id: "me", ...me, kind: "me" as const, label: "You" }] : []),
+            ...(me ? [{ id: "me", ...me, kind: "me" as const, label: tx("Jij", "You") }] : []),
           ];
           return (
             <Card key={o.id}>
@@ -150,7 +150,7 @@ export default function RiderPage() {
         })}
         <h2 className="mb-3 mt-1 text-lg font-bold">{t("Open bestellingen", "Open orders")}</h2>
         {open.length === 0 ? <Empty icon="📭">{t("Op dit moment geen bestellingen om op te bieden.", "No orders to bid on right now.")}</Empty> : open.map((o) => <BidCard key={o.id} o={o} activeCount={active.length} />)}
-        <Link href="/rider/earnings" className="mt-2 block rounded-2xl border-[1.5px] border-[#e2ded8] bg-white py-3.5 text-center font-bold">💶 Earnings history</Link>
+        <Link href="/rider/earnings" className="mt-2 block rounded-2xl border-[1.5px] border-[#e2ded8] bg-white py-3.5 text-center font-bold">💶 {tx("Verdiensten", "Earnings history")}</Link>
         </RoleGate>
       </main>
     </>

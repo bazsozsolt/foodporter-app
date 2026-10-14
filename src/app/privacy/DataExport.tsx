@@ -1,4 +1,5 @@
 "use client";
+import { tx } from "@/lib/i18n";
 import { getSupabase } from "@/lib/supabase";
 import { useStore } from "@/lib/store";
 import { act } from "@/lib/act";
@@ -6,7 +7,7 @@ import { ORDER_COLS } from "@/lib/orders";
 
 export function DataExport() {
   const { profile } = useStore();
-  if (!profile) return <p className="text-muted">Sign in to download a copy of your data.</p>;
+  if (!profile) return <p className="text-muted">{tx("Log in om een kopie van je gegevens te downloaden.", "Sign in to download a copy of your data.")}</p>;
   async function run() {
     const sb = getSupabase();
     if (!sb) return;

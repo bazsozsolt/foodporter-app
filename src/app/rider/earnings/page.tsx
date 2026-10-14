@@ -1,4 +1,5 @@
 "use client";
+import { tx } from "@/lib/i18n";
 import Link from "next/link";
 import { RoleGate } from "@/components/RoleGate";
 import { Card, Header, Stat } from "@/components/ui";
@@ -11,11 +12,11 @@ export default function EarningsPage() {
   const total = unpaid.reduce((a, e) => a + e.amount_cents, 0);
   return (
     <>
-      <Header subtitle="Rider app · Earnings" />
-      <main className="p-4">
-        <Link href="/rider" className="text-sm text-muted">← Order feed</Link>
+      <Header subtitle={tx("Rider-app · Verdiensten", "Rider app · Earnings")} />
+      <main id="main" className="p-4">
+        <Link href="/rider" className="text-sm text-muted">← {tx("Bestellingen", "Order feed")}</Link>
         <RoleGate role="rider">
-        <div className="mt-2.5 flex gap-2.5"><Stat value={eur(total)} label="Unpaid · paid next Monday" /><Stat value={String(earnings.length)} label="Deliveries" /></div>
+        <div className="mt-2.5 flex gap-2.5"><Stat value={eur(total)} label={tx("Openstaand · uitbetaald komende maandag", "Unpaid · paid next Monday")} /><Stat value={String(earnings.length)} label={tx("Bezorgingen", "Deliveries")} /></div>
         <Card className="mt-3">
           {[...earnings].reverse().map((e) => (
             <div key={e.id} className="flex items-center justify-between border-b border-[#f1eee9] py-2 last:border-0">
@@ -23,7 +24,7 @@ export default function EarningsPage() {
               <b>{eur(e.amount_cents)}</b>
             </div>
           ))}
-          <p className="mt-3 text-[13px] text-muted">💶 Each Monday, last week&apos;s earnings are paid out by bank transfer. You keep 100% of the delivery fee.</p>
+          <p className="mt-3 text-[13px] text-muted">💶 {tx("Elke maandag worden de verdiensten van vorige week per bankoverschrijving uitbetaald. Je houdt 100% van de bezorgvergoeding.", "Each Monday, last week’s earnings are paid out by bank transfer. You keep 100% of the delivery fee.")}</p>
         </Card>
         </RoleGate>
       </main>

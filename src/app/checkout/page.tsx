@@ -27,7 +27,7 @@ export default function CheckoutPage() {
   const sub = Object.entries(cart.qty).reduce((a, [id, q]) => a + q * (menuItems.find((m) => m.id === id)?.price_cents ?? 0), 0);
   const input = "mb-2.5 mt-1 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-3";
 
-  if (sub === 0) return <><Header /><main className="p-4"><Empty icon="🛒">{t("Er is niets om af te rekenen.", "Nothing to check out.")} <Link className="text-brand" href="/">{t("Bekijk restaurants", "Browse")}</Link></Empty></main></>;
+  if (sub === 0) return <><Header /><main id="main" className="p-4"><Empty icon="🛒">{t("Er is niets om af te rekenen.", "Nothing to check out.")} <Link className="text-brand" href="/">{t("Bekijk restaurants", "Browse")}</Link></Empty></main></>;
 
   async function pay() {
     if (!signedIn) { router.push("/login?next=/checkout"); return; }
@@ -45,24 +45,24 @@ export default function CheckoutPage() {
   return (
     <>
       <Header />
-      <main className="p-4">
+      <main id="main" className="p-4">
         <Link href="/cart" className="text-sm text-muted">← {t("Terug naar winkelmand", "Back to cart")}</Link>
         <h2 className="my-3 text-lg font-bold">{t("Afrekenen", "Checkout")}</h2>
         <Card>
-          <label className="text-[13px] text-muted">Delivery address</label>
+          <label className="text-[13px] text-muted">{t("Bezorgadres", "Delivery address")}</label>
           <AddressField value={address} onChange={setAddress} geo={geo} onGeo={setGeo} center={center} radiusKm={settings.zone_radius_km} />
-          <label className="text-[13px] text-muted">Phone (for SMS updates)</label>
-          <input className={input} data-testid="phone" type="tel" placeholder="Mobile number for SMS updates, e.g. 06 12345678" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <label className="text-[13px] text-muted">{t("Telefoon (voor SMS-updates)", "Phone (for SMS updates)")}</label>
+          <input className={input} data-testid="phone" type="tel" placeholder={t("Mobiel nummer, bv. 06 12345678", "Mobile number, e.g. 06 12345678")} value={phone} onChange={(e) => setPhone(e.target.value)} />
         </Card>
         <Card>
-          <div className="flex justify-between"><span>Subtotal</span><span>{eur(sub)}</span></div>
-          <div className="flex justify-between text-sm text-muted"><span>Delivery fee (flat)</span><span>{eur(DELIVERY_FEE_CENTS)}</span></div>
-          <div className="mt-1 flex justify-between font-bold"><span>Total</span><span>{eur(sub + DELIVERY_FEE_CENTS)}</span></div>
+          <div className="flex justify-between"><span>{t("Subtotaal", "Subtotal")}</span><span>{eur(sub)}</span></div>
+          <div className="flex justify-between text-sm text-muted"><span>{t("Bezorgkosten (vast)", "Delivery fee (flat)")}</span><span>{eur(DELIVERY_FEE_CENTS)}</span></div>
+          <div className="mt-1 flex justify-between font-bold"><span>{t("Totaal", "Total")}</span><span>{eur(sub + DELIVERY_FEE_CENTS)}</span></div>
         </Card>
         <TestModeCheckoutNote />
-        <Card><b>{t("Betalen met Mollie", "Pay with Mollie")}</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} value={method} onChange={setMethod} /></div></Card>
-        <Button onClick={pay} disabled={busy || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS)} met ${method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}`) : "Sign in to pay"}</Button>
-        <p className="mt-3 text-center text-xs text-muted">By paying you agree to our <Link className="underline" href="/terms">Terms</Link> and <Link className="underline" href="/privacy">Privacy policy</Link>. Cancelled orders are refunded in full.</p>
+        <Card><b>{t("Betalen met Mollie", "Pay with Mollie")}</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} render={(v) => v === "Card" ? t("Kaart", "Card") : v} value={method} onChange={setMethod} /></div></Card>
+        <Button onClick={pay} disabled={busy || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS)} met ${method === "Card" ? "kaart" : method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}`) : t("Log in om te betalen", "Sign in to pay")}</Button>
+        <p className="mt-3 text-center text-xs text-muted">{t("Door te betalen ga je akkoord met onze", "By paying you agree to our")} <Link className="underline" href="/terms">{t("Voorwaarden", "Terms")}</Link> {t("en", "and")} <Link className="underline" href="/privacy">{t("Privacybeleid", "Privacy policy")}</Link>. {t("Geannuleerde bestellingen worden volledig terugbetaald.", "Cancelled orders are refunded in full.")}</p>
       </main>
     </>
   );

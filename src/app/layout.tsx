@@ -4,6 +4,7 @@ import { Bebas_Neue } from "next/font/google";
 import { RoleNav } from "@/components/RoleNav";
 import { Toaster } from "@/components/Toaster";
 import { AppShell } from "@/components/AppShell";
+import { NetworkBanner } from "@/components/NetworkBanner";
 import { FeedbackButton } from "@/components/FeedbackButton";
 import { TestModeBanner } from "@/components/TestModeBanner";
 
@@ -39,7 +40,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans antialiased">
         <AppShell>
+          <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:font-bold">Naar inhoud / Skip to content</a>
           <TestModeBanner />
+          <NetworkBanner />
           {children}
           <FeedbackButton />
           <RoleNav />
