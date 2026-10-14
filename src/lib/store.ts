@@ -82,10 +82,11 @@ function mapOrder(o: Row): Order {
   }));
   const lines = ((o.order_items as Row[]) ?? []).map((l): OrderLine => ({
     item_id: (l.menu_item_id as string) ?? "", name: l.name as string, qty: l.qty as number, price_cents: l.price_cents as number,
+    guest_name: (l.guest_name as string) ?? null,
   }));
   return {
     id: String(o.id), restaurant_id: o.restaurant_id as string, customer_id: o.customer_id as string, status: o.status as OrderStatus,
-    lines, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number,
+    lines, group_order_id: (o.group_order_id as string) ?? null, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number,
     address: o.address as string, phone: (o.phone as string) ?? "", prep_minutes: (o.prep_minutes as number) ?? null,
     ready_at: (o.ready_at as string) ?? null, bids, created_at: o.created_at as string, delivered_at: (o.delivered_at as string) ?? null,
     accepted_at: (o.accepted_at as string) ?? null, paid_at: (o.paid_at as string) ?? null,

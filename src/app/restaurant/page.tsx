@@ -37,7 +37,13 @@ function OrderCard({ o }: { o: Order }) {
   return (
     <Card>
       <div className="flex items-center justify-between"><b>#{o.id} · {r?.name}</b><Pill>{o.status === "placed" ? t("NIEUW", "NEW") : SL[o.status]}</Pill></div>
-      <div className="my-1.5 text-[13px] text-muted">{o.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}</div>
+      {o.group_order_id ? (
+        <div className="my-1.5 text-[13px] text-muted" data-testid="group-lines">
+          <span className="mr-1 rounded bg-gold/40 px-1.5 py-0.5 text-[11px] font-bold text-ink">👥 {t("GROEP", "GROUP")}</span>
+          {Object.entries(o.lines.reduce<Record<string, string[]>>((a, l) => { (a[l.guest_name ?? "?"] ??= []).push(`${l.qty}× ${l.name}`); return a; }, {})).map(([n, ls]) => (
+            <div key={n}><b className="text-ink">{n}:</b> {ls.join(", ")}</div>))}
+        </div>
+      ) : <div className="my-1.5 text-[13px] text-muted">{o.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}</div>}
       <div className="text-[13px] text-muted">Deliver to {o.address}</div>
       {o.status === "placed" ? (
         <>
