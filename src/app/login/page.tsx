@@ -1,4 +1,5 @@
 "use client";
+import { T } from "@/components/LangToggle";
 import { Footer } from "@/components/Footer";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -51,7 +52,7 @@ export default function LoginPage() {
         <Card>
           <input className={input} placeholder="you@example.com" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input className={input} placeholder="Password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <Button disabled={busy || !email} onClick={() => go(actions.signInWithPassword(email, password), afterAuth)}>Sign in</Button>
+          <Button disabled={busy || !email} onClick={() => go(actions.signInWithPassword(email, password), afterAuth)}><T nl="Inloggen" en="Sign in" /></Button>
           <Button variant="ghost" disabled={busy || !email || password.length < 6} onClick={() => go(actions.signUp(email, password), afterAuth)}>Create account</Button>
           <button className="mt-3 w-full text-center text-sm font-semibold text-brand disabled:opacity-50" disabled={busy || !email} onClick={() => go(actions.magicLink(email), afterAuth)}>
             ✉️ Email me a magic link instead

@@ -27,6 +27,11 @@ export const STATUS_LABEL: Record<OrderStatus, string> = {
   ready: "Ready for pickup", picked_up: "On the way", delivered: "Delivered", cancelled: "Cancelled",
 };
 
+export const STATUS_LABEL_NL: Record<OrderStatus, string> = {
+  awaiting_payment: "Wacht op betaling", payment_failed: "Betaling mislukt", placed: "Besteld & betaald", accepted: "Restaurant heeft geaccepteerd", assigned: "Rider toegewezen",
+  ready: "Klaar voor ophalen", picked_up: "Onderweg", delivered: "Bezorgd", cancelled: "Geannuleerd",
+};
+
 export const CANCEL_REASON: Record<string, string> = {
   restaurant_rejected: "The restaurant couldn't take your order", restaurant_timeout: "The restaurant didn't confirm in time",
   admin_cancelled: "Cancelled by Food Porter support", system: "Cancelled",

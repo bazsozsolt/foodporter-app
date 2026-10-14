@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
@@ -6,7 +7,7 @@ import { act } from "@/lib/act";
 import { Card, Empty, Header } from "@/components/ui";
 import { hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
-import { CANCEL_REASON, STATUS_LABEL, STATUS_STEPS } from "@/lib/types";
+import { CANCEL_REASON, STATUS_LABEL, STATUS_LABEL_NL, STATUS_STEPS } from "@/lib/types";
 import { RateOrder } from "@/components/RateOrder";
 import { ReorderButton } from "@/components/ReorderButton";
 import { mmss, useSecondsLeft } from "@/components/Countdown";
@@ -21,6 +22,8 @@ export function TrackingView({ id }: { id: string }) {
   const { orders, restaurants, ready, profile, mode } = useStore();
   const o = orders.find((x) => x.id === id);
   const [paying, setPaying] = useState(false);
+  const tr = useT();
+  const SL = tr("nl", "en") === "nl" ? STATUS_LABEL_NL : STATUS_LABEL;
   const left = useSecondsLeft(o?.status === "accepted" ? o?.bid_window_closes_at : null);
   const live = Boolean(o && ["assigned", "ready", "picked_up"].includes(o.status));
   const loc = useOrderLocation(o?.id ?? null, live, o?.rider_id ?? null, o?.assigned_at ?? null);
@@ -53,16 +56,16 @@ export function TrackingView({ id }: { id: string }) {
 
   return (
     <>
-      <Header subtitle={`Order #${o.id}`} />
+      <Header subtitle={`${tr("Bestelling", "Order")} #${o.id}`} />
       <main className="p-4">
         <Link href="/" className="text-sm text-muted">← Home</Link>
         <Card className="mt-2.5 text-center">
-          {o.status === "awaiting_payment" ? (<><div className="text-4xl">💳</div><h2 className="text-lg font-bold">Waiting for payment</h2><p className="text-sm text-muted">If you just paid, this updates in a few seconds.</p>{mine ? <Button onClick={payNow} disabled={paying}>{paying ? "Opening Mollie…" : "Pay now"}</Button> : <p className="mt-2 text-sm text-muted">Only the customer can pay this order.</p>}</>)
-            : o.status === "payment_failed" ? (<><div className="text-4xl">⚠️</div><h2 className="text-lg font-bold">Payment failed or cancelled</h2>{mine && <Button onClick={payNow} disabled={paying}>Try again</Button>}</>)
-            : o.status === "cancelled" ? (<><div className="text-4xl">↩️</div><h2 className="text-lg font-bold">Order cancelled</h2><p className="text-sm text-muted">{CANCEL_REASON[o.cancel_reason ?? "system"] ?? "Cancelled"}.</p>
+          {o.status === "awaiting_payment" ? (<><div className="text-4xl">💳</div><h2 className="text-lg font-bold">{tr("Wacht op betaling", "Waiting for payment")}</h2><p className="text-sm text-muted">If you just paid, this updates in a few seconds.</p>{mine ? <Button onClick={payNow} disabled={paying}>{paying ? "Opening Mollie…" : "Pay now"}</Button> : <p className="mt-2 text-sm text-muted">Only the customer can pay this order.</p>}</>)
+            : o.status === "payment_failed" ? (<><div className="text-4xl">⚠️</div><h2 className="text-lg font-bold">{tr("Betaling mislukt of geannuleerd", "Payment failed or cancelled")}</h2>{mine && <Button onClick={payNow} disabled={paying}>Try again</Button>}</>)
+            : o.status === "cancelled" ? (<><div className="text-4xl">↩️</div><h2 className="text-lg font-bold">{tr("Bestelling geannuleerd", "Order cancelled")}</h2><p className="text-sm text-muted">{CANCEL_REASON[o.cancel_reason ?? "system"] ?? "Cancelled"}.</p>
                 {o.paid_at ? <p data-testid="refund" className="mt-1 text-sm">{o.refund_status === "failed" ? "Our team will refund you manually shortly." : o.refund_cents ? `Refund of ${eur(o.refund_cents)} ${o.refund_status === "refunded" ? "completed" : "on its way"} (1–3 working days for iDEAL/card).` : "Refund in progress…"}</p> : null}</>)
-            : o.status === "delivered" ? (<><div className="text-5xl">🎉</div><h2 className="text-lg font-bold">Delivered!</h2><p className="text-sm text-muted">Enjoy your meal.</p></>)
-            : bid ? (<><div className="text-sm text-muted">Arriving in about</div><div className="text-4xl font-extrabold text-brand">{bid.eta_minutes} min</div><div className="text-sm text-muted">by {etaAt} · rider {bid.rider_name} 🚲</div>{stopsBefore ? <div data-testid="stops-before" className="mt-2 inline-block rounded-full bg-[#fff1ea] px-3 py-1 text-[13px] font-semibold text-brand">🛵 Your rider has {stopsBefore} stop{stopsBefore > 1 ? "s" : ""} before you</div> : null}</>)
+            : o.status === "delivered" ? (<><div className="text-5xl">🎉</div><h2 className="text-lg font-bold">{tr("Bezorgd!", "Delivered!")}</h2><p className="text-sm text-muted">{tr("Eet smakelijk.", "Enjoy your meal.")}</p></>)
+            : bid ? (<><div className="text-sm text-muted">{tr("Bezorgd over ongeveer", "Arriving in about")}</div><div className="text-4xl font-extrabold text-brand">{bid.eta_minutes} min</div><div className="text-sm text-muted">{tr("rond", "by")} {etaAt} · rider {bid.rider_name}</div>{stopsBefore ? <div data-testid="stops-before" className="mt-2 inline-block rounded-full bg-brand-soft px-3 py-1 text-[13px] font-semibold text-brand">{tr(`Je rider heeft nog ${stopsBefore} ${stopsBefore > 1 ? "stops" : "stop"} vóór jou`, `Your rider has ${stopsBefore} stop${stopsBefore > 1 ? "s" : ""} before you`)}</div> : null}</>)
             : o.status === "accepted" && left != null ? (<div data-testid="customer-auction"><div className="text-sm text-muted">{o.bids.length} rider{o.bids.length === 1 ? "" : "s"} bidding · best ETA so far</div><div className="text-4xl font-extrabold text-brand">{best} min</div><div className="text-sm text-muted">{left > 0 ? `Rider chosen in ${mmss(left)}` : "Choosing your rider…"}</div></div>)
             : (<><div className="text-sm text-muted">Waiting for {idx < 1 ? "the restaurant" : "a rider bid"}…</div><div className="text-4xl">⏳</div></>)}
         </Card>
@@ -73,7 +76,7 @@ export function TrackingView({ id }: { id: string }) {
             {STATUS_STEPS.map((s, j) => (
               <li key={s} className={`relative py-2 pl-7 ${j <= idx ? "font-semibold text-ink" : "text-muted"}`}>
                 <span className={`absolute left-1.5 top-3 h-3 w-3 rounded-full ${j <= idx ? "bg-ok" : j === idx + 1 ? "bg-brand ring-4 ring-brand/20" : "bg-[#ddd]"}`} />
-                {STATUS_LABEL[s]}
+                {SL[s]}
                 {s === "accepted" && o.prep_minutes ? ` · ${o.prep_minutes} min prep${o.ready_at && !["ready", "picked_up", "delivered"].includes(o.status) ? ` (ready ~${hhmm(new Date(o.ready_at))})` : ""}` : ""}
                 {s === "assigned" && bid ? ` · ${bid.rider_name}, ETA ${bid.eta_minutes} min` : ""}
               </li>

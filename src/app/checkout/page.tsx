@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -18,6 +19,7 @@ export default function CheckoutPage() {
   const outOfZone = hasSupabase && (!geo || geo.distance_km > settings.zone_radius_km);
   const DELIVERY_FEE_CENTS = useStore().settings.delivery_fee_cents;
   const [busy, setBusy] = useState(false);
+  const t = useT();
   const router = useRouter();
   const [address, setAddress] = useState("Heuvelstraat 12, 5038 AA Tilburg");
   const [phone, setPhone] = useState("");
@@ -25,7 +27,7 @@ export default function CheckoutPage() {
   const sub = Object.entries(cart.qty).reduce((a, [id, q]) => a + q * (menuItems.find((m) => m.id === id)?.price_cents ?? 0), 0);
   const input = "mb-2.5 mt-1 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-3";
 
-  if (sub === 0) return <><Header /><main className="p-4"><Empty icon="🛒">Nothing to check out. <Link className="text-brand" href="/">Browse</Link></Empty></main></>;
+  if (sub === 0) return <><Header /><main className="p-4"><Empty icon="🛒">{t("Er is niets om af te rekenen.", "Nothing to check out.")} <Link className="text-brand" href="/">{t("Bekijk restaurants", "Browse")}</Link></Empty></main></>;
 
   async function pay() {
     if (!signedIn) { router.push("/login?next=/checkout"); return; }
@@ -44,8 +46,8 @@ export default function CheckoutPage() {
     <>
       <Header />
       <main className="p-4">
-        <Link href="/cart" className="text-sm text-muted">← Back to cart</Link>
-        <h2 className="my-3 text-lg font-bold">Checkout</h2>
+        <Link href="/cart" className="text-sm text-muted">← {t("Terug naar winkelmand", "Back to cart")}</Link>
+        <h2 className="my-3 text-lg font-bold">{t("Afrekenen", "Checkout")}</h2>
         <Card>
           <label className="text-[13px] text-muted">Delivery address</label>
           <AddressField value={address} onChange={setAddress} geo={geo} onGeo={setGeo} center={center} radiusKm={settings.zone_radius_km} />
@@ -58,8 +60,8 @@ export default function CheckoutPage() {
           <div className="mt-1 flex justify-between font-bold"><span>Total</span><span>{eur(sub + DELIVERY_FEE_CENTS)}</span></div>
         </Card>
         <TestModeCheckoutNote />
-        <Card><b>Pay with Mollie</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} value={method} onChange={setMethod} /></div></Card>
-        <Button onClick={pay} disabled={busy || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? "Redirecting to Mollie…" : signedIn ? `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}` : "Sign in to pay"}</Button>
+        <Card><b>{t("Betalen met Mollie", "Pay with Mollie")}</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} value={method} onChange={setMethod} /></div></Card>
+        <Button onClick={pay} disabled={busy || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS)} met ${method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}`) : "Sign in to pay"}</Button>
         <p className="mt-3 text-center text-xs text-muted">By paying you agree to our <Link className="underline" href="/terms">Terms</Link> and <Link className="underline" href="/privacy">Privacy policy</Link>. Cancelled orders are refunded in full.</p>
       </main>
     </>

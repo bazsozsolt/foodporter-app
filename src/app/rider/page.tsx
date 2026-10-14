@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
@@ -10,7 +11,7 @@ import { Button, Card, Chips, Empty, Header, Pill } from "@/components/ui";
 import { restaurantStyle } from "@/lib/mock-data";
 import { eur, hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
-import { STATUS_LABEL, type Order } from "@/lib/types";
+import { STATUS_LABEL, STATUS_LABEL_NL, type Order } from "@/lib/types";
 import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap, type MapMarker } from "@/components/LiveMap";
 import { navUrl, osmNavUrl, useShareLocation } from "@/lib/location";
@@ -33,6 +34,7 @@ function BidCard({ o, activeCount }: { o: Order; activeCount: number }) {
   const stackedExtra = activeCount > 0 ? 8 * activeCount : 0; // stacked: you deliver after your current stop(s)
   const opts = [prep + 8, prep + 12, prep + 18, prep + 25].map((m) => m + stackedExtra);
   const reason = useCanBid(o.id, activeCount);
+  const t = useT();
   const [eta, setEta] = useState(opts[1]);
   const { restaurants, profile } = useStore();
   const mine = o.bids.find((b) => b.rider_id === profile?.id);
@@ -49,18 +51,20 @@ function BidCard({ o, activeCount }: { o: Order; activeCount: number }) {
         ? <p data-testid="stack-ok" className="mt-2 rounded-xl bg-emerald-50 p-2 text-[13px] font-semibold text-emerald-800">🧩 On your route: stack it with your current job. Bid the time until this customer gets their food (after your other stop{activeCount > 1 ? "s" : ""}).</p>
         : reason ? <p data-testid="stack-no" className="mt-2 rounded-xl bg-[#f1ede8] p-2 text-[13px] text-muted">🚫 Can&apos;t stack: {reason}</p> : null)}
       {mine ? (
-        <p data-testid="my-bid" className="mt-3 rounded-xl bg-[#fff1ea] p-3 text-sm">Your bid: <b>{mine.eta_minutes} min</b>. Lowest ETA wins when the window closes (ties: earliest bid).</p>
+        <p data-testid="my-bid" className="mt-3 rounded-xl bg-brand-soft p-3 text-sm">Your bid: <b>{mine.eta_minutes} min</b>. Lowest ETA wins when the window closes (ties: earliest bid).</p>
       ) : left === 0 || (activeCount > 0 && reason !== null) ? null : (<>
-        <p className="mb-2 mt-3 font-bold">Bid your delivery time</p>
+        <p className="mb-2 mt-3 font-bold">{t("Bied je bezorgtijd", "Bid your delivery time")}</p>
         <Chips options={opts} value={eta} onChange={setEta} render={(m) => `${m} min`} />
         <p className="mt-2 text-[13px] text-muted">{o.bid_window_closes_at ? "Bidding is open" : "First bid opens a 60 s window"} · lowest ETA wins, ties go to the earliest bid · you keep the full fee</p>
-        <Button onClick={() => act(actions.placeBid(o.id, eta), `Bid placed: ${eta} min. Winner is picked when the window closes.`)}>Place bid</Button>
+        <Button onClick={() => act(actions.placeBid(o.id, eta), t(`Bod geplaatst: ${eta} min. De winnaar wordt gekozen als de biedtijd sluit.`, `Bid placed: ${eta} min. Winner is picked when the window closes.`))}>{t("Bod plaatsen", "Place bid")}</Button>
       </>)}
     </Card>
   );
 }
 
 export default function RiderPage() {
+  const t = useT();
+  const SL = t("nl", "en") === "nl" ? STATUS_LABEL_NL : STATUS_LABEL;
   const { orders, profile, mode, restaurants } = useStore();
   const open = orders.filter((o) => o.status === "accepted" && !acceptedBid(o));
   useOrderAlerts(open.map((o) => `${o.id}:${o.renotified_at ?? ""}`), "Food Porter · order to bid on", riderBody);
@@ -81,7 +85,7 @@ export default function RiderPage() {
   const stops = useMyStops(mode === "supabase" ? active.map((o) => `${o.id}:${o.status}`).join(",") : "");
   return (
     <>
-      <Header subtitle="Rider app · Tilburg Centrum" />
+      <Header tagline={t("Jouw tijd, jouw regels, jouw verdiensten", "Your time, your rules, your earnings")} subtitle={t("Rider-app · Tilburg Centrum", "Rider app · Tilburg Centrum")} />
       <main className="p-4">
         <RoleGate role="rider">
         <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
@@ -102,14 +106,14 @@ export default function RiderPage() {
         {(online || job) && <p data-testid="gps" className="-mt-1 mb-3 text-xs text-muted">{gpsError ? `⚠️ ${gpsError}` : me ? `📍 Sharing location (${me.lat.toFixed(4)}, ${me.lng.toFixed(4)}) every ~7 s` : "📍 Waiting for GPS…"}</p>}
         {stops.length > 0 && (
           <Card data-testid="route">
-            <div className="flex items-center justify-between"><b>🧭 Your route{active.length > 1 ? ` · ${active.length} orders stacked` : ""}</b><Pill>{stops.length} stop{stops.length > 1 ? "s" : ""}</Pill></div>
+            <div className="flex items-center justify-between"><b>{t("Jouw route", "Your route")}{active.length > 1 ? t(` · ${active.length} bestellingen gecombineerd`, ` · ${active.length} orders stacked`) : ""}</b><Pill>{stops.length} stop{stops.length > 1 ? "s" : ""}</Pill></div>
             <div className="mt-2"><LiveMap height={240} markers={[
               ...stops.filter((x) => x.lat != null).map((x) => ({ id: `${x.kind}-${x.order_id}`, lat: x.lat!, lng: x.lng!, kind: x.kind === "pickup" ? "restaurant" as const : "dropoff" as const, label: `${x.seq}. ${x.kind === "pickup" ? "Pickup" : "Drop-off"} #${x.order_id}: ${x.label}` })),
               ...(me ? [{ id: "me", ...me, kind: "me" as const, label: "You" }] : []),
             ]} /></div>
             <ol className="mt-2 space-y-1.5" data-testid="stop-list">
               {stops.map((x, i) => (
-                <li key={`${x.kind}-${x.order_id}`} className={`flex items-center gap-2 rounded-xl p-2 text-sm ${i === 0 ? "bg-[#fff1ea]" : "bg-white"}`}>
+                <li key={`${x.kind}-${x.order_id}`} className={`flex items-center gap-2 rounded-xl p-2 text-sm ${i === 0 ? "bg-brand-soft" : "bg-white"}`}>
                   <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink text-xs font-bold text-white">{x.seq}</span>
                   <span className="min-w-0 flex-1"><b>{x.kind === "pickup" ? "🍳 Pickup" : "🏠 Drop-off"}</b> #{x.order_id} · <span className="text-muted">{x.label}</span></span>
                   {x.lat != null && <a data-testid="stop-nav" className="rounded-lg bg-[#1a73e8] px-2 py-1 text-xs font-semibold text-white" href={navUrl({ lat: x.lat, lng: x.lng! }, i === 0 ? me : stops[i - 1].lat != null ? { lat: stops[i - 1].lat!, lng: stops[i - 1].lng! } : null)} target="_blank" rel="noreferrer">🧭 Go</a>}
@@ -131,21 +135,21 @@ export default function RiderPage() {
           ];
           return (
             <Card key={o.id}>
-              <div className="flex items-center justify-between"><b>Active · #{o.id}</b><Pill>{STATUS_LABEL[o.status]}</Pill></div>
+              <div className="flex items-center justify-between"><b>{t("Actief", "Active")} · #{o.id}</b><Pill>{SL[o.status]}</Pill></div>
               <p className="mt-1 text-[13px] text-muted">Your ETA {bid.eta_minutes} min · food ready ~{o.ready_at ? hhmm(new Date(o.ready_at)) : "?"} ({o.prep_minutes} min prep) · to {o.address}</p>
               {markers.length > 0 && active.length === 1 && <div className="mt-2"><LiveMap markers={markers} /></div>}
               {target && <div className="mt-2 flex gap-2 text-sm font-semibold">
                 <a data-testid="nav-link" className="flex-1 rounded-xl bg-[#1a73e8] py-2 text-center text-white" href={navUrl(target, me)} target="_blank" rel="noreferrer">🧭 Navigate to {o.status === "picked_up" ? "drop-off" : "pickup"}</a>
                 <a className="rounded-xl border-[1.5px] border-[#e2ded8] px-3 py-2 text-center" href={osmNavUrl(target, me)} target="_blank" rel="noreferrer">OSM</a>
               </div>}
-              {o.status === "assigned" && <Empty icon="⏳">Waiting for the restaurant to mark ready…</Empty>}
-              {o.status === "ready" && <Button onClick={() => act(actions.pickUp(o.id), "Customer notified: your food is on the way")}>📦 Picked up</Button>}
-              {o.status === "picked_up" && <Button variant="ok" onClick={() => act(actions.deliver(o.id), `Delivered ✅ · ${eur(o.delivery_fee_cents)} added to earnings`)}>✅ Delivered</Button>}
+              {o.status === "assigned" && <Empty icon="⏳">{t("Wachten tot het restaurant de bestelling klaar meldt…", "Waiting for the restaurant to mark ready…")}</Empty>}
+              {o.status === "ready" && <Button onClick={() => act(actions.pickUp(o.id), t("Klant geïnformeerd: je eten is onderweg", "Customer notified: your food is on the way"))}>{t("Opgehaald", "Picked up")}</Button>}
+              {o.status === "picked_up" && <Button variant="ok" onClick={() => act(actions.deliver(o.id), `Delivered ✅ · ${eur(o.delivery_fee_cents)} added to earnings`)}>{t("Bezorgd", "Delivered")}</Button>}
             </Card>
           );
         })}
-        <h2 className="mb-3 mt-1 text-lg font-bold">Open orders</h2>
-        {open.length === 0 ? <Empty icon="📭">No orders to bid on right now.</Empty> : open.map((o) => <BidCard key={o.id} o={o} activeCount={active.length} />)}
+        <h2 className="mb-3 mt-1 text-lg font-bold">{t("Open bestellingen", "Open orders")}</h2>
+        {open.length === 0 ? <Empty icon="📭">{t("Op dit moment geen bestellingen om op te bieden.", "No orders to bid on right now.")}</Empty> : open.map((o) => <BidCard key={o.id} o={o} activeCount={active.length} />)}
         <Link href="/rider/earnings" className="mt-2 block rounded-2xl border-[1.5px] border-[#e2ded8] bg-white py-3.5 text-center font-bold">💶 Earnings history</Link>
         </RoleGate>
       </main>

@@ -1,17 +1,21 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { Bebas_Neue } from "next/font/google";
 import { RoleNav } from "@/components/RoleNav";
 import { Toaster } from "@/components/Toaster";
 import { AppShell } from "@/components/AppShell";
 import { FeedbackButton } from "@/components/FeedbackButton";
 import { TestModeBanner } from "@/components/TestModeBanner";
 
+const bebas = Bebas_Neue({ weight: "400", subsets: ["latin", "latin-ext"], variable: "--font-bebas", display: "swap" });
+
 export const metadata: Metadata = {
-  title: "Food Porter",
-  description: "Local food delivery in Tilburg. Riders bid to bring it fast.",
+  title: "Food Porter · Tilburg",
+  description: "Sneller je avondeten bezorgd in Tilburg, door lokale riders die zelf hun tempo kiezen.",
+  icons: { icon: [{ url: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/icons/icon-192.png`, sizes: "192x192", type: "image/png" }], apple: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/icons/apple-touch-icon.png` },
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ff5a1f" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#9b0708" };
 
 const SUPA = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/$/, "");
 const CSP = [
@@ -27,7 +31,7 @@ const CSP = [
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="nl" className={bebas.variable}>
       <head>
         {/* GitHub Pages cannot send HTTP headers, so the policy is set via meta (frame-ancestors/HSTS are not possible this way). */}
         <meta httpEquiv="Content-Security-Policy" content={CSP} />

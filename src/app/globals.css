@@ -1,13 +1,18 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-brand: #ff5a1f;
-  --color-brand-dark: #e1440c;
+  /* sampled from Zsolt's logo: scooter/pins red #9b0708, wordmark yellow #fad228 */
+  --color-brand: #9b0708;
+  --color-brand-dark: #6f0506;
+  --color-brand-soft: #fbeaea;
+  --color-gold: #fad228;
+  --color-gold-soft: #fff6cc;
   --color-ink: #1d1b24;
   --color-muted: #7a7686;
   --color-paper: #f6f4f1;
   --color-ok: #14a36b;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-bebas), "Oswald", "Arial Narrow", sans-serif;
 }
 
 body {
@@ -19,3 +24,7 @@ body {
   body { background: #fff; }
   .no-print { display: none !important; }
 }
+
+/* Condensed headings echo the FOODPORTER wordmark */
+h1, h2, .font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: .02em; }
+h2 { font-size: 1.45rem !important; line-height: 1.1; }

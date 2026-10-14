@@ -11,7 +11,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     navigator.serviceWorker.register(`${base}/sw.js`, { scope: `${base}/` }).catch(() => { /* ignore */ });
   }, []);
   return (
-    <div className={`relative mx-auto min-h-screen bg-paper pb-24 shadow-2xl print:max-w-none print:pb-0 print:shadow-none ${admin ? "max-w-6xl" : "max-w-[420px]"}`}>
+    <div className={`relative mx-auto min-h-screen bg-paper pb-36 shadow-2xl print:max-w-none print:pb-0 print:shadow-none ${admin ? "max-w-6xl" : "max-w-[420px]"}`}>
       {children}
     </div>
   );

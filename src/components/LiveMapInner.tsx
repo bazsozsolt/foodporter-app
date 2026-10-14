@@ -6,9 +6,11 @@ import { useEffect, useRef } from "react";
 export interface MapMarker { id: string; lat: number; lng: number; kind: "rider" | "restaurant" | "dropoff" | "me"; label: string }
 
 const EMOJI: Record<MapMarker["kind"], string> = { rider: "🚲", me: "🚲", restaurant: "🍳", dropoff: "🏠" };
+// brand colours from the logo: red #9b0708, yellow #fad228
+const STYLE: Record<MapMarker["kind"], [string, string]> = { rider: ["#9b0708", "#fad228"], me: ["#9b0708", "#fad228"], restaurant: ["#fff", "#9b0708"], dropoff: ["#fad228", "#9b0708"] };
 const icon = (k: MapMarker["kind"]) => L.divIcon({
   className: "",
-  html: `<div style="font-size:22px;line-height:30px;width:34px;height:34px;text-align:center;border-radius:50%;background:${k === "rider" || k === "me" ? "#ff5a1f" : "#fff"};border:2px solid #1d1b19;box-shadow:0 2px 6px rgba(0,0,0,.3)">${EMOJI[k]}</div>`,
+  html: `<div style="font-size:22px;line-height:30px;width:34px;height:34px;text-align:center;border-radius:50%;background:${STYLE[k][0]};border:2.5px solid ${STYLE[k][1]};box-shadow:0 2px 6px rgba(0,0,0,.3)">${EMOJI[k]}</div>`,
   iconSize: [34, 34], iconAnchor: [17, 17],
 });
 

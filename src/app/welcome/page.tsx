@@ -13,8 +13,8 @@ const Step = ({ n, t, d }: { n: string; t: string; d: string }) => (
 export default function Welcome() {
   return (
     <main>
-      <section className="bg-gradient-to-br from-brand to-[#ff8a3d] px-5 pb-10 pt-12 text-white">
-        <div className="text-sm font-bold opacity-90">🛵 Food Porter · Tilburg</div>
+      <section className="bg-gradient-to-br from-brand to-brand-dark px-5 pb-10 pt-12 text-white">
+        <div className="text-sm font-bold opacity-90">Food Porter · Tilburg</div>
         <h1 className="mt-3 text-[28px] font-extrabold leading-tight">Faster dinner delivery in Tilburg, driven by local riders who choose their own speed.</h1>
         <p className="mt-3 text-white/90">Order from the city&apos;s favourite independent kitchens. Riders bid the delivery time they can really make, and you see it before your food leaves.</p>
         <Link href="/" className="mt-5 inline-block rounded-2xl bg-white px-5 py-3 font-extrabold text-brand shadow">Order now →</Link>
@@ -30,7 +30,7 @@ export default function Welcome() {
         <div className="rounded-2xl bg-ink p-4 text-white">
           <b>🚲 Ride with us</b>
           <p className="mt-1 text-sm text-white/80">Choose your own speed: bid only on the orders you want. Keep 100% of the flat delivery fee, paid weekly.</p>
-          <Link href="/login?next=/rider" className="mt-2 inline-block text-sm font-bold text-[#ffb08f] underline">Sign up as a rider →</Link>
+          <Link href="/login?next=/rider" className="mt-2 inline-block text-sm font-bold text-gold underline">Sign up as a rider →</Link>
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <b>👩‍🍳 Partner restaurants</b>

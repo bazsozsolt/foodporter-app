@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/lib/i18n";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, Pill } from "@/components/ui";
@@ -57,26 +58,27 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
   }, [list.length, key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function locate() {
-    navigator.geolocation?.getCurrentPosition((p) => setHere({ lat: p.coords.latitude, lng: p.coords.longitude, label: "your location" }), () => alert("Location not available"), { timeout: 8000 });
+    navigator.geolocation?.getCurrentPosition((p) => setHere({ lat: p.coords.latitude, lng: p.coords.longitude, label: t("jouw locatie", "your location") }), () => alert(t("Locatie niet beschikbaar", "Location not available")), { timeout: 8000 });
   }
 
+  const t = useT();
   const chip = (on: boolean) => `whitespace-nowrap rounded-full border px-3 py-1 text-xs font-semibold ${on ? "border-brand bg-brand text-white" : "border-[#e6dfd7] bg-white text-ink"}`;
   return (
     <section>
-      <input data-testid="restaurant-search" className="mb-2 w-full rounded-xl border border-[#e6dfd7] bg-white px-3 py-2.5 text-sm" placeholder="🔎 Search restaurants or cuisine (pizza, sushi, kebab…)"
+      <input data-testid="restaurant-search" className="mb-2 w-full rounded-xl border border-[#e6dfd7] bg-white px-3 py-2.5 text-sm" placeholder={t("Zoek restaurant of keuken (pizza, sushi, kebab…)", "Search restaurants or cuisine (pizza, sushi, kebab…)")}
         value={q} onChange={(e) => setQ(e.target.value)} />
       <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1" data-testid="cuisine-chips">
-        <button className={chip(!cuisine)} onClick={() => setCuisine(null)}>All</button>
+        <button className={chip(!cuisine)} onClick={() => setCuisine(null)}>{t("Alles", "All")}</button>
         {chips.map((c) => <button key={c} className={chip(cuisine === c)} onClick={() => setCuisine(cuisine === c ? null : c)}>{c}</button>)}
       </div>
       <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-muted">
         <span data-testid="result-count">{list.length} restaurant{list.length === 1 ? "" : "s"}</span>
         <span>·</span>
-        <button className={chip(sort === "recommended")} onClick={() => setSort("recommended")}>Partners first</button>
-        <button className={chip(sort === "distance")} data-testid="sort-distance" onClick={() => (origin ? setSort("distance") : locate())}>Nearest{origin ? ` to ${origin.label}` : ""}</button>
-        {!origin && <button className="font-semibold text-brand underline" onClick={locate}>📍 use my location</button>}
+        <button className={chip(sort === "recommended")} onClick={() => setSort("recommended")}>{t("Partners eerst", "Partners first")}</button>
+        <button className={chip(sort === "distance")} data-testid="sort-distance" onClick={() => (origin ? setSort("distance") : locate())}>{t("Dichtstbij", "Nearest")}{origin ? ` · ${origin.label}` : ""}</button>
+        {!origin && <button className="font-semibold text-brand underline" onClick={locate}>{t("gebruik mijn locatie", "use my location")}</button>}
       </div>
-      {list.length === 0 && <p className="text-sm text-muted">No restaurants match “{q}”.</p>}
+      {list.length === 0 && <p className="text-sm text-muted">{t("Geen restaurants gevonden voor", "No restaurants match")} “{q}”.</p>}
       {list.slice(0, shown).map(({ r, d }) => (
         <Link key={r.id} href={`/r?id=${r.id}`}>
           <Card className="flex items-center gap-3">
@@ -84,16 +86,16 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
             <div className="min-w-0 flex-1">
               <h3 className="font-bold">{r.name}</h3>
               <div className="text-[13px] text-muted">{r.cuisine} · {r.area}{d != null ? ` · ${d.toFixed(1)} km` : ""}</div>
-              {r.is_test ? <div className="text-[11px] font-semibold text-amber-700" data-testid="test-label">🧪 Test data from OpenStreetMap, not a partner</div>
-                : <div className="text-[11px] font-semibold text-emerald-700" data-testid="partner-label">✓ Pilot partner</div>}
-              <div className="mt-1.5 flex flex-wrap gap-1.5">{(r.rating_count ?? 0) > 0 && <Pill>★ {Number(r.rating_avg).toFixed(1)} ({r.rating_count})</Pill>}<Pill>~{r.avg_prep_minutes + 12} min</Pill><Pill tone="ok">{eur(fee)} delivery</Pill></div>
+              {r.is_test ? <div className="text-[11px] font-semibold text-[#8a5a00]" data-testid="test-label">🧪 {t("Testdata van OpenStreetMap, geen partner", "Test data from OpenStreetMap, not a partner")}</div>
+                : <div className="text-[11px] font-semibold text-emerald-700" data-testid="partner-label">✓ {t("Pilotpartner", "Pilot partner")}</div>}
+              <div className="mt-1.5 flex flex-wrap gap-1.5">{(r.rating_count ?? 0) > 0 && <Pill>★ {Number(r.rating_avg).toFixed(1)} ({r.rating_count})</Pill>}<Pill>~{r.avg_prep_minutes + 12} min</Pill><Pill tone="ok">{eur(fee)} {t("bezorging", "delivery")}</Pill></div>
             </div>
           </Card>
         </Link>
       ))}
       {shown < list.length && (
         <div ref={sentinel} className="py-2 text-center">
-          <button data-testid="show-more" className="rounded-xl bg-white px-4 py-2 text-sm font-semibold" onClick={more}>Show more ({list.length - shown} left)</button>
+          <button data-testid="show-more" className="rounded-xl bg-white px-4 py-2 text-sm font-semibold" onClick={more}>{t(`Meer tonen (nog ${list.length - shown})`, `Show more (${list.length - shown} left)`)}</button>
         </div>
       )}
     </section>

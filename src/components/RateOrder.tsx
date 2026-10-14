@@ -12,7 +12,7 @@ function Stars({ value, onChange, label }: { value: number; onChange: (n: number
       <div role="radiogroup" aria-label={label}>
         {[1, 2, 3, 4, 5].map((n) => (
           <button key={n} type="button" aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => onChange(n)}
-            className={`px-0.5 text-2xl ${n <= value ? "text-[#ffb400]" : "text-[#ddd]"}`}>★</button>
+            className={`px-0.5 text-2xl ${n <= value ? "text-gold" : "text-[#ddd]"}`}>★</button>
         ))}
       </div>
     </div>

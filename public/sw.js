@@ -1,5 +1,5 @@
 // Food Porter service worker: offline shell + fast repeat loads. Never caches API/Supabase/Mollie traffic.
-const VERSION = "fp-v2";
+const VERSION = "fp-v7";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const SHELL = [`${BASE}/`, `${BASE}/offline/`, `${BASE}/icons/icon-192.png`];
 

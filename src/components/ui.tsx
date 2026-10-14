@@ -1,17 +1,30 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { LangToggle } from "@/components/LangToggle";
 
-export function Header({ subtitle = "Tilburg Centrum" }: { subtitle?: string }) {
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+/** Brand header: Zsolt's mark (scooter + route) on a white badge, the yellow FOODPORTER wordmark on red. */
+export function Header({ subtitle = "Tilburg Centrum", tagline }: { subtitle?: ReactNode; tagline?: ReactNode }) {
   return (
-    <header className="print:hidden rounded-b-3xl bg-gradient-to-br from-brand to-[#ff8a3d] px-5 pb-5 pt-5 text-white">
-      <Link href="/" className="text-[22px] font-bold tracking-tight">🛵 Food Porter</Link>
+    <header className="print:hidden rounded-b-3xl bg-gradient-to-br from-brand to-brand-dark px-5 pb-5 pt-4 text-white">
+      <div className="flex items-center justify-between gap-3">
+        <Link href="/" className="flex min-w-0 items-center gap-2.5" aria-label="Food Porter, home" data-testid="brand-logo">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`${BASE}/brand/mark-badge.png`} alt="" width={44} height={44} className="h-12 w-12 shrink-0 rounded-full bg-white p-0.5 shadow" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`${BASE}/brand/wordmark.png`} alt="FOODPORTER" width={150} height={25} className="h-[25px] w-auto" />
+        </Link>
+        <LangToggle />
+      </div>
+      {tagline && <p className="mt-2 text-[14px] font-semibold leading-snug text-gold" data-testid="tagline">{tagline}</p>}
       <p className="mt-1 text-[13px] opacity-90">{subtitle}</p>
     </header>
   );
 }
 
 export function Card({ children, className = "", "data-testid": testId }: { children: ReactNode; className?: string; "data-testid"?: string }) {
-  return <div data-testid={testId} className={`mb-3 rounded-2xl bg-white p-4 shadow-[0_2px_10px_rgba(0,0,0,.05)] ${className}`}>{children}</div>;
+  return <div data-testid={testId} className={`mb-3 rounded-2xl ${/(^|\s)bg-/.test(className) ? "" : "bg-white"} p-4 shadow-[0_2px_10px_rgba(0,0,0,.05)] ${className}`}>{children}</div>;
 }
 
 type BtnVariant = "brand" | "dark" | "ghost" | "ok";
@@ -44,7 +57,7 @@ export function Chips<T extends number | string>({ options, value, onChange, ren
 }
 
 export function Pill({ children, tone = "brand" }: { children: ReactNode; tone?: "brand" | "ok" }) {
-  return <span className={`inline-block rounded-lg px-2 py-0.5 text-xs font-bold ${tone === "ok" ? "bg-[#e3f7ee] text-ok" : "bg-[#fff1ea] text-brand-dark"}`}>{children}</span>;
+  return <span className={`inline-block rounded-lg px-2 py-0.5 text-xs font-bold ${tone === "ok" ? "bg-[#e3f7ee] text-ok" : "bg-brand-soft text-brand"}`}>{children}</span>;
 }
 
 export function Empty({ icon, children }: { icon: string; children: ReactNode }) {

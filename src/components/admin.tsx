@@ -84,9 +84,9 @@ export const Td = ({ children, className = "" }: { children: ReactNode; classNam
 export function StatusBadge({ s }: { s: string }) {
   const tone: Record<string, string> = {
     active: "bg-[#e3f7ee] text-ok", delivered: "bg-[#e3f7ee] text-ok", resolved: "bg-[#e3f7ee] text-ok", paid: "bg-[#e3f7ee] text-ok",
-    pending: "bg-[#fff1ea] text-brand-dark", open: "bg-[#fff1ea] text-brand-dark", awaiting_payment: "bg-[#fff1ea] text-brand-dark",
+    pending: "bg-brand-soft text-brand-dark", open: "bg-brand-soft text-brand-dark", awaiting_payment: "bg-brand-soft text-brand-dark",
     suspended: "bg-[#fde8e7] text-[#b42318]", blocked: "bg-[#fde8e7] text-[#b42318]", payment_failed: "bg-[#fde8e7] text-[#b42318]", cancelled: "bg-[#fde8e7] text-[#b42318]",
-    critical: "bg-[#fde8e7] text-[#b42318]", high: "bg-[#fde8e7] text-[#b42318]", medium: "bg-[#fff1ea] text-brand-dark", low: "bg-[#f1ede8] text-muted",
+    critical: "bg-[#fde8e7] text-[#b42318]", high: "bg-[#fde8e7] text-[#b42318]", medium: "bg-brand-soft text-brand-dark", low: "bg-[#f1ede8] text-muted",
   };
   return <span className={`inline-block rounded-lg px-2 py-0.5 text-xs font-bold ${tone[s] ?? "bg-[#f1ede8] text-ink"}`}>{s.replace(/_/g, " ")}</span>;
 }
