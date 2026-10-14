@@ -25,7 +25,7 @@ export default function LoginPage() {
     setBusy(false);
     if (msg) then?.(msg);
   }
-  const afterAuth = (m: string) => { if (!m.startsWith("Check")) goNext(); };
+  const afterAuth = (m: string) => { if (!m.startsWith("✉️")) goNext(); };
 
   if (!ready) return <><Header /><p className="p-6 text-center text-muted">{tx("Laden…", "Loading…")}</p></>;
 

@@ -1,4 +1,5 @@
 "use client";
+import { tx } from "@/lib/i18n";
 import { ORDER_COLS } from "./orders";
 // Data layer. With NEXT_PUBLIC_SUPABASE_* set it uses Supabase (auth, queries, realtime);
 // otherwise it falls back to mock data in localStorage so the app always runs.
@@ -161,10 +162,10 @@ async function run(p: PromiseLike<{ error: { message: string } | null }>) {
 
 /** Friendlier texts for common Supabase Auth errors. */
 function authError(m: string) {
-  if (/rate limit/i.test(m)) return "Too many emails were sent in the last hour. Please try again later (or ask the Food Porter team to enable your account).";
-  if (/not authorized/i.test(m)) return "Sign-up emails can't be delivered to this address yet (pilot mail limits). Please ask the Food Porter team.";
-  if (/not confirmed/i.test(m)) return "Please confirm your email first: open the link we emailed you (check spam).";
-  if (/invalid login/i.test(m)) return "Wrong email or password.";
+  if (/rate limit/i.test(m)) return tx("Er zijn het afgelopen uur te veel e-mails verstuurd. Probeer het later opnieuw (of vraag het Food Porter-team je account te activeren).", "Too many emails were sent in the last hour. Please try again later (or ask the Food Porter team to enable your account).");
+  if (/not authorized/i.test(m)) return tx("Aanmeldmails kunnen nog niet naar dit adres worden verstuurd (pilotlimiet). Vraag het Food Porter-team.", "Sign-up emails can't be delivered to this address yet (pilot mail limits). Please ask the Food Porter team.");
+  if (/not confirmed/i.test(m)) return tx("Bevestig eerst je e-mailadres via de link die we je stuurden (kijk ook in spam).", "Please confirm your email first: open the link we emailed you (check spam).");
+  if (/invalid login/i.test(m)) return tx("Onjuist e-mailadres of wachtwoord.", "Wrong email or password.");
   return m;
 }
 const authRedirect = () => window.location.origin + (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/";
@@ -185,7 +186,7 @@ export const actions = {
     if (!sb) { set((s) => ({ ...s, signedIn: email || "email" })); return "Account created (mock)"; }
     const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: authRedirect() } });
     if (error) throw new Error(authError(error.message));
-    if (!data.session) return "Check your email (and spam folder) for the confirmation link, then come back and sign in";
+    if (!data.session) return "✉️ " + tx("Kijk in je e-mail (en spam) voor de bevestigingslink en log daarna in", "Check your email (and spam folder) for the confirmation link, then come back and sign in");
     await loadUserData();
     return "Account created";
   },
@@ -194,7 +195,7 @@ export const actions = {
     if (!sb) { set((s) => ({ ...s, signedIn: email || "email" })); return "Signed in (mock)"; }
     const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: authRedirect() } });
     if (error) throw new Error(authError(error.message));
-    return "Check your email for a login link";
+    return "✉️ " + tx("Kijk in je e-mail voor een inloglink", "Check your email for a login link");
   },
   async oauth(provider: "google" | "apple") {
     const sb = getSupabase();
@@ -229,7 +230,7 @@ export const actions = {
     const sb = getSupabase();
     if (sb) {
       const uid = state.profile?.id;
-      if (!uid) throw new Error("Please sign in first");
+      if (!uid) throw new Error(tx("Log eerst in", "Please sign in first"));
       const { data, error } = await sb.from("orders").insert({
         customer_id: uid, restaurant_id, subtotal_cents: subtotal, delivery_fee_cents: state.settings.delivery_fee_cents, address, phone,
         status: "awaiting_payment", ...(geo ? { lat: geo.lat, lng: geo.lng, distance_km: Math.round(geo.distance_km * 100) / 100 } : {}),
