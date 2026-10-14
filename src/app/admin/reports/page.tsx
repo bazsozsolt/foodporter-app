@@ -40,12 +40,14 @@ function Delivery({ range }: { range: Range }) {
         <Kpi label="Avg time to accepted bid" value={d?.avg_bid_seconds != null ? `${d.avg_bid_seconds}s` : "—"} />
         <Kpi label="Bid within 3 min" value={pct(d?.pct_bid_3min)} />
         <Kpi label="On time" value={pct(d?.pct_on_time)} />
+        <Kpi label="On time: stacked vs single" value={<span data-testid="stacked-ontime" className="text-base">{pct((d?.stacked as Row | undefined)?.stacked_pct_on_time)} vs {pct((d?.stacked as Row | undefined)?.single_pct_on_time)}</span>}
+          hint={`${String((d?.stacked as Row | undefined)?.stacked_delivered ?? 0)} stacked / ${String((d?.stacked as Row | undefined)?.single_delivered ?? 0)} single · avg late ${String((d?.stacked as Row | undefined)?.stacked_avg_minutes_late ?? "—")} vs ${String((d?.stacked as Row | undefined)?.single_avg_minutes_late ?? "—")} min`} />
         <Kpi label="Key metric" value={pct(d?.pct_key_metric)} hint="bid ≤ 3 min AND on time" />
         <Kpi label="Prep planned vs actual" value={`${d?.avg_prep_planned ?? "—"} / ${d?.avg_prep_actual ?? "—"} min`} />
       </div>
       <h3 className="mb-2 text-sm font-bold">Late deliveries ({late.length})</h3>
       <Table head={["Order", "Restaurant", "Rider", "ETA", "Late by", "Delivered"]} empty={late.length === 0}>
-        {late.map((l) => <tr key={String(l.id)}><Td><Link className="text-brand" href={`/admin/orders?id=${l.id}`}>#{String(l.id)}</Link></Td><Td>{String(l.restaurant ?? "")}</Td><Td>{String(l.rider ?? "")}</Td><Td>{String(l.eta)} min</Td><Td>{String(l.minutes_late)} min</Td><Td>{fmtDateTime(l.delivered_at)}</Td></tr>)}
+        {late.map((l) => <tr key={String(l.id)}><Td><Link className="text-brand" href={`/admin/orders?id=${l.id}`}>#{String(l.id)}</Link></Td><Td>{String(l.restaurant ?? "")}</Td><Td>{String(l.rider ?? "")}</Td><Td>{String(l.eta)} min</Td><Td>{String(l.minutes_late)} min{l.stacked ? " 🧩" : ""}</Td><Td>{fmtDateTime(l.delivered_at)}</Td></tr>)}
       </Table>
     </Panel>
   );
@@ -67,6 +69,8 @@ function Quality({ range }: { range: Range }) {
         <Kpi label="Payment failed" value={String(d?.payment_failed ?? "…")} hint={`${d?.awaiting_payment ?? 0} still unpaid`} />
         <Kpi label="Prep extensions" value={String(d?.prep_extensions ?? "…")} hint={`${d?.orders_extended ?? 0} orders · +${d?.extension_minutes ?? 0} min total`} />
         <Kpi label="Avg food rating" value={d?.avg_food_rating != null ? `★ ${Number(d.avg_food_rating).toFixed(1)}` : "—"} hint={`${d?.ratings ?? 0} ratings`} />
+        <Kpi label="Rating: stacked vs single" value={<span data-testid="stacked-rating" className="text-base">★ {String((d?.stacked as Row | undefined)?.stacked_avg_food ?? "—")} vs {String((d?.stacked as Row | undefined)?.single_avg_food ?? "—")}</span>}
+          hint={`food · rider ★ ${String((d?.stacked as Row | undefined)?.stacked_avg_rider ?? "—")} vs ${String((d?.stacked as Row | undefined)?.single_avg_rider ?? "—")} · ${String((d?.stacked as Row | undefined)?.stacked_ratings ?? 0)} / ${String((d?.stacked as Row | undefined)?.single_ratings ?? 0)} ratings`} />
         <Kpi label="Avg delivery rating" value={d?.avg_rider_rating != null ? `★ ${Number(d.avg_rider_rating).toFixed(1)}` : "—"} />
         <Kpi label="Refunds" value={String(d?.refunds ?? "…")} hint={`${eur(Number(d?.refund_cents ?? 0))}${Number(d?.refunds_failed) ? ` · ${d?.refunds_failed} failed` : ""}`} />
         <Kpi label="No-bid alerts" value={String(d?.no_bid_alerts ?? "…")} />

@@ -10,8 +10,8 @@ export function Header({ subtitle = "Tilburg Centrum" }: { subtitle?: string }) 
   );
 }
 
-export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`mb-3 rounded-2xl bg-white p-4 shadow-[0_2px_10px_rgba(0,0,0,.05)] ${className}`}>{children}</div>;
+export function Card({ children, className = "", "data-testid": testId }: { children: ReactNode; className?: string; "data-testid"?: string }) {
+  return <div data-testid={testId} className={`mb-3 rounded-2xl bg-white p-4 shadow-[0_2px_10px_rgba(0,0,0,.05)] ${className}`}>{children}</div>;
 }
 
 type BtnVariant = "brand" | "dark" | "ghost" | "ok";

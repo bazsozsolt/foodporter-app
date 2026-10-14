@@ -23,7 +23,8 @@ export function TrackingView({ id }: { id: string }) {
   const [paying, setPaying] = useState(false);
   const left = useSecondsLeft(o?.status === "accepted" ? o?.bid_window_closes_at : null);
   const live = Boolean(o && ["assigned", "ready", "picked_up"].includes(o.status));
-  const loc = useOrderLocation(o?.id ?? null, live);
+  const loc = useOrderLocation(o?.id ?? null, live, o?.rider_id ?? null, o?.assigned_at ?? null);
+  const stopsBefore = useStopsBefore(live && mode === "supabase" ? o?.id ?? null : null, o?.status);
   const unpaid = o?.status === "awaiting_payment";
   // After returning from Mollie the webhook may take a moment; realtime updates the order, poll as a fallback.
   useEffect(() => {
@@ -61,7 +62,7 @@ export function TrackingView({ id }: { id: string }) {
             : o.status === "cancelled" ? (<><div className="text-4xl">↩️</div><h2 className="text-lg font-bold">Order cancelled</h2><p className="text-sm text-muted">{CANCEL_REASON[o.cancel_reason ?? "system"] ?? "Cancelled"}.</p>
                 {o.paid_at ? <p data-testid="refund" className="mt-1 text-sm">{o.refund_status === "failed" ? "Our team will refund you manually shortly." : o.refund_cents ? `Refund of ${eur(o.refund_cents)} ${o.refund_status === "refunded" ? "completed" : "on its way"} (1–3 working days for iDEAL/card).` : "Refund in progress…"}</p> : null}</>)
             : o.status === "delivered" ? (<><div className="text-5xl">🎉</div><h2 className="text-lg font-bold">Delivered!</h2><p className="text-sm text-muted">Enjoy your meal.</p></>)
-            : bid ? (<><div className="text-sm text-muted">Arriving in about</div><div className="text-4xl font-extrabold text-brand">{bid.eta_minutes} min</div><div className="text-sm text-muted">by {etaAt} · rider {bid.rider_name} 🚲</div></>)
+            : bid ? (<><div className="text-sm text-muted">Arriving in about</div><div className="text-4xl font-extrabold text-brand">{bid.eta_minutes} min</div><div className="text-sm text-muted">by {etaAt} · rider {bid.rider_name} 🚲</div>{stopsBefore ? <div data-testid="stops-before" className="mt-2 inline-block rounded-full bg-[#fff1ea] px-3 py-1 text-[13px] font-semibold text-brand">🛵 Your rider has {stopsBefore} stop{stopsBefore > 1 ? "s" : ""} before you</div> : null}</>)
             : o.status === "accepted" && left != null ? (<div data-testid="customer-auction"><div className="text-sm text-muted">{o.bids.length} rider{o.bids.length === 1 ? "" : "s"} bidding · best ETA so far</div><div className="text-4xl font-extrabold text-brand">{best} min</div><div className="text-sm text-muted">{left > 0 ? `Rider chosen in ${mmss(left)}` : "Choosing your rider…"}</div></div>)
             : (<><div className="text-sm text-muted">Waiting for {idx < 1 ? "the restaurant" : "a rider bid"}…</div><div className="text-4xl">⏳</div></>)}
         </Card>
@@ -96,4 +97,19 @@ function SmsNote({ id, fallback }: { id: string; fallback: string }) {
     sb.rpc("order_phone", { p_order: Number(id) }).then(({ data }) => { if (data) setPhone(String(data)); });
   }, [id]);
   return <Card className="text-sm text-muted">📱 SMS updates go to {phone ?? "your phone"} at each step.</Card>;
+}
+
+/** Stacked orders: how many stops the rider makes before this customer's drop-off (refreshes every 20 s). */
+function useStopsBefore(id: string | null, status?: string) {
+  const [n, setN] = useState<number | null>(null);
+  useEffect(() => {
+    const sb = getSupabase();
+    if (!sb || !id) return;
+    let alive = true;
+    const run = () => void sb.rpc("order_stops_before", { p_order: Number(id) }).then(({ data }) => { if (alive) setN(typeof data === "number" ? data : null); });
+    run();
+    const t = setInterval(run, 20000);
+    return () => { alive = false; clearInterval(t); };
+  }, [id, status]);
+  return id ? n : null;
 }

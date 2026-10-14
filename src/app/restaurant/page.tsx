@@ -30,7 +30,7 @@ function OrderCard({ o }: { o: Order }) {
   const r = restaurants.find((x) => x.id === o.restaurant_id);
   const bid = acceptedBid(o);
   const left = useSecondsLeft(o.status === "accepted" ? o.bid_window_closes_at : null);
-  const loc = useOrderLocation(o.id, ["assigned", "ready"].includes(o.status));
+  const loc = useOrderLocation(o.id, ["assigned", "ready"].includes(o.status), o.rider_id ?? null, o.assigned_at ?? null);
   return (
     <Card>
       <div className="flex items-center justify-between"><b>#{o.id} · {r?.name}</b><Pill>{o.status === "placed" ? "NEW" : STATUS_LABEL[o.status]}</Pill></div>

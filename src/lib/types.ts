@@ -17,6 +17,7 @@ export interface Order {
   paid_at?: string | null; lat?: number | null; lng?: number | null; distance_km?: number | null;
   cancel_reason?: string | null; refund_status?: string | null; refund_cents?: number | null; renotified_at?: string | null;
   assigned_at?: string | null; bid_window_closes_at?: string | null; rider_id?: string | null;
+  stacked?: boolean;
 }
 export interface Earning { id: string; rider_id: string; order_id: string; restaurant_name: string; amount_cents: number; earned_at: string; payout_id: string | null }
 

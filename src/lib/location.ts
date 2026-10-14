@@ -42,21 +42,24 @@ export function useShareLocation(riderId: string | undefined, active: boolean, o
 }
 
 /** Customer / restaurant / rider: latest rider point for one order, live via Realtime (RLS decides who gets it). */
-export function useOrderLocation(orderId: string | null, enabled: boolean) {
+export function useOrderLocation(orderId: string | null, enabled: boolean, riderId?: string | null, since?: string | null) {
   const [pt, setPt] = useState<LocPoint | null>(null);
   useEffect(() => {
     const sb = getSupabase();
     if (!sb || !orderId || !enabled) return;
     let alive = true;
-    void sb.from("rider_locations").select("rider_id, order_id, lat, lng, created_at").eq("order_id", Number(orderId))
-      .order("created_at", { ascending: false }).limit(1).maybeSingle()
+    // With stacked orders a point may be tagged with the rider's other order, so follow the rider when known.
+    let q = sb.from("rider_locations").select("rider_id, order_id, lat, lng, created_at");
+    q = riderId ? q.eq("rider_id", riderId) : q.eq("order_id", Number(orderId));
+    if (riderId && since) q = q.gte("created_at", since);
+    void q.order("created_at", { ascending: false }).limit(1).maybeSingle()
       .then(({ data }) => { if (alive && data) setPt(data as LocPoint); });
     const ch = sb.channel(`loc-${orderId}-${Math.random().toString(36).slice(2)}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "rider_locations", filter: `order_id=eq.${orderId}` },
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "rider_locations", filter: riderId ? `rider_id=eq.${riderId}` : `order_id=eq.${orderId}` },
         (m) => setPt(m.new as LocPoint))
       .subscribe();
     return () => { alive = false; void sb.removeChannel(ch); };
-  }, [orderId, enabled]);
+  }, [orderId, enabled, riderId, since]);
   return enabled ? pt : null;
 }
 

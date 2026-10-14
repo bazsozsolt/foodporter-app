@@ -10,7 +10,7 @@ import type { Bid, Earning, MenuItem, Order, OrderLine, OrderStatus, Restaurant,
 export interface Profile { id: string; email: string | null; role: Role; full_name: string | null; restaurant_id: string | null; online?: boolean; location_consent_at?: string | null }
 export interface Settings {
   delivery_fee_cents: number; zone_radius_km: number; bid_window_seconds: number;
-  restaurant_accept_minutes: number; zone_center_lat: number; zone_center_lng: number; auction_seconds: number;
+  restaurant_accept_minutes: number; zone_center_lat: number; zone_center_lng: number; auction_seconds: number; max_active_orders: number;
 }
 export interface Geo { lat: number; lng: number; label: string; distance_km: number }
 export interface State {
@@ -29,7 +29,7 @@ export interface State {
 const KEY = "foodporter-mock-v2";
 const CART_KEY = "foodporter-cart-v1";
 const initial: State = {
-  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: 15, bid_window_seconds: 180, auction_seconds: 60, restaurant_accept_minutes: 5, zone_center_lat: 51.5576, zone_center_lng: 5.0913 },
+  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: 15, bid_window_seconds: 180, auction_seconds: 60, max_active_orders: 2, restaurant_accept_minutes: 5, zone_center_lat: 51.5576, zone_center_lng: 5.0913 },
   mode: hasSupabase ? "supabase" : "mock", ready: !hasSupabase, signedIn: null, profile: null,
   restaurants: hasSupabase ? [] : mockRestaurants, menuItems: hasSupabase ? [] : mockMenu,
   cart: { restaurant_id: null, qty: {} }, orders: [], earnings: hasSupabase ? [] : seedEarnings,
@@ -93,7 +93,7 @@ function mapOrder(o: Row): Order {
     cancel_reason: (o.cancel_reason as string) ?? null, refund_status: (o.refund_status as string) ?? null,
     refund_cents: (o.refund_cents as number) ?? null, renotified_at: (o.renotified_at as string) ?? null,
     assigned_at: (o.assigned_at as string) ?? null, bid_window_closes_at: (o.bid_window_closes_at as string) ?? null,
-    rider_id: (o.rider_id as string) ?? null,
+    rider_id: (o.rider_id as string) ?? null, stacked: Boolean(o.stacked),
   };
 }
 
@@ -111,7 +111,7 @@ async function loadCatalog() {
       }
       return { data: all };
     })(),
-    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds").maybeSingle(),
+    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds, max_active_orders").maybeSingle(),
   ]);
   set((s) => ({
     ...s, restaurants: (r.data as Restaurant[]) ?? [], menuItems: (m.data as MenuItem[]) ?? [],
