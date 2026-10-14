@@ -1,6 +1,6 @@
 import re, sys
 from playwright.sync_api import sync_playwright
-creds = dict(l.split("=",1) for l in open(__import__("os").environ.get("FP_TEST_CREDS","/workspace/fptest/.creds")).read().strip().split("\n"))
+creds = dict(l.split("=",1) for l in open("/workspace/fptest/.creds").read().strip().split("\n"))
 B = sys.argv[1] if len(sys.argv) > 1 else "https://bazsozsolt.github.io/foodporter-app"
 mobile = "--mobile" in sys.argv
 errs = []; res = []
@@ -23,7 +23,7 @@ with sync_playwright() as p:
         n0 = len(errs); pg.goto(h if h.startswith("http") else "https://bazsozsolt.github.io" + h if B.startswith("https") else B.split("/foodporter-app")[0] + h); pg.wait_for_timeout(3500)
         body = pg.inner_text("body")
         ok(f"{h} renders", "Application error" not in body and "Er ging iets mis" not in body and len(body) > 80, str(errs[n0:])[:300])
-    for t in ["key", "delivery", "quality", "safety", "payments", "groups"]:
+    for t in ["key", "delivery", "quality", "safety", "payments", "groups", "support"]:
         n0 = len(errs); pg.goto(B + f"/admin/reports/?tab={t}"); pg.wait_for_timeout(3500)
         cb = pg.locator("label:has-text('only') input[type=checkbox]")
         if cb.count(): cb.first.check(); pg.wait_for_timeout(2500)

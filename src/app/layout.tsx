@@ -23,7 +23,7 @@ const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'", // Next.js static export uses inline bootstrap scripts
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://tile.openstreetmap.org",
+  `img-src 'self' data: blob: https://tile.openstreetmap.org ${SUPA}`, // SUPA: signed URLs for support photos
   `connect-src 'self' ${SUPA} ${SUPA.replace(/^https/, "wss")} https://api.pdok.nl`,
   "font-src 'self' data:",
   "worker-src 'self'", "manifest-src 'self'",

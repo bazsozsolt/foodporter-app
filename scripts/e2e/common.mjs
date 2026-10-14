@@ -9,7 +9,7 @@ export async function login(role) {
   const sb = client(); const email = creds[role+"_EMAIL"], password = creds[role+"_PASSWORD"];
   let r = await sb.auth.signInWithPassword({ email, password });
   if (r.error) { r = await sb.auth.signUp({ email, password, options: { data: { full_name: "Test " + role.toLowerCase() } } }); if (r.error) throw r.error; }
-  return { sb, id: r.data.user.id };
+  return { sb, id: r.data.user.id, session: r.data.session };
 }
 export let pass = 0, fail = 0;
 export const ok = (name, cond, extra = "") => { cond ? pass++ : fail++; console.log((cond ? "PASS " : "FAIL ") + name + (extra ? " — " + extra : "")); };

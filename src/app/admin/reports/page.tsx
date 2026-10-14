@@ -8,7 +8,7 @@ import { act } from "@/lib/act";
 import { downloadCsv, fmtDateTime, preset, sb, toIso, useAdminQuery, type Range, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
 
-const TABS = [["key", "🎯 Key metric"], ["delivery", "🚀 Delivery"], ["quality", "⭐ Quality"], ["safety", "🦺 Safety"], ["payments", "💶 Payments"], ["groups", "👥 Groups"]] as const;
+const TABS = [["key", "🎯 Key metric"], ["delivery", "🚀 Delivery"], ["quality", "⭐ Quality"], ["safety", "🦺 Safety"], ["payments", "💶 Payments"], ["groups", "👥 Groups"], ["support", "🛟 Support"]] as const;
 type Tab = (typeof TABS)[number][0];
 const pct = (v: unknown) => (v == null ? "—" : `${v}%`);
 
@@ -114,6 +114,32 @@ function Groups({ range }: { range: Range }) {
       </div>
       <Table head={["Restaurant", "Groups", "Paid", "Avg size", "Avg basket"]} empty={rs.length === 0}>
         {rs.map((x) => <tr key={String(x.restaurant)}><Td>{String(x.restaurant)}</Td><Td>{String(x.groups)}</Td><Td>{String(x.paid)}</Td><Td>{String(x.avg_members ?? "—")}</Td><Td>{money(x.avg_basket_cents)}</Td></tr>)}
+      </Table>
+    </Panel>
+  );
+}
+
+function Support({ range }: { range: Range }) {
+  const [real, setReal] = useState(false);
+  const q = useAdminQuery<Row>(async () => sb().rpc("report_support", { ...toIso(range), p_include_test: !real }), [range.from, range.to, real]);
+  const d = q.data; const cats = Object.entries((d?.by_category as Record<string, number>) ?? {}).sort((a, b) => b[1] - a[1]);
+  const roles = (d?.by_role as Record<string, number>) ?? {};
+  const min = (v: unknown) => (v == null ? "—" : `${String(v)} min`);
+  return (
+    <Panel title={`Support · ${range.from} → ${range.to}`} actions={<div className="flex items-center gap-2">
+      <label className="flex items-center gap-1 text-xs"><input type="checkbox" checked={real} onChange={(e) => setReal(e.target.checked)} /> Real tickets only</label>
+      <SmallBtn onClick={() => downloadCsv(`support_${range.from}_${range.to}.csv`, cats.map(([category, n]) => ({ category, tickets: n })))}>⬇ CSV</SmallBtn></div>}>
+      <ErrorNote error={q.error} />
+      <div className="mb-4 grid grid-cols-2 gap-2.5 md:grid-cols-4" data-testid="support-report">
+        <Kpi label="Tickets" value={<span data-testid="support-count">{String(d?.tickets ?? "…")}</span>} hint={`${String(d?.open ?? 0)} still open · ${roles.customer ?? 0} customer · ${roles.restaurant ?? 0} restaurant · ${roles.rider ?? 0} rider`} />
+        <Kpi label="Median first response" value={min(d?.median_first_response_min)} hint="from ticket to first staff reply" />
+        <Kpi label="SLA breached" value={pct(d?.sla_breached_pct)} hint="first reply after the SLA (urgent 10m · high 1h · normal 4h · low 24h)" />
+        <Kpi label="Avg time to resolve" value={min(d?.avg_resolution_min)} />
+        <Kpi label="Refunds requested" value={eur(Number(d?.refund_requested_cents ?? 0))} hint={`approved ${eur(Number(d?.refunded_cents ?? 0))}`} />
+        <Kpi label="SOS / accidents" value={String(d?.sos ?? "…")} />
+      </div>
+      <Table head={["Category", "Tickets"]} empty={cats.length === 0}>
+        {cats.map(([c, n]) => <tr key={c}><Td>{c}</Td><Td>{String(n)}</Td></tr>)}
       </Table>
     </Panel>
   );
@@ -278,6 +304,7 @@ function Reports() {
       {tab === "safety" && <Safety range={range} />}
       {tab === "payments" && <Payments range={range} />}
       {tab === "groups" && <Groups range={range} />}
+      {tab === "support" && <Support range={range} />}
     </>
   );
 }

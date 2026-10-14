@@ -83,7 +83,7 @@ function mapOrder(o: Row): Order {
   }));
   const lines = ((o.order_items as Row[]) ?? []).map((l): OrderLine => ({
     item_id: (l.menu_item_id as string) ?? "", name: l.name as string, qty: l.qty as number, price_cents: l.price_cents as number,
-    guest_name: (l.guest_name as string) ?? null,
+    guest_name: (l.guest_name as string) ?? null, line_id: (l.id as string) ?? undefined,
   }));
   return {
     id: String(o.id), restaurant_id: o.restaurant_id as string, customer_id: o.customer_id as string, status: o.status as OrderStatus,

@@ -71,8 +71,24 @@ async function events(orderId: number, hint?: string): Promise<Push[]> {
   return out;
 }
 
+// Support: a new message in a ticket. Staff replies go to the ticket owner; user messages go to admins
+// (test tickets only reach test admins, so real admins aren't paged by test data).
+async function supportEvents(messageId: number): Promise<Push[]> {
+  const { data: m } = await db.from("support_messages").select("id, ticket_id, author_role, body, internal").eq("id", messageId).maybeSingle();
+  if (!m || m.internal) return [];
+  const { data: t } = await db.from("support_tickets").select("id, created_by, subject, priority, category, is_test, order_id").eq("id", m.ticket_id).single();
+  const short = m.body.length > 120 ? m.body.slice(0, 117) + "…" : m.body;
+  if (m.author_role === "admin" || m.author_role === "system") {
+    return [{ key: `sup:${m.id}`, to: [t.created_by], title: "Food Porter support", body: short, url: `/support/?id=${t.id}`, tag: `fp-sup-${t.id}`, ttl: 86400, urgency: "normal" }];
+  }
+  const { data: admins } = await db.from("profiles").select("id").eq("role", "admin").eq("is_test", t.is_test);
+  const sos = t.priority === "urgent";
+  return [{ key: `sup:${m.id}`, to: (admins ?? []).map((a) => a.id), title: `${sos ? "🚨 " : ""}[${t.priority}] ${t.subject}`, body: short, url: `/admin/support/?id=${t.id}`, tag: `fp-sup-${t.id}`, ttl: sos ? 600 : 3600, urgency: sos ? "high" : "normal" }];
+}
+
 async function send(p: Push) {
-  const { error: dup } = await db.from("push_log").insert({ event_key: p.key, order_id: Number(p.key.split(":")[1]) || null });
+  const oid = p.key.startsWith("sup:") ? null : Number(p.key.split(":")[1]) || null;
+  const { error: dup } = await db.from("push_log").insert({ event_key: p.key, order_id: oid });
   if (dup) return { key: p.key, skipped: "already sent" };
   if (p.to.length === 0) return { key: p.key, recipients: 0 };
   const { data: subs } = await db.from("push_subscriptions").select("id, endpoint, p256dh, auth, fail_count").in("profile_id", p.to);
@@ -94,8 +110,14 @@ async function send(p: Push) {
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
-  let id = 0, hint: string | undefined;
-  try { const b = await req.json(); id = Number(b.order_id); hint = typeof b.status === "string" ? b.status : undefined; } catch { /* ignore */ }
+  let id = 0, hint: string | undefined, sup = 0;
+  try { const b = await req.json(); id = Number(b.order_id); sup = Number(b.support_message_id); hint = typeof b.status === "string" ? b.status : undefined; } catch { /* ignore */ }
+  if (Number.isInteger(sup) && sup > 0) {
+    await vapid();
+    const results = [];
+    for (const p of await supportEvents(sup)) results.push(await send(p));
+    return json({ ok: true, results });
+  }
   if (!Number.isInteger(id) || id <= 0) return json({ error: "order_id required" }, 400);
   await vapid();
   const results = [];

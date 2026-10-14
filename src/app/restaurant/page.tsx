@@ -6,6 +6,8 @@ import { RoleGate } from "@/components/RoleGate";
 import { act } from "@/lib/act";
 import { Button, Card, Empty, Header, Pill, Stat } from "@/components/ui";
 import { PREP_MAX, PrepPicker } from "@/components/PrepPicker";
+import { HelpButton } from "@/components/SupportSheet";
+import { ItemUnavailable } from "@/components/ItemUnavailable";
 import { hhmm } from "@/lib/format";
 import { eur } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
@@ -44,7 +46,8 @@ function OrderCard({ o }: { o: Order }) {
             <div key={n}><b className="text-ink">{n}:</b> {ls.join(", ")}</div>))}
         </div>
       ) : <div className="my-1.5 text-[13px] text-muted">{o.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}</div>}
-      <div className="text-[13px] text-muted">Deliver to {o.address}</div>
+      <div className="text-[13px] text-muted">{t("Bezorgen op", "Deliver to")} {o.address}</div>
+      <div className="mt-1 flex flex-wrap gap-2"><ItemUnavailable o={o} /><HelpButton role="restaurant" orderId={Number(o.id)} label={t("Probleem melden", "Report a problem")} /></div>
       {o.status === "placed" ? (
         <>
           <p className="mb-2 mt-3 font-bold">{t("Bereidingstijd instellen", "Set preparation time")}</p>

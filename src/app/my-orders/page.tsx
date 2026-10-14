@@ -15,6 +15,7 @@ export default function MyOrders() {
     <>
       <Header subtitle={tx("Jouw bestellingen", "Your orders")} />
       <main id="main" className="p-4">
+        <Link href="/support/" data-testid="my-tickets-link" className="mb-3 block text-right text-sm font-semibold text-brand">🛟 {tx("Mijn meldingen", "My tickets")}</Link>
         <Link href="/" className="text-sm text-muted">← {tx("Home", "Home")}</Link>
         <h2 className="my-3 text-lg font-bold">{tx("Bestelgeschiedenis", "Order history")}</h2>
         {!ready ? <p className="text-muted">{tx("Laden…", "Loading…")}</p>

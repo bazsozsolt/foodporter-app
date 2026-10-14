@@ -1,4 +1,5 @@
 "use client";
+import { HelpButton } from "@/components/SupportSheet";
 import { tx } from "@/lib/i18n";
 import Link from "next/link";
 import { RoleGate } from "@/components/RoleGate";
@@ -14,6 +15,7 @@ export default function EarningsPage() {
     <>
       <Header subtitle={tx("Rider-app · Verdiensten", "Rider app · Earnings")} />
       <main id="main" className="p-4">
+        <div className="mb-3 flex justify-end"><HelpButton role="rider" label={tx("Vraag over uitbetaling", "Payout question")} /></div>
         <Link href="/rider" className="text-sm text-muted">← {tx("Bestellingen", "Order feed")}</Link>
         <RoleGate role="rider">
         <div className="mt-2.5 flex gap-2.5"><Stat value={eur(total)} label={tx("Openstaand · uitbetaald komende maandag", "Unpaid · paid next Monday")} /><Stat value={String(earnings.length)} label={tx("Bezorgingen", "Deliveries")} /></div>

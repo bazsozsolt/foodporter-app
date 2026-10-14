@@ -7,7 +7,7 @@ export interface Restaurant {
   avg_prep_minutes: number; commission_pct: number; active: boolean; lat?: number | null; lng?: number | null; rating_avg?: number | null; rating_count?: number;
   is_test?: boolean; description?: string | null; address?: string | null;
 }
-export interface OrderLine { item_id: string; name: string; qty: number; price_cents: number; guest_name?: string | null }
+export interface OrderLine { item_id: string; name: string; qty: number; price_cents: number; guest_name?: string | null; line_id?: string }
 export interface Bid { id: string; rider_id: string; rider_name: string; eta_minutes: number; accepted: boolean; created_at: string }
 export interface Order {
   id: string; restaurant_id: string; customer_id: string; status: OrderStatus;

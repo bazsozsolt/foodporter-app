@@ -1,5 +1,6 @@
 "use client";
 import { CustomerPushCard } from "@/components/OrderAlerts";
+import { HelpButton } from "@/components/SupportSheet";
 import { useT, tx } from "@/lib/i18n";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -60,6 +61,7 @@ export function TrackingView({ id }: { id: string }) {
       <Header subtitle={`${tr("Bestelling", "Order")} #${o.id}`} />
       <main id="main" className="p-4">
         {mine && o.paid_at && !["delivered", "cancelled"].includes(o.status) && <CustomerPushCard />}
+        {mine && o.status !== "awaiting_payment" && <div className="mb-2 flex justify-end"><HelpButton role="customer" orderId={Number(o.id)} orderTotalCents={o.paid_at ? o.subtotal_cents + o.delivery_fee_cents - (o.refund_cents ?? 0) : null} /></div>}
         <Link href="/" className="text-sm text-muted">← Home</Link>
         <Card className="mt-2.5 text-center">
           {o.status === "awaiting_payment" ? (<><div className="text-4xl">💳</div><h2 className="text-lg font-bold">{tr("Wacht op betaling", "Waiting for payment")}</h2><p className="text-sm text-muted">{tx("Net betaald? Dit wordt binnen een paar seconden bijgewerkt.", "If you just paid, this updates in a few seconds.")}</p>{mine ? <Button onClick={payNow} disabled={paying}>{paying ? tx("Mollie openen…", "Opening Mollie…") : tx("Nu betalen", "Pay now")}</Button> : <p className="mt-2 text-sm text-muted">{tx("Alleen de klant kan deze bestelling betalen.", "Only the customer can pay this order.")}</p>}</>)
