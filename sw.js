@@ -1,5 +1,5 @@
 // Food Porter service worker: offline shell + fast repeat loads. Never caches API/Supabase/Mollie traffic.
-const VERSION = "fp-v7";
+const VERSION = "fp-v10";
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const SHELL = [`${BASE}/`, `${BASE}/offline/`, `${BASE}/icons/icon-192.png`];
 
@@ -33,5 +33,11 @@ self.addEventListener("fetch", (e) => {
 });
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();
-  e.waitUntil(self.clients.matchAll({ type: "window" }).then((cs) => (cs[0] ? cs[0].focus() : self.clients.openWindow(`${BASE}/`))));
+  const url = (e.notification.data && e.notification.data.url) || `${BASE}/`;
+  // Focus an open Food Porter tab (navigating it to the alert's page), or open one.
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((cs) => {
+    const c = cs.find((x) => x.url.includes(BASE)) || cs[0];
+    if (c) return c.focus().then((f) => (f && f.navigate && !f.url.endsWith(url) ? f.navigate(url) : f)).catch(() => c.focus());
+    return self.clients.openWindow(url);
+  }));
 });
