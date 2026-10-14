@@ -1,30 +1,32 @@
 1:"$Sreact.fragment"
-2:"/foodporter-app/_next/static/chunks/26g9ty-18wozr.js"
-3:I[49830,["$2"],"AppShell"]
-4:I[39756,["$2"],"default"]
-5:I[37457,["$2"],"default"]
-6:I[44735,["$2"],"RoleNav"]
-7:I[94437,["$2"],"Toaster"]
-b:I[47257,["$2"],"ClientPageRoot"]
-c:"/foodporter-app/_next/static/chunks/04fi01r2-qrc7.js"
-d:"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js"
-e:I[94542,["$2","$c","$d"],"default"]
-11:I[97367,["$2"],"OutletBoundary"]
-12:"$Sreact.suspense"
-14:"ViewportBoundary"
-15:I[97367,["$2"],"$14"]
-17:"MetadataBoundary"
-18:I[97367,["$2"],"$17"]
-1a:I[68027,["$2"],"default",1]
-:HL["/foodporter-app/_next/static/chunks/3uv_4elec12jc.css","style"]
-9:X
-a:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":[["$","$Lb",null,{"Component":"$e","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@f","$@10"]}}],[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/04fi01r2-qrc7.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js","async":true,"nonce":"$undefined"}]],["$","$L11",null,{"children":["$","$12",null,{"name":"Next.MetadataOutlet","children":"$@13"}]}]]}],"p":false,"v":null}}]]
-8:[["children",{"s":"login","h":512,"d":{"r":["$","$1","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],"p":false,"v":"$9"},"c":"$Qa"}]]
-0:{"P":null,"c":["","login",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/3uv_4elec12jc.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/26g9ty-18wozr.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"className":"font-sans antialiased","children":["$","$L3",null,{"children":[["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$L6",null,{}],["$","$L7",null,{}]]}]}]}]]}],"p":false,"v":null},"c":"$Q8"},"h":{"r":["$","$1","h",{"children":[null,["$","$L15",null,{"children":"$L16"}],["$","$L18",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$12",null,{"name":"Next.Metadata","children":"$L19"}]}],null]}],null]}],"p":false,"v":null}},"m":"$undefined","G":["$1a",[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/3uv_4elec12jc.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"xq6LAYcedv-q4L94BSjqc"}
-9:C
-f:{}
-10:"$a:0:1:d:r:props:children:0:props:serverProvidedParams:params"
-16:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#ff5a1f"}]]
-1b:I[27201,["$2"],"IconMark"]
-13:null
-19:[["$","title","0",{"children":"Food Porter"}],["$","meta","1",{"name":"description","content":"Local food delivery in Tilburg. Riders bid to bring it fast."}],["$","link","2",{"rel":"manifest","href":"/foodporter-app/manifest.webmanifest","crossOrigin":"$undefined"}],["$","link","3",{"rel":"icon","href":"/foodporter-app/favicon.ico?favicon.117ezoe8m31dk.ico","sizes":"48x48","type":"image/x-icon"}],["$","link","4",{"rel":"apple-touch-icon","href":"/foodporter-app/apple-icon.png?apple-icon.1isdb6wdupf92.png","sizes":"180x180","type":"image/png"}],["$","$L1b","5",{}]]
+2:"/foodporter-app/_next/static/chunks/2e_l-46xf13ng.js"
+3:"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js"
+4:I[49830,["$2","$3"],"AppShell"]
+5:I[56762,["$2","$3"],"TestModeBanner"]
+6:I[39756,["$2","$3"],"default"]
+7:I[37457,["$2","$3"],"default"]
+8:I[59690,["$2","$3"],"FeedbackButton"]
+9:I[44735,["$2","$3"],"RoleNav"]
+a:I[94437,["$2","$3"],"Toaster"]
+e:I[47257,["$2","$3"],"ClientPageRoot"]
+f:"/foodporter-app/_next/static/chunks/1t2ibicnsiqd3.js"
+10:I[94542,["$2","$3","$f"],"default"]
+13:I[97367,["$2","$3"],"OutletBoundary"]
+14:"$Sreact.suspense"
+16:"ViewportBoundary"
+17:I[97367,["$2","$3"],"$16"]
+19:"MetadataBoundary"
+1a:I[97367,["$2","$3"],"$19"]
+1c:I[68027,["$2","$3"],"default",1]
+:HL["/foodporter-app/_next/static/chunks/248o579sd7u5v.css","style"]
+c:X
+d:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":[["$","$Le",null,{"Component":"$10","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@11","$@12"]}}],[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/1t2ibicnsiqd3.js","async":true,"nonce":"$undefined"}]],["$","$L13",null,{"children":["$","$14",null,{"name":"Next.MetadataOutlet","children":"$@15"}]}]]}],"p":false,"v":null}}]]
+b:[["children",{"s":"login","h":512,"d":{"r":["$","$1","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L7",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],"p":false,"v":"$c"},"c":"$Qd"}]]
+0:{"P":null,"c":["","login",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/248o579sd7u5v.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/2e_l-46xf13ng.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","meta",null,{"httpEquiv":"Content-Security-Policy","content":"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org; connect-src 'self' https://joontqbhfqjqkyhlifle.supabase.co wss://joontqbhfqjqkyhlifle.supabase.co https://api.pdok.nl; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"}],["$","meta",null,{"name":"referrer","content":"strict-origin-when-cross-origin"}]]}],["$","body",null,{"className":"font-sans antialiased","children":["$","$L4",null,{"children":[["$","$L5",null,{}],["$","$L6",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L7",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$L8",null,{}],["$","$L9",null,{}],["$","$La",null,{}]]}]}]]}]]}],"p":false,"v":null},"c":"$Qb"},"h":{"r":["$","$1","h",{"children":[null,["$","$L17",null,{"children":"$L18"}],["$","$L1a",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$14",null,{"name":"Next.Metadata","children":"$L1b"}]}],null]}],null]}],"p":false,"v":null}},"m":"$undefined","G":["$1c",[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/248o579sd7u5v.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"RcGZYWnx9DW6ou3wg_WWq"}
+c:C
+11:{}
+12:"$d:0:1:d:r:props:children:0:props:serverProvidedParams:params"
+18:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#ff5a1f"}]]
+1d:I[27201,["$2","$3"],"IconMark"]
+15:null
+1b:[["$","title","0",{"children":"Food Porter"}],["$","meta","1",{"name":"description","content":"Local food delivery in Tilburg. Riders bid to bring it fast."}],["$","link","2",{"rel":"manifest","href":"/foodporter-app/manifest.webmanifest","crossOrigin":"$undefined"}],["$","link","3",{"rel":"icon","href":"/foodporter-app/favicon.ico?favicon.117ezoe8m31dk.ico","sizes":"48x48","type":"image/x-icon"}],["$","link","4",{"rel":"apple-touch-icon","href":"/foodporter-app/apple-icon.png?apple-icon.1isdb6wdupf92.png","sizes":"180x180","type":"image/png"}],["$","$L1d","5",{}]]
