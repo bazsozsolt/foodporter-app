@@ -23,7 +23,7 @@ function Countdown({ from }: { from: string }) {
   return <p className={`mt-2 text-center text-[13px] ${left < 60000 ? "font-bold text-red-600" : "text-muted"}`}>{left > 0 ? tx(`Accepteer binnen ${m}:${String(s).padStart(2, "0")}, anders wordt de bestelling automatisch geannuleerd en terugbetaald`, `Accept within ${m}:${String(s).padStart(2, "0")} or the order is cancelled and refunded automatically`) : tx("Tijd om — wordt geannuleerd en terugbetaald…", "Time's up — cancelling and refunding…")}</p>;
 }
 
-const alertBody = (n: number) => `${n} new order${n > 1 ? "s" : ""} waiting for you to accept`;
+const alertBody = (n: number) => tx(`${n} nieuwe ${n > 1 ? "bestellingen wachten" : "bestelling wacht"} op acceptatie`, `${n} new order${n > 1 ? "s" : ""} waiting for you to accept`);
 
 function OrderCard({ o }: { o: Order }) {
   const t = useT();
@@ -78,7 +78,7 @@ export default function RestaurantPage() {
   const pct = Number(restaurants.find((r) => r.id === profile?.restaurant_id)?.commission_pct ?? 12);
   const mine = mode === "supabase" && profile?.role === "restaurant" ? orders.filter((o) => o.restaurant_id === profile.restaurant_id) : orders;
   const open = mine.filter((o) => ["placed", "accepted", "assigned"].includes(o.status));
-  useOrderAlerts(mine.filter((o) => o.status === "placed").map((o) => o.id), "Food Porter · new order", alertBody);
+  useOrderAlerts(mine.filter((o) => o.status === "placed").map((o) => o.id), tx("Food Porter · nieuwe bestelling", "Food Porter · new order"), alertBody, "/restaurant/");
   const handed = mine.filter((o) => ["ready", "picked_up", "delivered"].includes(o.status));
   const revenue = handed.reduce((a, o) => a + o.subtotal_cents, 0);
   return (

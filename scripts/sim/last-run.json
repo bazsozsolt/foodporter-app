@@ -1,0 +1,132 @@
+[
+ {
+  "kind": "restaurant_timeout",
+  "id": 1336,
+  "ok": true
+ },
+ {
+  "kind": "restaurant_timeout",
+  "id": 1338,
+  "ok": true
+ },
+ {
+  "kind": "no_bid",
+  "id": 1343,
+  "ok": true
+ },
+ {
+  "kind": "slow_bid",
+  "ok": false,
+  "error": "insert order: TypeError: fetch failed"
+ },
+ {
+  "kind": "no_bid",
+  "id": 1344,
+  "ok": true
+ },
+ {
+  "kind": "fast_on_time",
+  "id": 1335,
+  "ok": true
+ },
+ {
+  "kind": "fast_on_time",
+  "id": 1339,
+  "ok": true
+ },
+ {
+  "kind": "fast_on_time",
+  "id": 1341,
+  "ok": true
+ },
+ {
+  "kind": "fast_on_time",
+  "id": 1345,
+  "ok": true
+ },
+ {
+  "kind": "group",
+  "id": 1346,
+  "ok": true
+ },
+ {
+  "kind": "fast_on_time",
+  "id": 1347,
+  "ok": true
+ },
+ {
+  "kind": "late",
+  "ok": false,
+  "error": "#1348 never assigned"
+ },
+ {
+  "kind": "late",
+  "ok": false,
+  "error": "#1352 never assigned"
+ },
+ {
+  "kind": "fast_on_time",
+  "ok": false,
+  "error": "bid rik #1351 kept failing"
+ },
+ {
+  "kind": "fast_on_time",
+  "id": 1350,
+  "ok": true
+ },
+ {
+  "kind": "slow_bid",
+  "ok": false,
+  "error": "#1337 never assigned"
+ },
+ {
+  "kind": "group",
+  "id": 1354,
+  "ok": true
+ },
+ {
+  "kind": "late",
+  "ok": false,
+  "error": "bid rik #1355 kept failing"
+ },
+ {
+  "kind": "late",
+  "id": 1340,
+  "ok": true
+ },
+ {
+  "kind": "slow_bid",
+  "ok": false,
+  "error": "bid fenna #1349 kept failing"
+ },
+ {
+  "kind": "stacked_pair",
+  "id": "1358+1359",
+  "ok": true
+ },
+ {
+  "kind": "slow_bid",
+  "ok": false,
+  "error": "#1342 never assigned"
+ },
+ {
+  "kind": "stacked_pair",
+  "id": "1360+1361",
+  "ok": true
+ },
+ {
+  "kind": "stacked_pair",
+  "id": "1356+1357",
+  "ok": true
+ },
+ {
+  "kind": "late",
+  "id": 1353,
+  "ok": true
+ },
+ {
+  "kind": "stacked_pair",
+  "ok": false,
+  "error": "#1363 never assigned"
+ }
+]

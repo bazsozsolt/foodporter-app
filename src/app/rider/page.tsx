@@ -16,7 +16,7 @@ import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap, type MapMarker } from "@/components/LiveMap";
 import { navUrl, osmNavUrl, useShareLocation } from "@/lib/location";
 
-const riderBody = (n: number) => `${n} order${n > 1 ? "s" : ""} open for bids near you`;
+const riderBody = (n: number) => tx(`${n} ${n > 1 ? "bestellingen" : "bestelling"} in de buurt: bied nu je bezorgtijd`, `${n} order${n > 1 ? "s" : ""} open for bids near you`);
 
 /** Server-side answer to "may I take this order?" (stacking rules); null = yes. */
 function useCanBid(orderId: string, activeCount: number) {
@@ -67,14 +67,14 @@ export default function RiderPage() {
   const SL = t("nl", "en") === "nl" ? STATUS_LABEL_NL : STATUS_LABEL;
   const { orders, profile, mode, restaurants } = useStore();
   const open = orders.filter((o) => o.status === "accepted" && !acceptedBid(o));
-  useOrderAlerts(open.map((o) => `${o.id}:${o.renotified_at ?? ""}`), "Food Porter · order to bid on", riderBody);
+  useOrderAlerts(open.map((o) => `${o.id}:${o.renotified_at ?? ""}`), tx("Beep-beep! Nieuwe bestelling om op te bieden", "Beep-beep! New order to bid on"), riderBody, "/rider/");
   const [name, setName] = useState<string | null>(null);
   const job = mode === "supabase" ? orders.find((o) => ["assigned", "ready", "picked_up"].includes(o.status) && o.rider_id === profile?.id) : undefined;
   const online = Boolean(profile?.online);
   const { me, error: gpsError } = useShareLocation(profile?.id, mode === "supabase" && Boolean(profile?.location_consent_at) && (online || Boolean(job)), job?.id ?? null);
   async function toggleOnline() {
     if (!online && !profile?.location_consent_at) {
-      const ok = confirm("Share your location while you're online or on a delivery?\n\n• Admins see your position while you're online.\n• The customer and restaurant of your current order see it during that delivery only.\n• Sharing stops when you go offline and the delivery is done. Points are deleted after 7 days.");
+      const ok = confirm(tx("Je locatie delen zolang je online bent of een bezorging doet?\n\n• Admins zien je positie zolang je online bent.\n• De klant en het restaurant van je huidige bestelling zien die alleen tijdens die bezorging.\n• Delen stopt als je offline gaat en de bezorging klaar is. Punten worden na 7 dagen verwijderd.", "Share your location while you're online or on a delivery?\n\n• Admins see your position while you're online.\n• The customer and restaurant of your current order see it during that delivery only.\n• Sharing stops when you go offline and the delivery is done. Points are deleted after 7 days."));
       if (!ok) return;
       await act(actions.setOnline(true, true), tx("Je bent online · locatie wordt gedeeld", "You're online · sharing location"));
       return;
@@ -100,7 +100,7 @@ export default function RiderPage() {
           <div className="mb-3 flex items-center gap-2">
             <button data-testid="online-toggle" onClick={toggleOnline}
               className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-bold ${online ? "bg-ok text-white" : "bg-ink text-white"}`}>
-              {online ? "🟢 Online · tap to go offline" : "⚪ Offline · tap to go online"}</button>
+              {online ? tx("🟢 Online · tik om offline te gaan", "🟢 Online · tap to go offline") : tx("⚪ Offline · tik om online te gaan", "⚪ Offline · tap to go online")}</button>
           </div>
         )}
         {(online || job) && <p data-testid="gps" className="-mt-1 mb-3 text-xs text-muted">{gpsError ? `⚠️ ${gpsError}` : me ? `📍 Sharing location (${me.lat.toFixed(4)}, ${me.lng.toFixed(4)}) every ~7 s` : "📍 Waiting for GPS…"}</p>}

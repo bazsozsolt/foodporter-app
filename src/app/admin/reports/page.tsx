@@ -8,7 +8,7 @@ import { act } from "@/lib/act";
 import { downloadCsv, fmtDateTime, preset, sb, toIso, useAdminQuery, type Range, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
 
-const TABS = [["key", "🎯 Key metric"], ["delivery", "🚀 Delivery"], ["quality", "⭐ Quality"], ["safety", "🦺 Safety"], ["payments", "💶 Payments"]] as const;
+const TABS = [["key", "🎯 Key metric"], ["delivery", "🚀 Delivery"], ["quality", "⭐ Quality"], ["safety", "🦺 Safety"], ["payments", "💶 Payments"], ["groups", "👥 Groups"]] as const;
 type Tab = (typeof TABS)[number][0];
 const pct = (v: unknown) => (v == null ? "—" : `${v}%`);
 
@@ -90,6 +90,31 @@ function KeyMetric({ range }: { range: Range }) {
             {riders.map((x) => <tr key={String(x.rider)}><Td>{String(x.rider)}</Td><Td>{String(x.jobs)}</Td><Td>{String(x.hits)}</Td><Td><span className={tone(x.pct)}>{pct(x.pct)}</span></Td><Td>{String(x.on_time)}</Td></tr>)}
           </Table></div>
       </div>
+    </Panel>
+  );
+}
+
+function Groups({ range }: { range: Range }) {
+  const [real, setReal] = useState(false);
+  const q = useAdminQuery<Row>(async () => sb().rpc("report_groups", { ...toIso(range), p_include_test: !real }), [range.from, range.to, real]);
+  const d = q.data; const st = (d?.by_status as Record<string, number>) ?? {}; const rs = (d?.by_restaurant as Row[]) ?? [];
+  const money = (v: unknown) => (v == null ? "—" : eur(Number(v)));
+  return (
+    <Panel title={`Group orders · ${range.from} → ${range.to}`} actions={<div className="flex items-center gap-2">
+      <label className="flex items-center gap-1 text-xs"><input type="checkbox" checked={real} onChange={(e) => setReal(e.target.checked)} /> Real hosts only</label>
+      <SmallBtn onClick={() => downloadCsv(`groups_${range.from}_${range.to}.csv`, rs)}>⬇ CSV</SmallBtn></div>}>
+      <ErrorNote error={q.error} />
+      <div className="mb-4 grid grid-cols-2 gap-2.5 md:grid-cols-4" data-testid="group-report">
+        <Kpi label="Groups started" value={<span data-testid="groups-count">{String(d?.groups ?? "…")}</span>} hint={`${st.open ?? 0} open · ${st.locked ?? 0} locked · ${st.cancelled ?? 0} cancelled`} />
+        <Kpi label="Conversion to paid order" value={<span data-testid="groups-conversion">{pct(d?.conversion_pct)}</span>} hint={`${String(d?.paid ?? 0)} paid of ${String(d?.checked_out ?? 0)} checked out`} />
+        <Kpi label="Average group size" value={d?.avg_members == null ? "—" : `${String(d.avg_members)} people`} hint={`paid groups: ${String(d?.avg_members_paid ?? "—")}`} />
+        <Kpi label="Average group basket" value={money(d?.avg_basket_cents)} hint={`${money(d?.avg_per_person_cents)} per person · solo orders ${money(d?.avg_solo_basket_cents)}`} />
+        <Kpi label="Time to checkout" value={d?.avg_minutes_to_checkout == null ? "—" : `${String(d.avg_minutes_to_checkout)} min`} />
+        <Kpi label="Abandoned empty groups" value={String(d?.empty_abandoned ?? "…")} />
+      </div>
+      <Table head={["Restaurant", "Groups", "Paid", "Avg size", "Avg basket"]} empty={rs.length === 0}>
+        {rs.map((x) => <tr key={String(x.restaurant)}><Td>{String(x.restaurant)}</Td><Td>{String(x.groups)}</Td><Td>{String(x.paid)}</Td><Td>{String(x.avg_members ?? "—")}</Td><Td>{money(x.avg_basket_cents)}</Td></tr>)}
+      </Table>
     </Panel>
   );
 }
@@ -252,6 +277,7 @@ function Reports() {
       {tab === "quality" && <Quality range={range} />}
       {tab === "safety" && <Safety range={range} />}
       {tab === "payments" && <Payments range={range} />}
+      {tab === "groups" && <Groups range={range} />}
     </>
   );
 }
