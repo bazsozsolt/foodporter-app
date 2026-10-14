@@ -42,3 +42,19 @@ self.addEventListener("notificationclick", (e) => {
     return self.clients.openWindow(url);
   }));
 });
+
+// Web push from the order-push edge function: { title, body, url, tag, beep }.
+self.addEventListener("push", (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch { d = { body: e.data && e.data.text() }; }
+  const url = `${BASE}${d.url || "/"}`;
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((cs) => {
+    // Open pages play the beep-beep (a service worker can't play audio itself)
+    if (d.beep) cs.forEach((c) => c.postMessage({ type: "fp-beep" }));
+    return self.registration.showNotification(d.title || "Food Porter", {
+      body: d.body || "", tag: d.tag || "fp", renotify: true, requireInteraction: true, vibrate: [200, 100, 200, 100, 200],
+      icon: `${BASE}/icons/icon-192.png`, badge: `${BASE}/icons/icon-192.png`, data: { url }, lang: "nl",
+    }).then(() => cs.forEach((c) => c.postMessage({ type: "fp-push-shown", title: d.title, url })));
+  }));
+});
+// The browser rotated the subscription: open pages re-register on next load; nothing to do here without a session.
