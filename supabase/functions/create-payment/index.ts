@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
 
   const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: order } = await admin.from("orders")
-    .select("id, customer_id, status, address, delivery_fee_cents, mollie_payment_id, order_items(qty, menu_item_id)")
+    .select("id, customer_id, restaurant_id, status, address, delivery_fee_cents, mollie_payment_id, order_items(qty, menu_item_id)")
     .eq("id", orderId).maybeSingle();
   if (!order || order.customer_id !== user.id) return json({ error: "order not found" }, 404);
   if (order.status !== "awaiting_payment" && order.status !== "payment_failed") return json({ error: "order already paid" }, 409);
@@ -58,14 +58,15 @@ Deno.serve(async (req) => {
   // Recompute the amount from current menu prices (never trust client-sent prices)
   const items = (order.order_items ?? []) as { qty: number; menu_item_id: string }[];
   if (items.length === 0) return json({ error: "order has no items" }, 400);
-  const { data: menu } = await admin.from("menu_items").select("id, price_cents, available").in("id", items.map((i) => i.menu_item_id));
-  const price = new Map((menu ?? []).filter((m) => m.available).map((m) => [m.id, m.price_cents as number]));
+  if (items.some((i) => !Number.isInteger(i.qty) || i.qty < 1 || i.qty > 50) || items.length > 50) return json({ error: "invalid quantities" }, 400);
+  const { data: menu } = await admin.from("menu_items").select("id, price_cents, available, restaurant_id").in("id", items.map((i) => i.menu_item_id));
+  const price = new Map((menu ?? []).filter((m) => m.available && m.restaurant_id === order.restaurant_id).map((m) => [m.id, m.price_cents as number]));
   if (items.some((i) => !price.has(i.menu_item_id))) return json({ error: "an item is no longer available" }, 409);
   const subtotal = items.reduce((a, i) => a + i.qty * price.get(i.menu_item_id)!, 0);
-  const fee = Math.min(350, Math.max(250, order.delivery_fee_cents));
 
   // Delivery zone: geocode the address server-side (PDOK Locatieserver, free NL geocoder) and check the radius.
-  const { data: s } = await admin.from("settings").select("zone_radius_km, zone_center_lat, zone_center_lng").maybeSingle();
+  const { data: s } = await admin.from("settings").select("zone_radius_km, zone_center_lat, zone_center_lng, delivery_fee_cents").maybeSingle();
+  const fee = Math.min(500, Math.max(0, Number(s?.delivery_fee_cents ?? order.delivery_fee_cents)));
   const geo = await geocode(String(order.address ?? ""));
   if (!geo) return json({ error: "We couldn't find that address. Please pick it from the suggestions (street + number, Tilburg)." }, 422);
   const radius = Number(s?.zone_radius_km ?? 3);
@@ -73,6 +74,7 @@ Deno.serve(async (req) => {
   await admin.from("orders").update({ lat: geo.lat, lng: geo.lng, distance_km: Math.round(dist * 100) / 100 }).eq("id", order.id);
   if (dist > radius) return json({ error: `Sorry, ${geo.label} is ${dist.toFixed(1)} km from the centre. During the pilot we deliver within ${radius} km of central Tilburg.` }, 422);
   const total = subtotal + fee;
+  if (total < 100 || total > 50000) return json({ error: "order total out of range" }, 400);
 
   const res = await fetch("https://api.mollie.com/v2/payments", {
     method: "POST",

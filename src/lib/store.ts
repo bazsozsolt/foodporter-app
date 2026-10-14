@@ -1,4 +1,5 @@
 "use client";
+import { ORDER_COLS } from "./orders";
 // Data layer. With NEXT_PUBLIC_SUPABASE_* set it uses Supabase (auth, queries, realtime);
 // otherwise it falls back to mock data in localStorage so the app always runs.
 import { useSyncExternalStore } from "react";
@@ -85,7 +86,7 @@ function mapOrder(o: Row): Order {
   return {
     id: String(o.id), restaurant_id: o.restaurant_id as string, customer_id: o.customer_id as string, status: o.status as OrderStatus,
     lines, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number,
-    address: o.address as string, phone: o.phone as string, prep_minutes: (o.prep_minutes as number) ?? null,
+    address: o.address as string, phone: (o.phone as string) ?? "", prep_minutes: (o.prep_minutes as number) ?? null,
     ready_at: (o.ready_at as string) ?? null, bids, created_at: o.created_at as string, delivered_at: (o.delivered_at as string) ?? null,
     accepted_at: (o.accepted_at as string) ?? null, paid_at: (o.paid_at as string) ?? null,
     lat: (o.lat as number) ?? null, lng: (o.lng as number) ?? null, distance_km: o.distance_km == null ? null : Number(o.distance_km),
@@ -125,7 +126,7 @@ async function loadUserData() {
   const { data: p } = await sb.from("profiles").select("id, role, full_name, restaurant_id, online, location_consent_at").eq("id", user.id).maybeSingle();
   const profile: Profile = { id: user.id, email: user.email ?? null, role: (p?.role as Role) ?? "customer", full_name: p?.full_name ?? null, restaurant_id: p?.restaurant_id ?? null, online: Boolean(p?.online), location_consent_at: p?.location_consent_at ?? null };
   const [o, e] = await Promise.all([
-    sb.from("orders").select("*, order_items(*), bids(*)").order("id", { ascending: false }).limit(200),
+    sb.from("orders").select(`${ORDER_COLS}, order_items(*), bids(*)`).order("id", { ascending: false }).limit(200),
     sb.from("earnings").select("*, orders(restaurant_id)").order("earned_at", { ascending: true }),
   ]);
   const names = new Map(state.restaurants.map((r) => [r.id, r.name.replace(" (example)", "")]));
@@ -157,6 +158,14 @@ async function run(p: PromiseLike<{ error: { message: string } | null }>) {
   refetchSoon();
 }
 
+/** Friendlier texts for common Supabase Auth errors. */
+function authError(m: string) {
+  if (/rate limit/i.test(m)) return "Too many emails were sent in the last hour. Please try again later (or ask the Food Porter team to enable your account).";
+  if (/not authorized/i.test(m)) return "Sign-up emails can't be delivered to this address yet (pilot mail limits). Please ask the Food Porter team.";
+  if (/not confirmed/i.test(m)) return "Please confirm your email first: open the link we emailed you (check spam).";
+  if (/invalid login/i.test(m)) return "Wrong email or password.";
+  return m;
+}
 const authRedirect = () => window.location.origin + (process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/";
 
 // ---------------- Actions (async in both modes) ----------------
@@ -166,7 +175,7 @@ export const actions = {
     const sb = getSupabase();
     if (!sb) { set((s) => ({ ...s, signedIn: email || "email" })); return "Signed in (mock)"; }
     const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) throw new Error(error.message);
+    if (error) throw new Error(authError(error.message));
     await loadUserData();
     return "Signed in";
   },
@@ -174,8 +183,8 @@ export const actions = {
     const sb = getSupabase();
     if (!sb) { set((s) => ({ ...s, signedIn: email || "email" })); return "Account created (mock)"; }
     const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: authRedirect() } });
-    if (error) throw new Error(error.message);
-    if (!data.session) return "Check your email to confirm your account";
+    if (error) throw new Error(authError(error.message));
+    if (!data.session) return "Check your email (and spam folder) for the confirmation link, then come back and sign in";
     await loadUserData();
     return "Account created";
   },
@@ -183,7 +192,7 @@ export const actions = {
     const sb = getSupabase();
     if (!sb) { set((s) => ({ ...s, signedIn: email || "email" })); return "Signed in (mock)"; }
     const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: authRedirect() } });
-    if (error) throw new Error(error.message);
+    if (error) throw new Error(authError(error.message));
     return "Check your email for a login link";
   },
   async oauth(provider: "google" | "apple") {

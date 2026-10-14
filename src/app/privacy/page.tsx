@@ -22,6 +22,8 @@ export default function Privacy() {
         <li>To pay riders and restaurants, keep accounting records (7 years) and prevent fraud: <i>legal obligation / legitimate interest</i>.</li>
         <li>To measure and improve the service (e.g. % of orders delivered on time): <i>legitimate interest</i>, using aggregated data.</li>
       </ul>
+      <h2>Feedback</h2>
+      <p>If you use &quot;Give feedback&quot;, we store your message, optional star rating and email, the page you were on, your browser type and (if signed in) your account. Only Food Porter admins can read it; we delete it when the pilot ends or on request.</p>
       <h2>Live location</h2>
       <p>Riders choose when to share: going online starts sharing, going offline (with no delivery in progress) stops it. While a delivery is active, its <b>customer</b> and <b>restaurant</b> can see the rider on a map; after delivery they can no longer see it. Our admins can see online riders for dispatch and safety. Nobody else can see locations (enforced in the database). Location points are <b>automatically deleted after 7 days</b>. Legal basis: the rider’s consent (withdraw any time by going offline) and, during a delivery, performance of the contract with the customer. Maps use OpenStreetMap tiles (OpenStreetMap Foundation), which receive your IP address when the map loads.</p>
       <h2>Who we share it with</h2>

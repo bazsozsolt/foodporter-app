@@ -64,7 +64,9 @@ export function toIso(r: Range) {
 export function downloadCsv(filename: string, rows: Row[], columns?: string[]) {
   const cols = columns ?? Array.from(new Set(rows.flatMap((r) => Object.keys(r))));
   const esc = (v: unknown) => {
-    const s = v == null ? "" : typeof v === "object" ? JSON.stringify(v) : String(v);
+    let s = v == null ? "" : typeof v === "object" ? JSON.stringify(v) : String(v);
+    // CSV/formula injection: a user-typed value starting with = + - @ would run as a spreadsheet formula
+    if (typeof v === "string" && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
     return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const csv = [cols.join(","), ...rows.map((r) => cols.map((c) => esc(r[c])).join(","))].join("\n");

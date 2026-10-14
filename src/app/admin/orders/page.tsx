@@ -6,6 +6,7 @@ import { ErrorNote, Field, inputCls, Panel, RangePicker, SmallBtn, StatusBadge, 
 import { downloadCsv, fmtDateTime, preset, sb, toIso, useAdminQuery, type Range, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
 import { act } from "@/lib/act";
+import { ORDER_COLS } from "@/lib/orders";
 import { STATUS_LABEL, type OrderStatus } from "@/lib/types";
 
 const STATUSES: OrderStatus[] = ["awaiting_payment", "payment_failed", "placed", "accepted", "assigned", "ready", "picked_up", "delivered", "cancelled"];
@@ -14,15 +15,16 @@ function OrderDetail({ id }: { id: string }) {
   const router = useRouter();
   const q = useAdminQuery<{ o: Row; events: Row[]; incidents: Row[] }>(async () => {
     const c = sb();
-    const [o, f, ev, inc] = await Promise.all([
-      c.from("orders").select("*, order_items(*), bids(*), restaurants(name)").eq("id", Number(id)).maybeSingle(),
+    const [o, ph, f, ev, inc] = await Promise.all([
+      c.from("orders").select(`${ORDER_COLS}, order_items(*), bids(*), restaurants(name)`).eq("id", Number(id)).maybeSingle(),
+      c.rpc("order_phone", { p_order: Number(id) }),
       c.from("order_facts").select("*").eq("id", Number(id)).maybeSingle(),
       c.from("audit_events").select("*").eq("order_id", Number(id)).order("created_at"),
       c.from("incidents").select("*").eq("order_id", Number(id)),
     ]);
     if (!o.data) return { data: null, error: o.error ?? { message: `Order #${id} not found` } };
     const cust = await c.from("profiles").select("email, full_name, status").eq("id", String(o.data.customer_id)).maybeSingle();
-    return { data: { o: { ...o.data, ...(f.data ?? {}), customer: cust.data }, events: ev.data ?? [], incidents: inc.data ?? [] }, error: null };
+    return { data: { o: { ...o.data, ...(f.data ?? {}), phone: ph.data ?? "", customer: cust.data }, events: ev.data ?? [], incidents: inc.data ?? [] }, error: null };
   }, [id]);
   const o = q.data?.o;
   async function cancelOrder(oid: string, paid: boolean) {

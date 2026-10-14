@@ -13,6 +13,7 @@ import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap, type MapMarker } from "@/components/LiveMap";
 import { useOrderLocation } from "@/lib/location";
 import { eur } from "@/lib/format";
+import { getSupabase } from "@/lib/supabase";
 
 const NEXT_ROLE: Record<string, string> = { placed: "Restaurant", accepted: "Rider", assigned: "Restaurant", ready: "Rider", picked_up: "Rider" };
 
@@ -80,9 +81,19 @@ export function TrackingView({ id }: { id: string }) {
         </Card>}
         {o.status === "delivered" && mine && mode === "supabase" && <RateOrder orderId={o.id} hasRider={Boolean(bid)} />}
         {o.status === "delivered" && mine && <ReorderButton id={o.id} />}
-        <Card className="text-sm text-muted">📱 SMS updates go to {o.phone} at each step.</Card>
+        {mine && <SmsNote id={o.id} fallback={o.phone} />}
         {!["delivered", "awaiting_payment", "payment_failed", "cancelled"].includes(o.status) && <p className="text-center text-sm text-muted">Demo: switch to <b>{NEXT_ROLE[o.status]}</b> below to move the order forward.</p>}
       </main>
     </>
   );
+}
+
+function SmsNote({ id, fallback }: { id: string; fallback: string }) {
+  const [phone, setPhone] = useState<string | null>(fallback || null);
+  useEffect(() => {
+    const sb = getSupabase();
+    if (!sb) return;
+    sb.rpc("order_phone", { p_order: Number(id) }).then(({ data }) => { if (data) setPhone(String(data)); });
+  }, [id]);
+  return <Card className="text-sm text-muted">📱 SMS updates go to {phone ?? "your phone"} at each step.</Card>;
 }

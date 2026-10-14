@@ -9,6 +9,7 @@ import { actions, useStore, type Geo } from "@/lib/store";
 import { AddressField } from "@/components/AddressField";
 import { hasSupabase } from "@/lib/supabase";
 import { orderHref } from "@/lib/orders";
+import { TestModeCheckoutNote } from "@/components/TestModeBanner";
 
 export default function CheckoutPage() {
   const { cart, signedIn, menuItems, settings } = useStore();
@@ -19,7 +20,7 @@ export default function CheckoutPage() {
   const [busy, setBusy] = useState(false);
   const router = useRouter();
   const [address, setAddress] = useState("Heuvelstraat 12, 5038 AA Tilburg");
-  const [phone, setPhone] = useState("+31 6 1234 5678");
+  const [phone, setPhone] = useState("");
   const [method, setMethod] = useState<"iDEAL" | "Card">("iDEAL");
   const sub = Object.entries(cart.qty).reduce((a, [id, q]) => a + q * (menuItems.find((m) => m.id === id)?.price_cents ?? 0), 0);
   const input = "mb-2.5 mt-1 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-3";
@@ -49,15 +50,16 @@ export default function CheckoutPage() {
           <label className="text-[13px] text-muted">Delivery address</label>
           <AddressField value={address} onChange={setAddress} geo={geo} onGeo={setGeo} center={center} radiusKm={settings.zone_radius_km} />
           <label className="text-[13px] text-muted">Phone (for SMS updates)</label>
-          <input className={input} value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <input className={input} data-testid="phone" type="tel" placeholder="Mobile number for SMS updates, e.g. 06 12345678" value={phone} onChange={(e) => setPhone(e.target.value)} />
         </Card>
         <Card>
           <div className="flex justify-between"><span>Subtotal</span><span>{eur(sub)}</span></div>
           <div className="flex justify-between text-sm text-muted"><span>Delivery fee (flat)</span><span>{eur(DELIVERY_FEE_CENTS)}</span></div>
           <div className="mt-1 flex justify-between font-bold"><span>Total</span><span>{eur(sub + DELIVERY_FEE_CENTS)}</span></div>
         </Card>
+        <TestModeCheckoutNote />
         <Card><b>Pay with Mollie</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} value={method} onChange={setMethod} /></div></Card>
-        <Button onClick={pay} disabled={busy || (Boolean(signedIn) && outOfZone)}>{busy ? "Redirecting to Mollie…" : signedIn ? `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}` : "Sign in to pay"}</Button>
+        <Button onClick={pay} disabled={busy || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? "Redirecting to Mollie…" : signedIn ? `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}` : "Sign in to pay"}</Button>
         <p className="mt-3 text-center text-xs text-muted">By paying you agree to our <Link className="underline" href="/terms">Terms</Link> and <Link className="underline" href="/privacy">Privacy policy</Link>. Cancelled orders are refunded in full.</p>
       </main>
     </>

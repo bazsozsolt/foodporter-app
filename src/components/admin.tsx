@@ -12,6 +12,7 @@ const sections = [
   { href: "/admin/map", label: "🗺️ Live map" },
   { href: "/admin/customers", label: "👥 Customers" },
   { href: "/admin/reports", label: "📈 Reports" },
+  { href: "/admin/feedback", label: "💬 Feedback" },
   { href: "/admin/settings", label: "⚙️ Settings" },
 ];
 

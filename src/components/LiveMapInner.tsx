@@ -12,6 +12,9 @@ const icon = (k: MapMarker["kind"]) => L.divIcon({
   iconSize: [34, 34], iconAnchor: [17, 17],
 });
 
+/** Tooltip content as a text node: Leaflet would otherwise render label strings (names, addresses) as HTML. */
+function textNode(t: string) { const s = document.createElement("span"); s.textContent = t; return s; }
+
 /** Leaflet + OpenStreetMap tiles. Markers are diffed so realtime updates just move the rider. */
 export default function LiveMapInner({ markers, height = 220 }: { markers: MapMarker[]; height?: number }) {
   const el = useRef<HTMLDivElement>(null);
@@ -35,7 +38,7 @@ export default function LiveMapInner({ markers, height = 220 }: { markers: MapMa
       seen.add(k.id);
       const ex = layers.current.get(k.id);
       if (ex) ex.setLatLng([k.lat, k.lng]);
-      else layers.current.set(k.id, L.marker([k.lat, k.lng], { icon: icon(k.kind), title: k.label }).bindTooltip(k.label).addTo(m));
+      else layers.current.set(k.id, L.marker([k.lat, k.lng], { icon: icon(k.kind), title: k.label }).bindTooltip(textNode(k.label)).addTo(m));
     }
     for (const [id, mk] of layers.current) if (!seen.has(id)) { mk.remove(); layers.current.delete(id); }
     // fit once per set of marker ids (not on every rider move)
