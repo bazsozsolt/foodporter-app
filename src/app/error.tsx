@@ -3,11 +3,12 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { Button, Card, Header } from "@/components/ui";
 import { useT } from "@/lib/i18n";
+import { isChunkError, reloadOnce } from "@/lib/freshness";
 
 /** Friendly fallback instead of a blank screen when a page crashes. */
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const t = useT();
-  useEffect(() => { console.error(error); }, [error]);
+  useEffect(() => { console.error(error); if (isChunkError(error)) reloadOnce("chunk load error"); }, [error]);
   return (
     <><Header />
       <main id="main" className="p-4" data-testid="error-page"><Card className="text-center">

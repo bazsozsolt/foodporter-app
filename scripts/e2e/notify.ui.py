@@ -1,6 +1,6 @@
 import re, subprocess
 from playwright.sync_api import sync_playwright
-creds = dict(l.split("=",1) for l in open("/workspace/fptest/.creds").read().strip().split("\n"))
+creds = dict(l.split("=",1) for l in open(__import__("os").environ.get("FP_TEST_CREDS","/workspace/fptest/.creds")).read().strip().split("\n"))
 B = "http://localhost:8787/foodporter-app"; S = "/workspace/foodporter/screens/v10_"; APP="/workspace/foodporter-app"
 res = []
 def ok(n, c, x=""): res.append(c); print(("PASS " if c else "FAIL ") + n + (f" — {x}" if x else ""))

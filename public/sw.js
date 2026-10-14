@@ -1,5 +1,6 @@
 // Food Porter service worker: offline shell + fast repeat loads. Never caches API/Supabase/Mollie traffic.
-const VERSION = "fp-v10";
+// The app registers sw.js?v=<build id>, so every deploy installs a new worker that takes over immediately.
+const VERSION = "fp-" + (new URL(self.location.href).searchParams.get("v") || "v11");
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const SHELL = [`${BASE}/`, `${BASE}/offline/`, `${BASE}/icons/icon-192.png`];
 
@@ -15,7 +16,7 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET" || url.origin !== self.location.origin) return;
   if (req.mode === "navigate") {
     // Network first for pages; fall back to the cached page, then the offline page.
-    e.respondWith(fetch(req).then((res) => {
+    e.respondWith(fetch(req, { cache: "no-cache" }).then((res) => {
       const copy = res.clone();
       caches.open(VERSION).then((c) => c.put(req, copy));
       return res;

@@ -64,7 +64,7 @@ function OrderDetail({ id }: { id: string }) {
               <dt className="text-muted">Rider bid</dt><dd>{o.bid_at ? `${o.rider_name ?? "rider"} · ETA ${o.eta_minutes} min · after ${o.bid_seconds}s` : "—"}</dd>
               <dt className="text-muted">Distance</dt><dd>{o.distance_km != null ? `${Number(o.distance_km).toFixed(1)} km from centre` : "—"}</dd>
               {o.status === "cancelled" && <><dt className="text-muted">Cancelled</dt><dd>{String(o.cancel_reason ?? "")} · {fmtDateTime(o.cancelled_at)}</dd>
-                <dt className="text-muted">Refund</dt><dd data-testid="admin-refund">{o.refund_status ? `${o.refund_status}${o.refund_cents ? ` · ${eur(Number(o.refund_cents))}` : ""}${o.refund_id ? ` · ${o.refund_id}` : ""}` : o.paid_at ? "starting…" : "not paid, nothing to refund"}</dd></>}
+                <dt className="text-muted">Refund</dt><dd data-testid="admin-refund">{o.refund_status === "simulated" ? "🧪 simulated test payment, nothing charged (auto-closed)" : o.refund_status ? `${o.refund_status}${o.refund_cents ? ` · ${eur(Number(o.refund_cents))}` : ""}${o.refund_id ? ` · ${o.refund_id}` : ""}` : o.paid_at ? "starting…" : "not paid, nothing to refund"}</dd></>}
               {o.food_stars != null && <><dt className="text-muted">Rating</dt><dd>food {"★".repeat(Number(o.food_stars))}{o.rider_stars ? ` · delivery ${"★".repeat(Number(o.rider_stars))}` : ""}</dd></>}
               <dt className="text-muted">Result</dt><dd>{o.delivered_at ? (o.on_time ? "✅ on time" : `⏰ ${o.minutes_late} min late`) : "—"}{o.fast_bid ? " · ⚡ fast bid" : ""}</dd>
             </dl>
