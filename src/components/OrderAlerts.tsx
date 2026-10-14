@@ -2,6 +2,7 @@
 import { tx } from "@/lib/i18n";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useStore } from "@/lib/store";
+import { disablePush, enablePush, pushOn, pushSupported } from "@/lib/push";
 
 const KEY = "foodporter-alerts";
 let ctx: AudioContext | null = null;
@@ -34,6 +35,12 @@ export function unlockAudioOnFirstTap() {
     try { ctx ??= new AudioContext(); void ctx.resume(); } catch { /* ignore */ }
   };
   window.addEventListener("pointerdown", unlock, { once: true, capture: true });
+  // A push arrived while a Food Porter page is open: the service worker asks us to play the beep-beep.
+  navigator.serviceWorker?.addEventListener("message", (e) => {
+    const d = e.data as { type?: string; title?: string; url?: string };
+    if (d?.type === "fp-beep") beep();
+    if (d?.type === "fp-push-shown") { const w = window as unknown as { __fpPushShown?: unknown[] }; (w.__fpPushShown ??= []).push({ title: d.title, url: d.url }); }
+  });
 }
 
 /**
@@ -153,7 +160,7 @@ export function useOrderAlerts(keys: string[], title: string, body: (n: number) 
     beep();
     navigator.vibrate?.([200, 100, 200]);
     // System notification only when the app is in the background; in the foreground the beep + list update is enough.
-    if (backgrounded()) { void notify(title, body(fresh.length), { url, tag: `fp-${url}` }); flashTitle(fresh.length); }
+    if (backgrounded()) { if (!pushOn()) void notify(title, body(fresh.length), { url, tag: `fp-${url}` }); flashTitle(fresh.length); }
     (window as unknown as { __fpAlerts?: number }).__fpAlerts = ((window as unknown as { __fpAlerts?: number }).__fpAlerts ?? 0) + 1;
   }, [sig, title, body, url, ready, profile]);
 }
@@ -161,8 +168,11 @@ export function useOrderAlerts(keys: string[], title: string, body: (n: number) 
 export function AlertsToggle() {
   const on = useSyncExternalStore((l) => { subs.add(l); return () => { subs.delete(l); }; }, enabled, () => false);
   const [perm, setPerm] = useState<NotifySupport>(() => notifySupport());
+  const [push, setPush] = useState<boolean>(() => pushOn());
+  // Alerts on + permission granted: make sure this device is registered for push (also after a reinstall).
+  useEffect(() => { if (on && perm === "granted" && pushSupported()) void enablePush().then(setPush); }, [on, perm]);
   async function toggle() {
-    if (on) localStorage.setItem(KEY, "off");
+    if (on) { localStorage.setItem(KEY, "off"); void disablePush(); setPush(false); }
     else {
       localStorage.setItem(KEY, "on");
       beep(); // unlocks audio on iOS (needs a tap)
@@ -189,7 +199,30 @@ export function AlertsToggle() {
       {on && perm === "denied" && <p data-testid="notify-denied" className="mb-3 text-[12px] text-muted">🔕 {tx("Meldingen zijn geblokkeerd. Je krijgt alleen geluid. Sta meldingen toe via de site-instellingen van je browser.", "Notifications are blocked; you'll get sound only. Allow them in your browser's site settings.")}</p>}
       {on && perm === "needs-install" && <p data-testid="notify-install" className="mb-3 text-[12px] text-muted">📲 {tx("Op iPhone werken meldingen alleen als je Food Porter op je beginscherm zet (Deel → Zet op beginscherm). Tot die tijd krijg je geluid zolang de app open is.", "On iPhone, notifications only work after adding Food Porter to your home screen (Share → Add to Home Screen). Until then you get sound while the app is open.")}</p>}
       {on && perm === "unsupported" && <p data-testid="notify-unsupported" className="mb-3 text-[12px] text-muted">ℹ️ {tx("Deze browser ondersteunt geen meldingen. Je krijgt geluid en trillen zolang de app open is.", "This browser doesn't support notifications. You'll get sound and vibration while the app is open.")}</p>}
-      {on && perm === "granted" && <p data-testid="notify-granted" className="mb-3 text-[12px] text-ok">✓ {tx("Meldingen staan aan, ook op de achtergrond.", "Notifications on, also in the background.")}</p>}
+      {on && perm === "granted" && <p data-testid="notify-granted" className="mb-3 text-[12px] text-ok">✓ {push
+        ? tx("Pushmeldingen staan aan: je krijgt ze ook als Food Porter dicht is.", "Push notifications on: you'll get them even when Food Porter is closed.")
+        : tx("Meldingen staan aan zolang Food Porter open is.", "Notifications on while Food Porter is open.")}<span data-testid={push ? "push-on" : "push-off"} /></p>}
+    </div>
+  );
+}
+
+/** Customer: one tap to get a push when the order status changes (accepted, rider, on the way, delivered). */
+export function CustomerPushCard() {
+  const [state, setState] = useState<"idle" | "on" | "denied" | "unsupported">(() =>
+    !pushSupported() ? "unsupported" : pushOn() && Notification.permission === "granted" ? "on" : Notification.permission === "denied" ? "denied" : "idle");
+  useEffect(() => { if (state === "on") void enablePush(); }, [state]);
+  if (state === "unsupported") return null;
+  async function allow() {
+    let p: NotificationPermission = Notification.permission;
+    if (p === "default") { try { p = await Notification.requestPermission(); } catch { /* ignore */ } }
+    if (p !== "granted") { setState("denied"); return; }
+    setState((await enablePush()) ? "on" : "idle");
+  }
+  return (
+    <div data-testid="customer-push" className="mt-3 rounded-xl border-[1.5px] border-[#e2ded8] bg-white p-3 text-sm">
+      {state === "on" ? <p data-testid="customer-push-on" className="text-ok">🔔 {tx("Je krijgt een melding bij elke stap van je bestelling.", "You'll get a notification at every step of your order.")}</p>
+        : state === "denied" ? <p className="text-muted">🔕 {tx("Meldingen zijn geblokkeerd in je browser. Je kunt deze pagina openhouden om de status te volgen.", "Notifications are blocked in your browser. Keep this page open to follow the status.")}</p>
+        : <button data-testid="customer-push-allow" onClick={allow} className="w-full font-semibold text-brand">🔔 {tx("Stuur me een melding als mijn eten onderweg is", "Notify me when my food is on the way")}</button>}
     </div>
   );
 }

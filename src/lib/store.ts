@@ -206,6 +206,7 @@ export const actions = {
   },
   async signOut() {
     const sb = getSupabase();
+    await (await import("@/lib/push")).disablePush(); // this device stops getting this user's pushes
     if (sb) await sb.auth.signOut();
     set((s) => ({ ...s, signedIn: null, profile: null, orders: sb ? [] : s.orders }));
   },

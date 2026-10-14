@@ -6,6 +6,7 @@ import { getSupabase } from "@/lib/supabase";
 import { AlertsToggle, TestSoundButton, useOrderAlerts } from "@/components/OrderAlerts";
 import { distanceKm } from "@/lib/geo";
 import { RoleGate } from "@/components/RoleGate";
+import { useWakeLock } from "@/lib/wakeLock";
 import { act } from "@/lib/act";
 import { Button, Card, Chips, Empty, Header, Pill } from "@/components/ui";
 import { restaurantStyle } from "@/lib/mock-data";
@@ -71,6 +72,7 @@ export default function RiderPage() {
   const [name, setName] = useState<string | null>(null);
   const job = mode === "supabase" ? orders.find((o) => ["assigned", "ready", "picked_up"].includes(o.status) && o.rider_id === profile?.id) : undefined;
   const online = Boolean(profile?.online);
+  const wake = useWakeLock(online || Boolean(job));
   const { me, error: gpsError } = useShareLocation(profile?.id, mode === "supabase" && Boolean(profile?.location_consent_at) && (online || Boolean(job)), job?.id ?? null);
   async function toggleOnline() {
     if (!online && !profile?.location_consent_at) {
@@ -103,7 +105,8 @@ export default function RiderPage() {
               {online ? tx("🟢 Online · tik om offline te gaan", "🟢 Online · tap to go offline") : tx("⚪ Offline · tik om online te gaan", "⚪ Offline · tap to go online")}</button>
           </div>
         )}
-        {(online || job) && <p data-testid="gps" className="-mt-1 mb-3 text-xs text-muted">{gpsError ? `⚠️ ${gpsError}` : me ? `📍 Sharing location (${me.lat.toFixed(4)}, ${me.lng.toFixed(4)}) every ~7 s` : "📍 Waiting for GPS…"}</p>}
+        {(online || job) && <p data-testid="gps" className="-mt-1 mb-1 text-xs text-muted">{gpsError ? `⚠️ ${gpsError}` : me ? tx(`📍 Locatie wordt gedeeld (${me.lat.toFixed(4)}, ${me.lng.toFixed(4)}), elke ~7 s`, `📍 Sharing location (${me.lat.toFixed(4)}, ${me.lng.toFixed(4)}) every ~7 s`) : tx("📍 Wachten op GPS…", "📍 Waiting for GPS…")}</p>}
+        {(online || job) && wake !== "unsupported" && <p data-testid="wake-lock" data-state={wake} className="mb-3 text-xs text-muted">{wake === "on" ? tx("📱 Scherm blijft aan zolang je online bent", "📱 Screen stays on while you're online") : tx("📱 Scherm kan uitgaan: houd de app open voor meldingen", "📱 Screen may turn off: keep the app open for alerts")}</p>}
         {stops.length > 0 && (
           <Card data-testid="route">
             <div className="flex items-center justify-between"><b>{t("Jouw route", "Your route")}{active.length > 1 ? t(` · ${active.length} bestellingen gecombineerd`, ` · ${active.length} orders stacked`) : ""}</b><Pill>{stops.length} stop{stops.length > 1 ? "s" : ""}</Pill></div>
