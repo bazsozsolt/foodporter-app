@@ -1,38 +1,39 @@
 1:"$Sreact.fragment"
-2:"/foodporter-app/_next/static/chunks/0md_o5p-ap7xe.js"
+2:"/foodporter-app/_next/static/chunks/0umf92h1sb77c.js"
 3:"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js"
-4:I[49830,["$2","$3"],"AppShell"]
-5:I[56762,["$2","$3"],"TestModeBanner"]
-6:I[10486,["$2","$3"],"NetworkBanner"]
-7:I[39756,["$2","$3"],"default"]
-8:"/foodporter-app/_next/static/chunks/41t403tjewlpu.js"
-9:I[58298,["$2","$3","$8"],"default"]
-a:I[37457,["$2","$3"],"default"]
-b:"/foodporter-app/_next/static/chunks/1cwdfna3pysrh.js"
-c:I[29306,["$2","$3","$b"],"default"]
-d:I[59690,["$2","$3"],"FeedbackButton"]
-e:I[44735,["$2","$3"],"RoleNav"]
-f:I[94437,["$2","$3"],"Toaster"]
-15:I[97367,["$2","$3"],"OutletBoundary"]
-16:"$Sreact.suspense"
-18:"ViewportBoundary"
-19:I[97367,["$2","$3"],"$18"]
-1b:"MetadataBoundary"
-1c:I[97367,["$2","$3"],"$1b"]
-1e:I[68027,["$2","$3"],"default",1]
+4:"/foodporter-app/_next/static/chunks/1vgrywq11ga7z.js"
+5:I[49830,["$2","$3","$4"],"AppShell"]
+6:I[56762,["$2","$3","$4"],"TestModeBanner"]
+7:I[10486,["$2","$3","$4"],"NetworkBanner"]
+8:I[39756,["$2","$3","$4"],"default"]
+9:"/foodporter-app/_next/static/chunks/3mf_690gw-eed.js"
+a:I[58298,["$2","$3","$4","$9"],"default"]
+b:I[37457,["$2","$3","$4"],"default"]
+c:"/foodporter-app/_next/static/chunks/1cwdfna3pysrh.js"
+d:I[29306,["$2","$3","$4","$c"],"default"]
+e:I[59690,["$2","$3","$4"],"FeedbackButton"]
+f:I[44735,["$2","$3","$4"],"RoleNav"]
+10:I[94437,["$2","$3","$4"],"Toaster"]
+16:I[97367,["$2","$3","$4"],"OutletBoundary"]
+17:"$Sreact.suspense"
+19:"ViewportBoundary"
+1a:I[97367,["$2","$3","$4"],"$19"]
+1c:"MetadataBoundary"
+1d:I[97367,["$2","$3","$4"],"$1c"]
+1f:I[68027,["$2","$3","$4"],"default",1]
 :HL["/foodporter-app/_next/static/chunks/1tbhqrydl34_k.css","style"]
 :HL["/foodporter-app/_next/static/media/2039e8342bda6056-s.p.1hiu0hj9qpr9g.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/foodporter-app/_next/static/media/fabcf92ba1ccea36-s.p.1w_qz2ahumqmz.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
-11:X
-13:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":["$L14",[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/23q_nzqi2u_w9.js","async":true,"nonce":"$undefined"}]],["$","$L15",null,{"children":["$","$16",null,{"name":"Next.MetadataOutlet","children":"$@17"}]}]]}],"p":false,"v":null}}]]
-12:[["children",{"s":{"n":"id","t":"d","k":"1156","s":[]},"h":512,"d":{"r":["$","$1","c",{"children":[null,["$","$L7",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$La",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],"p":false,"v":"$11"},"c":"$Q13"}]]
-10:[["children",{"s":"orders","h":512,"d":{"r":["$","$1","c",{"children":[null,["$","$L7",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$La",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],"p":false,"v":"$11"},"c":"$Q12"}]]
-0:{"P":null,"c":["","orders","1156",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/1tbhqrydl34_k.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/0md_o5p-ap7xe.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"nl","className":"pJNVca_variable","children":[["$","head",null,{"children":[["$","meta",null,{"httpEquiv":"Content-Security-Policy","content":"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org; connect-src 'self' https://joontqbhfqjqkyhlifle.supabase.co wss://joontqbhfqjqkyhlifle.supabase.co https://api.pdok.nl; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"}],["$","meta",null,{"name":"referrer","content":"strict-origin-when-cross-origin"}]]}],["$","body",null,{"className":"font-sans antialiased","children":["$","$L4",null,{"children":[["$","a",null,{"href":"#main","className":"sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:font-bold","children":"Naar inhoud / Skip to content"}],["$","$L5",null,{}],["$","$L6",null,{}],["$","$L7",null,{"parallelRouterKey":"children","error":"$9","errorStyles":[],"errorScripts":[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/41t403tjewlpu.js","async":true,"nonce":"$undefined"}]],"template":["$","$La",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$Lc",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$Ld",null,{}],["$","$Le",null,{}],["$","$Lf",null,{}]]}]}]]}]]}],"p":false,"v":null},"c":"$Q10"},"h":{"r":["$","$1","h",{"children":[null,["$","$L19",null,{"children":"$L1a"}],["$","$L1c",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$16",null,{"name":"Next.Metadata","children":"$L1d"}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":false,"v":null}},"m":"$undefined","G":["$1e",[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/1tbhqrydl34_k.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"6GtDXg3nrtquvxTnXvwnq"}
-1f:"/foodporter-app/_next/static/chunks/23q_nzqi2u_w9.js"
-20:I[48798,["$2","$3","$1f"],"TrackingView"]
-11:C
-14:["$","$L20",null,{"id":"1156"}]
-1a:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#9b0708"}]]
-21:I[27201,["$2","$3"],"IconMark"]
-17:null
-1d:[["$","title","0",{"children":"Food Porter · Tilburg"}],["$","meta","1",{"name":"description","content":"Sneller je avondeten bezorgd in Tilburg, door lokale riders die zelf hun tempo kiezen."}],["$","link","2",{"rel":"manifest","href":"/foodporter-app/manifest.webmanifest","crossOrigin":"$undefined"}],["$","link","3",{"rel":"icon","href":"/foodporter-app/icons/icon-192.png","sizes":"192x192","type":"image/png"}],["$","link","4",{"rel":"apple-touch-icon","href":"/foodporter-app/icons/apple-touch-icon.png"}],["$","$L21","5",{}]]
+12:X
+14:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":["$L15",[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/3z_7ho7c5i78_.js","async":true,"nonce":"$undefined"}]],["$","$L16",null,{"children":["$","$17",null,{"name":"Next.MetadataOutlet","children":"$@18"}]}]]}],"p":false,"v":null}}]]
+13:[["children",{"s":{"n":"id","t":"d","k":"1156","s":[]},"h":512,"d":{"r":["$","$1","c",{"children":[null,["$","$L8",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$Lb",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],"p":false,"v":"$12"},"c":"$Q14"}]]
+11:[["children",{"s":"orders","h":512,"d":{"r":["$","$1","c",{"children":[null,["$","$L8",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$Lb",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],"p":false,"v":"$12"},"c":"$Q13"}]]
+0:{"P":null,"c":["","orders","1156",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/1tbhqrydl34_k.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/0umf92h1sb77c.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js","async":true,"nonce":"$undefined"}],["$","script","script-2",{"src":"/foodporter-app/_next/static/chunks/1vgrywq11ga7z.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"nl","className":"pJNVca_variable","children":[["$","head",null,{"children":[["$","meta",null,{"httpEquiv":"Content-Security-Policy","content":"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org; connect-src 'self' https://joontqbhfqjqkyhlifle.supabase.co wss://joontqbhfqjqkyhlifle.supabase.co https://api.pdok.nl; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"}],["$","meta",null,{"name":"referrer","content":"strict-origin-when-cross-origin"}]]}],["$","body",null,{"className":"font-sans antialiased","children":["$","$L5",null,{"children":[["$","a",null,{"href":"#main","className":"sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:font-bold","children":"Naar inhoud / Skip to content"}],["$","$L6",null,{}],["$","$L7",null,{}],["$","$L8",null,{"parallelRouterKey":"children","error":"$a","errorStyles":[],"errorScripts":[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/3mf_690gw-eed.js","async":true,"nonce":"$undefined"}]],"template":["$","$Lb",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$Ld",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$Le",null,{}],["$","$Lf",null,{}],["$","$L10",null,{}]]}]}]]}]]}],"p":false,"v":null},"c":"$Q11"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1a",null,{"children":"$L1b"}],["$","$L1d",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$17",null,{"name":"Next.Metadata","children":"$L1e"}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":false,"v":null}},"m":"$undefined","G":["$1f",[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/1tbhqrydl34_k.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"CVl4P-Kme-UIbGpXk91YJ"}
+20:"/foodporter-app/_next/static/chunks/3z_7ho7c5i78_.js"
+21:I[48798,["$2","$3","$4","$20"],"TrackingView"]
+12:C
+15:["$","$L21",null,{"id":"1156"}]
+1b:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#9b0708"}]]
+22:I[27201,["$2","$3","$4"],"IconMark"]
+18:null
+1e:[["$","title","0",{"children":"Food Porter · Tilburg"}],["$","meta","1",{"name":"description","content":"Sneller je avondeten bezorgd in Tilburg, door lokale riders die zelf hun tempo kiezen."}],["$","link","2",{"rel":"manifest","href":"/foodporter-app/manifest.webmanifest","crossOrigin":"$undefined"}],["$","link","3",{"rel":"icon","href":"/foodporter-app/icons/icon-192.png","sizes":"192x192","type":"image/png"}],["$","link","4",{"rel":"apple-touch-icon","href":"/foodporter-app/icons/apple-touch-icon.png"}],["$","$L22","5",{}]]

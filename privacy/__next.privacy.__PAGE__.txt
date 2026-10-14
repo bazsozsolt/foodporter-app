@@ -1,63 +1,65 @@
 1:"$Sreact.fragment"
-2:"/foodporter-app/_next/static/chunks/0md_o5p-ap7xe.js"
+2:"/foodporter-app/_next/static/chunks/0umf92h1sb77c.js"
 3:"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js"
-4:I[49830,["$2","$3"],"AppShell"]
-5:I[56762,["$2","$3"],"TestModeBanner"]
-6:I[10486,["$2","$3"],"NetworkBanner"]
-7:I[39756,["$2","$3"],"default"]
-8:"/foodporter-app/_next/static/chunks/41t403tjewlpu.js"
-9:I[58298,["$2","$3","$8"],"default"]
-a:I[37457,["$2","$3"],"default"]
-b:"/foodporter-app/_next/static/chunks/1cwdfna3pysrh.js"
-c:I[29306,["$2","$3","$b"],"default"]
-d:I[59690,["$2","$3"],"FeedbackButton"]
-e:I[44735,["$2","$3"],"RoleNav"]
-f:I[94437,["$2","$3"],"Toaster"]
-16:"/foodporter-app/_next/static/chunks/1ppjmi0c2d-jg.js"
-17:I[22016,["$2","$3","$16"],""]
-18:I[89796,["$2","$3","$16"],"LangToggle"]
-2c:"ViewportBoundary"
-2d:I[97367,["$2","$3"],"$2c"]
-2e:"MetadataBoundary"
-2f:I[97367,["$2","$3"],"$2e"]
-30:"$Sreact.suspense"
-31:I[27201,["$2","$3"],"IconMark"]
+4:"/foodporter-app/_next/static/chunks/1vgrywq11ga7z.js"
+5:I[49830,["$2","$3","$4"],"AppShell"]
+6:I[56762,["$2","$3","$4"],"TestModeBanner"]
+7:I[10486,["$2","$3","$4"],"NetworkBanner"]
+8:I[39756,["$2","$3","$4"],"default"]
+9:"/foodporter-app/_next/static/chunks/3mf_690gw-eed.js"
+a:I[58298,["$2","$3","$4","$9"],"default"]
+b:I[37457,["$2","$3","$4"],"default"]
+c:"/foodporter-app/_next/static/chunks/1cwdfna3pysrh.js"
+d:I[29306,["$2","$3","$4","$c"],"default"]
+e:I[59690,["$2","$3","$4"],"FeedbackButton"]
+f:I[44735,["$2","$3","$4"],"RoleNav"]
+10:I[94437,["$2","$3","$4"],"Toaster"]
+17:"/foodporter-app/_next/static/chunks/1ppjmi0c2d-jg.js"
+18:I[22016,["$2","$3","$4","$17"],""]
+19:I[89796,["$2","$3","$4","$17"],"LangToggle"]
+2e:"ViewportBoundary"
+2f:I[97367,["$2","$3","$4"],"$2e"]
+30:"MetadataBoundary"
+31:I[97367,["$2","$3","$4"],"$30"]
+32:"$Sreact.suspense"
+33:I[27201,["$2","$3","$4"],"IconMark"]
 :HL["/foodporter-app/_next/static/chunks/1tbhqrydl34_k.css","style"]
 :HL["/foodporter-app/brand/mark-badge.png","image"]
 :HL["/foodporter-app/brand/wordmark.png","image"]
-11:X
-14:X
-14:C
-15:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[[["$","header",null,{"className":"print:hidden rounded-b-3xl bg-gradient-to-br from-brand to-brand-dark px-5 pb-5 pt-4 text-white","children":[["$","div",null,{"className":"flex items-center justify-between gap-3","children":[["$","$L17",null,{"href":"/","className":"flex min-w-0 items-center gap-2.5","aria-label":"Food Porter, home","data-testid":"brand-logo","children":[["$","img",null,{"src":"/foodporter-app/brand/mark-badge.png","alt":"","width":44,"height":44,"className":"h-12 w-12 shrink-0 rounded-full bg-white p-0.5 shadow"}],["$","img",null,{"src":"/foodporter-app/brand/wordmark.png","alt":"FOODPORTER","width":150,"height":25,"className":"h-[25px] w-auto"}]]}],["$","$L18",null,{}]]}],"$undefined",["$","p",null,{"className":"mt-1 text-[13px] opacity-90","children":"Privacy policy"}]]}],["$","main",null,{"className":"p-4","children":[["$","$L17",null,{"href":"/","className":"text-sm text-muted","children":"← Home"}],["$","div",null,{"className":"mb-3 rounded-2xl bg-white p-4 shadow-[0_2px_10px_rgba(0,0,0,.05)] mt-2.5","children":[["$","h1",null,{"className":"text-xl font-extrabold","children":"Privacy policy"}],["$","p",null,{"className":"mb-3 text-xs text-muted","children":["Last updated ","14 October 2026"," · Pilot version: to be reviewed by a lawyer before public launch."]}],["$","div",null,{"className":"legal space-y-3 text-sm leading-relaxed [&_h2]:mt-4 [&_h2]:font-bold [&_li]:ml-4 [&_li]:list-disc","children":[["$","p",null,{"children":"Food Porter (“we”) runs a food delivery pilot in Tilburg, the Netherlands. This policy explains which personal data we process, why, and your rights under the GDPR (AVG)."}],["$","h2",null,{"children":"What we collect"}],["$","ul",null,{"children":[["$","li",null,{"children":[["$","b",null,{"children":"Account:"}]," email address, name (optional), role, and sign-in data from Google/Apple if you use them."]}],["$","li",null,{"children":[["$","b",null,{"children":"Orders:"}]," delivery address and its map coordinates, phone number, items, amounts, timestamps, ratings and comments."]}],["$","li",null,{"children":[["$","b",null,{"children":"Payments:"}]," processed by Mollie B.V. We store the payment id and status, never your card or bank details."]}],["$","li",null,{"children":[["$","b",null,{"children":"Riders:"}]," name, phone, IBAN (for payouts), bids, delivery times and earnings."]}],"$L19","$L1a"]}],"$L1b","$L1c","$L1d","$L1e","$L1f","$L20","$L21","$L22","$L23","$L24","$L25","$L26","$L27"]}]]}],"$L28"]}]],["$L29"],"$L2a"]}],"p":"$@2b","v":null,"s":"$11"}}]]
-12:[["children",{"s":"privacy","h":96,"d":{"r":["$","$1","c",{"children":[null,["$","$L7",null,{"parallelRouterKey":"children","template":["$","$La",null,{}]}]]}],"p":"$@13","v":"$14","s":"$11"},"c":"$Q15"}]]
-0:{"t":{"t":{"s":"","h":80,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/1tbhqrydl34_k.css","precedence":"next"}],["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/0md_o5p-ap7xe.js","async":true}],["$","script","script-1",{"src":"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js","async":true}]],["$","html",null,{"lang":"nl","className":"pJNVca_variable","children":[["$","head",null,{"children":[["$","meta",null,{"httpEquiv":"Content-Security-Policy","content":"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org; connect-src 'self' https://joontqbhfqjqkyhlifle.supabase.co wss://joontqbhfqjqkyhlifle.supabase.co https://api.pdok.nl; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"}],["$","meta",null,{"name":"referrer","content":"strict-origin-when-cross-origin"}]]}],["$","body",null,{"className":"font-sans antialiased","children":["$","$L4",null,{"children":[["$","a",null,{"href":"#main","className":"sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:font-bold","children":"Naar inhoud / Skip to content"}],["$","$L5",null,{}],["$","$L6",null,{}],["$","$L7",null,{"parallelRouterKey":"children","error":"$9","errorStyles":[],"errorScripts":[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/41t403tjewlpu.js","async":true}]],"template":["$","$La",null,{}],"notFound":[["$","$Lc",null,{}],[]]}],["$","$Ld",null,{}],["$","$Le",null,{}],["$","$Lf",null,{}]]}]}]]}]]}],"p":"$@10","v":null,"s":"$11"},"c":"$Q12"},"h":{"r":["$","$1","h",{"children":[null,["$","$L2d",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#9b0708"}]]}],["$","$L2f",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$30",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Privacy policy · Food Porter"}],["$","meta","1",{"name":"description","content":"Sneller je avondeten bezorgd in Tilburg, door lokale riders die zelf hun tempo kiezen."}],["$","link","2",{"rel":"manifest","href":"/foodporter-app/manifest.webmanifest"}],["$","link","3",{"rel":"icon","href":"/foodporter-app/icons/icon-192.png","sizes":"192x192","type":"image/png"}],["$","link","4",{"rel":"apple-touch-icon","href":"/foodporter-app/icons/apple-touch-icon.png"}],["$","$L31","5",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@32","v":null,"s":"$11"}},"a":"$@33","u":"$@34","b":"6GtDXg3nrtquvxTnXvwnq"}
-35:I[15840,["$2","$3","$16"],"DataExport"]
-36:I[13642,["$2","$3","$16"],"Footer"]
-37:I[97367,["$2","$3"],"OutletBoundary"]
-19:["$","li",null,{"children":[["$","b",null,{"children":"Rider location (GPS):"}]," only after the rider consents, and only while they are ",["$","i",null,{"children":"online"}]," or on a delivery: position, accuracy, speed and heading, about every 7 seconds."]}]
-1a:["$","li",null,{"children":[["$","b",null,{"children":"Restaurants:"}]," business contact details, menu and order handling times."]}]
-1b:["$","h2",null,{"children":"Why (legal basis)"}]
-1c:["$","ul",null,{"children":[["$","li",null,{"children":["To deliver your order and send status SMS: ",["$","i",null,{"children":"performance of a contract"}],"."]}],["$","li",null,{"children":["To pay riders and restaurants, keep accounting records (7 years) and prevent fraud: ",["$","i",null,{"children":"legal obligation / legitimate interest"}],"."]}],["$","li",null,{"children":["To measure and improve the service (e.g. % of orders delivered on time): ",["$","i",null,{"children":"legitimate interest"}],", using aggregated data."]}]]}]
-1d:["$","h2",null,{"children":"Feedback"}]
-1e:["$","p",null,{"children":"If you use \"Give feedback\", we store your message, optional star rating and email, the page you were on, your browser type and (if signed in) your account. Only Food Porter admins can read it; we delete it when the pilot ends or on request."}]
-1f:["$","h2",null,{"children":"Live location"}]
-20:["$","p",null,{"children":["Riders choose when to share: going online starts sharing, going offline (with no delivery in progress) stops it. While a delivery is active, its ",["$","b",null,{"children":"customer"}]," and ",["$","b",null,{"children":"restaurant"}]," can see the rider on a map; after delivery they can no longer see it. Our admins can see online riders for dispatch and safety. Nobody else can see locations (enforced in the database). Location points are ",["$","b",null,{"children":"automatically deleted after 7 days"}],". Legal basis: the rider’s consent (withdraw any time by going offline) and, during a delivery, performance of the contract with the customer. Maps use OpenStreetMap tiles (OpenStreetMap Foundation), which receive your IP address when the map loads."]}]
-21:["$","h2",null,{"children":"Who we share it with"}]
-22:["$","p",null,{"children":"The restaurant and the assigned rider see what they need for your order (items, address, phone). Processors: Supabase (database & login, EU region), Mollie (payments, NL), PDOK/Kadaster (address lookup, NL), OpenStreetMap (map tiles), our SMS provider (Twilio or Bird) and GitHub Pages (hosting the app files). We do not sell data or use advertising trackers."}]
-23:["$","h2",null,{"children":"How long"}]
-24:["$","p",null,{"children":"Order and payment records: 7 years (Dutch tax law). Account data: until you delete your account. Ratings: until you ask us to remove them. Rider GPS points: 7 days."}]
-25:["$","h2",null,{"children":"Your rights"}]
-26:["$","p",null,{"children":["You can access, correct, export or delete your data, object to processing, and complain to the Autoriteit Persoonsgegevens. Download your data below; for deletion or questions contact us at ",["$","b",null,{"children":"privacy@foodporter.nl"}]," (pilot contact, to be confirmed). We reply within 30 days."]}]
-27:["$","$L35",null,{}]
-28:["$","$L36",null,{}]
-29:["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/1ppjmi0c2d-jg.js","async":true}]
-2a:["$","$L37",null,{"children":["$","$30",null,{"name":"Next.MetadataOutlet","children":"$@38"}]}]
-11:300
-38:null
-34:true
-11:C
-33:0
-13:"$undefined"
-10:"$undefined"
-32:"$undefined"
-2b:"$undefined"
+12:X
+15:X
+15:C
+16:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[[["$","header",null,{"className":"print:hidden rounded-b-3xl bg-gradient-to-br from-brand to-brand-dark px-5 pb-5 pt-4 text-white","children":[["$","div",null,{"className":"flex items-center justify-between gap-3","children":[["$","$L18",null,{"href":"/","className":"flex min-w-0 items-center gap-2.5","aria-label":"Food Porter, home","data-testid":"brand-logo","children":[["$","img",null,{"src":"/foodporter-app/brand/mark-badge.png","alt":"","width":44,"height":44,"className":"h-12 w-12 shrink-0 rounded-full bg-white p-0.5 shadow"}],["$","img",null,{"src":"/foodporter-app/brand/wordmark.png","alt":"FOODPORTER","width":150,"height":25,"className":"h-[25px] w-auto"}]]}],["$","$L19",null,{}]]}],"$undefined",["$","p",null,{"className":"mt-1 text-[13px] opacity-90","children":"Privacy policy"}]]}],["$","main",null,{"className":"p-4","children":[["$","$L18",null,{"href":"/","className":"text-sm text-muted","children":"← Home"}],["$","div",null,{"className":"mb-3 rounded-2xl bg-white p-4 shadow-[0_2px_10px_rgba(0,0,0,.05)] mt-2.5","children":[["$","h1",null,{"className":"text-xl font-extrabold","children":"Privacy policy"}],["$","p",null,{"className":"mb-3 text-xs text-muted","children":["Last updated ","14 October 2026"," · Pilot version: to be reviewed by a lawyer before public launch."]}],["$","div",null,{"className":"legal space-y-3 text-sm leading-relaxed [&_h2]:mt-4 [&_h2]:font-bold [&_li]:ml-4 [&_li]:list-disc","children":[["$","p",null,{"children":"Food Porter (“we”) runs a food delivery pilot in Tilburg, the Netherlands. This policy explains which personal data we process, why, and your rights under the GDPR (AVG)."}],["$","h2",null,{"children":"What we collect"}],["$","ul",null,{"children":[["$","li",null,{"children":[["$","b",null,{"children":"Account:"}]," email address, name (optional), role, and sign-in data from Google/Apple if you use them."]}],["$","li",null,{"children":[["$","b",null,{"children":"Orders:"}]," delivery address and its map coordinates, phone number, items, amounts, timestamps, ratings and comments."]}],["$","li",null,{"children":[["$","b",null,{"children":"Payments:"}]," processed by Mollie B.V. We store the payment id and status, never your card or bank details."]}],"$L1a","$L1b","$L1c"]}],"$L1d","$L1e","$L1f","$L20","$L21","$L22","$L23","$L24","$L25","$L26","$L27","$L28","$L29"]}]]}],"$L2a"]}]],["$L2b"],"$L2c"]}],"p":"$@2d","v":null,"s":"$12"}}]]
+13:[["children",{"s":"privacy","h":96,"d":{"r":["$","$1","c",{"children":[null,["$","$L8",null,{"parallelRouterKey":"children","template":["$","$Lb",null,{}]}]]}],"p":"$@14","v":"$15","s":"$12"},"c":"$Q16"}]]
+0:{"t":{"t":{"s":"","h":80,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/foodporter-app/_next/static/chunks/1tbhqrydl34_k.css","precedence":"next"}],["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/0umf92h1sb77c.js","async":true}],["$","script","script-1",{"src":"/foodporter-app/_next/static/chunks/1gn5-_108cqbe.js","async":true}],["$","script","script-2",{"src":"/foodporter-app/_next/static/chunks/1vgrywq11ga7z.js","async":true}]],["$","html",null,{"lang":"nl","className":"pJNVca_variable","children":[["$","head",null,{"children":[["$","meta",null,{"httpEquiv":"Content-Security-Policy","content":"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org; connect-src 'self' https://joontqbhfqjqkyhlifle.supabase.co wss://joontqbhfqjqkyhlifle.supabase.co https://api.pdok.nl; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'"}],["$","meta",null,{"name":"referrer","content":"strict-origin-when-cross-origin"}]]}],["$","body",null,{"className":"font-sans antialiased","children":["$","$L5",null,{"children":[["$","a",null,{"href":"#main","className":"sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:font-bold","children":"Naar inhoud / Skip to content"}],["$","$L6",null,{}],["$","$L7",null,{}],["$","$L8",null,{"parallelRouterKey":"children","error":"$a","errorStyles":[],"errorScripts":[["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/3mf_690gw-eed.js","async":true}]],"template":["$","$Lb",null,{}],"notFound":[["$","$Ld",null,{}],[]]}],["$","$Le",null,{}],["$","$Lf",null,{}],["$","$L10",null,{}]]}]}]]}]]}],"p":"$@11","v":null,"s":"$12"},"c":"$Q13"},"h":{"r":["$","$1","h",{"children":[null,["$","$L2f",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#9b0708"}]]}],["$","$L31",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$32",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Privacy policy · Food Porter"}],["$","meta","1",{"name":"description","content":"Sneller je avondeten bezorgd in Tilburg, door lokale riders die zelf hun tempo kiezen."}],["$","link","2",{"rel":"manifest","href":"/foodporter-app/manifest.webmanifest"}],["$","link","3",{"rel":"icon","href":"/foodporter-app/icons/icon-192.png","sizes":"192x192","type":"image/png"}],["$","link","4",{"rel":"apple-touch-icon","href":"/foodporter-app/icons/apple-touch-icon.png"}],["$","$L33","5",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@34","v":null,"s":"$12"}},"a":"$@35","u":"$@36","b":"CVl4P-Kme-UIbGpXk91YJ"}
+37:I[15840,["$2","$3","$4","$17"],"DataExport"]
+38:I[13642,["$2","$3","$4","$17"],"Footer"]
+39:I[97367,["$2","$3","$4"],"OutletBoundary"]
+1a:["$","li",null,{"children":[["$","b",null,{"children":"Riders:"}]," name, phone, IBAN (for payouts), bids, delivery times and earnings."]}]
+1b:["$","li",null,{"children":[["$","b",null,{"children":"Rider location (GPS):"}]," only after the rider consents, and only while they are ",["$","i",null,{"children":"online"}]," or on a delivery: position, accuracy, speed and heading, about every 7 seconds."]}]
+1c:["$","li",null,{"children":[["$","b",null,{"children":"Restaurants:"}]," business contact details, menu and order handling times."]}]
+1d:["$","h2",null,{"children":"Why (legal basis)"}]
+1e:["$","ul",null,{"children":[["$","li",null,{"children":["To deliver your order and send status SMS: ",["$","i",null,{"children":"performance of a contract"}],"."]}],["$","li",null,{"children":["To pay riders and restaurants, keep accounting records (7 years) and prevent fraud: ",["$","i",null,{"children":"legal obligation / legitimate interest"}],"."]}],["$","li",null,{"children":["To measure and improve the service (e.g. % of orders delivered on time): ",["$","i",null,{"children":"legitimate interest"}],", using aggregated data."]}]]}]
+1f:["$","h2",null,{"children":"Feedback"}]
+20:["$","p",null,{"children":"If you use \"Give feedback\", we store your message, optional star rating and email, the page you were on, your browser type and (if signed in) your account. Only Food Porter admins can read it; we delete it when the pilot ends or on request."}]
+21:["$","h2",null,{"children":"Live location"}]
+22:["$","p",null,{"children":["Riders choose when to share: going online starts sharing, going offline (with no delivery in progress) stops it. While a delivery is active, its ",["$","b",null,{"children":"customer"}]," and ",["$","b",null,{"children":"restaurant"}]," can see the rider on a map; after delivery they can no longer see it. Our admins can see online riders for dispatch and safety. Nobody else can see locations (enforced in the database). Location points are ",["$","b",null,{"children":"automatically deleted after 7 days"}],". Legal basis: the rider’s consent (withdraw any time by going offline) and, during a delivery, performance of the contract with the customer. Maps use OpenStreetMap tiles (OpenStreetMap Foundation), which receive your IP address when the map loads."]}]
+23:["$","h2",null,{"children":"Who we share it with"}]
+24:["$","p",null,{"children":"The restaurant and the assigned rider see what they need for your order (items, address, phone). Processors: Supabase (database & login, EU region), Mollie (payments, NL), PDOK/Kadaster (address lookup, NL), OpenStreetMap (map tiles), our SMS provider (Twilio or Bird) and GitHub Pages (hosting the app files). We do not sell data or use advertising trackers."}]
+25:["$","h2",null,{"children":"How long"}]
+26:["$","p",null,{"children":"Order and payment records: 7 years (Dutch tax law). Account data: until you delete your account. Ratings: until you ask us to remove them. Rider GPS points: 7 days."}]
+27:["$","h2",null,{"children":"Your rights"}]
+28:["$","p",null,{"children":["You can access, correct, export or delete your data, object to processing, and complain to the Autoriteit Persoonsgegevens. Download your data below; for deletion or questions contact us at ",["$","b",null,{"children":"privacy@foodporter.nl"}]," (pilot contact, to be confirmed). We reply within 30 days."]}]
+29:["$","$L37",null,{}]
+2a:["$","$L38",null,{}]
+2b:["$","script","script-0",{"src":"/foodporter-app/_next/static/chunks/1ppjmi0c2d-jg.js","async":true}]
+2c:["$","$L39",null,{"children":["$","$32",null,{"name":"Next.MetadataOutlet","children":"$@3a"}]}]
+12:300
+3a:null
+36:true
+12:C
+35:0
+14:"$undefined"
+11:"$undefined"
+34:"$undefined"
+2d:"$undefined"
