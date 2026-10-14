@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/Toaster";
 import { cuisineLabel } from "@/lib/format";
 import { useT } from "@/lib/i18n";
 import Link from "next/link";
@@ -60,7 +61,10 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
   }, [list.length, key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function locate() {
-    navigator.geolocation?.getCurrentPosition((p) => setHere({ lat: p.coords.latitude, lng: p.coords.longitude, label: t("jouw locatie", "your location") }), () => alert(t("Locatie niet beschikbaar", "Location not available")), { timeout: 8000 });
+    if (!navigator.geolocation) return toast(t("Locatie niet beschikbaar op dit apparaat", "Location not available on this device"));
+    toast(t("📍 Locatie zoeken…", "📍 Finding your location…"));
+    navigator.geolocation.getCurrentPosition((p) => setHere({ lat: p.coords.latitude, lng: p.coords.longitude, label: t("jouw locatie", "your location") }),
+      (e) => toast(e.code === 1 ? t("Locatie geweigerd. Sta locatie toe in je browserinstellingen.", "Location denied. Allow location in your browser settings.") : t("Locatie niet beschikbaar", "Location not available")), { timeout: 8000 });
   }
 
   const t = useT();
@@ -70,14 +74,14 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
       <input data-testid="restaurant-search" className="mb-2 w-full rounded-xl border border-[#e6dfd7] bg-white px-3 py-2.5 text-sm" placeholder={t("Zoek restaurant of keuken (pizza, sushi, kebab…)", "Search restaurants or cuisine (pizza, sushi, kebab…)")}
         value={q} onChange={(e) => setQ(e.target.value)} />
       <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1" data-testid="cuisine-chips">
-        <button className={chip(!cuisine)} onClick={() => setCuisine(null)}>{t("Alles", "All")}</button>
-        {chips.map((c) => <button key={c} className={chip(cuisine === c)} onClick={() => setCuisine(cuisine === c ? null : c)}>{cuisineLabel(c)}</button>)}
+        <button className={chip(!cuisine)} aria-pressed={!cuisine} onClick={() => setCuisine(null)}>{t("Alles", "All")}</button>
+        {chips.map((c) => <button key={c} aria-pressed={cuisine === c} className={chip(cuisine === c)} onClick={() => setCuisine(cuisine === c ? null : c)}>{cuisineLabel(c)}</button>)}
       </div>
       <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-muted">
         <span data-testid="result-count">{list.length} restaurant{list.length === 1 ? "" : "s"}</span>
         <span>·</span>
-        <button className={chip(sort === "recommended")} onClick={() => setSort("recommended")}>{t("Partners eerst", "Partners first")}</button>
-        <button className={chip(sort === "distance")} data-testid="sort-distance" onClick={() => (origin ? setSort("distance") : locate())}>{t("Dichtstbij", "Nearest")}{origin ? ` · ${origin.label}` : ""}</button>
+        <button className={chip(sort === "recommended")} aria-pressed={sort === "recommended"} onClick={() => setSort("recommended")}>{t("Partners eerst", "Partners first")}</button>
+        <button className={chip(sort === "distance")} aria-pressed={sort === "distance"} data-testid="sort-distance" onClick={() => (origin ? setSort("distance") : locate())}>{t("Dichtstbij", "Nearest")}{origin ? ` · ${origin.label}` : ""}</button>
         {!origin && <button className="font-semibold text-brand underline" onClick={locate}>{t("gebruik mijn locatie", "use my location")}</button>}
       </div>
       {list.length === 0 && <p className="text-sm text-muted">{t("Geen restaurants gevonden voor", "No restaurants match")} “{q}”.</p>}

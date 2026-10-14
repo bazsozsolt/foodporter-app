@@ -76,7 +76,7 @@ export default function RiderPage() {
   const job = mode === "supabase" ? orders.find((o) => ["assigned", "ready", "picked_up"].includes(o.status) && o.rider_id === profile?.id) : undefined;
   const online = Boolean(profile?.online);
   const wake = useWakeLock(online || Boolean(job));
-  const { me, error: gpsError } = useShareLocation(profile?.id, mode === "supabase" && Boolean(profile?.location_consent_at) && (online || Boolean(job)), job?.id ?? null);
+  const { me, error: gpsError } = useShareLocation(profile?.id, mode === "supabase" && profile?.role === "rider" && Boolean(profile?.location_consent_at) && (online || Boolean(job)), job?.id ?? null);
   async function toggleOnline() {
     if (!online && !profile?.location_consent_at) {
       const ok = confirm(tx("Je locatie delen zolang je online bent of een bezorging doet?\n\n• Admins zien je positie zolang je online bent.\n• De klant en het restaurant van je huidige bestelling zien die alleen tijdens die bezorging.\n• Delen stopt als je offline gaat en de bezorging klaar is. Punten worden na 7 dagen verwijderd.", "Share your location while you're online or on a delivery?\n\n• Admins see your position while you're online.\n• The customer and restaurant of your current order see it during that delivery only.\n• Sharing stops when you go offline and the delivery is done. Points are deleted after 7 days."));
@@ -151,8 +151,8 @@ export default function RiderPage() {
               </div>}
               {o.status === "assigned" && <Empty icon="⏳">{t("Wachten tot het restaurant de bestelling klaar meldt…", "Waiting for the restaurant to mark ready…")}</Empty>}
               {o.status === "ready" && <Button onClick={() => act(actions.pickUp(o.id), t("Klant geïnformeerd: je eten is onderweg", "Customer notified: your food is on the way"))}>{t("Opgehaald", "Picked up")}</Button>}
-              <div className="mt-2 flex flex-wrap justify-end gap-2"><CallButton orderId={Number(o.id)} status={o.status} side="rider" /><HelpButton role="rider" orderId={Number(o.id)} label={tx("Probleem melden", "Report a problem")} /></div>
-              <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="rider" side="rider" /></div>
+              <div className="mt-2 flex flex-wrap justify-end gap-2"><CallButton orderId={Number(o.id)} status={o.status} side="rider" asAdmin={o.rider_id !== profile?.id} /><HelpButton role="rider" orderId={Number(o.id)} label={tx("Probleem melden", "Report a problem")} /></div>
+              <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="rider" side={o.rider_id === profile?.id ? "rider" : "admin"} order={o} /></div>
               {o.status === "picked_up" && <Button variant="ok" onClick={() => act(actions.deliver(o.id), tx(`Bezorgd ✅ · ${eur(o.delivery_fee_cents)} bij je verdiensten`, `Delivered ✅ · ${eur(o.delivery_fee_cents)} added to earnings`))}>{t("Bezorgd", "Delivered")}</Button>}
             </Card>
           );

@@ -7,11 +7,11 @@ import { QUICK, callOther, sendChat, useChat, type ChatChannel } from "@/lib/cha
 const ACTIVE = ["assigned", "ready", "picked_up"];
 
 /** "Bel rider/klant": only during an active delivery; the number comes from a secured, audited RPC. */
-export function CallButton({ orderId, status, side }: { orderId: number; status: string; side: "customer" | "rider" }) {
+export function CallButton({ orderId, status, side, asAdmin = false }: { orderId: number; status: string; side: "customer" | "rider"; asAdmin?: boolean }) {
   const [busy, setBusy] = useState(false);
   if (!ACTIVE.includes(status)) return null;
   return (
-    <button data-testid="call-btn" disabled={busy} onClick={async () => { setBusy(true); await act(callOther(orderId)); setBusy(false); }}
+    <button data-testid="call-btn" disabled={busy} onClick={async () => { setBusy(true); await act(callOther(orderId, asAdmin ? (side === "customer" ? "rider" : "customer") : undefined)); setBusy(false); }}
       className="rounded-full border-[1.5px] border-brand px-3 py-1.5 text-sm font-semibold text-brand disabled:opacity-50">
       📞 {side === "customer" ? tx("Bel bezorger", "Call rider") : tx("Bel klant", "Call customer")}
     </button>
@@ -19,11 +19,21 @@ export function CallButton({ orderId, status, side }: { orderId: number; status:
 }
 
 /** Per-order chat. side = who I am in this conversation; readOnly for admins. */
-export function OrderChat({ orderId, channel, side, readOnly, title }: { orderId: number; channel: ChatChannel; side: "customer" | "rider" | "restaurant" | "admin"; readOnly?: boolean; title?: string }) {
+/** Mirrors the server lock (fp_chat_open): closed when cancelled, 2 h after delivery, or (rider chat) without a rider. */
+export function chatClosed(channel: ChatChannel, o?: { status: string; delivered_at?: string | null; rider_id?: string | null } | null, lockMinutes = 120) {
+  if (!o) return false;
+  if (o.status === "delivered") return !o.delivered_at || Date.now() - Date.parse(o.delivered_at) > lockMinutes * 60000;
+  if (["cancelled", "payment_failed", "awaiting_payment"].includes(o.status)) return true;
+  return channel === "rider" ? !o.rider_id || !["assigned", "ready", "picked_up"].includes(o.status) : !["placed", "accepted", "assigned", "ready", "picked_up"].includes(o.status);
+}
+
+export function OrderChat({ orderId, channel, side, readOnly, title, order }: { orderId: number; channel: ChatChannel; side: "customer" | "rider" | "restaurant" | "admin"; readOnly?: boolean; title?: string; order?: { status: string; delivered_at?: string | null; rider_id?: string | null } | null }) {
   const rows = useChat(orderId, channel);
   const [open, setOpen] = useState(!!readOnly);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
+  const [serverClosed, setServerClosed] = useState(false);
+  const closed = !readOnly && (serverClosed || chatClosed(channel, order));
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => { end.current?.scrollIntoView({ block: "nearest" }); }, [rows?.length, open]);
   const label = title ?? (channel === "rider"
@@ -33,7 +43,7 @@ export function OrderChat({ orderId, channel, side, readOnly, title }: { orderId
   async function send(body: string, quick = false) {
     if (!body.trim()) return;
     setBusy(true);
-    const ok = await act(sendChat(orderId, channel, body, quick));
+    const ok = await act(sendChat(orderId, channel, body, quick).catch((e: Error) => { if (/gesloten|closed/i.test(e.message)) setServerClosed(true); throw e; }));
     setBusy(false);
     if (ok) setText("");
   }
@@ -61,7 +71,8 @@ export function OrderChat({ orderId, channel, side, readOnly, title }: { orderId
             ))}
             <div ref={end} />
           </div>
-          {!readOnly && (
+          {closed && <p className="mt-2 rounded-xl bg-[#f4f1ec] p-2 text-xs text-muted" data-testid="chat-closed">🔒 {tx("Deze chat is gesloten. Hulp nodig? Gebruik de Hulp-knop.", "This chat is closed. Need help? Use the Help button.")}</p>}
+          {!readOnly && !closed && (
             <>
               <div className="mt-2 flex flex-wrap gap-1.5" data-testid="chat-quick">
                 {(QUICK[side] ?? []).map(([nl, en]) => (

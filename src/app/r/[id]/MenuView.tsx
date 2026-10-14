@@ -52,7 +52,7 @@ export function MenuView({ id }: { id: string }) {
             <Photo src={m.image_url} alt={m.name} emoji={restaurantStyle(r.id).emoji} className="w-20 shrink-0 rounded-xl text-lg" sizes="80px" />
             <div className="min-w-0 flex-1"><b>{m.name}</b><div className="text-[13px] text-muted">{eur(m.price_cents)}</div></div>
             <div className="flex items-center gap-2.5">
-              <button aria-label={tx("Eén minder", "Remove one")} className="h-8 w-8 rounded-full bg-[#f1ede8] font-bold" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) - 1)}>−</button>
+              <button aria-label={tx("Eén minder", "Remove one")} disabled={!qty[m.id]} className="h-8 w-8 rounded-full bg-[#f1ede8] font-bold disabled:opacity-40" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) - 1)}>−</button>
               <b>{qty[m.id] ?? 0}</b>
               <button aria-label={tx("Eén meer", "Add one")} className="h-8 w-8 rounded-full bg-[#f1ede8] font-bold" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) + 1)}>+</button>
             </div>

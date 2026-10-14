@@ -27,7 +27,12 @@ export function useShareLocation(riderId: string | undefined, active: boolean, o
         rider_id: riderId, order_id: order.current ? Number(order.current) : null,
         lat: pos.coords.latitude, lng: pos.coords.longitude,
         accuracy_m: pos.coords.accuracy, heading: pos.coords.heading, speed_mps: pos.coords.speed,
-      }).then(({ error: e }) => { if (e) setError(e.message); });
+      }).then(({ error: e }) => {
+        if (!e) return;
+        setError(e.message);
+        // RLS refusal (not a rider, no consent, job no longer active): back off instead of retrying every 7 s
+        if (e.code === "42501" || /row-level security/i.test(e.message)) last.current = Date.now() + 5 * 60_000;
+      });
     };
     const id = navigator.geolocation.watchPosition(
       (pos) => { lastPos = pos; setMe({ lat: pos.coords.latitude, lng: pos.coords.longitude }); setError(null); send(); },

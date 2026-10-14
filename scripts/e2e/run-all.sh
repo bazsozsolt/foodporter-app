@@ -8,4 +8,5 @@ echo "=== chat"; node chat.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1
 echo "=== photos"; node photos.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1
 echo "=== i18n"; node ../i18n/check-parity.mjs || rc=1
 echo "=== reports"; node reports.check.mjs 2>&1 | grep -v "Node.js 20" || rc=1
+echo "=== crawler (click-everything, quick; needs FP_BASE or local server)"; python3 -u crawl.ui.py --quick || rc=1
 exit $rc

@@ -71,6 +71,29 @@ const au = await admin.sb.from("call_audit").select("caller_role, callee_role, p
 ok("both calls are in the audit log", (au.data ?? []).length === 2, JSON.stringify(au.data));
 ok("audit log is admin-only", ((await cust.sb.from("call_audit").select("id").eq("order_id", oid)).data ?? []).length === 0);
 
+// ---------- v14 regression: an admin acting in the customer/rider views (Zsolt's case: admin picked up a test order on the rider page)
+const am = await admin.sb.rpc("order_chat_send", { p_order: oid, p_channel: "rider", p_body: "Admin kijkt mee" });
+ok("admin (not a party) can post in the rider chat of an active order", Number.isInteger(am.data), err(am));
+const seen = await cust.sb.from("order_messages").select("author_role").eq("order_id", oid).eq("id", am.data).maybeSingle();
+ok("customer sees it labelled as admin", seen.data?.author_role === "admin", JSON.stringify(seen.data));
+const ac = await admin.sb.rpc("order_call", { p_order: oid, p_target: "customer" });
+ok("admin acting as rider can call the customer (audited as admin)", ac.data?.number === "+31600000000", JSON.stringify(ac.data ?? err(ac)));
+ok("admin must say whom to call", /Kies wie/.test(err(await admin.sb.rpc("order_call", { p_order: oid })) ?? ""));
+ok("admin call is in the audit log", ((await admin.sb.from("call_audit").select("caller_role").eq("order_id", oid).eq("caller_role", "admin")).data ?? []).length === 1);
+ok("still no access for a random customer", !!err(await other.sb.rpc("order_chat_send", { p_order: oid, p_channel: "rider", p_body: "hoi" })));
+const loc = await admin.sb.from("rider_locations").insert({ rider_id: admin.id, order_id: oid, lat: 51.56, lng: 5.09 });
+ok("admin cannot post rider locations (the client no longer tries)", !!loc.error);
+
+// stacked: a second active job for the same rider (accepted bid path), chats stay per order
+const oid2 = Number(execSync("node ../sim/one-order.mjs", { encoding: "utf8" }).trim().split("\n").pop());
+await rider.sb.from("bids").insert({ order_id: oid2, rider_id: rider.id, eta_minutes: 15 });
+await admin.sb.from("bids").update({ accepted: true }).eq("order_id", oid2).eq("rider_id", rider.id);
+await admin.sb.from("orders").update({ rider_id: rider.id, status: "assigned", assigned_at: new Date().toISOString(), stacked: true }).eq("id", oid2);
+ok("stacked job: rider chats on the second order too", Number.isInteger((await rider.sb.rpc("order_chat_send", { p_order: oid2, p_channel: "rider", p_body: "Tweede stop, ben er zo" })).data));
+const leak = (await cust.sb.from("order_messages").select("order_id").eq("order_id", oid2)).data ?? [];
+ok("messages stay on their own order", leak.length === 1 && leak[0].order_id === oid2, JSON.stringify(leak));
+await admin.sb.from("orders").update({ status: "cancelled", cancel_reason: "test: v14 stacked" }).eq("id", oid2);
+
 // ---------- delivered -> chat still open within the lock window, then locked; call button gone
 await staff.sb.from("orders").update({ status: "ready" }).eq("id", oid);
 await rider.sb.from("orders").update({ status: "picked_up" }).eq("id", oid);

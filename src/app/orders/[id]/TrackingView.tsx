@@ -63,11 +63,11 @@ export function TrackingView({ id }: { id: string }) {
       <main id="main" className="p-4">
         {mine && o.paid_at && !["delivered", "cancelled"].includes(o.status) && <CustomerPushCard />}
         {mine && o.status !== "awaiting_payment" && <div className="mb-2 flex justify-end"><HelpButton role="customer" orderId={Number(o.id)} orderTotalCents={o.paid_at ? o.subtotal_cents + o.delivery_fee_cents - (o.refund_cents ?? 0) : null} /></div>}
-        {mine && ["placed", "accepted", "assigned", "ready", "picked_up", "delivered"].includes(o.status) && (
+        {(mine || profile?.role === "admin") && ["placed", "accepted", "assigned", "ready", "picked_up", "delivered"].includes(o.status) && (
           <div className="mb-2 space-y-2" data-testid="contact-box">
-            {o.rider_id && <div className="flex justify-end"><CallButton orderId={Number(o.id)} status={o.status} side="customer" /></div>}
-            {o.rider_id && <OrderChat orderId={Number(o.id)} channel="rider" side="customer" />}
-            <OrderChat orderId={Number(o.id)} channel="restaurant" side="customer" />
+            {o.rider_id && <div className="flex justify-end"><CallButton orderId={Number(o.id)} status={o.status} side="customer" asAdmin={!mine} /></div>}
+            {o.rider_id && <OrderChat orderId={Number(o.id)} channel="rider" side={mine ? "customer" : "admin"} order={o} />}
+            <OrderChat orderId={Number(o.id)} channel="restaurant" side={mine ? "customer" : "admin"} order={o} />
           </div>
         )}
         <Link href="/" className="text-sm text-muted">← Home</Link>

@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/Toaster";
 import { tx } from "@/lib/i18n";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useStore } from "@/lib/store";
@@ -102,7 +103,7 @@ function synth() {
 
 export function TestSoundButton() {
   return (
-    <button data-testid="test-sound" onClick={() => { beep(); navigator.vibrate?.([120, 80, 120]); }}
+    <button data-testid="test-sound" onClick={() => { beep(); navigator.vibrate?.([120, 80, 120]); toast(tx("🔊 Testgeluid afgespeeld. Hoorde je niks? Zet je volume hoger en de stille modus uit.", "🔊 Test sound played. Heard nothing? Turn up the volume and switch off silent mode.")); }}
       className="mb-3 w-full rounded-xl border-[1.5px] border-[#e2ded8] bg-white px-3 py-2 text-sm font-semibold">🔊 {tx("Testgeluid afspelen", "Test alert sound")}</button>
   );
 }

@@ -33,7 +33,7 @@ function OrderCard({ o }: { o: Order }) {
   const t = useT();
   const SL = t("nl", "en") === "nl" ? STATUS_LABEL_NL : STATUS_LABEL;
   const [prep, setPrep] = useState(15);
-  const { restaurants } = useStore();
+  const { restaurants, profile } = useStore();
   const r = restaurants.find((x) => x.id === o.restaurant_id);
   const bid = acceptedBid(o);
   const left = useSecondsLeft(o.status === "accepted" ? o.bid_window_closes_at : null);
@@ -50,7 +50,7 @@ function OrderCard({ o }: { o: Order }) {
       ) : <div className="my-1.5 text-[13px] text-muted">{o.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}</div>}
       <div className="text-[13px] text-muted">{t("Bezorgen op", "Deliver to")} {o.address}</div>
       <div className="mt-1 flex flex-wrap gap-2"><ItemUnavailable o={o} /><HelpButton role="restaurant" orderId={Number(o.id)} label={t("Probleem melden", "Report a problem")} /></div>
-      {o.status !== "placed" && <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="restaurant" side="restaurant" /></div>}
+      {o.status !== "placed" && <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="restaurant" side={profile?.role === "admin" && profile.restaurant_id !== o.restaurant_id ? "admin" : "restaurant"} order={o} /></div>}
       {o.status === "placed" ? (
         <>
           <p className="mb-2 mt-3 font-bold">{t("Bereidingstijd instellen", "Set preparation time")}</p>

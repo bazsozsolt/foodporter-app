@@ -98,6 +98,10 @@ async function chatEvents(messageId: number): Promise<Push[]> {
     if (m.channel === "rider") { to = o.rider_id ? [o.rider_id] : []; url = "/rider/"; }
     else { const { data: staff } = await db.from("profiles").select("id").eq("restaurant_id", o.restaurant_id).eq("role", "restaurant"); to = (staff ?? []).map((s) => s.id); url = "/restaurant/"; }
     who = "Klant";
+  } else if (m.author_role === "admin") {
+    // admin acting in a customer/rider/restaurant view: notify every party of that channel
+    const side = m.channel === "rider" ? (o.rider_id ? [o.rider_id] : []) : ((await db.from("profiles").select("id").eq("restaurant_id", o.restaurant_id).eq("role", "restaurant")).data ?? []).map((s) => s.id);
+    to = [o.customer_id, ...side]; who = "Food Porter"; url = `/order/?id=${o.id}`;
   } else {
     to = [o.customer_id];
     who = m.author_role === "rider" ? "Je bezorger" : ((o.restaurants as unknown as { name?: string } | null)?.name ?? "Het restaurant");

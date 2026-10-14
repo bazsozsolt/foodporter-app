@@ -9,6 +9,7 @@ export interface ChatMessage { id: number; order_id: number; channel: ChatChanne
 /** Quick replies per sender side: [Dutch, English]. The Dutch text is what gets sent when the UI is Dutch. */
 export const QUICK: Record<string, [string, string][]> = {
   customer: [["Ik sta beneden", "I'm downstairs"], ["Bel aan", "Ring the bell"], ["Ik ben er over 2 min", "I'll be there in 2 min"], ["Laat het bij de deur", "Leave it at the door"]],
+  admin: [["Je bezorger is onderweg", "Your rider is on the way"], ["We kijken mee, even geduld", "We're on it, one moment"]],
   rider: [["Ik ben er over 2 min", "I'll be there in 2 min"], ["Ik sta voor de deur", "I'm at the door"], ["Ik kan het adres niet vinden", "I can't find the address"], ["Kom je naar beneden?", "Can you come down?"]],
   restaurant: [["Je bestelling is bijna klaar", "Your order is almost ready"], ["Een item is op, we bellen je", "An item is sold out, we'll contact you"]],
 };
@@ -38,9 +39,9 @@ export function useChat(order: number | null, channel: ChatChannel) {
 }
 
 /** Ask the server for the counterpart's number (only during an active delivery, audited) and dial it. */
-export async function callOther(order: number) {
+export async function callOther(order: number, target?: "rider" | "customer") {
   const sb = getSupabase(); if (!sb) throw new Error("offline");
-  const { data, error } = await sb.rpc("order_call", { p_order: order });
+  const { data, error } = await sb.rpc("order_call", { p_order: order, p_target: target ?? null });
   if (error) throw new Error(error.message);
   const n = (data as { number?: string } | null)?.number;
   if (!n) throw new Error("Geen telefoonnummer beschikbaar");

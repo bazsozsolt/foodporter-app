@@ -3,7 +3,7 @@ import { tx } from "@/lib/i18n";
 import { T } from "@/components/LangToggle";
 import { Footer } from "@/components/Footer";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Card, Header } from "@/components/ui";
 import { act } from "@/lib/act";
 import { hasSupabase } from "@/lib/supabase";
@@ -15,6 +15,12 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [providers, setProviders] = useState<{ google?: boolean; apple?: boolean }>({});
+  useEffect(() => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!hasSupabase || !url || !key) return;
+    fetch(`${url}/auth/v1/settings`, { headers: { apikey: key } }).then((r) => r.json()).then((d) => setProviders({ google: !!d?.external?.google, apple: !!d?.external?.apple })).catch(() => {});
+  }, []);
   const input = "mb-2 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-3";
 
   const goNext = () => router.push(new URLSearchParams(window.location.search).get("next") || "/");
@@ -59,11 +65,12 @@ export default function LoginPage() {
             ✉️ {tx("Stuur me liever een inloglink", "Email me a magic link instead")}
           </button>
         </Card>
-        <div className="my-3 text-center text-xs text-muted">{tx("of", "or")}</div>
-        <Button variant="dark" disabled={busy} onClick={() => go(actions.oauth("apple"), afterAuth)}> {tx("Doorgaan met Apple", "Continue with Apple")}</Button>
-        <Button variant="ghost" disabled={busy} onClick={() => go(actions.oauth("google"), afterAuth)}><span className="text-[#4285f4]">G</span> {tx("Doorgaan met Google", "Continue with Google")}</Button>
+        {/* Only show social logins that are actually enabled in Supabase Auth (they returned a 400 error page before). */}
+        {(providers.apple || providers.google) && <div className="my-3 text-center text-xs text-muted">{tx("of", "or")}</div>}
+        {providers.apple && <Button variant="dark" disabled={busy} onClick={() => go(actions.oauth("apple"), afterAuth)}> {tx("Doorgaan met Apple", "Continue with Apple")}</Button>}
+        {providers.google && <Button variant="ghost" disabled={busy} onClick={() => go(actions.oauth("google"), afterAuth)}><span className="text-[#4285f4]">G</span> {tx("Doorgaan met Google", "Continue with Google")}</Button>}
         <p className="mt-3 text-center text-[13px] text-muted">
-          {hasSupabase ? "" : tx("Demo-inlog (geen Supabase-sleutels). ", "Mock sign-in (no Supabase keys). ")}{tx("Inloggen met Facebook volgt later.", "Facebook login coming later.")}
+          {hasSupabase ? "" : tx("Demo-inlog (geen Supabase-sleutels). ", "Mock sign-in (no Supabase keys). ")}{tx("Inloggen met Google, Apple of Facebook volgt later.", "Google, Apple and Facebook login coming later.")}
         </p>
       <Footer />
       </main>
