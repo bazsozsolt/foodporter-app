@@ -5,6 +5,7 @@ import { useT , tx } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { AlertsToggle, TestSoundButton, useOrderAlerts } from "@/components/OrderAlerts";
 import { RoleGate } from "@/components/RoleGate";
+import { LegalOnboarding, useLegalStatus } from "@/components/LegalOnboarding";
 import { act } from "@/lib/act";
 import { Button, Card, Empty, Header, Pill, Stat } from "@/components/ui";
 import { PREP_MAX, PrepPicker } from "@/components/PrepPicker";
@@ -106,6 +107,7 @@ export default function RestaurantPage() {
     { key: "ready", title: tx("Klaar voor ophalen", "Ready for pickup"), icon: <CircleCheck size={16} aria-hidden />, rows: mine.filter((o) => o.status === "ready") },
   ];
   const myName = restaurants.find((r) => r.id === profile?.restaurant_id)?.name;
+  const { st: legal, reload: reloadLegal } = useLegalStatus();
   return (
     <>
       <Header subtitle={myName ? `${myName} · ${t("Keuken", "Kitchen")}` : t("Restaurant · Keuken", "Restaurant · Kitchen")} />
@@ -117,6 +119,7 @@ export default function RestaurantPage() {
           </div>
           <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
         </div>
+        {mode === "supabase" && profile?.role === "restaurant" && <LegalOnboarding st={legal} reload={() => void reloadLegal()} who="restaurant" />}
         {tab === "orders" ? (<>
         {profile?.restaurant_id && <PauseBusyPanel restaurantId={profile.restaurant_id} />}
         <div className="mb-4 flex gap-2.5"><Stat value={String(handed.length)} label={tx("Overgedragen", "Handed over")} /><Stat value={eur(revenue)} label={tx("Omzet", "Revenue")} /><Stat value={eur(Math.round((revenue * pct) / 100))} label={tx(`Commissie ${pct}%`, `Commission ${pct}%`)} /></div>

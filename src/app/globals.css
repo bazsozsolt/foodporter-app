@@ -42,3 +42,13 @@ h1, h2, .font-display { font-family: var(--font-display); font-weight: 400; lett
 h2 { font-size: 1.45rem !important; line-height: 1.1; }
 /* Type scale (v15): display h1 28px, h2 23px, section label 12px caps, body 15px, meta 13px */
 .t-label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--color-muted); }
+
+/* v18 legal documents (rendered from legal/templates) */
+.legal-doc h1 { font-size: 1.1rem; font-weight: 700; margin: 0 0 .5rem; }
+.legal-doc h2 { font-size: .95rem; font-weight: 700; margin: .9rem 0 .3rem; }
+.legal-doc h3 { font-size: .9rem; font-weight: 600; margin: .7rem 0 .2rem; }
+.legal-doc p, .legal-doc li { margin: .3rem 0; line-height: 1.45; }
+.legal-doc ul, .legal-doc ol { padding-left: 1.2rem; list-style: disc; }
+.legal-doc table { border-collapse: collapse; margin: .5rem 0; font-size: .8rem; }
+.legal-doc td, .legal-doc th { border: 1px solid #ddd; padding: .25rem .4rem; vertical-align: top; }
+.legal-doc blockquote { border-left: 3px solid #e85d04; padding-left: .6rem; color: #555; }

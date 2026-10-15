@@ -7,6 +7,7 @@ import { getSupabase } from "@/lib/supabase";
 import { AlertsToggle, TestSoundButton, useOrderAlerts } from "@/components/OrderAlerts";
 import { distanceKm } from "@/lib/geo";
 import { RoleGate } from "@/components/RoleGate";
+import { LegalOnboarding, useLegalStatus } from "@/components/LegalOnboarding";
 import { useWakeLock } from "@/lib/wakeLock";
 import { HelpButton } from "@/components/SupportSheet";
 import { SosButton } from "@/components/SosButton";
@@ -79,7 +80,10 @@ export default function RiderPage() {
   const online = Boolean(profile?.online);
   const wake = useWakeLock(online || Boolean(job));
   const { me, error: gpsError } = useShareLocation(profile?.id, mode === "supabase" && profile?.role === "rider" && Boolean(profile?.location_consent_at) && (online || Boolean(job)), job?.id ?? null);
+  const { st: legal, reload: reloadLegal } = useLegalStatus();
+  const blocked = mode === "supabase" && !online && legal != null && !legal.ready;
   async function toggleOnline() {
+    if (blocked) return;
     if (!online && !profile?.location_consent_at) {
       const ok = confirm(tx("Je locatie delen zolang je online bent of een bezorging doet?\n\n• Admins zien je positie zolang je online bent.\n• De klant en het restaurant van je huidige bestelling zien die alleen tijdens die bezorging.\n• Delen stopt als je offline gaat en de bezorging klaar is. Punten worden na 7 dagen verwijderd.", "Share your location while you're online or on a delivery?\n\n• Admins see your position while you're online.\n• The customer and restaurant of your current order see it during that delivery only.\n• Sharing stops when you go offline and the delivery is done. Points are deleted after 7 days."));
       if (!ok) return;
@@ -95,12 +99,13 @@ export default function RiderPage() {
       <Header subtitle={t("Rider-app · Tilburg Centrum", "Rider app · Tilburg Centrum")} />
       <main id="main" className="p-4">
         <RoleGate role="rider">
+        {mode === "supabase" && profile?.role === "rider" && <LegalOnboarding st={legal} reload={() => void reloadLegal()} who="rider" />}
         {mode === "supabase" && profile && (
-          <button data-testid="online-toggle" onClick={toggleOnline} aria-pressed={online}
-            className={`mb-3 flex min-h-16 w-full items-center gap-3 rounded-2xl px-4 text-left text-white shadow-[var(--shadow-card)] ${online ? "bg-ok" : "bg-ink"}`}>
+          <button data-testid="online-toggle" onClick={toggleOnline} aria-pressed={online} disabled={blocked}
+            className={`mb-3 flex min-h-16 w-full items-center gap-3 rounded-2xl px-4 text-left text-white shadow-[var(--shadow-card)] disabled:opacity-50 ${online ? "bg-ok" : "bg-ink"}`}>
             <span className={`grid h-10 w-10 place-items-center rounded-full ${online ? "bg-white/20" : "bg-white/10"}`}><Power size={20} aria-hidden /></span>
             <span className="flex-1"><b className="block text-[17px]">{online ? tx("Je bent online", "You're online") : tx("Je bent offline", "You're offline")}</b>
-              <span className="text-[13px] text-white/80">{online ? tx("Tik om offline te gaan", "Tap to go offline") : tx("Tik om online te gaan en opdrachten te krijgen", "Tap to go online and get jobs")}</span></span>
+              <span className="text-[13px] text-white/80">{online ? tx("Tik om offline te gaan", "Tap to go offline") : blocked ? tx("Rond eerst je onboarding af", "Finish onboarding first") : tx("Tik om online te gaan en opdrachten te krijgen", "Tap to go online and get jobs")}</span></span>
           </button>
         )}
         <div className="mb-3 grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
