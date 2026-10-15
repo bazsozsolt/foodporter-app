@@ -11,18 +11,18 @@ const clamp = (n: number) => Math.min(PREP_MAX, Math.max(PREP_MIN, Math.round(n)
 export function PrepPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const [custom, setCustom] = useState(!PRESETS.includes(value));
   const chip = (on: boolean) =>
-    `rounded-full border-[1.5px] px-3.5 py-2 font-semibold ${on ? "border-ink bg-ink text-white" : "border-[#e2ded8] bg-white"}`;
-  const step = "grid h-12 w-12 place-items-center rounded-2xl bg-[#f1ede8] text-xl font-bold active:scale-95 disabled:opacity-40";
+    `min-h-12 min-w-[72px] rounded-xl border px-4 py-2 text-[16px] font-semibold ${on ? "border-ink bg-ink text-white" : "border-line bg-white"}`;
+  const step = "grid h-12 w-12 place-items-center rounded-2xl bg-subtle text-xl font-bold active:scale-95 disabled:opacity-40";
   return (
     <div>
       <div className="flex flex-wrap gap-2">
         {PRESETS.map((m) => (
           <button key={m} className={chip(!custom && value === m)} onClick={() => { setCustom(false); onChange(m); }}>{m} min</button>
         ))}
-        <button className={chip(custom)} onClick={() => setCustom(true)}>⏱ {tx("Anders", "Custom")}</button>
+        <button className={chip(custom)} onClick={() => setCustom(true)}>{tx("Anders", "Custom")}</button>
       </div>
       {custom && (
-        <div className="mt-3 flex items-center justify-between rounded-2xl border-[1.5px] border-[#e2ded8] bg-white p-2">
+        <div className="mt-3 flex items-center justify-between rounded-2xl border border-line bg-white p-2">
           <button aria-label={tx("5 minuten minder", "5 minutes less")} className={step} disabled={value <= PREP_MIN} onClick={() => onChange(clamp(value - 5))}>−5</button>
           <label className="flex items-baseline gap-1">
             <input aria-label={tx("Eigen bereidingstijd in minuten", "Custom prep minutes")} type="number" inputMode="numeric" min={PREP_MIN} max={PREP_MAX} step={5}

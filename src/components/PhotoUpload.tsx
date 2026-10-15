@@ -30,7 +30,7 @@ export function RestaurantPhotos({ restaurantId, english = false }: { restaurant
   if (!r) return null;
   return (
     <details className="rounded-2xl bg-white p-3" data-testid="restaurant-photos">
-      <summary className="cursor-pointer font-semibold">📷 {tx("Foto's van je restaurant en menu", "Photos of your restaurant and menu")}</summary>
+      <summary className="cursor-pointer font-semibold">{tx("Foto's van je restaurant en menu", "Photos of your restaurant and menu")}</summary>
       <p className="mt-1 text-xs text-muted">{tx("Foto's worden op je telefoon verkleind en als WebP opgeslagen. Gebruik alleen eigen foto's.", "Photos are resized on your phone and stored as WebP. Only use your own photos.")}</p>
       <div className="mt-2 grid grid-cols-[96px_1fr] items-center gap-3">
         <Photo src={r.image_url} alt={r.name} className="rounded-xl" sizes="96px" />

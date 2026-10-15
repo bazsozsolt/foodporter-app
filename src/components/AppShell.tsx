@@ -7,7 +7,8 @@ import { unlockAudioOnFirstTap } from "@/components/OrderAlerts";
 
 /** Phone-width column for the apps; wider workspace for the admin back office on desktop. */
 export function AppShell({ children }: { children: ReactNode }) {
-  const admin = usePathname().startsWith("/admin");
+  const path = usePathname();
+  const admin = path.startsWith("/admin") || path.startsWith("/restaurant"); // back-office widths: kitchen tablet + desktop
   const lang = useLang();
   setCurrentLang(lang);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
