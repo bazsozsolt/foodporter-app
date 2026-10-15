@@ -20,7 +20,7 @@ with sync_playwright() as p:
     login(ad, "ADMIN"); lang(ad, "nl"); ad.goto(B + "/rider/earnings/"); ad.wait_for_selector("[data-testid=help-button]", timeout=20000)
     ad.click("[data-testid=help-button]"); ad.wait_for_selector("[data-testid=support-sheet]")
     ad.click("[data-testid=cat-payout]"); ad.fill("[data-testid=support-body]", "Regressietest v13: admin-account op mobiel")
-    ad.set_input_files("[data-testid=support-photo]", files=[{"name": "IMG_0001.HEIC", "mimeType": "", "buffer": open("/tmp/fp_fake.heic", "rb").read()}])
+    ad.set_input_files("[data-testid=support-photo]", files=[{"name": "IMG_0001.HEIC", "mimeType": "", "buffer": b"\x00\x00\x00\x18ftypheic" + bytes(2048)}])
     ad.click("[data-testid=support-submit]")
     try: ad.wait_for_url(re.compile(r"/support/\?id=\d+"), timeout=20000); went = True
     except Exception: went = False

@@ -91,7 +91,7 @@ export default function RiderPage() {
   const stops = useMyStops(mode === "supabase" ? active.map((o) => `${o.id}:${o.status}`).join(",") : "");
   return (
     <>
-      <Header subtitle={t("Rider · Tilburg Centrum", "Rider · Tilburg Centrum")} />
+      <Header subtitle={t("Rider-app · Tilburg Centrum", "Rider app · Tilburg Centrum")} />
       <main id="main" className="p-4">
         <RoleGate role="rider">
         {mode === "supabase" && profile && (
