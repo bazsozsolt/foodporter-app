@@ -1,7 +1,7 @@
 ---
 id: rider_onboarding
 title: Onboardingchecklist bezorger
-version: 0.2
+version: 0.3
 audience: internal
 ---
 # Onboardingchecklist bezorger
@@ -20,6 +20,9 @@ audience: internal
 | BSN opgegeven **via de beveiligde omgeving van de loonadministratie**; de app bewaart alleen het vinkje "ingevoerd", nooit het nummer | ✔ | vinkje |
 | IBAN gecontroleerd (tenaamstelling komt overeen met ID) | ✔ | vinkje |
 | Proefrit of begeleiding | optioneel | vinkje |
+| Contractvorm vastgelegd (oproep of min-max met min/max-uren), startdatum en referentiedagen | ✔ | contractgegevens in de app |
+| Aangemeld bij Pensioenfonds Vervoer (via de loonadministratie) | ✔ | buiten de app |
+| Schriftelijke informatie over werkgever, functie, loon, cao, werktijden, oproepregels en opleiding gegeven (art. 7:655 BW, binnen 7 dagen) | ✔ | contract + transparantieverklaring |
 Het account gaat pas **online** als alle verplichte stappen en het contract zijn afgerond. Herinnering 30 dagen vóór het verlopen van ID, verblijfsdocument of rijbewijs. **De app bewaart geen kopieën van documenten**, alleen vinkjes en vervaldatums.
 
 ---

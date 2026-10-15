@@ -1,7 +1,7 @@
 ---
 id: dpa_restaurant
 title: Verwerkersovereenkomst (DPA) restaurant + subverwerkers
-version: 0.1
+version: 0.2
 audience: restaurant
 ---
 # Verwerkersovereenkomst (art. 28 AVG)
@@ -28,6 +28,8 @@ audience: restaurant
 | Mollie B.V. | betaalverwerking | Nederland (EU) |
 | GitHub Inc. (Pages) | hosting van de statische app (geen opslag van persoonsgegevens) | VS; DPF/SCC |
 | Google (FCM), Apple (APNs), Mozilla (autopush) | doorgifte van pushberichten aan de browser van de klant | VS/EU; DPF/SCC |
+
+*De loonadministratie/payrollprovider van Food Porter ({{PAYROLL_PROVIDER}}) verwerkt alleen gegevens van bezorgers (werknemers) en **geen** gegevens van het restaurant of van klanten; zij is daarom geen subverwerker onder deze overeenkomst (zie de aparte verwerkersovereenkomst loonadministratie).*
 | [SMS-provider] | SMS-statusberichten (optioneel) | [ ] |
 
 ---

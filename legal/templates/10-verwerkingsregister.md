@@ -1,7 +1,7 @@
 ---
 id: processing_register
 title: Register van verwerkingsactiviteiten (art. 30 AVG)
-version: 0.2
+version: 0.3
 audience: internal
 ---
 # Verwerkingsregister
@@ -14,6 +14,8 @@ audience: internal
 | 3 | Bezorgeronboarding | bezorgers | ID-controle (vinkje), geboortedatum, verblijfsrecht, BSN-vinkje (geen nummer) | identificatieplicht, leeftijd | wettelijk, overeenkomst | admin | relatie + 5 jr | aparte private opslag |
 | 4 | GPS tijdens online-zijn | bezorgers | locatie | zone-toewijzing, tracking, ETA, veiligheid | overeenkomst, GB (DPIA) | admin; klant en restaurant alleen tijdens eigen bezorging | 7 dagen | RLS |
 | 4a | Werktijdregistratie | bezorgers (werknemers) | beschikbaarheid, in-/uitkloktijden, uren, pauzes, ATW-meldingen, bonussen, fooien | loon, loonadministratie, Arbeidstijdenwet | wettelijk, overeenkomst | admin, payrollprovider (CSV) | 7 jr | RLS; bezorger alleen eigen |
+| 4b | Oproeprooster en contractvorm | bezorgers (werknemers) | contractvorm, min/max-uren, startdatum, referentiedagen, oproepen, annuleringen, weigeringen | art. 7:628a BW, loon | wettelijk, overeenkomst | admin, payrollprovider (export) | 7 jr | RLS; bezorger alleen eigen |
+| 4c | Loonadministratie (extern) | bezorgers (werknemers) | wekelijkse uren-/looncijfers uit de app; BSN, loonheffingskorting, ID-kopie en loonstroken alleen bij de provider | loonbetaling, loonheffing, pensioen | wettelijk, overeenkomst | {{PAYROLL_PROVIDER}} (verwerker), Belastingdienst, Pensioenfonds Vervoer | 7 jr (fiscaal); ID-kopie 5 jr na einde dienstverband | verwerkersovereenkomst; geen BSN in de app |
 | 5 | Afleverfoto | bezorger, klant(adres) | foto deur | bewijs | overeenkomst | klant, admin | 30 dagen | private bucket, signed URL |
 | 6 | Support en chat | iedereen | berichten, foto's | klachtafhandeling | overeenkomst | admin | 2 jr | RLS |
 | 7 | Contractacceptatie | bezorgers, restaurants | versie, tijd, IP, user-agent | bewijs akkoord | GB | admin | relatie + 5 jr | append-only log |
