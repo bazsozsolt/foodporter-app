@@ -2,7 +2,7 @@
 import { AdminOrderContact } from "@/components/OrderChat";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { ErrorNote, Field, inputCls, Panel, RangePicker, SmallBtn, StatusBadge, Table, Td } from "@/components/admin";
 import { downloadCsv, fmtDateTime, preset, sb, toIso, useAdminQuery, type Range, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
@@ -63,7 +63,7 @@ function OrderDetail({ id }: { id: string }) {
               <dt className="text-muted">Commission</dt><dd>{eur(Number(o.commission_cents ?? 0))} ({String(o.commission_pct ?? "")}%)</dd>
               <dt className="text-muted">Payment</dt><dd>{String(o.payment_status ?? "—")} {o.mollie_payment_id ? `· ${o.mollie_payment_id}` : ""}</dd>
               <dt className="text-muted">Prep</dt><dd>{o.prep_minutes ? `${o.prep_minutes} min planned` : "—"}{o.actual_prep_minutes != null ? ` · ${o.actual_prep_minutes} min actual` : ""}{Number(o.prep_extensions) ? ` · extended ${o.prep_extensions}×` : ""}</dd>
-              <dt className="text-muted">Rider bid</dt><dd>{o.bid_at ? `${o.rider_name ?? "rider"} · ETA ${o.eta_minutes} min · after ${o.bid_seconds}s` : "—"}</dd>
+              <dt className="text-muted">Rider</dt><dd data-testid="admin-rider">{o.rider_id ? <AdminRider id={Number(o.id)} bidSeconds={o.eta_minutes != null ? Number(o.bid_seconds) : null} /> : "—"}</dd>
               <dt className="text-muted">Distance</dt><dd>{o.distance_km != null ? `${Number(o.distance_km).toFixed(1)} km from centre` : "—"}</dd>
               {o.status === "cancelled" && <><dt className="text-muted">Cancelled</dt><dd>{String(o.cancel_reason ?? "")} · {fmtDateTime(o.cancelled_at)}</dd>
                 <dt className="text-muted">Refund</dt><dd data-testid="admin-refund">{o.refund_status === "simulated" ? "🧪 simulated test payment, nothing charged (auto-closed)" : o.refund_status ? `${o.refund_status}${o.refund_cents ? ` · ${eur(Number(o.refund_cents))}` : ""}${o.refund_id ? ` · ${o.refund_id}` : ""}` : o.paid_at ? "starting…" : "not paid, nothing to refund"}</dd></>}
@@ -132,7 +132,7 @@ function OrderList() {
             <Td><Link className="font-semibold text-brand" href={`/admin/orders?id=${o.id}`}>#{String(o.id)}</Link>{o.is_test ? " 🧪" : ""}</Td>
             <Td>{fmtDateTime(o.created_at)}</Td>
             <Td>{String(o.restaurant_name ?? "")}</Td>
-            <Td>{String(o.rider_name ?? "—")}</Td>
+            <Td>{String(o.rider_name ?? (riders.data ?? []).find((r) => r.id === o.rider_id)?.full_name ?? (o.rider_id ? "assigned" : "—"))}</Td>
             <Td>{eur(Number(o.subtotal_cents))}</Td>
             <Td>{o.prep_minutes ? `${o.prep_minutes}′${Number(o.prep_extensions) ? ` (+${o.prep_extensions})` : ""}` : "—"}</Td>
             <Td>{o.bid_seconds != null ? `${o.bid_seconds}s${o.fast_bid ? " · fast" : ""}` : "—"}</Td>
@@ -152,4 +152,12 @@ function Orders() {
 
 export default function OrdersPage() {
   return <Suspense fallback={<p className="text-muted">Loading…</p>}><Orders /></Suspense>;
+}
+
+/** Assigned rider via order_rider_info: works for bid winners and hand-assigned riders. */
+function AdminRider({ id, bidSeconds }: { id: number; bidSeconds: number | null }) {
+  const [v, setV] = useState<{ rider_name: string; eta_minutes: number; estimated: boolean } | null>(null);
+  useEffect(() => { void sb().rpc("order_rider_info", { p_order: id }).then(({ data }) => setV(data as typeof v)); }, [id]);
+  if (!v) return <>…</>;
+  return <>{v.rider_name} · ETA {v.eta_minutes} min{v.estimated ? " (estimated, assigned manually)" : bidSeconds != null ? ` · bid after ${bidSeconds}s` : ""}</>;
 }

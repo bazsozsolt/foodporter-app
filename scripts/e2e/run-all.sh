@@ -7,6 +7,7 @@ echo "=== support"; node support.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1
 echo "=== chat"; node chat.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1
 echo "=== chat-admin"; node chat-admin.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1
 echo "=== photos"; node photos.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1
+echo "=== manual-assign"; python3 manual-assign.ui.py "${FP_BASE:-https://bazsozsolt.github.io/foodporter-app}" || rc=1
 echo "=== i18n"; node ../i18n/check-parity.mjs || rc=1
 echo "=== reports"; node reports.check.mjs 2>&1 | grep -v "Node.js 20" || rc=1
 echo "=== crawler (click-everything, quick; needs FP_BASE or local server)"; ./crawl-parallel.sh "${FP_BASE:-https://bazsozsolt.github.io/foodporter-app}" --quick || rc=1

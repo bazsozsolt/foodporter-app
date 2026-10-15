@@ -17,6 +17,7 @@ import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap } from "@/components/LiveMap";
 import { useOrderLocation } from "@/lib/location";
 import { OrderChat } from "@/components/OrderChat";
+import { useRiderInfo } from "@/lib/orders";
 import { ChefHat, CircleCheck, Inbox, Users } from "lucide-react";
 
 function Countdown({ from }: { from: string }) {
@@ -36,7 +37,7 @@ function OrderCard({ o }: { o: Order }) {
   const [prep, setPrep] = useState(15);
   const { restaurants, profile } = useStore();
   const r = restaurants.find((x) => x.id === o.restaurant_id);
-  const bid = acceptedBid(o);
+  const bid = useRiderInfo(o); // bid winner or hand-assigned rider
   const left = useSecondsLeft(o.status === "accepted" ? o.bid_window_closes_at : null);
   const loc = useOrderLocation(o.id, ["assigned", "ready"].includes(o.status), o.rider_id ?? null, o.assigned_at ?? null);
   return (
@@ -62,7 +63,7 @@ function OrderCard({ o }: { o: Order }) {
         </>
       ) : (
         <>
-          <p className="mt-3 text-sm">{tx("Bereidingstijd", "Prep time")} <b>{o.prep_minutes} min</b>{o.ready_at ? <> · {tx("klaar", "ready")} ~<b>{hhmm(new Date(o.ready_at))}</b></> : null} · {bid ? <>rider <b>{bid.rider_name}</b> {tx("komt eraan", "coming")}</> : left != null ? tx(`${o.bids.length} bod/biedingen · rider gekozen over ${mmss(left)}`, `${o.bids.length} bid(s) · rider chosen in ${mmss(left)}`) : tx("wacht op een bod van een rider", "waiting for a rider bid")}</p>
+          <p className="mt-3 text-sm">{tx("Bereidingstijd", "Prep time")} <b>{o.prep_minutes} min</b>{o.ready_at ? <> · {tx("klaar", "ready")} ~<b>{hhmm(new Date(o.ready_at))}</b></> : null} · {bid ? <span data-testid="assigned-rider">rider <b>{bid.rider_name}</b> {tx("komt eraan", "coming")} · ETA {bid.eta_minutes} min{bid.estimated ? tx(" (geschat)", " (estimated)") : ""}</span> : left != null ? tx(`${o.bids.length} bod/biedingen · rider gekozen over ${mmss(left)}`, `${o.bids.length} bid(s) · rider chosen in ${mmss(left)}`) : tx("wacht op een bod van een rider", "waiting for a rider bid")}</p>
           {bid && r?.lat && <div className="mt-2"><LiveMap height={180} markers={[{ id: "r", lat: r.lat, lng: r.lng!, kind: "restaurant", label: r.name }, ...(loc ? [{ id: "rider", lat: loc.lat, lng: loc.lng, kind: "rider" as const, label: `Rider ${bid.rider_name}` }] : [])]} /></div>}
           <div className="mt-2 flex items-center gap-2">
             <span className="text-[13px] text-muted">{tx("Loop je uit?", "Running late?")}</span>
