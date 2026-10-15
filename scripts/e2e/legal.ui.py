@@ -35,7 +35,11 @@ try:
     pg.locator("[data-testid=legal-doc] >> text=/^(Lezen|Read)$/").click(); pg.wait_for_timeout(1500)
     ok("contract text shown", "Concept" in pg.inner_text("[data-testid=legal-text]"))
     ok("accept disabled until ticked", pg.locator("[data-testid=legal-accept]").is_disabled())
-    pg.check("[data-testid=legal-agree]"); pg.click("[data-testid=legal-accept]"); pg.wait_for_timeout(3000)
+    pg.check("[data-testid=legal-agree]"); pg.click("[data-testid=legal-accept]")
+    for _ in range(15):
+        if pg.locator("[data-testid=legal-onboarding]").count() == 0: break
+        pg.wait_for_timeout(1000)
+    if pg.locator("[data-testid=legal-onboarding]").count(): print("card text:", pg.inner_text("[data-testid=legal-onboarding]")[:200])
     ok("card gone after signing", pg.locator("[data-testid=legal-onboarding]").count() == 0)
     ok("online toggle enabled", not pg.locator("[data-testid=online-toggle]").is_disabled())
     pg.screenshot(path="/tmp/legal-rider.png"); b.close(); p.stop()

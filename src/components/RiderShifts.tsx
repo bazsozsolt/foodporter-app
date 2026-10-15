@@ -35,7 +35,8 @@ export function RiderShifts({ riderId, online }: { riderId: string; online: bool
   const [sess, setSess] = useState<Sess[]>([]);
   const [now, setNow] = useState(() => Date.now());
   const [rev, setRev] = useState(0);
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  // local date; after 16:00 the default 17:00 block would be in the past soon, so suggest tomorrow
+  const [date, setDate] = useState(() => { const d = new Date(); if (d.getHours() >= 16) d.setDate(d.getDate() + 1); return d.toLocaleDateString("sv-SE"); });
   const [from, setFrom] = useState("17:00");
   const [to, setTo] = useState("21:00");
   const [calls, setCalls] = useState<CallIn[]>([]);
@@ -59,6 +60,7 @@ export function RiderShifts({ riderId, online }: { riderId: string; online: bool
     if (e <= s) e.setDate(e.getDate() + 1);
     const ok = await act((async () => {
       if (e.getTime() - s.getTime() > 12 * 3600e3) throw new Error(tx("Een blok mag maximaal 12 uur zijn", "A block can be at most 12 hours"));
+      if (s.getTime() < Date.now()) throw new Error(tx("Kies een blok in de toekomst", "Pick a block in the future"));
       const { error } = await sb.from("rider_availability").insert({ rider_id: riderId, starts_at: s.toISOString(), ends_at: e.toISOString() });
       if (error) throw new Error(error.message);
       return true;

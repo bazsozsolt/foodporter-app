@@ -30,7 +30,8 @@ export default function LiveMapInner({ markers, height = 220 }: { markers: MapMa
       maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map.current);
     const ls = layers.current;
-    return () => { map.current?.remove(); map.current = null; ls.clear(); };
+    // stop running pan/zoom animations first: removing mid-animation throws "_leaflet_pos" (seen on unmount)
+    return () => { const m = map.current; if (m) { m.stop(); m.off(); m.remove(); } map.current = null; ls.clear(); };
   }, []);
   useEffect(() => {
     const m = map.current;
@@ -48,7 +49,7 @@ export default function LiveMapInner({ markers, height = 220 }: { markers: MapMa
     if (key && key !== fitted.current) {
       fitted.current = key;
       const b = L.latLngBounds(markers.map((k) => [k.lat, k.lng] as [number, number]));
-      if (markers.length === 1) m.setView(b.getCenter(), 15); else m.fitBounds(b.pad(0.25), { maxZoom: 16 });
+      if (markers.length === 1) m.setView(b.getCenter(), 15, { animate: false }); else m.fitBounds(b.pad(0.25), { maxZoom: 16, animate: false });
     }
   }, [markers]);
   return <div ref={el} data-testid="live-map" className="z-0 overflow-hidden rounded-2xl border border-line" style={{ height }} />;
