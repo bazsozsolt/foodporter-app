@@ -87,7 +87,7 @@ function mapOrder(o: Row): Order {
   }));
   return {
     id: String(o.id), restaurant_id: o.restaurant_id as string, customer_id: o.customer_id as string, status: o.status as OrderStatus,
-    lines, group_order_id: (o.group_order_id as string) ?? null, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number, tip_cents: Number(o.tip_cents ?? 0), leave_at_door: Boolean(o.leave_at_door), fulfilment: (o.fulfilment as "delivery" | "pickup") ?? "delivery", scheduled_for: (o.scheduled_for as string) ?? null, release_at: (o.release_at as string) ?? null, discount_cents: Number(o.discount_cents ?? 0), credit_cents: Number(o.credit_cents ?? 0), delivery_photo_path: (o.delivery_photo_path as string) ?? null,
+    lines, group_order_id: (o.group_order_id as string) ?? null, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number, service_fee_cents: Number(o.service_fee_cents ?? 0), tip_cents: Number(o.tip_cents ?? 0), leave_at_door: Boolean(o.leave_at_door), fulfilment: (o.fulfilment as "delivery" | "pickup") ?? "delivery", scheduled_for: (o.scheduled_for as string) ?? null, release_at: (o.release_at as string) ?? null, discount_cents: Number(o.discount_cents ?? 0), credit_cents: Number(o.credit_cents ?? 0), delivery_photo_path: (o.delivery_photo_path as string) ?? null,
     address: o.address as string, phone: (o.phone as string) ?? "", prep_minutes: (o.prep_minutes as number) ?? null,
     ready_at: (o.ready_at as string) ?? null, bids, created_at: o.created_at as string, delivered_at: (o.delivered_at as string) ?? null,
     accepted_at: (o.accepted_at as string) ?? null, paid_at: (o.paid_at as string) ?? null,
@@ -254,7 +254,7 @@ export const actions = {
   },
 
   /** Supabase mode: create a Mollie payment server-side and return the checkout URL. */
-  async startPayment(orderId: string, tipCents = 0, extra: { promo_code?: string; use_credit?: boolean; scheduled_for?: string | null } = {}): Promise<string> {
+  async startPayment(orderId: string, tipCents = 0, extra: { promo_code?: string; use_credit?: boolean; scheduled_for?: string | null; leave_at_door?: boolean } = {}): Promise<string> {
     const sb = getSupabase();
     if (!sb) throw new Error("Payments need Supabase");
     const { data, error } = await sb.functions.invoke("create-payment", { body: { order_id: Number(orderId), tip_cents: tipCents, ...extra } });

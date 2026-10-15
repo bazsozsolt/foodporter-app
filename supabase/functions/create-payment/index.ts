@@ -48,8 +48,8 @@ Deno.serve(async (req) => {
   const { data: { user } } = await userClient.auth.getUser();
   if (!user) return json({ error: "not signed in" }, 401);
 
-  let orderId: number; let tip = 0; let promo = ""; let useCredit = false; let schedRaw: string | null = null;
-  try { const b = await req.json(); orderId = Number(b.order_id); tip = Number(b.tip_cents ?? 0); promo = String(b.promo_code ?? "").slice(0, 20); useCredit = b.use_credit === true; schedRaw = b.scheduled_for ? String(b.scheduled_for) : null; } catch { return json({ error: "bad request" }, 400); }
+  let orderId: number; let tip = 0; let promo = ""; let useCredit = false; let door: boolean | null = null; let schedRaw: string | null = null;
+  try { const b = await req.json(); orderId = Number(b.order_id); tip = Number(b.tip_cents ?? 0); promo = String(b.promo_code ?? "").slice(0, 20); useCredit = b.use_credit === true; schedRaw = b.scheduled_for ? String(b.scheduled_for) : null; door = b.leave_at_door === true ? true : b.leave_at_door === false ? false : null; } catch { return json({ error: "bad request" }, 400); }
   // Tip: whole cents, €0–€20, 100% to the rider (credited on delivery)
   if (!Number.isInteger(tip) || tip < 0 || tip > 2000) return json({ error: "Tip must be between €0 and €20.", code: "tip" }, 422);
   if (!Number.isInteger(orderId)) return json({ error: "order_id required" }, 400);
@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
     const { data: openAt } = await admin.rpc("fp_restaurant_open", { p_rid: order.restaurant_id, p_at: scheduled.toISOString() });
     if (openAt === false) return json({ error: "The restaurant is closed at that time.", code: "schedule" }, 422);
     const { data: rr } = await admin.from("restaurants").select("avg_prep_minutes, busy_extra_minutes").eq("id", order.restaurant_id).maybeSingle();
-    const lead = Number(rr?.avg_prep_minutes ?? 15) + Number(rr?.busy_extra_minutes ?? 0) + 25; // prep + bidding + ride
+    const lead = Number(rr?.avg_prep_minutes ?? 15) + Number(rr?.busy_extra_minutes ?? 0) + (order.fulfilment === "pickup" ? 0 : 25); // prep (+ bidding + ride for delivery)
     releaseAt = new Date(Math.max(Date.now(), scheduled.getTime() - lead * 60000)).toISOString();
   } else {
     const { data: isOpen } = await admin.rpc("fp_restaurant_open", { p_rid: order.restaurant_id });
@@ -110,8 +110,9 @@ Deno.serve(async (req) => {
   const { data: q, error: qe } = await admin.rpc("fp_quote_discount", { p_customer: user.id, p_subtotal: subtotal, p_code: promo, p_use_credit: useCredit, p_order: order.id });
   if (qe) return json({ error: "could not check the code" }, 500);
   if (q?.error) return json({ error: q.error, code: "promo" }, 422);
-  const discount = Math.max(0, Math.min(subtotal, Number(q?.discount_cents ?? 0)));
-  const credit = Math.max(0, Math.min(subtotal - discount, Number(q?.credit_cents ?? 0)));
+  const discount = Math.max(0, Math.min(subtotal, subtotal + fee + service + tip - 100, Number(q?.discount_cents ?? 0)));
+  // credit never pushes the charge below Mollie's €1 minimum (the rest stays on the balance)
+  const credit = Math.max(0, Math.min(subtotal - discount, subtotal + fee + service + tip - discount - 100, Number(q?.credit_cents ?? 0)));
   const total = subtotal + fee + service + tip - discount - credit;
   if (total < 100 || total > 50000) return json({ error: "order total out of range" }, 400);
 
@@ -133,8 +134,8 @@ Deno.serve(async (req) => {
   await admin.from("orders").update({
     mollie_payment_id: payment.id, payment_status: payment.status, subtotal_cents: subtotal,
     delivery_fee_cents: fee, service_fee_cents: service, tip_cents: tip, discount_cents: discount, credit_cents: credit, promo_code: q?.kind === "promo" ? q.code : null, referral_code: q?.kind === "referral" ? q.code : null,
-    scheduled_for: scheduled ? scheduled.toISOString() : null, release_at: releaseAt, status: "awaiting_payment",
+    scheduled_for: scheduled ? scheduled.toISOString() : null, release_at: releaseAt, status: "awaiting_payment", ...(door !== null && !pickup ? { leave_at_door: door } : {}),
   }).eq("id", order.id);
 
-  return json({ checkoutUrl: payment._links?.checkout?.href, paymentId: payment.id, testmode: payment.mode === "test" });
+  return json({ checkoutUrl: payment._links?.checkout?.href, paymentId: payment.id, testmode: payment.mode === "test", amount_cents: total });
 });

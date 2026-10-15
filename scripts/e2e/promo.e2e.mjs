@@ -1,6 +1,7 @@
 // v17 P6: promo codes (admin), referral credit, scheduled orders — all validated server-side.
 import { ADDRESS, login, ok, RID, SB_URL, summary } from "./common.mjs";
 const admin = await login("ADMIN"), staff = await login("STAFF"), cust = await login("SIMC1");
+const rider = await login("SIMR3");
 // a test customer without paid orders (for the referral path)
 let fresh = null;
 for (const acct of ["OUTSIDER", "GUEST", "HOST", "CUST2"]) {
@@ -50,6 +51,7 @@ const o2 = await newOrder(cust);
 const p2 = await pay(cust, o2, { promo_code: CODE });
 ok("max uses reached -> refused server-side", p2.status === 422 && p2.body.code === "promo", `${p2.status} ${p2.body.error}`);
 await cancel(o1); await cancel(o2);
+ok("cancelling the paid order frees the promo use", (await admin.sb.from("promo_codes").select("uses").eq("code", CODE).single()).data.uses === 0);
 
 // referral
 const myCode = (await cust.sb.rpc("my_referral_code")).data;
@@ -65,9 +67,15 @@ if (freshPaid === 0) {
   const p3 = await pay(fresh, o3, { promo_code: myCode });
   ok("referral payment created", p3.status === 200, `${p3.status} ${p3.body.error ?? ""}`);
   await markPaid(o3);
+  ok("no referral credit yet while the order is only paid", ((await cust.sb.rpc("my_credit_cents")).data ?? 0) === before);
+  let w = { error: null };
+  for (const st of ["accepted", "assigned", "ready", "picked_up", "delivered"]) {
+    w = await admin.sb.from("orders").update({ status: st, ...(st === "assigned" ? { rider_id: rider.id, assigned_at: new Date().toISOString() } : {}) }).eq("id", o3);
+    if (w.error) break;
+  }
   const after = (await cust.sb.rpc("my_credit_cents")).data ?? 0;
-  ok("the friend who invited gets €5 credit", after - before === 500, `${before} -> ${after}`);
-  await cancel(o3); await admin.sb.from("orders").update({ paid_at: null }).eq("id", o3); // keep this test customer "new" so the referral path stays repeatable
+  ok("the friend who invited gets €5 credit once it is delivered", !w.error && after - before === 500, `${before} -> ${after} ${err(w) ?? ""}`);
+  await admin.sb.from("orders").update({ paid_at: null }).eq("id", o3); // keep this test customer "new" so the referral path stays repeatable
   // credit is spent on the next order
   const o4 = await newOrder(cust);
   q = await quote(cust, "", m.price_cents * 3, true);
@@ -77,6 +85,7 @@ if (freshPaid === 0) {
   await markPaid(o4);
   ok("used credit is deducted from the balance", ((await cust.sb.rpc("my_credit_cents")).data ?? 0) === after - (await admin.sb.from("orders").select("credit_cents").eq("id", o4).single()).data.credit_cents);
   await cancel(o4);
+  ok("cancelling a paid order gives the used credit back", ((await cust.sb.rpc("my_credit_cents")).data ?? 0) === after);
 } else console.log("SKIP referral: OUTSIDER already has paid orders");
 ok("others cannot read someone's credit", ((await fresh.sb.from("customer_credit").select("id").eq("customer_id", cust.id)).data ?? []).length === 0);
 

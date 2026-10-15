@@ -25,7 +25,7 @@ async function supportRefund(req: Request, db: any, mollieKey: string, ticketId:
   const { data: t } = await db.from("support_tickets").update({ refund_status: "processing" }).eq("id", ticketId)
     .or("refund_status.is.null,refund_status.eq.requested,refund_status.eq.failed").select("id, order_id").maybeSingle();
   if (!t?.order_id) return ok({ error: "ticket has no order or a refund is already in progress/done" }, 409);
-  const { data: o } = await db.from("orders").select("id, mollie_payment_id, paid_at, is_test, subtotal_cents, delivery_fee_cents").eq("id", t.order_id).single();
+  const { data: o } = await db.from("orders").select("id, mollie_payment_id, paid_at, is_test, subtotal_cents, delivery_fee_cents, service_fee_cents, tip_cents, discount_cents, credit_cents").eq("id", t.order_id).single();
   const note = async (status: string, cents: number | null, refundId: string | null, msg: string) => {
     await db.from("support_tickets").update({ refund_status: status, refund_cents: cents, refund_id: refundId }).eq("id", ticketId);
     await db.from("support_messages").insert({ ticket_id: ticketId, author_role: "system", body: msg });
@@ -34,7 +34,11 @@ async function supportRefund(req: Request, db: any, mollieKey: string, ticketId:
   if (!o?.paid_at || !o.mollie_payment_id) { await note("failed", null, null, "Terugbetaling niet mogelijk: deze bestelling is niet betaald."); return ok({ error: "order not paid" }, 400); }
   const eur = (c: number) => `€${(c / 100).toFixed(2).replace(".", ",")}`;
   if (o.is_test && String(o.mollie_payment_id).startsWith("tr_sim_")) {
-    const c = Math.min(amount, (o.subtotal_cents ?? 0) + (o.delivery_fee_cents ?? 0));
+    // cap at what the customer actually paid (incl. service fee + tip, minus discount/credit) minus earlier refunds
+    const paid = (o.subtotal_cents ?? 0) + (o.delivery_fee_cents ?? 0) + (o.service_fee_cents ?? 0) + (o.tip_cents ?? 0) - (o.discount_cents ?? 0) - (o.credit_cents ?? 0);
+    const { data: prev } = await db.from("support_tickets").select("refund_cents").eq("order_id", o.id).neq("id", ticketId).in("refund_status", ["simulated", "pending", "processing", "refunded"]);
+    const c = Math.max(0, Math.min(amount, paid - (prev ?? []).reduce((a: number, x: { refund_cents: number | null }) => a + (x.refund_cents ?? 0), 0)));
+    if (c <= 0) { await note("none", 0, null, "Er valt niets meer terug te betalen voor deze bestelling."); return ok({ skipped: "nothing remaining" }); }
     await note("simulated", c, null, `Terugbetaling van ${eur(c)} goedgekeurd (testbestelling, er is niets afgeschreven).`);
     return ok({ status: "simulated", cents: c });
   }
@@ -69,8 +73,14 @@ Deno.serve(async (req) => {
 
   const { data: o } = await admin.from("orders").update({ refund_status: "processing" })
     .eq("id", id).eq("status", "cancelled").not("paid_at", "is", null).not("mollie_payment_id", "is", null).is("refund_status", null)
-    .select("id, mollie_payment_id, cancel_reason").maybeSingle();
+    .select("id, mollie_payment_id, cancel_reason, is_test, subtotal_cents, delivery_fee_cents, service_fee_cents, tip_cents, discount_cents, credit_cents").maybeSingle();
   if (!o) return ok({ skipped: "nothing to refund" });
+  if (o.is_test && String(o.mollie_payment_id).startsWith("tr_sim_")) {
+    // simulated test payment: record the full paid amount as refunded without calling Mollie
+    const cents = (o.subtotal_cents ?? 0) + (o.delivery_fee_cents ?? 0) + (o.service_fee_cents ?? 0) + (o.tip_cents ?? 0) - (o.discount_cents ?? 0) - (o.credit_cents ?? 0);
+    await admin.from("orders").update({ refund_status: "simulated", refund_cents: cents, refunded_at: new Date().toISOString() }).eq("id", id);
+    return ok({ status: "simulated", cents });
+  }
 
   const fail = async (detail: string) => {
     await admin.from("orders").update({ refund_status: "failed" }).eq("id", id);

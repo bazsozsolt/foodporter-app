@@ -6,7 +6,7 @@ import { ReorderButton } from "@/components/ReorderButton";
 import { Card, Empty, Header, Pill } from "@/components/ui";
 import { LifeBuoy, LogIn, Receipt } from "lucide-react";
 import { eur } from "@/lib/format";
-import { orderHref } from "@/lib/orders";
+import { orderHref, paidTotalCents } from "@/lib/orders";
 import { useStore } from "@/lib/store";
 import { statusLabel } from "@/lib/types";
 
@@ -27,7 +27,7 @@ export default function MyOrders() {
               <Card>
                 <div className="flex items-center justify-between"><b>#{o.id} · {restaurants.find((r) => r.id === o.restaurant_id)?.name ?? "Restaurant"}</b><Pill tone={o.status === "delivered" ? "ok" : undefined}>{statusLabel(o.status)}</Pill></div>
                 <div className="mt-1 text-[13px] text-muted">{new Date(o.created_at).toLocaleString(tx("nl-NL", "en-GB"), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} · {o.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}</div>
-                <div className="mt-1 text-sm font-semibold">{eur(o.subtotal_cents + o.delivery_fee_cents)}{o.refund_cents ? <span className="ml-2 text-xs font-normal text-muted">{tx("terugbetaald", "refunded")} {eur(o.refund_cents)}</span> : null}</div>
+                <div className="mt-1 text-sm font-semibold">{eur(paidTotalCents(o))}{o.refund_cents ? <span className="ml-2 text-xs font-normal text-muted">{tx("terugbetaald", "refunded")} {eur(o.refund_cents)}</span> : null}</div>
                 {o.status === "delivered" && <ReorderButton id={o.id} />}
               </Card>
             </Link>

@@ -56,6 +56,8 @@ export function GroupView() {
   const [showSplit, setShowSplit] = useState(false);
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  const [tip, setTip] = useState(0);
+  const [door, setDoor] = useState(false);
   const [geo, setGeo] = useState<Geo | null>(null);
   const center = useMemo(() => ({ lat: settings.zone_center_lat, lng: settings.zone_center_lng }), [settings.zone_center_lat, settings.zone_center_lng]);
 
@@ -123,7 +125,7 @@ export function GroupView() {
     setBusy(true);
     const oid = await act(rpc<number>("group_checkout", { p_group: group!.id, p_address: address, p_phone: phone }));
     if (!oid) { setBusy(false); return; }
-    const url = await act(actions.startPayment(String(oid)));
+    const url = await act(actions.startPayment(String(oid), tip, { leave_at_door: door }));
     setBusy(false);
     if (url) window.location.href = url; else router.push(orderHref(oid));
   }
@@ -269,8 +271,16 @@ export function GroupView() {
               <AddressField value={address} onChange={setAddress} geo={geo} onGeo={setGeo} center={center} radiusKm={settings.zone_radius_km} />
               <label className="text-[13px] text-muted">{t("Telefoon (voor SMS-updates)", "Phone (for SMS updates)")}</label>
               <input data-testid="group-phone" className={input} type="tel" placeholder="06 12345678" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <label className="my-2 flex min-h-11 items-center gap-2 text-sm" data-testid="group-leave-at-door"><input type="checkbox" checked={door} onChange={(e) => setDoor(e.target.checked)} className="h-5 w-5" />{t("Zet het bij de deur (zonder contact, de rider maakt een foto)", "Leave at the door (contactless, the rider takes a photo)")}</label>
+              <p className="text-[13px] text-muted">{t("Fooi voor je rider (100% voor de rider)", "Tip your rider (100% to the rider)")}</p>
+              <div className="mb-2 flex flex-wrap gap-2" data-testid="group-tip-picker">
+                {[0, 100, 200, 300].map((c) => (
+                  <button key={c} type="button" data-testid={`group-tip-${c}`} aria-pressed={tip === c} onClick={() => setTip(c)}
+                    className={`min-h-11 rounded-full px-4 text-sm font-semibold ring-1 ${tip === c ? "bg-ink text-white ring-ink" : "bg-white ring-line"}`}>{c === 0 ? t("Geen", "None") : eur(c)}</button>
+                ))}
+              </div>
               <TestModeCheckoutNote />
-              <Button disabled={busy || !geo || geo.distance_km > settings.zone_radius_km || phone.replace(/\D/g, "").length < 9} onClick={checkout}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : t(`Betaal ${eur(subtotal + fee)} met Mollie`, `Pay ${eur(subtotal + fee)} with Mollie`)}</Button>
+              <Button disabled={busy || !geo || geo.distance_km > settings.zone_radius_km || phone.replace(/\D/g, "").length < 9} onClick={checkout}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : t(`Betaal ${eur(subtotal + fee + (settings.service_fee_cents ?? 0) + tip)} met Mollie`, `Pay ${eur(subtotal + fee + (settings.service_fee_cents ?? 0) + tip)} with Mollie`)}</Button>
             </>}
             <button className="mt-3 w-full text-center text-sm text-muted underline" onClick={() => { if (confirm(t("Groepsbestelling annuleren?", "Cancel this group order?"))) void run(rpc("group_cancel", { p_group: group.id })); }}>{t("Groepsbestelling annuleren", "Cancel group order")}</button>
           </Card>

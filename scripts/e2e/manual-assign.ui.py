@@ -26,7 +26,11 @@ def page(acct, url, sel, view=None):
         pg.fill("input[type=email]", creds[acct + "_EMAIL"]); pg.fill("input[type=password]", creds[acct + "_PASSWORD"])
         pg.get_by_role("button", name=re.compile("^(Inloggen|Sign in)$")).click(); pg.wait_for_timeout(3000)
         pg.goto(B + url)
-        try: pg.wait_for_selector(sel, timeout=20000); pg.wait_for_function(f"!document.querySelector('{sel}').innerText.includes('…')", timeout=10000); t = pg.inner_text(sel)
+        try:
+            pg.wait_for_selector(sel, timeout=20000); t = pg.inner_text(sel)
+            for _ in range(40):  # poll in Python: the live CSP blocks string eval in wait_for_function
+                if "…" not in t: break
+                pg.wait_for_timeout(250); t = pg.inner_text(sel)
         except Exception as e: t = "MISSING " + str(e)[:80]
         b.close(); return t
 t = page("STAFF", "/restaurant/", f"[data-testid=col-prep] [data-testid=assigned-rider]")
