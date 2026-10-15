@@ -1,4 +1,5 @@
 "use client";
+import { DeliveryPhoto } from "@/components/DeliveryProof";
 import { AdminOrderContact } from "@/components/OrderChat";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -73,6 +74,7 @@ function OrderDetail({ id }: { id: string }) {
             <h3 className="mt-3 text-sm font-bold">Items</h3>
             <ul className="text-sm">{((o.order_items as Row[]) ?? []).map((l) => <li key={String(l.id)}>{String(l.qty)}× {String(l.name)} · {eur(Number(l.price_cents) * Number(l.qty))}</li>)}</ul>
           </Panel>
+          {(o.leave_at_door || o.delivery_photo_path) ? <Panel title="Proof of delivery"><p className="text-sm">{o.leave_at_door ? "Leave at the door" : "In person"}</p>{o.delivery_photo_path ? <DeliveryPhoto path={String(o.delivery_photo_path)} english /> : <p className="text-xs text-muted">No photo yet.</p>}</Panel> : null}
           <Panel title="Customer contact"><AdminOrderContact orderId={Number(o.id)} /></Panel>
           <Panel title="Timeline">
             <ol className="relative ml-2 border-l-2 border-[#eee] pl-4 text-sm">

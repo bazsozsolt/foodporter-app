@@ -1,4 +1,5 @@
 "use client";
+import { LeaveAtDoorNote, ProofCapture } from "@/components/DeliveryProof";
 import { useT , tx } from "@/lib/i18n";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -162,7 +163,9 @@ export default function RiderPage() {
               {o.status === "ready" && <Button className="min-h-14 text-[17px]" onClick={() => act(actions.pickUp(o.id), t("Klant geïnformeerd: je eten is onderweg", "Customer notified: your food is on the way"))}>{t("Opgehaald", "Picked up")}</Button>}
               <div className="mt-3 flex gap-2"><CallButton orderId={Number(o.id)} status={o.status} side="rider" asAdmin={o.rider_id !== profile?.id} /><HelpButton role="rider" orderId={Number(o.id)} label={tx("Probleem melden", "Report a problem")} /></div>
               <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="rider" side={o.rider_id === profile?.id ? "rider" : "admin"} order={o} /></div>
-              {o.status === "picked_up" && <Button variant="ok" className="min-h-14 text-[17px]" onClick={() => act(actions.deliver(o.id), tx(`Bezorgd · ${eur(o.delivery_fee_cents + (o.tip_cents ?? 0))} bij je verdiensten`, `Delivered · ${eur(o.delivery_fee_cents + (o.tip_cents ?? 0))} added to earnings`))}>{t("Bezorgd", "Delivered")}</Button>}
+              {o.leave_at_door && <LeaveAtDoorNote />}
+              {o.status === "picked_up" && o.rider_id === profile?.id && <ProofCapture orderId={o.id} hasPhoto={!!o.delivery_photo_path} />}
+              {o.status === "picked_up" && <Button variant="ok" disabled={o.leave_at_door && !o.delivery_photo_path && o.rider_id === profile?.id} className="min-h-14 text-[17px]" onClick={() => act(actions.deliver(o.id), tx(`Bezorgd · ${eur(o.delivery_fee_cents + (o.tip_cents ?? 0))} bij je verdiensten`, `Delivered · ${eur(o.delivery_fee_cents + (o.tip_cents ?? 0))} added to earnings`))}>{t("Bezorgd", "Delivered")}</Button>}
             </Card>
           );
         })}

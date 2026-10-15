@@ -28,6 +28,7 @@ export default function CheckoutPage() {
   const [address, setAddress] = useState("Heuvelstraat 12, 5038 AA Tilburg");
   const [phone, setPhone] = useState("");
   const [tip, setTip] = useState(0);
+  const [door, setDoor] = useState(false);
   const [customTip, setCustomTip] = useState("");
   const [method, setMethod] = useState<"iDEAL" | "Card">("iDEAL");
   const sub = Object.entries(cart.qty).reduce((a, [id, q]) => a + q * (menuItems.find((m) => m.id === id)?.price_cents ?? 0), 0);
@@ -41,7 +42,7 @@ export default function CheckoutPage() {
   async function pay() {
     if (!signedIn) { router.push("/login?next=/checkout"); return; }
     setBusy(true);
-    const id = await act(actions.placeOrder(address, phone, geo), hasSupabase ? undefined : `Order placed · Mollie ${method} payment is mocked (no Supabase)`);
+    const id = await act(actions.placeOrder(address, phone, geo, { leaveAtDoor: door }), hasSupabase ? undefined : `Order placed · Mollie ${method} payment is mocked (no Supabase)`);
     if (!id) { setBusy(false); return; }
     if (!hasSupabase) { setBusy(false); router.push(orderHref(id)); return; }
     // Mollie hosted checkout (iDEAL / card are chosen there); amount is computed server-side.
@@ -61,6 +62,7 @@ export default function CheckoutPage() {
           <label className="text-[13px] text-muted">{t("Bezorgadres", "Delivery address")}</label>
           <AddressField value={address} onChange={setAddress} geo={geo} onGeo={setGeo} center={center} radiusKm={settings.zone_radius_km} />
           <label className="text-[13px] text-muted">{t("Telefoon (voor SMS-updates)", "Phone (for SMS updates)")}</label>
+          <label className="mb-1 flex min-h-11 items-center gap-2 text-sm" data-testid="leave-at-door"><input type="checkbox" checked={door} onChange={(e) => setDoor(e.target.checked)} className="h-5 w-5" />{t("Zet het bij de deur (zonder contact, de rider maakt een foto)", "Leave at the door (contactless, the rider takes a photo)")}</label>
           <input className={input} data-testid="phone" type="tel" placeholder={t("Mobiel nummer, bv. 06 12345678", "Mobile number, e.g. 06 12345678")} value={phone} onChange={(e) => setPhone(e.target.value)} />
         </Card>
         <Card data-testid="price-breakdown">

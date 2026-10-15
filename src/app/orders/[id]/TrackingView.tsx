@@ -20,6 +20,7 @@ import { eur } from "@/lib/format";
 import { getSupabase } from "@/lib/supabase";
 import { CallButton, OrderChat } from "@/components/OrderChat";
 import { useRiderInfo } from "@/lib/orders";
+import { DeliveryPhoto } from "@/components/DeliveryProof";
 
 const NEXT_ROLE: Record<string, string> = { placed: "Restaurant", accepted: "Rider", assigned: "Restaurant", ready: "Rider", picked_up: "Rider" };
 
@@ -83,6 +84,8 @@ export function TrackingView({ id }: { id: string }) {
               {o.rider_id && ["placed", "accepted", "assigned", "ready", "picked_up", "delivered"].includes(o.status) && <CallButton orderId={Number(o.id)} status={o.status} side="customer" asAdmin={!mine} />}
             </div>
             {["placed", "accepted", "assigned", "ready", "picked_up", "delivered"].includes(o.status) && <div className="mt-2 space-y-2">
+              {o.leave_at_door && <p data-testid="door-chosen" className="mt-2 text-[13px] text-muted">{tr("Je koos: bij de deur zetten (zonder contact).", "You chose: leave at the door (contactless).")}</p>}
+              <DeliveryPhoto path={o.delivery_photo_path} english={!mine} />
               {o.rider_id && <OrderChat orderId={Number(o.id)} channel="rider" side={mine ? "customer" : "admin"} order={o} />}
               <OrderChat orderId={Number(o.id)} channel="restaurant" side={mine ? "customer" : "admin"} order={o} />
             </div>}

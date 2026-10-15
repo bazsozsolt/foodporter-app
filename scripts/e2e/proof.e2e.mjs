@@ -1,0 +1,45 @@
+// v17 P4: leave at door + photo proof of delivery (private bucket, signed URLs, RLS, required before "delivered").
+import { readFileSync } from "node:fs";
+import { ADDRESS, login, ok, RID, SB_URL, summary } from "./common.mjs";
+const admin = await login("ADMIN"), cust = await login("SIMC1"), other = await login("CUST2"), rider = await login("SIMR3");
+const err = (r) => r.error?.message ?? null;
+const img = readFileSync(new URL("../../public/brand/mark.png", import.meta.url));
+const m = (await admin.sb.from("menu_items").select("id,name,price_cents").eq("restaurant_id", RID).eq("available", true).limit(1).single()).data;
+const ins = await cust.sb.from("orders").insert({ customer_id: cust.id, restaurant_id: RID, subtotal_cents: m.price_cents, delivery_fee_cents: 295, address: ADDRESS, phone: "+31 6 0000 0000", status: "awaiting_payment", leave_at_door: true }).select("id, leave_at_door").single();
+ok("customer chooses leave at the door at checkout", ins.data?.leave_at_door === true, err(ins));
+const id = ins.data.id;
+await cust.sb.from("order_items").insert({ order_id: id, menu_item_id: m.id, name: m.name, qty: 1, price_cents: m.price_cents });
+await admin.sb.from("orders").update({ is_test: true }).eq("id", id);
+for (const st of ["placed", "accepted", "assigned", "ready"]) {
+  const extra = st === "placed" ? { paid_at: new Date().toISOString(), payment_status: "paid" } : st === "assigned" ? { rider_id: rider.id, assigned_at: new Date().toISOString() } : {};
+  const r = await admin.sb.from("orders").update({ status: st, ...extra }).eq("id", id); if (r.error) console.log(st, r.error.message);
+}
+ok("customer cannot change leave-at-door after payment", !!err(await cust.sb.from("orders").update({ leave_at_door: false }).eq("id", id)) || (await admin.sb.from("orders").select("leave_at_door").eq("id", id).single()).data.leave_at_door === true);
+const early = await rider.sb.storage.from("delivery-proof").upload(`${id}/early.jpg`, img, { contentType: "image/png" });
+ok("rider cannot upload before pick-up", !!early.error);
+await rider.sb.from("orders").update({ status: "picked_up" }).eq("id", id);
+const dv0 = await rider.sb.from("orders").update({ status: "delivered" }).eq("id", id).select("status");
+ok("rider cannot mark delivered without the door photo", !!err(dv0) || dv0.data?.[0]?.status !== "delivered", err(dv0));
+const intr = await other.sb.storage.from("delivery-proof").upload(`${id}/x.jpg`, img, { contentType: "image/png" });
+ok("someone else cannot upload a proof photo", !!intr.error);
+const path = `${id}/e2e${Date.now()}.jpg`;
+const up = await rider.sb.storage.from("delivery-proof").upload(path, img, { contentType: "image/png" });
+ok("rider uploads the photo at drop-off", !up.error, up.error?.message);
+ok("photo path must belong to the order", !!err(await rider.sb.rpc("order_set_delivery_photo", { p_order: id, p_path: `999999/${path.split("/")[1]}` })));
+const cu = await cust.sb.from("orders").update({ delivery_photo_path: path }).eq("id", id).select("id");
+ok("customer cannot set the photo column directly", !!err(cu) || (cu.data ?? []).length === 0 && (await admin.sb.from("orders").select("delivery_photo_path").eq("id", id).single()).data.delivery_photo_path === null, err(cu));
+const set = await rider.sb.rpc("order_set_delivery_photo", { p_order: id, p_path: path });
+ok("rider attaches the photo to the order", !err(set), err(set));
+const dv = await rider.sb.from("orders").update({ status: "delivered" }).eq("id", id).select("status");
+ok("rider can deliver once the photo is attached", dv.data?.[0]?.status === "delivered", err(dv));
+const cs = await cust.sb.storage.from("delivery-proof").createSignedUrl(path, 60);
+ok("customer gets a signed URL for their photo", !!cs.data?.signedUrl, err(cs));
+const res = cs.data?.signedUrl ? await fetch(cs.data.signedUrl) : null;
+ok("signed URL serves the image", res?.ok === true);
+ok("another customer cannot get a signed URL", !(await other.sb.storage.from("delivery-proof").createSignedUrl(path, 60)).data?.signedUrl);
+ok("admin can view the photo (support)", !!(await admin.sb.storage.from("delivery-proof").createSignedUrl(path, 60)).data?.signedUrl);
+const pubRes = await fetch(`${SB_URL}/storage/v1/object/public/delivery-proof/${path}`);
+ok("photo is not reachable via a public URL", !pubRes.ok, String(pubRes.status));
+const row = (await cust.sb.from("orders").select("delivery_photo_path").eq("id", id).single()).data;
+ok("customer sees the photo on the order", row?.delivery_photo_path === path);
+process.exit(summary() ? 1 : 0);

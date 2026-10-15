@@ -87,7 +87,7 @@ function mapOrder(o: Row): Order {
   }));
   return {
     id: String(o.id), restaurant_id: o.restaurant_id as string, customer_id: o.customer_id as string, status: o.status as OrderStatus,
-    lines, group_order_id: (o.group_order_id as string) ?? null, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number, tip_cents: Number(o.tip_cents ?? 0),
+    lines, group_order_id: (o.group_order_id as string) ?? null, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number, tip_cents: Number(o.tip_cents ?? 0), leave_at_door: Boolean(o.leave_at_door), delivery_photo_path: (o.delivery_photo_path as string) ?? null,
     address: o.address as string, phone: (o.phone as string) ?? "", prep_minutes: (o.prep_minutes as number) ?? null,
     ready_at: (o.ready_at as string) ?? null, bids, created_at: o.created_at as string, delivered_at: (o.delivered_at as string) ?? null,
     accepted_at: (o.accepted_at as string) ?? null, paid_at: (o.paid_at as string) ?? null,
@@ -221,7 +221,7 @@ export const actions = {
   },
 
   // --- customer ---
-  async placeOrder(address: string, phone: string, geo?: Geo | null): Promise<string> {
+  async placeOrder(address: string, phone: string, geo?: Geo | null, opts: { leaveAtDoor?: boolean } = {}): Promise<string> {
     const { restaurant_id, qty } = state.cart;
     const lines: OrderLine[] = Object.entries(qty).map(([item_id, q]) => {
       const it = state.menuItems.find((m) => m.id === item_id)!;
@@ -234,7 +234,7 @@ export const actions = {
       if (!uid) throw new Error(tx("Log eerst in", "Please sign in first"));
       const { data, error } = await sb.from("orders").insert({
         customer_id: uid, restaurant_id, subtotal_cents: subtotal, delivery_fee_cents: state.settings.delivery_fee_cents, address, phone,
-        status: "awaiting_payment", ...(geo ? { lat: geo.lat, lng: geo.lng, distance_km: Math.round(geo.distance_km * 100) / 100 } : {}),
+        status: "awaiting_payment", leave_at_door: Boolean(opts.leaveAtDoor), ...(geo ? { lat: geo.lat, lng: geo.lng, distance_km: Math.round(geo.distance_km * 100) / 100 } : {}),
       }).select("id").single();
       if (error) throw new Error(error.message);
       const { error: e2 } = await sb.from("order_items").insert(lines.map((l) => ({ order_id: data.id, menu_item_id: l.item_id, name: l.name, qty: l.qty, price_cents: l.price_cents })));
@@ -381,6 +381,7 @@ export const actions = {
     set((s) => ({ ...s, profile: s.profile ? { ...s.profile, full_name: name.trim() || null } : s.profile }));
     return true;
   },
+  reloadUser() { if (state.mode === "supabase") void loadUserData(); },
   reloadCatalog() { if (state.mode === "supabase") void loadCatalog(); },
   reset() {
     if (state.mode === "mock") set(() => ({ ...initial }));

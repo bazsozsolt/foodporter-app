@@ -49,7 +49,7 @@ export const catLabel = (role: SupportRole, key: string) => {
 export const statusLabel = (s: string) => s === "open" ? tx("Open: wij kijken ernaar", "Open: we're on it") : s === "waiting_user" ? tx("Antwoord ontvangen", "We replied") : tx("Opgelost", "Resolved");
 
 /** Shrinks a photo on the phone (max 1600 px JPEG) before upload; keeps uploads small and strips EXIF. */
-async function shrink(file: File): Promise<Blob> {
+export async function shrink(file: File): Promise<Blob> {
   try {
     const bmp = await createImageBitmap(file);
     const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
