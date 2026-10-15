@@ -139,7 +139,7 @@ export default function AdminLegal() {
   const q = useAdminQuery<Row>(async () => {
     const c = sb();
     const [t, riders, staff, acc, req, docs] = await Promise.all([
-      c.from("legal_templates").select("*").order("id").order("effective_date", { ascending: false }).order("created_at", { ascending: false }),
+      c.from("legal_templates").select("*").order("id").order("effective_date", { ascending: false }).order("version_key", { ascending: false }),
       c.from("profiles").select("id, full_name, email, online, status, is_test").eq("role", "rider").order("full_name"),
       c.from("profiles").select("restaurant_id").eq("role", "restaurant").not("restaurant_id", "is", null),
       c.from("legal_acceptances").select("*").order("accepted_at", { ascending: false }).limit(1000),

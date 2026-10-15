@@ -111,9 +111,9 @@ export function LegalOnboarding({ st, reload, who }: { st: LegalStatus | null; r
   useEffect(() => {
     const sb = getSupabase();
     if (!sb || !key) return;
-    void sb.from("legal_templates").select("id, version, title, pdf_path, html_path, sha256, effective_date").in("id", key.split(","))
-      .lte("effective_date", new Date().toISOString().slice(0, 10)).order("effective_date", { ascending: false }).order("created_at", { ascending: false }).order("created_at", { ascending: false })
-      .then(({ data }) => { const seen = new Set<string>(); setTpls(((data ?? []) as Tpl[]).filter((x) => !seen.has(x.id) && seen.add(x.id))); });
+    // legal_templates_current = one row per template, chosen in the DB (same rule as legal_accept)
+    void sb.from("legal_templates_current").select("id, version, title, pdf_path, html_path, sha256, effective_date").in("id", key.split(","))
+      .then(({ data }) => setTpls((data ?? []) as Tpl[]));
   }, [key]);
   if (!st || st.ready) return null;
   const other = st.missing.filter((m) => m.startsWith("step:") || m.startsWith("doc_expired:") || m.startsWith("age") || m === "youth_night" || m.startsWith("atw_"));

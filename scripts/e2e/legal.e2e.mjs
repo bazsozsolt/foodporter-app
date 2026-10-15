@@ -5,7 +5,7 @@ const anon = client();
 const admin = await login("ADMIN"), staff = await login("STAFF"), rider = await login("SIMR3"), cust = await login("CUST2"), out = await login("OUTSIDER");
 const err = (r) => r?.error?.message ?? null;
 const reqIds = [];
-const tpl = async (id) => (await admin.sb.from("legal_templates").select("id, version, sha256").eq("id", id).order("effective_date", { ascending: false }).order("created_at", { ascending: false }).limit(1).single()).data;
+const tpl = async (id) => (await admin.sb.from("legal_templates_current").select("id, version, sha256").eq("id", id).single()).data;
 const status = async (u) => (await u.sb.rpc("my_legal_status")).data;
 const wasOnline = (await admin.sb.from("profiles").select("online").eq("id", rider.id).single()).data.online;
 try {
@@ -14,6 +14,8 @@ try {
   ok("anon reads public templates", !pub.error && pub.data.some((t) => t.id === "rider_employment"));
   ok("internal templates hidden from anon", !pub.data.some((t) => t.audience === "internal"));
   ok("admin sees internal templates", (await admin.sb.from("legal_templates").select("id").eq("audience", "internal")).data?.length >= 3);
+  ok("lower version rejected (unique current version)", /must be higher/.test(err(await admin.sb.from("legal_templates").insert({ id: "rider_conduct", version: "0.0.9", title: "x", audience: "rider", pdf_path: "x", html_path: "x", sha256: "0".repeat(64) })) ?? ""));
+  ok("one current row per template", new Set(((await anon.from("legal_templates_current").select("id")).data ?? []).map((r) => r.id)).size === ((await anon.from("legal_templates_current").select("id")).data ?? []).length);
   ok("non-admin cannot add templates", err(await out.sb.from("legal_templates").insert({ id: "x", version: "9", title: "x", audience: "all", pdf_path: "x", html_path: "x", sha256: "0".repeat(64) })) !== null);
   const pdf = await fetch((process.env.FP_BASE ?? "https://bazsozsolt.github.io/foodporter-app") + "/legal/rider_employment-v0.1.pdf");
   ok("PDF served", pdf.status === 200 || pdf.status === 404, `status ${pdf.status} (404 ok before first deploy)`);

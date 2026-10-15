@@ -26,7 +26,7 @@ ok("signature log", pg.locator("[data-testid=acc-row]").count() > 10)
 pg.locator("[data-testid=legal-rider-row] button.underline").first.click(); pg.wait_for_selector("[data-testid=rider-detail]", timeout=10000)
 ok("rider detail with checklist (no KvK, BSN flag)", pg.locator("[data-testid=checklist] input[type=checkbox]").count() == 9 and pg.locator("[data-testid=step-bsn_entered]").count() == 1 and pg.locator("[data-testid=step-kvk_checked]").count() == 0)
 pg.screenshot(path="/tmp/legal-admin.png", full_page=True); b.close(); p.stop()
-rq = NODE("const a=await m.login('ADMIN'), r=await m.login('SIMR3'); await a.sb.from('profiles').update({online:false}).eq('id',r.id); const t=(await a.sb.from('legal_templates').select('version').eq('id','platform_transparency').order('created_at',{ascending:false}).limit(1).single()).data; const q=(await a.sb.from('legal_requests').insert({template_id:'platform_transparency',version:t.version,profile_id:r.id}).select('id').single()).data; console.log(q.id)")
+rq = NODE("const a=await m.login('ADMIN'), r=await m.login('SIMR3'); await a.sb.from('profiles').update({online:false}).eq('id',r.id); const t=(await a.sb.from('legal_templates_current').select('version').eq('id','platform_transparency').single()).data; const q=(await a.sb.from('legal_requests').insert({template_id:'platform_transparency',version:t.version,profile_id:r.id}).select('id').single()).data; console.log(q.id)")
 try:
     p, b, pg = session("SIMR3", {"width": 390, "height": 844})
     pg.goto(B + "/rider/"); pg.wait_for_selector("[data-testid=legal-onboarding]", timeout=20000)
