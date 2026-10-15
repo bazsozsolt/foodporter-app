@@ -87,7 +87,7 @@ function mapOrder(o: Row): Order {
   }));
   return {
     id: String(o.id), restaurant_id: o.restaurant_id as string, customer_id: o.customer_id as string, status: o.status as OrderStatus,
-    lines, group_order_id: (o.group_order_id as string) ?? null, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number,
+    lines, group_order_id: (o.group_order_id as string) ?? null, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number, tip_cents: Number(o.tip_cents ?? 0),
     address: o.address as string, phone: (o.phone as string) ?? "", prep_minutes: (o.prep_minutes as number) ?? null,
     ready_at: (o.ready_at as string) ?? null, bids, created_at: o.created_at as string, delivered_at: (o.delivered_at as string) ?? null,
     accepted_at: (o.accepted_at as string) ?? null, paid_at: (o.paid_at as string) ?? null,
@@ -133,7 +133,7 @@ async function loadUserData() {
   ]);
   const names = new Map(state.restaurants.map((r) => [r.id, r.name.replace(" (example)", "")]));
   const earnings: Earning[] = ((e.data as Row[]) ?? []).map((x) => ({
-    id: x.id as string, rider_id: x.rider_id as string, order_id: String(x.order_id), amount_cents: x.amount_cents as number,
+    id: x.id as string, rider_id: x.rider_id as string, order_id: String(x.order_id), amount_cents: x.amount_cents as number, tip_cents: Number(x.tip_cents ?? 0),
     earned_at: x.earned_at as string, payout_id: (x.payout_id as string) ?? null,
     restaurant_name: names.get((x.orders as Row | null)?.restaurant_id as string) ?? "Order #" + x.order_id,
   }));
@@ -254,10 +254,10 @@ export const actions = {
   },
 
   /** Supabase mode: create a Mollie payment server-side and return the checkout URL. */
-  async startPayment(orderId: string): Promise<string> {
+  async startPayment(orderId: string, tipCents = 0): Promise<string> {
     const sb = getSupabase();
     if (!sb) throw new Error("Payments need Supabase");
-    const { data, error } = await sb.functions.invoke("create-payment", { body: { order_id: Number(orderId) } });
+    const { data, error } = await sb.functions.invoke("create-payment", { body: { order_id: Number(orderId), tip_cents: tipCents } });
     if (error) {
       let msg = error.message;
       try { const ctx = (error as { context?: Response }).context; if (ctx) msg = (await ctx.json()).error ?? msg; } catch { /* ignore */ }

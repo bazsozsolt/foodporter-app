@@ -1,5 +1,5 @@
 // POST { order_id } with the customer's Supabase JWT -> { checkoutUrl }
-// The amount is computed server-side from menu_items prices + delivery fee + service fee; the minimum order is enforced here.
+// The amount is computed server-side from menu_items prices + delivery fee + service fee + tip; the minimum order is enforced here.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -48,8 +48,10 @@ Deno.serve(async (req) => {
   const { data: { user } } = await userClient.auth.getUser();
   if (!user) return json({ error: "not signed in" }, 401);
 
-  let orderId: number;
-  try { orderId = Number((await req.json()).order_id); } catch { return json({ error: "bad request" }, 400); }
+  let orderId: number; let tip = 0;
+  try { const b = await req.json(); orderId = Number(b.order_id); tip = Number(b.tip_cents ?? 0); } catch { return json({ error: "bad request" }, 400); }
+  // Tip: whole cents, €0–€20, 100% to the rider (credited on delivery)
+  if (!Number.isInteger(tip) || tip < 0 || tip > 2000) return json({ error: "Tip must be between €0 and €20.", code: "tip" }, 422);
   if (!Number.isInteger(orderId)) return json({ error: "order_id required" }, 400);
 
   const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
@@ -82,7 +84,7 @@ Deno.serve(async (req) => {
   await admin.from("orders").update({ lat: geo.lat, lng: geo.lng, distance_km: Math.round(dist * 100) / 100 }).eq("id", order.id);
   if (dist > radius) return json({ error: `Sorry, ${geo.label} is ${dist.toFixed(1)} km from the centre. During the pilot we deliver within ${radius} km of central Tilburg.` }, 422);
   const service = Math.min(300, Math.max(0, Number(s?.service_fee_cents ?? 0)));
-  const total = subtotal + fee + service;
+  const total = subtotal + fee + service + tip;
   if (total < 100 || total > 50000) return json({ error: "order total out of range" }, 400);
 
   const res = await fetch("https://api.mollie.com/v2/payments", {
@@ -102,7 +104,7 @@ Deno.serve(async (req) => {
 
   await admin.from("orders").update({
     mollie_payment_id: payment.id, payment_status: payment.status, subtotal_cents: subtotal,
-    delivery_fee_cents: fee, service_fee_cents: service, status: "awaiting_payment",
+    delivery_fee_cents: fee, service_fee_cents: service, tip_cents: tip, status: "awaiting_payment",
   }).eq("id", order.id);
 
   return json({ checkoutUrl: payment._links?.checkout?.href, paymentId: payment.id, testmode: payment.mode === "test" });

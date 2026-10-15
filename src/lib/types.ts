@@ -11,7 +11,7 @@ export interface OrderLine { item_id: string; name: string; qty: number; price_c
 export interface Bid { id: string; rider_id: string; rider_name: string; eta_minutes: number; accepted: boolean; created_at: string }
 export interface Order {
   id: string; restaurant_id: string; customer_id: string; status: OrderStatus;
-  lines: OrderLine[]; subtotal_cents: number; delivery_fee_cents: number;
+  lines: OrderLine[]; subtotal_cents: number; delivery_fee_cents: number; tip_cents?: number;
   address: string; phone: string; prep_minutes: number | null; ready_at: string | null;
   group_order_id?: string | null;
   bids: Bid[]; created_at: string; delivered_at: string | null; accepted_at?: string | null;
@@ -20,7 +20,7 @@ export interface Order {
   assigned_at?: string | null; bid_window_closes_at?: string | null; rider_id?: string | null;
   stacked?: boolean;
 }
-export interface Earning { id: string; rider_id: string; order_id: string; restaurant_name: string; amount_cents: number; earned_at: string; payout_id: string | null }
+export interface Earning { id: string; rider_id: string; order_id: string; restaurant_name: string; amount_cents: number; tip_cents?: number; earned_at: string; payout_id: string | null }
 
 export const STATUS_STEPS: OrderStatus[] = ["placed", "accepted", "assigned", "ready", "picked_up", "delivered"];
 export const STATUS_LABEL: Record<OrderStatus, string> = {

@@ -22,10 +22,10 @@ export default function EarningsPage() {
           {[...earnings].reverse().map((e) => (
             <div key={e.id} className="flex items-center justify-between border-b border-[#f1eee9] py-2 last:border-0">
               <span>{e.restaurant_name}<div className="text-[13px] text-muted">{new Date(e.earned_at).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}</div></span>
-              <b>{eur(e.amount_cents)}</b>
+              <span className="text-right"><b>{eur(e.amount_cents)}</b>{(e.tip_cents ?? 0) > 0 && <div data-testid="earning-tip" className="text-[12px] text-ok">{tx(`incl. ${eur(e.tip_cents ?? 0)} fooi`, `incl. ${eur(e.tip_cents ?? 0)} tip`)}</div>}</span>
             </div>
           ))}
-          <p className="mt-3 text-[13px] text-muted">{tx("Elke maandag worden de verdiensten van vorige week per bankoverschrijving uitbetaald. Je houdt 100% van de bezorgvergoeding.", "Each Monday, last week’s earnings are paid out by bank transfer. You keep 100% of the delivery fee.")}</p>
+          <p className="mt-3 text-[13px] text-muted">{tx("Elke maandag worden de verdiensten van vorige week per bankoverschrijving uitbetaald. Je houdt 100% van de bezorgvergoeding en 100% van elke fooi.", "Each Monday, last week’s earnings are paid out by bank transfer. You keep 100% of the delivery fee and 100% of every tip.")}</p>
         </Card>
         </RoleGate>
       </main>

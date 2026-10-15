@@ -79,7 +79,7 @@ export function TrackingView({ id }: { id: string }) {
         {(mine || profile?.role === "admin") && o.status !== "awaiting_payment" && (
           <Card className="!p-3" data-testid="contact-box">
             <div className="flex gap-2">
-              {mine && <HelpButton role="customer" orderId={Number(o.id)} orderTotalCents={o.paid_at ? o.subtotal_cents + o.delivery_fee_cents - (o.refund_cents ?? 0) : null} />}
+              {mine && <HelpButton role="customer" orderId={Number(o.id)} orderTotalCents={o.paid_at ? o.subtotal_cents + o.delivery_fee_cents + (o.tip_cents ?? 0) - (o.refund_cents ?? 0) : null} />}
               {o.rider_id && ["placed", "accepted", "assigned", "ready", "picked_up", "delivered"].includes(o.status) && <CallButton orderId={Number(o.id)} status={o.status} side="customer" asAdmin={!mine} />}
             </div>
             {["placed", "accepted", "assigned", "ready", "picked_up", "delivered"].includes(o.status) && <div className="mt-2 space-y-2">

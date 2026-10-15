@@ -26,6 +26,8 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [address, setAddress] = useState("Heuvelstraat 12, 5038 AA Tilburg");
   const [phone, setPhone] = useState("");
+  const [tip, setTip] = useState(0);
+  const [customTip, setCustomTip] = useState("");
   const [method, setMethod] = useState<"iDEAL" | "Card">("iDEAL");
   const sub = Object.entries(cart.qty).reduce((a, [id, q]) => a + q * (menuItems.find((m) => m.id === id)?.price_cents ?? 0), 0);
   const minOrder = rest?.min_order_cents ?? 0;
@@ -41,7 +43,7 @@ export default function CheckoutPage() {
     if (!id) { setBusy(false); return; }
     if (!hasSupabase) { setBusy(false); router.push(orderHref(id)); return; }
     // Mollie hosted checkout (iDEAL / card are chosen there); amount is computed server-side.
-    const checkoutUrl = await act(actions.startPayment(id));
+    const checkoutUrl = await act(actions.startPayment(id, tip));
     setBusy(false);
     if (checkoutUrl) window.location.href = checkoutUrl;
     else router.push(orderHref(id)); // order exists unpaid; tracking page offers "Pay now"
@@ -64,13 +66,29 @@ export default function CheckoutPage() {
           <div className="flex justify-between text-sm"><span>{t("Gerechten", "Items")}</span><span>{eur(sub)}</span></div>
           <div className="flex justify-between text-sm"><span>{t("Bezorgkosten (vast, 100% voor de rider)", "Delivery fee (flat, 100% to the rider)")}</span><span>{eur(DELIVERY_FEE_CENTS)}</span></div>
           <div className="flex justify-between text-sm"><span>{t("Servicekosten", "Service fee")}</span><span>{eur(SERVICE)}</span></div>
+          <div className="flex justify-between text-sm"><span>{t("Fooi (100% voor de rider)", "Tip (100% to the rider)")}</span><span data-testid="tip-line">{eur(tip)}</span></div>
           <hr className="my-2 border-line" />
-          <div className="flex justify-between font-bold" data-testid="total"><span>{t("Totaal (incl. btw)", "Total (incl. VAT)")}</span><span>{eur(sub + DELIVERY_FEE_CENTS + SERVICE)}</span></div>
+          <div className="flex justify-between font-bold" data-testid="total"><span>{t("Totaal (incl. btw)", "Total (incl. VAT)")}</span><span>{eur(sub + DELIVERY_FEE_CENTS + SERVICE + tip)}</span></div>
           {belowMin && <p data-testid="min-order-warning" className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{t(`Minimale bestelling bij dit restaurant is ${eur(minOrder)}. Voeg nog ${eur(minOrder - sub)} toe.`, `This restaurant's minimum order is ${eur(minOrder)}. Add ${eur(minOrder - sub)} more.`)}</p>}
+        </Card>
+        <Card data-testid="tip-picker">
+          <b className="block">{t("Fooi voor je rider", "Tip your rider")}</b>
+          <p className="mb-2 text-[13px] text-muted">{t("Optioneel. De rider krijgt 100% van de fooi.", "Optional. The rider gets 100% of the tip.")}</p>
+          <div className="flex flex-wrap gap-2">
+            {[0, 100, 200, 300].map((c) => (
+              <button key={c} type="button" data-testid={`tip-${c}`} aria-pressed={tip === c && customTip === ""} onClick={() => { setTip(c); setCustomTip(""); }}
+                className={`min-h-11 rounded-full px-4 text-sm font-semibold ring-1 ${tip === c && customTip === "" ? "bg-ink text-white ring-ink" : "bg-white ring-line"}`}>{c === 0 ? t("Geen", "None") : eur(c)}</button>
+            ))}
+            <label className="flex min-h-11 items-center gap-1 rounded-full px-3 text-sm ring-1 ring-line">€
+              <input data-testid="tip-custom" inputMode="decimal" aria-label={t("Eigen bedrag", "Custom amount")} placeholder={t("Anders", "Other")} className="w-16 bg-transparent outline-none" value={customTip}
+                onChange={(e) => { const v = e.target.value.replace(",", "."); setCustomTip(e.target.value); const c = Math.round(Number(v) * 100); setTip(Number.isFinite(c) ? Math.min(2000, Math.max(0, c)) : 0); }} />
+            </label>
+          </div>
+          <p className="mt-1 text-[12px] text-muted">{t("Maximaal €20.", "Up to €20.")}</p>
         </Card>
         <TestModeCheckoutNote />
         <Card><b>{t("Betalen met Mollie", "Pay with Mollie")}</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} render={(v) => v === "Card" ? t("Kaart", "Card") : v} value={method} onChange={setMethod} /></div></Card>
-        <Button icon={<Lock size={16} aria-hidden />} onClick={pay} disabled={busy || belowMin || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS + SERVICE)} met ${method === "Card" ? "kaart" : method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS + SERVICE)} with ${method}`) : t("Log in om te betalen", "Sign in to pay")}</Button>
+        <Button icon={<Lock size={16} aria-hidden />} onClick={pay} disabled={busy || belowMin || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS + SERVICE + tip)} met ${method === "Card" ? "kaart" : method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS + SERVICE + tip)} with ${method}`) : t("Log in om te betalen", "Sign in to pay")}</Button>
         <p className="mt-3 text-center text-xs text-muted">{t("Door te betalen ga je akkoord met onze", "By paying you agree to our")} <Link className="underline" href="/terms">{t("Voorwaarden", "Terms")}</Link> {t("en", "and")} <Link className="underline" href="/privacy">{t("Privacybeleid", "Privacy policy")}</Link>. {t("Geannuleerde bestellingen worden volledig terugbetaald.", "Cancelled orders are refunded in full.")}</p>
       </main>
     </>

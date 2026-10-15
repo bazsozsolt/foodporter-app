@@ -61,13 +61,13 @@ export function Payments({ range, show }: { range: Range; show: "restaurants" | 
           {rs.length > 0 && <tr className="font-bold"><Td>Total</Td><Td>{tot(rs, "orders")}</Td><Td>{eur(tot(rs, "gross_cents"))}</Td><Td>{eur(tot(rs, "commission_cents"))}</Td><Td>{eur(tot(rs, "net_cents"))}</Td><Td>{eur(tot(rs, "paid_cents"))}</Td><Td>{eur(tot(rs, "owed_cents"))}</Td><Td>{""}</Td></tr>}
         </Table>
       </Panel>}
-      {show === "riders" && <Panel title={`Rider payouts · ${range.from} → ${range.to}`} actions={<Toolbar range={range} title="rider payouts" onCsv={() => downloadCsv(`rider_payouts_${range.from}_${range.to}.csv`, rd, ["rider", "status", "deliveries", "earned_cents", "paid_cents", "unpaid_cents"])} />}>
+      {show === "riders" && <Panel title={`Rider payouts · ${range.from} → ${range.to}`} actions={<Toolbar range={range} title="rider payouts" onCsv={() => downloadCsv(`rider_payouts_${range.from}_${range.to}.csv`, rd, ["rider", "status", "deliveries", "earned_cents", "tip_cents", "paid_cents", "unpaid_cents"])} />}>
         <p className="mb-2 text-xs text-muted">Riders are paid weekly for the previous week: choose “Last week”, then mark each rider paid after the bank transfer.</p>
-        <Table head={["Rider", "Status", "Deliveries", "Earned", "Paid", "Unpaid", ""]} empty={rd.length === 0}>
+        <Table head={["Rider", "Status", "Deliveries", "Earned", "of which tips", "Paid", "Unpaid", ""]} empty={rd.length === 0}>
           {rd.map((r) => (
             <tr key={String(r.rider_id)}>
               <Td>{String(r.rider)}</Td><Td><StatusBadge s={String(r.status)} /></Td><Td>{String(r.deliveries)}</Td>
-              <Td>{eur(Number(r.earned_cents))}</Td><Td>{eur(Number(r.paid_cents))}</Td><Td className="font-bold">{eur(Number(r.unpaid_cents))}</Td>
+              <Td>{eur(Number(r.earned_cents))}</Td><Td data-testid="payout-tips">{eur(Number(r.tip_cents ?? 0))}</Td><Td>{eur(Number(r.paid_cents))}</Td><Td className="font-bold">{eur(Number(r.unpaid_cents))}</Td>
               <Td>{Number(r.unpaid_cents) > 0 && <SmallBtn tone="ok" onClick={() => mark("rider", String(r.rider_id), String(r.rider), Number(r.unpaid_cents))}>Mark paid</SmallBtn>}</Td>
             </tr>
           ))}
