@@ -10,7 +10,7 @@ import { act } from "@/lib/act";
 import { Card, Empty, Header } from "@/components/ui";
 import { hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
-import { cancelReason, STATUS_LABEL, STATUS_LABEL_NL, STATUS_STEPS } from "@/lib/types";
+import { cancelReason, PICKUP_STEPS, STATUS_LABEL, STATUS_LABEL_NL, STATUS_STEPS } from "@/lib/types";
 import { RateOrder } from "@/components/RateOrder";
 import { ReorderButton } from "@/components/ReorderButton";
 import { mmss, useSecondsLeft } from "@/components/Countdown";
@@ -31,7 +31,7 @@ export function TrackingView({ id }: { id: string }) {
   const tr = useT();
   const SL = tr("nl", "en") === "nl" ? STATUS_LABEL_NL : STATUS_LABEL;
   const left = useSecondsLeft(o?.status === "accepted" ? o?.bid_window_closes_at : null);
-  const live = Boolean(o && ["assigned", "ready", "picked_up"].includes(o.status));
+  const live = Boolean(o && o.fulfilment !== "pickup" && ["assigned", "ready", "picked_up"].includes(o.status));
   const loc = useOrderLocation(o?.id ?? null, live, o?.rider_id ?? null, o?.assigned_at ?? null);
   const stopsBefore = useStopsBefore(live && mode === "supabase" ? o?.id ?? null : null, o?.status);
   const riderInfo = useRiderInfo(o);
@@ -52,7 +52,9 @@ export function TrackingView({ id }: { id: string }) {
   const mine = mode === "mock" || o.customer_id === profile?.id;
   const r = restaurants.find((x) => x.id === o.restaurant_id);
   const bid = riderInfo;
-  const idx = STATUS_STEPS.indexOf(o.status);
+  const pickup = o.fulfilment === "pickup";
+  const steps = pickup ? PICKUP_STEPS : STATUS_STEPS;
+  const idx = steps.indexOf(o.status);
   const etaAt = bid ? hhmm(new Date(new Date(bid.since).getTime() + bid.eta_minutes * 60000)) : null;
   const best = o.bids.length ? Math.min(...o.bids.map((b) => b.eta_minutes)) : null;
   const markers: MapMarker[] = [
@@ -71,7 +73,8 @@ export function TrackingView({ id }: { id: string }) {
             : o.status === "payment_failed" ? (<><AlertTriangle size={40} className="mx-auto text-danger" aria-hidden /><h2 className="mt-2 text-lg font-bold">{tr("Betaling mislukt of geannuleerd", "Payment failed or cancelled")}</h2>{mine && <Button onClick={payNow} disabled={paying}>{tx("Opnieuw proberen", "Try again")}</Button>}</>)
             : o.status === "cancelled" ? (<><Undo2 size={40} className="mx-auto text-muted" aria-hidden /><h2 className="mt-2 text-lg font-bold">{tr("Bestelling geannuleerd", "Order cancelled")}</h2><p className="text-sm text-muted">{cancelReason(o.cancel_reason)}.</p>
                 {o.paid_at ? <p data-testid="refund" className="mt-1 text-sm">{o.refund_status === "simulated" ? tx("Testbestelling: er is niets afgeschreven.", "Test order: nothing was charged.") : o.refund_status === "failed" ? tx("Ons team betaalt je binnenkort handmatig terug.", "Our team will refund you manually shortly.") : o.refund_cents ? tx(`Terugbetaling van ${eur(o.refund_cents)} ${o.refund_status === "refunded" ? "voltooid" : "onderweg"} (1–3 werkdagen voor iDEAL/kaart).`, `Refund of ${eur(o.refund_cents)} ${o.refund_status === "refunded" ? "completed" : "on its way"} (1–3 working days for iDEAL/card).`) : tx("Terugbetaling wordt verwerkt…", "Refund in progress…")}</p> : null}</>)
-            : o.status === "delivered" ? (<><CircleCheck size={48} className="mx-auto text-ok" aria-hidden /><h2 className="mt-2 text-lg font-bold">{tr("Bezorgd!", "Delivered!")}</h2><p className="text-sm text-muted">{tr("Eet smakelijk.", "Enjoy your meal.")}</p></>)
+            : o.status === "delivered" ? (<><CircleCheck size={48} className="mx-auto text-ok" aria-hidden /><h2 className="mt-2 text-lg font-bold">{pickup ? tr("Opgehaald!", "Collected!") : tr("Bezorgd!", "Delivered!")}</h2><p className="text-sm text-muted">{tr("Eet smakelijk.", "Enjoy your meal.")}</p></>)
+            : pickup ? (<div data-testid="pickup-hero"><div className="text-sm text-muted">{o.status === "ready" ? tr("Klaar om af te halen bij", "Ready to collect at") : idx < 1 ? tr("Wacht op het restaurant…", "Waiting for the restaurant…") : tr("Wordt bereid · afhalen bij", "Being prepared · collect at")}</div><div className="font-display text-3xl leading-tight text-brand">{r?.name}</div>{o.ready_at && o.status === "accepted" ? <div className="text-sm text-muted">{tr("klaar rond", "ready around")} {hhmm(new Date(o.ready_at))}</div> : null}</div>)
             : bid ? (<><div className="text-sm text-muted">{tr("Bezorgd over ongeveer", "Arriving in about")}</div><div className="font-display text-6xl leading-none text-brand">{bid.eta_minutes} min</div><div className="text-sm text-muted" data-testid="assigned-rider">{tr("rond", "by")} {etaAt} · rider {bid.rider_name}{bid.estimated ? tr(" · geschatte tijd", " · estimated time") : ""}</div>{stopsBefore ? <div data-testid="stops-before" className="mt-2 inline-block rounded-full bg-brand-soft px-3 py-1 text-[13px] font-semibold text-brand">{tr(`Je rider heeft nog ${stopsBefore} ${stopsBefore > 1 ? "stops" : "stop"} vóór jou`, `Your rider has ${stopsBefore} stop${stopsBefore > 1 ? "s" : ""} before you`)}</div> : null}</>)
             : o.status === "accepted" && left != null ? (<div data-testid="customer-auction"><div className="text-sm text-muted">{tx(`${o.bids.length} rider${o.bids.length === 1 ? "" : "s"} biedt · beste tijd tot nu toe`, `${o.bids.length} rider${o.bids.length === 1 ? "" : "s"} bidding · best ETA so far`)}</div><div className="font-display text-6xl leading-none text-brand">{best} min</div><div className="text-sm text-muted">{left > 0 ? tx(`Rider gekozen over ${mmss(left)}`, `Rider chosen in ${mmss(left)}`) : tx("Je rider wordt gekozen…", "Choosing your rider…")}</div></div>)
             : (<><div className="text-sm text-muted">{idx < 1 ? tx("Wacht op het restaurant…", "Waiting for the restaurant…") : tx("Wacht op een bod van een rider…", "Waiting for a rider bid…")}</div><Hourglass size={36} className="mx-auto mt-2 text-brand" aria-hidden /></>)}
@@ -93,11 +96,12 @@ export function TrackingView({ id }: { id: string }) {
         )}
         {o.status !== "cancelled" && <Card>
           <b>{r?.name}</b>
+          {pickup && <p data-testid="pickup-info" className="mt-1 rounded-xl bg-brand-soft p-2 text-[13px] text-brand"><b>{tx("Afhalen", "Pickup")}</b> · {r?.address ?? ""} · {o.status === "ready" ? tx("Je bestelling staat klaar. Noem je bestelnummer aan de balie.", "Your order is ready. Give your order number at the counter.") : tx("We sturen een bericht zodra je bestelling klaarstaat.", "We'll notify you when your order is ready.")}</p>}
           <ul className="mt-2">
-            {STATUS_STEPS.map((s, j) => (
+            {steps.map((s, j) => (
               <li key={s} className={`relative py-2 pl-7 ${j <= idx ? "font-semibold text-ink" : "text-muted"}`}>
                 <span className={`absolute left-1.5 top-3 h-3 w-3 rounded-full ${j <= idx ? "bg-ok" : j === idx + 1 ? "bg-brand ring-4 ring-brand/20" : "bg-[#ddd]"}`} />
-                {SL[s]}
+                {pickup && s === "ready" ? tx("Klaar om af te halen", "Ready for collection") : pickup && s === "delivered" ? tx("Opgehaald", "Collected") : SL[s]}
                 {s === "accepted" && o.prep_minutes ? ` · ${o.prep_minutes} ${tx("min bereiding", "min prep")}${o.ready_at && !["ready", "picked_up", "delivered"].includes(o.status) ? ` (${tx("klaar", "ready")} ~${hhmm(new Date(o.ready_at))})` : ""}` : ""}
                 {s === "assigned" && bid ? ` · ${bid.rider_name}, ETA ${bid.eta_minutes} min` : ""}
               </li>

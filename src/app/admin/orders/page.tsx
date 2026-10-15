@@ -51,7 +51,7 @@ function OrderDetail({ id }: { id: string }) {
       <ErrorNote error={q.error} />
       {o && (
         <div className="grid gap-4 md:grid-cols-2">
-          <Panel title={<>Order #{String(o.id)} <StatusBadge s={String(o.status)} /></>} actions={<>
+          <Panel title={<>Order #{String(o.id)} <StatusBadge s={String(o.status)} />{o.fulfilment === "pickup" ? <span data-testid="admin-pickup" className="ml-2 rounded bg-brand-soft px-1.5 text-[11px] font-bold text-brand">PICKUP</span> : null}</>} actions={<>
             {!["delivered", "cancelled"].includes(String(o.status)) && <SmallBtn tone="danger" onClick={() => cancelOrder(String(o.id), Boolean(o.paid_at))}>Cancel{o.paid_at ? " & refund" : ""}</SmallBtn>}
             {o.refund_status === "failed" && <SmallBtn tone="brand" onClick={() => retryRefund(String(o.id))}>Retry refund</SmallBtn>}
             <SmallBtn onClick={() => window.print()}>Print</SmallBtn></>}>

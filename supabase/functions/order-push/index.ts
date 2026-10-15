@@ -45,7 +45,7 @@ const CUSTOMER: Record<string, string> = {
 };
 
 async function events(orderId: number, hint?: string): Promise<Push[]> {
-  const { data: o } = await db.from("orders").select("id, status, paid_at, rider_id, restaurant_id, customer_id, is_test, renotified_at, restaurants(name)").eq("id", orderId).maybeSingle();
+  const { data: o } = await db.from("orders").select("id, status, paid_at, rider_id, restaurant_id, customer_id, is_test, renotified_at, fulfilment, restaurants(name)").eq("id", orderId).maybeSingle();
   if (!o) return [];
   const rname = (o.restaurants as unknown as { name?: string } | null)?.name ?? "het restaurant";
   const out: Push[] = [];
@@ -54,7 +54,8 @@ async function events(orderId: number, hint?: string): Promise<Push[]> {
     const { data: staff } = await db.from("profiles").select("id").eq("restaurant_id", o.restaurant_id).in("role", ["restaurant", "admin"]);
     out.push({ key: `rest:${o.id}`, to: (staff ?? []).map((s) => s.id), title: `Beep-beep! Nieuwe bestelling #${o.id}`, body: "Accepteer de bestelling en kies een bereidingstijd.", url: "/restaurant/", tag: `fp-rest-${o.id}`, ttl: 600, urgency: "high" });
   }
-  if (o.status === "accepted" && !o.rider_id) {
+  const pickup = o.fulfilment === "pickup";
+  if (o.status === "accepted" && !o.rider_id && !pickup) {
     const { data: st } = await db.from("settings").select("zone_radius_km, zone_center_lat, zone_center_lng").limit(1).single();
     const { data: riders } = await db.from("profiles").select("id").eq("role", "rider").eq("online", true).eq("status", "active").eq("is_test", o.is_test);
     const ids = (riders ?? []).map((r) => r.id);
@@ -66,7 +67,10 @@ async function events(orderId: number, hint?: string): Promise<Push[]> {
     const inZone = ids.filter((id) => { const l = last.get(id); return !l || !st || km(l.lat, l.lng, st.zone_center_lat, st.zone_center_lng) <= st.zone_radius_km; });
     out.push({ key: `bid:${o.id}:${o.renotified_at ?? "0"}`, to: inZone, title: "Beep-beep! Nieuwe bestelling om op te bieden", body: `#${o.id} bij ${rname}: bied nu je bezorgtijd.`, url: "/rider/", tag: "fp-bid", ttl: 180, urgency: "high" });
   }
-  if (CUSTOMER[o.status]) {
+  if (pickup && (o.status === "ready" || o.status === "delivered")) {
+    // v17 P5: pickup-ready notification; "delivered" means collected
+    out.push({ key: `cust:${o.id}:${o.status}`, to: [o.customer_id], title: `Food Porter · bestelling #${o.id}`, body: o.status === "ready" ? `Je bestelling staat klaar bij ${rname}. Haal hem nu op! 🛍️` : "Opgehaald. Eet smakelijk 😋", url: `/order/?id=${o.id}`, tag: `fp-order-${o.id}`, ttl: 3600, urgency: "high" });
+  } else if (CUSTOMER[o.status] && !(pickup && o.status === "assigned")) {
     out.push({ key: `cust:${o.id}:${o.status}`, to: [o.customer_id], title: `Food Porter · bestelling #${o.id}`, body: CUSTOMER[o.status], url: `/order/?id=${o.id}`, tag: `fp-order-${o.id}`, ttl: 3600, urgency: o.status === "picked_up" ? "high" : "normal" });
   }
   return out;

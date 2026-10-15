@@ -60,6 +60,7 @@ function KeyMetric({ range }: { range: Range }) {
         <Kpi label="Key metric" value={<span className={tone(d?.pct)} data-testid="key-metric-pct">{pct(d?.pct)}</span>} hint={`${String(d?.hits ?? 0)} of ${String(d?.paid ?? 0)} paid orders`} />
         <Kpi label="Bid within 3 min" value={pct(d?.pct_fast_bid)} />
         <Kpi label="On time (delivered)" value={pct(d?.pct_on_time)} />
+        <Kpi label="Pickup orders (excluded)" value={String(d?.pickup_orders ?? 0)} hint="Pickup has no rider, so it is left out of the key metric" />
         <Kpi label="Paid but never got a bid" value={String(d?.no_bid ?? "…")} hint={`${String(d?.cancelled_after_payment ?? 0)} cancelled after payment`} />
       </div>
       <h3 className="mb-2 text-sm font-bold">Per day</h3>

@@ -7,7 +7,7 @@ echo "=== support"; node support.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1
 echo "=== chat"; node chat.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1
 echo "=== chat-admin"; node chat-admin.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1
 echo "=== photos"; node photos.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1
-for t in compliance tips hours proof; do echo "=== $t"; node $t.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1; [ "${PIPESTATUS[0]}" = 0 ] || rc=1; done
+for t in compliance tips hours proof pickup; do echo "=== $t"; node $t.e2e.mjs 2>&1 | grep -v "Node.js 20" || rc=1; [ "${PIPESTATUS[0]}" = 0 ] || rc=1; done
 echo "=== manual-assign"; python3 manual-assign.ui.py "${FP_BASE:-https://bazsozsolt.github.io/foodporter-app}" || rc=1
 echo "=== i18n"; node ../i18n/check-parity.mjs || rc=1
 echo "=== reports"; node reports.check.mjs 2>&1 | grep -v "Node.js 20" || rc=1

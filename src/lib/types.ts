@@ -12,7 +12,7 @@ export interface OrderLine { item_id: string; name: string; qty: number; price_c
 export interface Bid { id: string; rider_id: string; rider_name: string; eta_minutes: number; accepted: boolean; created_at: string }
 export interface Order {
   id: string; restaurant_id: string; customer_id: string; status: OrderStatus;
-  lines: OrderLine[]; subtotal_cents: number; delivery_fee_cents: number; tip_cents?: number; leave_at_door?: boolean; delivery_photo_path?: string | null;
+  lines: OrderLine[]; subtotal_cents: number; delivery_fee_cents: number; tip_cents?: number; leave_at_door?: boolean; fulfilment?: "delivery" | "pickup"; delivery_photo_path?: string | null;
   address: string; phone: string; prep_minutes: number | null; ready_at: string | null;
   group_order_id?: string | null;
   bids: Bid[]; created_at: string; delivered_at: string | null; accepted_at?: string | null;
@@ -24,6 +24,8 @@ export interface Order {
 export interface Earning { id: string; rider_id: string; order_id: string; restaurant_name: string; amount_cents: number; tip_cents?: number; earned_at: string; payout_id: string | null }
 
 export const STATUS_STEPS: OrderStatus[] = ["placed", "accepted", "assigned", "ready", "picked_up", "delivered"];
+/** Pickup (afhalen): no rider steps; "delivered" = collected. */
+export const PICKUP_STEPS: OrderStatus[] = ["placed", "accepted", "ready", "delivered"];
 export const STATUS_LABEL: Record<OrderStatus, string> = {
   awaiting_payment: "Waiting for payment", payment_failed: "Payment failed", placed: "Order placed & paid", accepted: "Restaurant accepted", assigned: "Rider assigned",
   ready: "Ready for pickup", picked_up: "On the way", delivered: "Delivered", cancelled: "Cancelled",

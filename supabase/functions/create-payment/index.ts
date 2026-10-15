@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
 
   const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: order } = await admin.from("orders")
-    .select("id, customer_id, restaurant_id, status, address, delivery_fee_cents, mollie_payment_id, order_items(qty, menu_item_id)")
+    .select("id, customer_id, restaurant_id, status, address, delivery_fee_cents, mollie_payment_id, fulfilment, order_items(qty, menu_item_id)")
     .eq("id", orderId).maybeSingle();
   if (!order || order.customer_id !== user.id) return json({ error: "order not found" }, 404);
   if (order.status !== "awaiting_payment" && order.status !== "payment_failed") return json({ error: "order already paid" }, 409);
@@ -80,13 +80,18 @@ Deno.serve(async (req) => {
 
   // Delivery zone: geocode the address server-side (PDOK Locatieserver, free NL geocoder) and check the radius.
   const { data: s } = await admin.from("settings").select("zone_radius_km, zone_center_lat, zone_center_lng, delivery_fee_cents, service_fee_cents").maybeSingle();
-  const fee = Math.min(500, Math.max(0, Number(s?.delivery_fee_cents ?? order.delivery_fee_cents)));
-  const geo = await geocode(String(order.address ?? ""));
-  if (!geo) return json({ error: "We couldn't find that address. Please pick it from the suggestions (street + number, Tilburg)." }, 422);
-  const radius = Number(s?.zone_radius_km ?? 3);
-  const dist = distanceKm(Number(s?.zone_center_lat ?? 51.5576), Number(s?.zone_center_lng ?? 5.0913), geo.lat, geo.lng);
-  await admin.from("orders").update({ lat: geo.lat, lng: geo.lng, distance_km: Math.round(dist * 100) / 100 }).eq("id", order.id);
-  if (dist > radius) return json({ error: `Sorry, ${geo.label} is ${dist.toFixed(1)} km from the centre. During the pilot we deliver within ${radius} km of central Tilburg.` }, 422);
+  const pickup = order.fulfilment === "pickup";
+  // Pickup (afhalen, v17 P5): no delivery fee and no address/zone check
+  const fee = pickup ? 0 : Math.min(500, Math.max(0, Number(s?.delivery_fee_cents ?? order.delivery_fee_cents)));
+  if (pickup && tip > 0) return json({ error: "Pickup orders have no rider to tip.", code: "tip" }, 422);
+  if (!pickup) {
+    const geo = await geocode(String(order.address ?? ""));
+    if (!geo) return json({ error: "We couldn't find that address. Please pick it from the suggestions (street + number, Tilburg)." }, 422);
+    const radius = Number(s?.zone_radius_km ?? 3);
+    const dist = distanceKm(Number(s?.zone_center_lat ?? 51.5576), Number(s?.zone_center_lng ?? 5.0913), geo.lat, geo.lng);
+    await admin.from("orders").update({ lat: geo.lat, lng: geo.lng, distance_km: Math.round(dist * 100) / 100 }).eq("id", order.id);
+    if (dist > radius) return json({ error: `Sorry, ${geo.label} is ${dist.toFixed(1)} km from the centre. During the pilot we deliver within ${radius} km of central Tilburg.` }, 422);
+  }
   const service = Math.min(300, Math.max(0, Number(s?.service_fee_cents ?? 0)));
   const total = subtotal + fee + service + tip;
   if (total < 100 || total > 50000) return json({ error: "order total out of range" }, 400);

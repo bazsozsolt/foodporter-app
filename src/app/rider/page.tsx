@@ -72,7 +72,7 @@ export default function RiderPage() {
   const t = useT();
   const SL = t("nl", "en") === "nl" ? STATUS_LABEL_NL : STATUS_LABEL;
   const { orders, profile, mode, restaurants, earnings } = useStore();
-  const open = orders.filter((o) => o.status === "accepted" && !acceptedBid(o));
+  const open = orders.filter((o) => o.status === "accepted" && o.fulfilment !== "pickup" && !acceptedBid(o));
   useOrderAlerts(open.map((o) => `${o.id}:${o.renotified_at ?? ""}`), tx("Beep-beep! Nieuwe bestelling om op te bieden", "Beep-beep! New order to bid on"), riderBody, "/rider/");
   const [name, setName] = useState<string | null>(null);
   const job = mode === "supabase" ? orders.find((o) => ["assigned", "ready", "picked_up"].includes(o.status) && o.rider_id === profile?.id) : undefined;

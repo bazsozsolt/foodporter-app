@@ -53,20 +53,20 @@ function OrderCard({ o }: { o: Order }) {
             <div key={n}><b className="text-ink">{n}:</b> {ls.join(", ")}</div>))}
         </div>
       ) : <ul className="my-2 space-y-0.5 text-[15px]">{o.lines.map((l, i) => <li key={i}><b>{l.qty}×</b> {l.name}</li>)}</ul>}
-      <div className="text-[13px] text-muted">{t("Bezorgen op", "Deliver to")} {o.address}</div>
+      {o.fulfilment === "pickup" ? <div data-testid="pickup-badge" className="inline-flex items-center gap-1 rounded bg-brand-soft px-2 py-0.5 text-[12px] font-bold text-brand">{t("AFHALEN · klant haalt zelf op", "PICKUP · customer collects")}</div> : <div className="text-[13px] text-muted">{t("Bezorgen op", "Deliver to")} {o.address}</div>}
       <div className="mt-2 flex flex-wrap gap-2"><ItemUnavailable o={o} /><HelpButton role="restaurant" orderId={Number(o.id)} label={t("Probleem melden", "Report a problem")} /></div>
       {o.status !== "placed" && <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="restaurant" side={profile?.role === "admin" && profile.restaurant_id !== o.restaurant_id ? "admin" : "restaurant"} order={o} /></div>}
       {o.status === "placed" ? (
         <>
           <p className="mb-2 mt-3 font-bold">{t("Bereidingstijd instellen", "Set preparation time")}</p>
           <PrepPicker value={prep} onChange={setPrep} />
-          <Button variant="ok" onClick={() => act(actions.acceptOrder(o.id, prep), t("Geaccepteerd · bestelling gedeeld met riders", "Accepted · order published to riders"))}>{t("Bestelling accepteren", "Accept order")}</Button>
+          <Button variant="ok" onClick={() => act(actions.acceptOrder(o.id, prep), o.fulfilment === "pickup" ? t("Geaccepteerd · klant ziet de afhaaltijd", "Accepted · customer sees the pickup time") : t("Geaccepteerd · bestelling gedeeld met riders", "Accepted · order published to riders"))}>{t("Bestelling accepteren", "Accept order")}</Button>
           <Countdown from={o.paid_at ?? o.created_at} />
           <Button variant="ghost" onClick={() => { if (confirm(tx(`Bestelling #${o.id} weigeren? De klant krijgt het volledige bedrag terug.`, `Reject order #${o.id}? The customer is refunded in full.`))) void act(actions.rejectOrder(o.id), t("Bestelling geweigerd · klant terugbetaald", "Order rejected · customer refunded")); }}>{t("Weigeren", "Reject")}</Button>
         </>
       ) : (
         <>
-          <p className="mt-3 text-sm">{tx("Bereidingstijd", "Prep time")} <b>{o.prep_minutes} min</b>{o.ready_at ? <> · {tx("klaar", "ready")} ~<b>{hhmm(new Date(o.ready_at))}</b></> : null} · {bid ? <span data-testid="assigned-rider">rider <b>{bid.rider_name}</b> {tx("komt eraan", "coming")} · ETA {bid.eta_minutes} min{bid.estimated ? tx(" (geschat)", " (estimated)") : ""}</span> : left != null ? tx(`${o.bids.length} bod/biedingen · rider gekozen over ${mmss(left)}`, `${o.bids.length} bid(s) · rider chosen in ${mmss(left)}`) : tx("wacht op een bod van een rider", "waiting for a rider bid")}</p>
+          <p className="mt-3 text-sm">{tx("Bereidingstijd", "Prep time")} <b>{o.prep_minutes} min</b>{o.ready_at ? <> · {tx("klaar", "ready")} ~<b>{hhmm(new Date(o.ready_at))}</b></> : null} · {o.fulfilment === "pickup" ? <span>{tx("klant haalt op", "customer collects")}</span> : bid ? <span data-testid="assigned-rider">rider <b>{bid.rider_name}</b> {tx("komt eraan", "coming")} · ETA {bid.eta_minutes} min{bid.estimated ? tx(" (geschat)", " (estimated)") : ""}</span> : left != null ? tx(`${o.bids.length} bod/biedingen · rider gekozen over ${mmss(left)}`, `${o.bids.length} bid(s) · rider chosen in ${mmss(left)}`) : tx("wacht op een bod van een rider", "waiting for a rider bid")}</p>
           {bid && r?.lat && <div className="mt-2"><LiveMap height={180} markers={[{ id: "r", lat: r.lat, lng: r.lng!, kind: "restaurant", label: r.name }, ...(loc ? [{ id: "rider", lat: loc.lat, lng: loc.lng, kind: "rider" as const, label: `Rider ${bid.rider_name}` }] : [])]} /></div>}
           <div className="mt-2 flex items-center gap-2">
             <span className="text-[13px] text-muted">{tx("Loop je uit?", "Running late?")}</span>
@@ -76,7 +76,9 @@ function OrderCard({ o }: { o: Order }) {
                 onClick={() => act(actions.extendPrep(o.id, m), tx(`Bereiding +${m} min · rider en klant bijgewerkt`, `Prep +${m} min · rider and customer updated`))}>+{m} min</button>
             ))}
           </div>
-          {o.status !== "ready" && <Button disabled={!bid} onClick={() => act(actions.markReady(o.id), t("Rider geïnformeerd: eten is klaar", "Rider notified: food is ready"))}>{t("Klaar voor ophalen", "Mark ready for pickup")}</Button>}
+          {o.status !== "ready" && o.fulfilment !== "pickup" && <Button disabled={!bid} onClick={() => act(actions.markReady(o.id), t("Rider geïnformeerd: eten is klaar", "Rider notified: food is ready"))}>{t("Klaar voor ophalen", "Mark ready for pickup")}</Button>}
+          {o.status !== "ready" && o.fulfilment === "pickup" && <Button data-testid="pickup-ready" onClick={() => act(actions.markReady(o.id), t("Klant geïnformeerd: klaar om af te halen", "Customer notified: ready to collect"))}>{t("Klaar om af te halen", "Ready for collection")}</Button>}
+          {o.status === "ready" && o.fulfilment === "pickup" && <Button variant="ok" data-testid="pickup-collected" onClick={() => act(actions.collect(o.id), t("Opgehaald door de klant", "Collected by the customer"))}>{t("Opgehaald door klant", "Collected by customer")}</Button>}
         </>
       )}
     </Card>
