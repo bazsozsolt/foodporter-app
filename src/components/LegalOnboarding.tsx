@@ -49,7 +49,11 @@ export function useLegalStatus() {
   useEffect(() => {
     const sb = getSupabase();
     if (!sb) return;
-    void sb.rpc("my_legal_status").then(({ data }) => setSt((data as LegalStatus) ?? { ready: true, missing: [] }));
+    void sb.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) return; // signed out: RoleGate shows the login prompt
+      const { data } = await sb.rpc("my_legal_status");
+      setSt((data as LegalStatus) ?? { ready: true, missing: [] });
+    });
   }, []);
   return { st, reload };
 }
