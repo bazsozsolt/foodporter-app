@@ -94,7 +94,8 @@ def crawl(ctx, role, url, lang, view):
         try:
             r = pg.goto(full); pg.wait_for_timeout(400)
             if (r and r.status >= 400 and "nope" not in h) or pg.locator("[data-testid=not-found]").count(): F("dead-link", where, h)
-        except Exception as e: F("dead-link", where, f"{h} {str(e)[:60]}")
+        except Exception as e:
+            if "Download is starting" not in str(e): F("dead-link", where, f"{h} {str(e)[:60]}")  # PDFs download instead of rendering: fine
     for e in sorted(set(errs)):
         if re.search(r"push|Notification|serviceWorker|geolocation|ERR_ABORTED|WebSocket|favicon|Failed to load resource: the server responded with a status of 4", e, re.I): continue
         F("console", where, e)

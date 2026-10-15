@@ -83,10 +83,10 @@ export default function AdminPayroll() {
     <Panel title={`Call-in roster (${d.shifts.length})`}>
       <p className="mb-2 text-xs text-muted">Announce call-ins at least 4 days ahead (7:628a BW). Later call-ins are flagged and the rider may decline. Each call-in pays at least 3 h; cancelling within 4 days pays the scheduled hours.</p>
       <div className="mb-2 flex flex-wrap items-end gap-2">
-        <select data-testid="call-rider" className="rounded border border-line px-2 py-1 text-sm" value={cr} onChange={(e) => setCr(e.target.value)}><option value="">Rider…</option>{d.rows.map((r) => <option key={String(r.rider_id)} value={String(r.rider_id)}>{String(r.name || r.email)}</option>)}</select>
-        <input data-testid="call-date" type="date" className="rounded border border-line px-2 py-1 text-sm" value={cd} onChange={(e) => setCd(e.target.value)} />
-        <input data-testid="call-from" type="time" className="rounded border border-line px-2 py-1 text-sm" value={cf} onChange={(e) => setCf(e.target.value)} />
-        <input data-testid="call-to" type="time" className="rounded border border-line px-2 py-1 text-sm" value={ct} onChange={(e) => setCt(e.target.value)} />
+        <select data-testid="call-rider" aria-label="Rider" className="rounded border border-line px-2 py-1 text-sm" value={cr} onChange={(e) => setCr(e.target.value)}><option value="">Rider…</option>{d.rows.map((r) => <option key={String(r.rider_id)} value={String(r.rider_id)}>{String(r.name || r.email)}</option>)}</select>
+        <input data-testid="call-date" aria-label="Call-in date" type="date" className="rounded border border-line px-2 py-1 text-sm" value={cd} onChange={(e) => setCd(e.target.value)} />
+        <input data-testid="call-from" aria-label="Call-in start" type="time" className="rounded border border-line px-2 py-1 text-sm" value={cf} onChange={(e) => setCf(e.target.value)} />
+        <input data-testid="call-to" aria-label="Call-in end" type="time" className="rounded border border-line px-2 py-1 text-sm" value={ct} onChange={(e) => setCt(e.target.value)} />
         <SmallBtn tone="brand" onClick={addCall}>Add call-in</SmallBtn></div>
       <Table head={["Rider", "Start", "End", "Notice", "Status", ""]} empty={d.shifts.length === 0}>
         {d.shifts.map((c) => { const short = new Date(String(c.created_at)).getTime() > new Date(String(c.starts_at)).getTime() - 4 * 864e5;
