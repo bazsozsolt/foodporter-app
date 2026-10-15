@@ -1,0 +1,133 @@
+<div class='legal-doc'><h1>Verwerkingsregister</h1>
+<blockquote>
+<p><strong>Concept – laat beoordelen door een Nederlandse jurist voor gebruik.</strong> Dit is geen juridisch advies. Placeholders: {{BEDRIJFSNAAM}}, {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / <em>Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.</em></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verwerking</th>
+<th>Betrokkenen</th>
+<th>Categorieën</th>
+<th>Doel</th>
+<th>Grondslag</th>
+<th>Ontvangers</th>
+<th>Termijn</th>
+<th>Beveiliging</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Klantaccount en bestellingen</td>
+<td>klanten</td>
+<td>NAW, contact, bestellingen</td>
+<td>levering</td>
+<td>overeenkomst</td>
+<td>restaurant, bezorger, Supabase</td>
+<td>7 jr (fiscaal)</td>
+<td>RLS, TLS</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Betalingen</td>
+<td>klanten</td>
+<td>betaalstatus, Mollie-ID</td>
+<td>betaling, terugbetaling</td>
+<td>overeenkomst, wettelijk</td>
+<td>Mollie</td>
+<td>7 jr</td>
+<td>geen kaartdata opgeslagen</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Bezorgeronboarding</td>
+<td>bezorgers</td>
+<td>ID-controle, geboortedatum, verblijfsrecht, KvK</td>
+<td>identificatieplicht, leeftijd</td>
+<td>wettelijk, overeenkomst</td>
+<td>admin</td>
+<td>relatie + 5 jr</td>
+<td>aparte private opslag</td>
+</tr>
+<tr>
+<td>4</td>
+<td>GPS tijdens online-zijn</td>
+<td>bezorgers</td>
+<td>locatie</td>
+<td>zone-toewijzing, tracking, ETA, veiligheid</td>
+<td>overeenkomst, GB (DPIA)</td>
+<td>admin; klant en restaurant alleen tijdens eigen bezorging</td>
+<td>7 dagen</td>
+<td>RLS</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Afleverfoto</td>
+<td>bezorger, klant(adres)</td>
+<td>foto deur</td>
+<td>bewijs</td>
+<td>overeenkomst</td>
+<td>klant, admin</td>
+<td>30 dagen</td>
+<td>private bucket, signed URL</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Support en chat</td>
+<td>iedereen</td>
+<td>berichten, foto's</td>
+<td>klachtafhandeling</td>
+<td>overeenkomst</td>
+<td>admin</td>
+<td>2 jr</td>
+<td>RLS</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Contractacceptatie</td>
+<td>bezorgers, restaurants</td>
+<td>versie, tijd, IP, user-agent</td>
+<td>bewijs akkoord</td>
+<td>GB</td>
+<td>admin</td>
+<td>relatie + 5 jr</td>
+<td>append-only log</td>
+</tr>
+<tr>
+<td>8</td>
+<td>DAC7</td>
+<td>restaurants, (zzp-)bezorgers</td>
+<td>NAW, TIN, IBAN, omzet</td>
+<td>rapportage</td>
+<td>wettelijk</td>
+<td>Belastingdienst</td>
+<td>10 jr</td>
+<td>admin-only</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Push en SMS</td>
+<td>klanten, bezorgers</td>
+<td>push-endpoint, telefoon</td>
+<td>meldingen</td>
+<td>toestemming / overeenkomst</td>
+<td>FCM/APNs/autopush, SMS-provider</td>
+<td>tot afmelding</td>
+<td>service-role only</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Accountstatus en deactivatie</td>
+<td>bezorgers, restaurants</td>
+<td>reden, besluit</td>
+<td>menselijk besluit, bezwaar</td>
+<td>GB</td>
+<td>admin</td>
+<td>relatie + 2 jr</td>
+<td>append-only</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>English summary.</strong> An Art. 30 GDPR record of processing for 10 processing activities (accounts, payments, onboarding, GPS, photo proof, support, contract e-sign, DAC7, push/SMS, account status), with legal basis, recipients, retention and security per activity.</p><p class='meta'>processing_register · versie 0.1 · Concept – laat beoordelen door een Nederlandse jurist voor gebruik.</p></div>
