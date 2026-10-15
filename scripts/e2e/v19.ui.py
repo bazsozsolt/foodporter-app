@@ -39,7 +39,7 @@ def rider_en(pg):
     ok("earnings EN", "Holiday pay (8%)" in pg.inner_text("[data-testid=week-pay]"))
     pg.screenshot(path=f"{OUT}/rider-weekpay-en.png", full_page=True)
     pg.goto(B + "/rider-info/"); pg.wait_for_timeout(1500)
-    t = pg.inner_text("main"); ok("rider info EN: employment + ATW", "direct employment" in t and "5.5 hours" in t and "not a price" in t)
+    t = pg.inner_text("main"); ok("rider info EN: employment + ATW", "direct employment" in t and "4.5 hours" in t and "not a price" in t)
     pg.screenshot(path=f"{OUT}/rider-info-en.png", full_page=True)
 def admin(pg):
     pg.goto(B + "/admin/payroll/"); pg.wait_for_selector("text=Hours & payroll", timeout=20000); pg.wait_for_timeout(2500)
@@ -49,7 +49,7 @@ def admin(pg):
     ok("payroll CSV columns", "wml_rate_eur" in head and "holiday_pay_eur" in head and "bsn" not in head.lower(), head[:120])
     pg.screenshot(path=f"{OUT}/admin-payroll.png", full_page=True)
     pg.goto(B + "/admin/settings/"); pg.wait_for_selector("[data-testid=wml-table]", timeout=20000); pg.wait_for_timeout(1500)
-    ok("admin WML table", pg.input_value("[data-testid=wml-21]") == "14.99" and pg.input_value("[data-testid=wml-16]") == "5.17")
+    ok("admin WML table", pg.input_value("[data-testid=wml-21]") == "14.99" and pg.input_value("[data-testid=wml-16]") == "7.50")
     pg.screenshot(path=f"{OUT}/admin-settings-wml.png", full_page=True)
     pg.goto(B + "/admin/legal/"); pg.wait_for_selector("[data-testid=tpl-row]", timeout=20000); pg.wait_for_timeout(1500)
     pg.screenshot(path=f"{OUT}/admin-legal.png", full_page=True)

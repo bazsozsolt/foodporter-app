@@ -11,6 +11,7 @@ for t in compliance tips hours proof pickup promo cross legal employment v20; do
 echo "=== manual-assign"; python3 manual-assign.ui.py "${FP_BASE:-https://bazsozsolt.github.io/foodporter-app}" || rc=1
 echo "=== legal-ui"; python3 legal.ui.py "${FP_BASE:-https://bazsozsolt.github.io/foodporter-app}" || rc=1
 echo "=== v19-ui"; python3 v19.ui.py "${FP_BASE:-https://bazsozsolt.github.io/foodporter-app}" || rc=1
+echo "=== v20-ui"; python3 v20.ui.py "${FP_BASE:-https://bazsozsolt.github.io/foodporter-app}" || rc=1
 echo "=== i18n"; node ../i18n/check-parity.mjs || rc=1
 echo "=== reports"; node reports.check.mjs 2>&1 | grep -v "Node.js 20" || rc=1
 echo "=== crawler (click-everything, quick; needs FP_BASE or local server)"; ./crawl-parallel.sh "${FP_BASE:-https://bazsozsolt.github.io/foodporter-app}" --quick || rc=1
