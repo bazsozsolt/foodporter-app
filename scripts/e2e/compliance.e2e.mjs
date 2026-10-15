@@ -3,11 +3,11 @@ import { ADDRESS, client, login, ok, RID, SB_URL, summary } from "./common.mjs";
 const anon = client();
 const admin = await login("ADMIN"), staff = await login("STAFF"), cust = await login("SIMC1"), rider = await login("SIMR3");
 const err = (r) => r.error?.message ?? null;
-const item = (await admin.sb.from("menu_items").select("id, allergens").eq("restaurant_id", RID).limit(1).single()).data;
+const item = (await admin.sb.from("menu_items").select("id, allergens, allergens_test").eq("restaurant_id", RID).limit(1).single()).data;
 const foreign = (await admin.sb.from("menu_items").select("id, allergens").neq("restaurant_id", RID).limit(1).single()).data;
 // --- allergens
-const a1 = await staff.sb.from("menu_items").update({ allergens: ["gluten", "milk"] }).eq("id", item.id).select("allergens, allergens_test");
-ok("restaurant sets allergens on its own dish", !err(a1) && a1.data?.[0]?.allergens?.join() === "gluten,milk" && a1.data[0].allergens_test === false, err(a1));
+const a1 = await staff.sb.from("menu_items").update({ allergens: ["gluten", "milk", "sesame"] }).eq("id", item.id).select("allergens, allergens_test");
+ok("restaurant sets allergens on its own dish", !err(a1) && a1.data?.[0]?.allergens?.join() === "gluten,milk,sesame" && a1.data[0].allergens_test === false, err(a1));
 ok("unknown allergen code is rejected", !!err(await staff.sb.from("menu_items").update({ allergens: ["chocolate"] }).eq("id", item.id)));
 const f = await staff.sb.from("menu_items").update({ allergens: ["fish"] }).eq("id", foreign.id).select("id");
 ok("restaurant cannot edit another restaurant's allergens", !!err(f) || (f.data ?? []).length === 0);
@@ -15,7 +15,7 @@ const c = await cust.sb.from("menu_items").update({ allergens: [] }).eq("id", it
 ok("customer cannot edit allergens", !!err(c) || (c.data ?? []).length === 0);
 const pub = await anon.from("menu_items").select("allergens").eq("id", item.id).single();
 ok("anyone can read allergens before ordering", pub.data?.allergens?.includes("gluten"), err(pub));
-await admin.sb.from("menu_items").update({ allergens: item.allergens }).eq("id", item.id);
+await admin.sb.from("menu_items").update({ allergens: item.allergens, allergens_test: item.allergens_test }).eq("id", item.id);
 // --- human review of suspensions
 const before = (await admin.sb.from("profiles").select("status, status_reason").eq("id", rider.id).single()).data;
 ok("suspension without a reason is refused", !!err(await admin.sb.from("profiles").update({ status: "suspended", status_reason: null }).eq("id", rider.id)));
