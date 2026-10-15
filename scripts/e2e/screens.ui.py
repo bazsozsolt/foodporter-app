@@ -6,10 +6,10 @@ B, P = sys.argv[1], sys.argv[2]; OUT = "/workspace/foodporter/screens"
 NODE = lambda js: subprocess.run(["node","--input-type=module","-e","import * as m from '/workspace/foodporter-app/scripts/e2e/common.mjs';"+js+";process.exit(0)"],capture_output=True,text=True,cwd="/workspace/foodporter-app/scripts/e2e").stdout.strip().split("\n")[-1]
 RID = "187f751c-bebb-4a34-9d4b-9b1a9e8851db"
 oid = NODE("const a=await m.login('ADMIN'), c=await m.login('SIMC1'); const {data}=await a.sb.from('orders').select('id').eq('customer_id',c.id).eq('status','delivered').order('id',{ascending:false}).limit(1).single(); console.log(data.id)")
-PLAN = {"customer": ("SIMC1", [("home","/"),("menu",f"/r/?id={RID}"),("cart","/cart/"),("checkout","/checkout/"),("orders","/my-orders/"),("tracking",f"/order/?id={oid}"),("support","/support/"),("group","/group/")]),
+PLAN = {"customer": ("SIMC1", [("home","/"),("menu",f"/r/?id={RID}"),("cart","/cart/"),("checkout","/checkout/"),("orders","/my-orders/"),("tracking",f"/order/?id={oid}"),("support","/support/"),("group","/group/"),("login","/login/"),("welcome","/welcome/")]),
         "rider": ("SIMR1", [("job","/rider/"),("earnings","/rider/earnings/")]),
         "restaurant": ("STAFF", [("board","/restaurant/")]),
-        "admin": ("ADMIN", [("home","/admin/"),("orders","/admin/orders/"),("restaurants","/admin/restaurants/"),("riders","/admin/riders/"),("map","/admin/map/"),("reports","/admin/reports/"),("support","/admin/support/")])}
+        "admin": ("ADMIN", [("home","/admin/"),("orders","/admin/orders/"),("restaurants","/admin/restaurants/"),("riders","/admin/riders/"),("map","/admin/map/"),("reports","/admin/reports/"),("support","/admin/support/"),("payments","/admin/payments/"),("payouts","/admin/payouts/")])}
 only = sys.argv[3].split(",") if len(sys.argv) > 3 else PLAN
 with sync_playwright() as p:
     b = p.chromium.launch()
