@@ -73,7 +73,7 @@ with sync_playwright() as p:
     hm.click("button[aria-label='Eén meer'] >> nth=0"); hm.click("button[aria-label='Eén meer'] >> nth=1"); hm.goto(B + "/cart/"); hm.wait_for_timeout(1500)
     ok("cart shows item photos", hm.locator("main [data-testid=photo], main [data-testid=photo-placeholder]").count() >= 2); hm.screenshot(path=S + "cart_photos.png")
     st = b.new_context(**mob).new_page(); login(st, "STAFF"); lang(st, "nl"); st.goto(B + "/restaurant/"); st.click("[data-testid=rtab-menu]", timeout=20000); st.wait_for_selector("[data-testid=restaurant-photos]", timeout=20000)
-    st.click("[data-testid=restaurant-photos] summary"); st.wait_for_timeout(800); ok("restaurant has a photo manager (cover, logo, per dish)", st.locator("[data-testid=upload-cover]").count() == 1 and st.locator("[data-testid^=upload-item-]").count() >= 1)
+    st.wait_for_timeout(800); ok("restaurant has a photo manager (cover, logo, per dish)", st.locator("[data-testid=upload-cover]").count() == 1 and st.locator("[data-testid^=upload-item-]").count() >= 1)
     st.screenshot(path=S + "restaurant_photo_manager.png", full_page=True)
     # ---- 5. language scan: EN pages must not contain Dutch UI words, NL pages no English UI words
     NL = re.compile(r"\b(bestelling|bestellingen|bezorger|winkelmand|afrekenen|bezorgd|betaling|melding|meldingen|inloggen|uitloggen|wachtwoord|bekijk|terugbetaling|verdiensten|uitbetaling|klaar|onderweg|probleem|geen|jouw|bezorging|bereiding|Typ een|Stuur|Bel )\b", re.I)

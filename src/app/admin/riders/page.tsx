@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 import { ErrorNote, Field, inputCls, Kpi, Panel, SmallBtn, StatusBadge, Table, Td } from "@/components/admin";
 import { toast } from "@/components/Toaster";
@@ -46,7 +47,7 @@ export default function RidersAdmin() {
     if (error || !data) return toast("No account with that email. Ask the rider to sign up first.");
     if (data.role === "admin") return toast("That account is an admin");
     const { error: e2 } = await sb().from("profiles").update({ role: "rider", status: "pending" }).eq("id", data.id);
-    if (e2) return toast("⚠️ " + e2.message);
+    if (e2) return toast(e2.message);
     toast("Added as rider (pending approval)"); setEmail(""); q.reload();
   }
   const count = (s: string) => riders.filter((r) => r.status === s).length;
@@ -59,7 +60,7 @@ export default function RidersAdmin() {
           <Field label="Add rider by account email (they sign up first)"><input className={`${inputCls} min-w-64`} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="rider@example.com" /></Field>
           <SmallBtn tone="dark" onClick={invite}>+ Add as rider</SmallBtn>
         </div>
-        <Table head={["Rider", "Status", "Deliveries", "On time", "Avg bid", "Unpaid", ""]} empty={!q.loading && riders.length === 0}>
+        <Table head={["Rider", "Status", "Deliveries", "On time", "Avg bid", ""]} empty={!q.loading && riders.length === 0}>
           {riders.map((r) => {
             const s = stats(String(r.id));
             return (
@@ -71,7 +72,6 @@ export default function RidersAdmin() {
                 <Td>{s.deliveries}</Td>
                 <Td>{s.onTime == null ? "—" : `${s.onTime}%`}</Td>
                 <Td>{s.avgBid == null ? "—" : `${s.avgBid}s`}</Td>
-                <Td>{eur(s.unpaid)}</Td>
                 <Td className="whitespace-nowrap text-right">
                   {r.status !== "active" && <SmallBtn tone="ok" onClick={async () => { if (await act(setStatus(String(r.id), "active"), r.status === "pending" ? "Rider approved" : "Rider reactivated") !== undefined) q.reload(); }}>{r.status === "pending" ? "Approve" : "Reactivate"}</SmallBtn>}{" "}
                   {r.status !== "suspended" && r.role !== "admin" && <SmallBtn tone="danger" onClick={async () => { const why = prompt("Reason for suspension?") ?? undefined; if (why === undefined) return; if (await act(setStatus(String(r.id), "suspended", why), "Rider suspended") !== undefined) q.reload(); }}>Suspend</SmallBtn>}
@@ -80,7 +80,7 @@ export default function RidersAdmin() {
             );
           })}
         </Table>
-        <p className="mt-2 text-xs text-muted">Pending and suspended riders cannot bid (enforced in the database).</p>
+        <p className="mt-2 text-xs text-muted">Pending and suspended riders cannot bid (enforced in the database). Earnings and payouts: <Link className="font-semibold text-brand" href="/admin/payouts">Finance → Rider payouts</Link>.</p>
       </Panel>
     </>
   );

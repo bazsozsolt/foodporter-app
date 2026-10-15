@@ -2,8 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { useSearchParams } from "next/navigation";
-import { BarChart3, Bike, ClipboardList, LayoutDashboard, LifeBuoy, Map, MessageSquare, Settings, Store, Users, Wallet } from "lucide-react";
+import { BarChart3, Bike, ClipboardList, LayoutDashboard, LifeBuoy, Map, MessageSquare, Receipt, Settings, Store, Users, Wallet } from "lucide-react";
 import { preset, type Range } from "@/lib/admin";
 
 const groups: { title: string; items: { href: string; label: string; icon: ReactNode }[] }[] = [
@@ -22,7 +21,8 @@ const groups: { title: string; items: { href: string; label: string; icon: React
     { href: "/admin/customers", label: "Customers", icon: <Users size={16} /> },
   ] },
   { title: "Finance", items: [
-    { href: "/admin/reports?tab=payments", label: "Payments & payouts", icon: <Wallet size={16} /> },
+    { href: "/admin/payments", label: "Payments", icon: <Receipt size={16} /> },
+    { href: "/admin/payouts", label: "Rider payouts", icon: <Wallet size={16} /> },
   ] },
   { title: "Reports", items: [
     { href: "/admin/reports", label: "Reports", icon: <BarChart3 size={16} /> },
@@ -33,11 +33,9 @@ const groups: { title: string; items: { href: string; label: string; icon: React
 /** Grouped admin navigation: a sidebar on desktop, a scrollable bar on small screens. */
 export function AdminNav() {
   const path = usePathname().replace(/\/$/, "") || "/";
-  const tab = useSearchParams().get("tab");
   const isOn = (href: string) => {
-    const [p, q] = href.split("?");
+    const p = href;
     if (p === "/admin") return path === "/admin";
-    if (p === "/admin/reports") return path.startsWith(p) && (q ? tab === q.split("=")[1] : tab !== "payments");
     return path.startsWith(p);
   };
   return (

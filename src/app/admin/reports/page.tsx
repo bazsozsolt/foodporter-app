@@ -7,23 +7,13 @@ import { toast } from "@/components/Toaster";
 import { act } from "@/lib/act";
 import { downloadCsv, fmtDateTime, preset, sb, toIso, useAdminQuery, type Range, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
+import { Toolbar, useReport } from "@/components/adminFinance";
 
-const TABS = [["key", "Key metric"], ["delivery", "Delivery"], ["quality", "⭐ Quality"], ["safety", "Safety"], ["payments", "Payments"], ["groups", "Groups"], ["support", "Support"]] as const;
+const TABS = [["key", "Key metric"], ["delivery", "Delivery"], ["quality", "Quality"], ["safety", "Safety"], ["groups", "Groups"], ["support", "Support"]] as const;
 type Tab = (typeof TABS)[number][0];
 const pct = (v: unknown) => (v == null ? "—" : `${v}%`);
 
-function useReport(name: string, range: Range) {
-  return useAdminQuery<Row>(async () => sb().rpc(name, toIso(range)), [name, range.from, range.to]);
-}
 
-function Toolbar({ range, onCsv, title }: { range: Range; onCsv: () => void; title: string }) {
-  return (
-    <div className="flex gap-2">
-      <SmallBtn onClick={onCsv}>⬇ CSV</SmallBtn>
-      <SmallBtn onClick={() => { document.title = `Food Porter ${title} ${range.from}–${range.to}`; window.print(); }}>Print / PDF</SmallBtn>
-    </div>
-  );
-}
 
 function Delivery({ range }: { range: Range }) {
   const q = useReport("report_delivery", range);
@@ -238,50 +228,6 @@ function Safety({ range }: { range: Range }) {
   );
 }
 
-function Payments({ range }: { range: Range }) {
-  const q = useReport("report_payments", range);
-  const rs = ((q.data?.restaurants as Row[]) ?? []).filter((r) => Number(r.orders) > 0 || Number(r.owed_cents) > 0);
-  const rd = (q.data?.riders as Row[]) ?? [];
-  async function mark(kind: "rider" | "restaurant", id: string, name: string, owed: number) {
-    const ref = prompt(`Mark ${eur(owed)} as paid to ${name} for ${range.from} → ${range.to}?\nOptional bank reference:`);
-    if (ref === null) return;
-    const fn = kind === "rider" ? "mark_rider_payout" : "mark_restaurant_payout";
-    const args = { ...(kind === "rider" ? { p_rider: id } : { p_restaurant: id }), ...toIso(range), p_reference: ref || null };
-    const ok = await act((async () => { const { error } = await sb().rpc(fn, args); if (error) throw new Error(error.message); return true; })(), `Recorded payout to ${name}`);
-    if (ok !== undefined) q.reload();
-  }
-  const tot = (rows: Row[], k: string) => rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
-  return (
-    <>
-      <Panel title={`Restaurant payouts · ${range.from} → ${range.to}`} actions={<Toolbar range={range} title="restaurant payouts" onCsv={() => downloadCsv(`restaurant_payouts_${range.from}_${range.to}.csv`, rs, ["restaurant", "commission_pct", "orders", "gross_cents", "commission_cents", "net_cents", "paid_cents", "owed_cents"])} />}>
-        <ErrorNote error={q.error} />
-        <Table head={["Restaurant", "Delivered orders", "Gross food sales", "Commission", "Net payout", "Paid", "Owed", ""]} empty={rs.length === 0}>
-          {rs.map((r) => (
-            <tr key={String(r.restaurant_id)}>
-              <Td>{String(r.restaurant)} <span className="text-xs text-muted">({Number(r.commission_pct)}%)</span></Td><Td>{String(r.orders)}</Td>
-              <Td>{eur(Number(r.gross_cents))}</Td><Td>{eur(Number(r.commission_cents))}</Td><Td>{eur(Number(r.net_cents))}</Td>
-              <Td>{eur(Number(r.paid_cents))}</Td><Td className="font-bold">{eur(Number(r.owed_cents))}</Td>
-              <Td>{Number(r.owed_cents) > 0 && <SmallBtn tone="ok" onClick={() => mark("restaurant", String(r.restaurant_id), String(r.restaurant), Number(r.owed_cents))}>Mark paid</SmallBtn>}</Td>
-            </tr>
-          ))}
-          {rs.length > 0 && <tr className="font-bold"><Td>Total</Td><Td>{tot(rs, "orders")}</Td><Td>{eur(tot(rs, "gross_cents"))}</Td><Td>{eur(tot(rs, "commission_cents"))}</Td><Td>{eur(tot(rs, "net_cents"))}</Td><Td>{eur(tot(rs, "paid_cents"))}</Td><Td>{eur(tot(rs, "owed_cents"))}</Td><Td>{""}</Td></tr>}
-        </Table>
-      </Panel>
-      <Panel title={`Rider payouts · ${range.from} → ${range.to}`} actions={<Toolbar range={range} title="rider payouts" onCsv={() => downloadCsv(`rider_payouts_${range.from}_${range.to}.csv`, rd, ["rider", "status", "deliveries", "earned_cents", "paid_cents", "unpaid_cents"])} />}>
-        <p className="mb-2 text-xs text-muted">Riders are paid weekly for the previous week: choose “Last week”, then mark each rider paid after the bank transfer.</p>
-        <Table head={["Rider", "Status", "Deliveries", "Earned", "Paid", "Unpaid", ""]} empty={rd.length === 0}>
-          {rd.map((r) => (
-            <tr key={String(r.rider_id)}>
-              <Td>{String(r.rider)}</Td><Td><StatusBadge s={String(r.status)} /></Td><Td>{String(r.deliveries)}</Td>
-              <Td>{eur(Number(r.earned_cents))}</Td><Td>{eur(Number(r.paid_cents))}</Td><Td className="font-bold">{eur(Number(r.unpaid_cents))}</Td>
-              <Td>{Number(r.unpaid_cents) > 0 && <SmallBtn tone="ok" onClick={() => mark("rider", String(r.rider_id), String(r.rider), Number(r.unpaid_cents))}>Mark paid</SmallBtn>}</Td>
-            </tr>
-          ))}
-        </Table>
-      </Panel>
-    </>
-  );
-}
 
 function Reports() {
   const params = useSearchParams();
@@ -302,7 +248,6 @@ function Reports() {
       {tab === "delivery" && <Delivery range={range} />}
       {tab === "quality" && <Quality range={range} />}
       {tab === "safety" && <Safety range={range} />}
-      {tab === "payments" && <Payments range={range} />}
       {tab === "groups" && <Groups range={range} />}
       {tab === "support" && <Support range={range} />}
     </>

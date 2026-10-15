@@ -23,7 +23,7 @@ with sync_playwright() as p:
         n0 = len(errs); pg.goto(h if h.startswith("http") else "https://bazsozsolt.github.io" + h if B.startswith("https") else B.split("/foodporter-app")[0] + h); pg.wait_for_timeout(3500)
         body = pg.inner_text("body")
         ok(f"{h} renders", "Application error" not in body and "Er ging iets mis" not in body and len(body) > 80, str(errs[n0:])[:300])
-    for t in ["key", "delivery", "quality", "safety", "payments", "groups", "support"]:
+    for t in ["key", "delivery", "quality", "safety", "groups", "support"]:
         n0 = len(errs); pg.goto(B + f"/admin/reports/?tab={t}"); pg.wait_for_timeout(3500)
         cb = pg.locator("label:has-text('only') input[type=checkbox]")
         if cb.count(): cb.first.check(); pg.wait_for_timeout(2500)
