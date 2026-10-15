@@ -5,7 +5,7 @@ const anon = client();
 const admin = await login("ADMIN"), staff = await login("STAFF"), rider = await login("SIMR3"), cust = await login("CUST2"), out = await login("OUTSIDER");
 const err = (r) => r?.error?.message ?? null;
 const reqIds = [];
-const tpl = async (id) => (await admin.sb.from("legal_templates").select("id, version, sha256").eq("id", id).order("effective_date", { ascending: false }).limit(1).single()).data;
+const tpl = async (id) => (await admin.sb.from("legal_templates").select("id, version, sha256").eq("id", id).order("effective_date", { ascending: false }).order("created_at", { ascending: false }).limit(1).single()).data;
 const status = async (u) => (await u.sb.rpc("my_legal_status")).data;
 const wasOnline = (await admin.sb.from("profiles").select("online").eq("id", rider.id).single()).data.online;
 try {
