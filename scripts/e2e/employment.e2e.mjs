@@ -13,7 +13,7 @@ try {
   await wipe();
   // settings / WML
   const s = (await anon.from("settings").select("wml_cents, holiday_pay_pct, atw_break_after_h").single()).data;
-  ok("WML table readable", s?.wml_cents?.["21"] === 1499 && s.wml_cents["16"] === 517 && Number(s.holiday_pay_pct) === 8, JSON.stringify(s?.wml_cents));
+  ok("WML table readable", s?.wml_cents?.["21"] === 1499 && s.wml_cents["16"] === 750 && Number(s.holiday_pay_pct) === 8, JSON.stringify(s?.wml_cents));
   ok("non-admin cannot edit WML", ((await out.sb.from("settings").update({ wml_cents: { 21: 100 } }).eq("id", true).select("id")).data ?? []).length === 0);
   ok("WML without 21+ rate rejected", err(await admin.sb.from("settings").update({ wml_cents: { 16: 517 } }).eq("id", true)) !== null);
   ok("holiday pay below 8% rejected", err(await admin.sb.from("settings").update({ holiday_pay_pct: 5 }).eq("id", true)) !== null);
@@ -48,21 +48,21 @@ try {
   await admin.sb.from("rider_hr").upsert({ profile_id: rider.id, contract_type: "employment", birthdate: b17 });
   await admin.sb.from("work_sessions").insert({ rider_id: rider.id, clock_in: "2026-09-08T10:00:00Z", clock_out: "2026-09-08T12:00:00Z", closed_by: "admin", is_test: true });
   const w = (await rider.sb.rpc("fp_rider_week", { p_rider: rider.id, p_week: "2026-09-10" })).data;
-  ok("week: hours × age-based WML", w?.week_start === "2026-09-07" && Number(w.hours) === 2 && w.wml_rate_cents === 592 && w.wage_cents === 1184, JSON.stringify(w && { h: w.hours, r: w.wml_rate_cents, wage: w.wage_cents }));
+  ok("week: hours × CAO youth rate (17 = 56% WML)", w?.week_start === "2026-09-07" && Number(w.hours) === 2 && w.wml_rate_cents === 839 && w.wage_cents === 1678, JSON.stringify(w && { h: w.hours, r: w.wml_rate_cents, wage: w.wage_cents }));
   ok("week: 8% holiday pay over wage + bonus", w?.holiday_pay_cents === Math.round((w.wage_cents + w.bonus_cents) * 0.08));
-  ok("week: gross = wage + bonus + tips + holiday", w?.gross_cents === w.wage_cents + w.bonus_cents + w.tips_cents + w.holiday_pay_cents && w.indicative === true);
-  ok("week: holiday hours accrued", Number(w?.holiday_hours) === Math.round(2 * 7.69) / 100);
+  ok("week: gross = wage + bonus + tips + holiday", w?.gross_cents === w.wage_cents + w.guarantee_cents + w.surcharge_cents + w.bonus_cents + w.tips_cents + w.holiday_pay_cents && w.indicative === true);
+  ok("week: holiday hours accrued", Number(w?.holiday_hours) === Math.round(2 * 10.58) / 100);
   ok("others cannot read my week", /not allowed/.test(err(await other.sb.rpc("fp_rider_week", { p_rider: rider.id, p_week: "2026-09-10" })) ?? ""));
   ok("payroll export admin-only", err(await rider.sb.rpc("fp_payroll_week", { p_week: "2026-09-07" })) !== null);
   const pw = (await admin.sb.rpc("fp_payroll_week", { p_week: "2026-09-07" })).data ?? [];
-  ok("payroll export lists the rider", pw.some((r) => r.rider_id === rider.id && r.wage_cents === 1184) && !JSON.stringify(pw).match(/bsn/i));
+  ok("payroll export lists the rider", pw.some((r) => r.rider_id === rider.id && r.wage_cents === 1678) && !JSON.stringify(pw).match(/bsn/i));
   await admin.sb.from("rider_hr").upsert({ profile_id: rider.id, contract_type: "employment", birthdate: null });
   ok("unknown age uses 21+ rate", (await admin.sb.rpc("fp_rider_week", { p_rider: rider.id, p_week: "2026-09-10" })).data?.wml_rate_cents === 1499);
 
   // ATW
   await wipe();
   const long = (await admin.sb.from("work_sessions").insert({ rider_id: rider.id, clock_in: ago(340), clock_out: ago(5), closed_by: "admin", is_test: true }).select("id").single()).data;
-  ok("break required after 5.5 h", (await status())?.missing.includes("atw_break"));
+  ok("break required after 4.5 h (CAO)", (await status())?.missing.includes("atw_break"));
   ok("clock-in blocked until break", /atw_break/.test(err(await rider.sb.from("profiles").update({ online: true }).eq("id", rider.id)) ?? ""));
   await admin.sb.from("work_sessions").update({ clock_out: ago(20) }).eq("id", long.id);
   ok("after a 15+ min break clock-in allowed", (await status())?.ready === true, JSON.stringify((await status())?.missing));
