@@ -1,4 +1,5 @@
 "use client";
+import { CircleCheck, Search, Share2, Users, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -141,7 +142,7 @@ export function GroupView() {
           <section data-testid="my-groups">
             <h3 className="font-display mb-2 mt-4 text-xl">{t("Mijn groepen", "My groups")}</h3>
             {myGroups === null ? <p className="text-sm text-muted">{t("Laden…", "Loading…")}</p>
-              : myGroups.length === 0 ? <Empty icon="👥">{t("Je zit nog in geen enkele groep. Start er een vanuit een restaurant.", "You're not in any group yet. Start one from a restaurant.")}</Empty>
+              : myGroups.length === 0 ? <Empty icon={<Users size={24} />}>{t("Je zit nog in geen enkele groep. Start er een vanuit een restaurant.", "You're not in any group yet. Start one from a restaurant.")}</Empty>
               : myGroups.map((g) => (
                 <Link key={g.id} href={`/group?code=${g.code}`}>
                   <Card className="flex items-center justify-between">
@@ -159,14 +160,14 @@ export function GroupView() {
   if (ready && !signedIn) return (
     <><Header subtitle={t("Groepsbestelling", "Group order")} />
       <main id="main" className="p-4"><Card>
-        <h2 className="font-display text-2xl">{t("Je bent uitgenodigd 👥", "You're invited 👥")}</h2>
+        <h2 className="font-display text-2xl">{t("Je bent uitgenodigd", "You're invited")}</h2>
         <p className="my-2 text-sm text-muted">{t("Log in om mee te doen met groepsbestelling", "Sign in to join group order")} <b className="tracking-widest text-ink">{code}</b>.</p>
         <Button onClick={() => router.push(`/login?next=${encodeURIComponent(`/group?code=${code}`)}`)}>{t("Inloggen om mee te doen", "Sign in to join")}</Button>
       </Card></main></>
   );
 
   if (preview === undefined) return <><Header /><p className="p-6 text-center text-muted">{t("Laden…", "Loading…")}</p></>;
-  if (preview === null) return <><Header /><main id="main" className="p-4"><Empty icon="🔎">{t("Deze groepsbestelling bestaat niet.", "This group order doesn't exist.")} <Link className="text-brand" href="/group">{t("Andere code", "Try another code")}</Link></Empty></main></>;
+  if (preview === null) return <><Header /><main id="main" className="p-4"><Empty icon={<Search size={24} />}>{t("Deze groepsbestelling bestaat niet.", "This group order doesn't exist.")} <Link className="text-brand" href="/group">{t("Andere code", "Try another code")}</Link></Empty></main></>;
 
   // ---- not a member yet: join screen
   if (!group) return (
@@ -198,13 +199,13 @@ export function GroupView() {
           </div>
           <div className="mt-3 flex items-center gap-2">
             <div className="flex-1 rounded-xl bg-gold-soft px-3 py-2 text-center"><div className="text-[11px] uppercase text-muted">{t("Code", "Code")}</div><b data-testid="group-code" className="text-xl tracking-[0.3em]">{group.code}</b></div>
-            <button data-testid="group-share" onClick={share} className="rounded-xl bg-brand px-4 py-3 font-bold text-white">{t("Delen", "Share")} 🔗</button>
+            <button data-testid="group-share" onClick={share} className="min-h-12 rounded-xl bg-brand px-4 py-3 font-semibold text-white"><Share2 size={16} className="mr-1.5 inline" aria-hidden />{t("Delen", "Share")}</button>
           </div>
           {group.deadline && group.status === "open" && left !== null && <p className="mt-2 text-sm font-semibold" data-testid="group-deadline">⏱ {left > 0 ? t(`Nog ${mmss(left)} om toe te voegen`, `${mmss(left)} left to add items`) : t("De deadline is voorbij", "The deadline has passed")}</p>}
         </Card>
 
         {group.status === "checked_out" && group.order_id && (
-          <Card className="bg-gold-soft"><b>✅ {t("Besteld en betaald door de host", "Ordered and paid by the host")}</b>
+          <Card className="bg-gold-soft"><b className="inline-flex items-center gap-1.5"><CircleCheck size={16} className="text-ok" aria-hidden />{t("Besteld en betaald door de host", "Ordered and paid by the host")}</b>
             {isHost && <Link className="mt-2 block font-bold text-brand" href={orderHref(group.order_id)}>{t("Volg bestelling", "Track order")} #{group.order_id} →</Link>}</Card>
         )}
 
@@ -234,7 +235,7 @@ export function GroupView() {
                   <span>{i.qty}× {i.name}</span>
                   <span className="flex items-center gap-2">{eur(i.qty * i.price_cents)}
                     {((isHost && ["open", "locked"].includes(group.status)) || (i.user_id === profile?.id && editable)) &&
-                      <button aria-label={t(`${i.name} verwijderen`, `Remove ${i.name}`)} data-testid="group-remove" className="text-muted" onClick={() => run(rpc("group_remove_item", { p_item: i.id }))}>✕</button>}</span>
+                      <button aria-label={t(`${i.name} verwijderen`, `Remove ${i.name}`)} data-testid="group-remove" className="text-muted" onClick={() => run(rpc("group_remove_item", { p_item: i.id }))}><X size={16} /></button>}</span>
                 </div>))}
             </div>))}
           <div className="mt-3 border-t border-[#f1ede8] pt-2 text-sm">
@@ -261,7 +262,7 @@ export function GroupView() {
               </div>
             </>}
             <Button variant={group.status === "open" ? "dark" : "ghost"} disabled={busy} onClick={() => run(rpc("group_set_locked", { p_group: group.id, p_locked: group.status === "open" }), group.status === "open" ? t("Mand vergrendeld", "Basket locked") : t("Mand weer open", "Basket reopened"))}>
-              {group.status === "open" ? "" + t("Mand vergrendelen", "Lock basket") : "🔓 " + t("Mand weer openen", "Reopen basket")}</Button>
+              {group.status === "open" ? "" + t("Mand vergrendelen", "Lock basket") : t("Mand weer openen", "Reopen basket")}</Button>
             {group.status === "locked" && items.length > 0 && <>
               <p className="mt-4 font-bold">{t("Afrekenen (jij betaalt voor iedereen)", "Checkout (you pay for everyone)")}</p>
               <label className="text-[13px] text-muted">{t("Eén bezorgadres", "One delivery address")}</label>

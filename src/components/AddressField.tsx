@@ -50,7 +50,7 @@ export function AddressField({ value, onChange, geo, onGeo, center, radiusKm }: 
         onChange={(e) => { onChange(e.target.value); onGeo(null); setOpen(true); }} onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 200)} />
       {open && list.length > 0 && (
-        <ul className="absolute z-30 w-full overflow-hidden rounded-xl border border-[#e2ded8] bg-white shadow-lg">
+        <ul className="absolute z-30 w-full overflow-hidden rounded-xl border border-line bg-white shadow-lg">
           {list.map((s) => (
             <li key={s.id}><button type="button" className="w-full px-3 py-2.5 text-left text-sm hover:bg-brand-soft" onMouseDown={(e) => e.preventDefault()} onClick={() => pick(s)}>{s.label}</button></li>
           ))}

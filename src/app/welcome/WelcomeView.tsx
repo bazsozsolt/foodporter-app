@@ -1,4 +1,5 @@
 "use client";
+import { Bike, Store } from "lucide-react";
 import { tx } from "@/lib/i18n";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
@@ -29,12 +30,12 @@ export function WelcomeView() {
       </section>
       <section className="grid gap-2.5 p-4 md:grid-cols-2">
         <div className="rounded-2xl bg-ink p-4 text-white">
-          <b>🚲 {tx("Rijd met ons mee", "Ride with us")}</b>
+          <b className="flex items-center gap-2"><Bike size={18} className="text-brand" aria-hidden />{tx("Rijd met ons mee", "Ride with us")}</b>
           <p className="mt-1 text-sm text-white/80">{tx("Kies je eigen tempo: bied alleen op de bestellingen die je wilt. Je houdt 100% van de vaste bezorgvergoeding, wekelijks uitbetaald.", "Choose your own speed: bid only on the orders you want. Keep 100% of the flat delivery fee, paid weekly.")}</p>
           <Link href="/login?next=/rider" className="mt-2 inline-block text-sm font-bold text-gold underline">{tx("Aanmelden als rider →", "Sign up as a rider →")}</Link>
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm">
-          <b>👩‍🍳 {tx("Partnerrestaurants", "Partner restaurants")}</b>
+          <b className="flex items-center gap-2"><Store size={18} className="text-brand" aria-hidden />{tx("Partnerrestaurants", "Partner restaurants")}</b>
           <p className="mt-1 text-sm text-muted">{tx("Geen aanmeldkosten en een simpele commissie van 10–15%. Stel per bestelling je eigen bereidingstijd in; wij regelen riders en betalingen.", "No listing fee and a simple 10–15% commission. Set your own prep time per order; we handle riders and payments.")}</p>
           <a href="mailto:partners@foodporter.nl" className="mt-2 inline-block text-sm font-bold text-brand underline">{tx("Word partner →", "Become a partner →")}</a>
         </div>

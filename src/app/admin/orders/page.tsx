@@ -135,8 +135,8 @@ function OrderList() {
             <Td>{String(o.rider_name ?? "—")}</Td>
             <Td>{eur(Number(o.subtotal_cents))}</Td>
             <Td>{o.prep_minutes ? `${o.prep_minutes}′${Number(o.prep_extensions) ? ` (+${o.prep_extensions})` : ""}` : "—"}</Td>
-            <Td>{o.bid_seconds != null ? `${o.bid_seconds}s${o.fast_bid ? " ⚡" : ""}` : "—"}</Td>
-            <Td>{o.delivered_at ? (o.on_time ? "✅" : `⏰ +${o.minutes_late}′`) : "—"}</Td>
+            <Td>{o.bid_seconds != null ? `${o.bid_seconds}s${o.fast_bid ? " · fast" : ""}` : "—"}</Td>
+            <Td>{o.delivered_at ? (o.on_time ? <span className="font-semibold text-ok">On time</span> : <span className="font-semibold text-danger">+{String(o.minutes_late)} min</span>) : "—"}</Td>
             <Td><StatusBadge s={String(o.status)} /></Td>
           </tr>
         ))}

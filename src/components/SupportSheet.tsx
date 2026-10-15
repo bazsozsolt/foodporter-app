@@ -1,5 +1,5 @@
 "use client";
-import { LifeBuoy } from "lucide-react";
+import { Camera, LifeBuoy, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { tx } from "@/lib/i18n";
@@ -43,8 +43,8 @@ export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role
     <div role="dialog" aria-modal="true" aria-labelledby="sup-title" data-testid="support-sheet" className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={onClose}>
       <div className="max-h-[92vh] w-full max-w-[420px] overflow-y-auto rounded-t-3xl bg-paper p-4 pb-8" onClick={(e) => e.stopPropagation()}>
         <div className="mb-2 flex items-center justify-between">
-          <h2 id="sup-title" className="font-display text-2xl">🛟 {tx("Hulp", "Help")}{orderId ? ` · #${orderId}` : ""}</h2>
-          <button onClick={onClose} aria-label={tx("Sluiten", "Close")} className="rounded-full bg-white px-3 py-1 text-lg">✕</button>
+          <h2 id="sup-title" className="font-display text-2xl">{tx("Hulp", "Help")}{orderId ? ` · #${orderId}` : ""}</h2>
+          <button onClick={onClose} aria-label={tx("Sluiten", "Close")} className="grid h-9 w-9 place-items-center rounded-full bg-subtle"><X size={18} /></button>
         </div>
         {role === "customer" && !cat && (
           <div className="mb-3 space-y-1">
@@ -67,12 +67,12 @@ export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role
               <textarea data-testid="support-body" value={body} onChange={(e) => setBody(e.target.value)} maxLength={2000} rows={4}
                 className="mt-1 w-full rounded-xl border border-line bg-white p-3 text-sm font-normal" placeholder={tx("Vertel het kort in je eigen woorden", "Tell us briefly in your own words")} />
             </label>
-            <label className="text-sm font-semibold">📷 {tx("Foto (optioneel)", "Photo (optional)")}
+            <label className="flex items-center gap-1.5 text-sm font-semibold"><Camera size={16} aria-hidden />{tx("Foto (optioneel)", "Photo (optional)")}
               <input data-testid="support-photo" type="file" accept="image/*" capture="environment" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} className="mt-1 block w-full text-sm font-normal" />
             </label>
             {refundable && (
               <fieldset className="rounded-xl bg-white p-3 text-sm" data-testid="support-refund">
-                <legend className="font-semibold">💶 {tx("Wil je geld terug?", "Would you like a refund?")}</legend>
+                <legend className="font-semibold">{tx("Wil je geld terug?", "Would you like a refund?")}</legend>
                 {(["none", "partial", "full"] as const).map((v) => (
                   <label key={v} className="mr-3 inline-flex items-center gap-1"><input type="radio" name="refund" checked={refund === v} onChange={() => setRefund(v)} />
                     {v === "none" ? tx("Nee", "No") : v === "partial" ? tx("Deels", "Partly") : tx(`Alles (€${(orderTotalCents! / 100).toFixed(2).replace(".", ",")})`, `All (€${(orderTotalCents! / 100).toFixed(2)})`)}</label>
@@ -81,7 +81,7 @@ export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role
                 <p className="mt-1 text-[12px] text-muted">{tx("Ons team beoordeelt je verzoek, meestal binnen een paar uur.", "Our team reviews your request, usually within a few hours.")}</p>
               </fieldset>
             )}
-            {err && <p role="alert" data-testid="support-error" className="rounded-xl bg-red-50 p-3 text-sm font-semibold text-brand">⚠️ {tx("Melding niet verstuurd", "Report not sent")}: {err}</p>}
+            {err && <p role="alert" data-testid="support-error" className="rounded-xl bg-[#fde8e7] p-3 text-sm font-semibold text-danger">{tx("Melding niet verstuurd", "Report not sent")}: {err}</p>}
             <button data-testid="support-submit" disabled={busy || body.trim().length < 3 || (refund === "partial" && refundable && !(euros > 0))} onClick={submit}
               className="rounded-xl bg-brand px-4 py-3 font-bold text-white disabled:opacity-50">{busy ? tx("Versturen…", "Sending…") : tx("Versturen", "Send")}</button>
           </div>

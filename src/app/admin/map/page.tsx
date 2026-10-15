@@ -52,7 +52,7 @@ export default function AdminMap() {
       <Panel title="Riders">
         <Table head={["Rider", "Online", "Last point", "Order"]} empty={Object.keys(latest).length === 0}>
           {Object.values(latest).map((p) => (
-            <tr key={p.rider_id}><Td>{name(p.rider_id)}</Td><Td>{(q.data?.riders ?? []).find((x) => x.id === p.rider_id)?.online ? "🟢" : "⚪"}</Td><Td>{fmtDateTime(p.created_at)}</Td>
+            <tr key={p.rider_id}><Td>{name(p.rider_id)}</Td><Td>{(q.data?.riders ?? []).find((x) => x.id === p.rider_id)?.online ? <span className="font-semibold text-ok">Online</span> : <span className="text-muted">Offline</span>}</Td><Td>{fmtDateTime(p.created_at)}</Td>
               <Td>{p.order_id ? <Link className="text-brand" href={`/admin/orders?id=${p.order_id}`}>#{p.order_id}</Link> : "—"} {p.order_id && <StatusBadge s={String((q.data?.orders ?? []).find((o) => Number(o.id) === p.order_id)?.status ?? "")} />}</Td></tr>
           ))}
         </Table>

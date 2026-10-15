@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../src");
-const SKIP = [/\/app\/admin\//, /\/lib\/admin\.ts$/, /\/lib\/mock-data\.ts$/, /AdminOrderContact/];
+const SKIP = [/\/app\/admin\//, /\/lib\/admin\.ts$/, /\/lib\/mock-data\.ts$/, /AdminOrderContact/, /\/components\/adminFinance\.tsx$/];
 // Identical NL/EN values that are intended (brand, proper nouns, loanwords, symbols).
 const SAME_OK = new Set(["Restaurant", "Home", "OSM", "Admin", "Rider", "Food Porter", "SOS", "OPEN", "Host", "Code", "live", "Deadline", "rider", "· rider", "Naar inhoud / Skip to content", "No messages", "iDEAL", "Login", "Status", "Totaal", "Menu", "Support", "Chat", "Email", "E-mail", "Stop", "OK", "Pizza", "Sushi", "Burger", "Account", "Online", "Offline", "Live", "Test", "Info", "min", "km", "€", "—", "+", "−", "×", "✓"]);
 const FN = new Set(["tx", "t", "tr", "tt"]);

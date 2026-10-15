@@ -1,4 +1,5 @@
 "use client";
+import { AlertTriangle, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function toast(msg: string) {
@@ -15,7 +16,7 @@ export function Toaster() {
   }, []);
   return (
     <div role="status" aria-live="polite" aria-atomic="true" data-testid="toast" className={`fixed bottom-24 left-1/2 z-50 max-w-[380px] -translate-x-1/2 rounded-xl bg-ink px-4 py-2.5 text-sm text-white transition-opacity ${msg ? "opacity-100" : "pointer-events-none opacity-0"}`}>
-      {msg}
+      {msg && <span className="flex items-start gap-2">{/^⚠️/.test(msg) ? <AlertTriangle size={16} className="mt-0.5 shrink-0 text-gold" aria-hidden /> : /^✉️/.test(msg) ? <Mail size={16} className="mt-0.5 shrink-0 text-gold" aria-hidden /> : null}<span>{msg.replace(/^(⚠️|✉️)\s*/, "")}</span></span>}
     </div>
   );
 }

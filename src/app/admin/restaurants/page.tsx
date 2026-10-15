@@ -99,7 +99,7 @@ export default function RestaurantsAdmin() {
       <ErrorNote error={q.error} />
       {adding && <div className="mb-4 rounded-xl border border-line p-3"><RestaurantForm initial={blank} onDone={done} /></div>}
       {(q.data ?? []).map((r) => (
-        <div key={String(r.id)} className="border-b border-[#f3f1ee] py-3 last:border-0">
+        <div key={String(r.id)} className="border-b border-line py-3 last:border-0">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <b>{String(r.name)}</b> <StatusBadge s={r.active ? "active" : "suspended"} />

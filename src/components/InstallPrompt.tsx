@@ -1,4 +1,5 @@
 "use client";
+import { X } from "lucide-react";
 import { tx } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 
@@ -23,7 +24,7 @@ export function InstallPrompt() {
     <div className="mb-3 flex items-center gap-2 rounded-2xl border border-line bg-white p-3 text-sm">
       <span className="flex-1">{ios ? <>{tx("Installeren: tik op", "Install: tap")} <b>{tx("Deel", "Share")}</b> → <b>{tx("Zet op beginscherm", "Add to Home Screen")}</b></> : tx("Installeer Food Porter op je telefoon", "Install Food Porter on your phone")}</span>
       {evt && <button className="rounded-xl bg-brand px-3 py-1.5 font-bold text-white" onClick={async () => { await evt.prompt(); close(); }}>{tx("Installeren", "Install")}</button>}
-      <button aria-label={tx("Sluiten", "Dismiss")} className="px-1 text-muted" onClick={close}>✕</button>
+      <button aria-label={tx("Sluiten", "Dismiss")} className="grid h-9 w-9 place-items-center text-muted" onClick={close}><X size={16} /></button>
     </div>
   );
 }

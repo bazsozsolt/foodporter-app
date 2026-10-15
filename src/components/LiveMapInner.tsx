@@ -51,5 +51,5 @@ export default function LiveMapInner({ markers, height = 220 }: { markers: MapMa
       if (markers.length === 1) m.setView(b.getCenter(), 15); else m.fitBounds(b.pad(0.25), { maxZoom: 16 });
     }
   }, [markers]);
-  return <div ref={el} data-testid="live-map" className="z-0 overflow-hidden rounded-2xl border border-[#e2ded8]" style={{ height }} />;
+  return <div ref={el} data-testid="live-map" className="z-0 overflow-hidden rounded-2xl border border-line" style={{ height }} />;
 }

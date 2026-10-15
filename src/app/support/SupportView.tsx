@@ -1,4 +1,5 @@
 "use client";
+import { Loader2, Camera, Euro, LifeBuoy, LogIn, Search } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -40,8 +41,8 @@ function Thread({ id }: { id: number }) {
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => { end.current?.scrollIntoView({ block: "end" }); }, [msgs.length]);
-  if (loading) return <Empty icon="⏳">{tx("Laden…", "Loading…")}</Empty>;
-  if (!t) return <Empty icon="🔎">{tx("Melding niet gevonden.", "Ticket not found.")}</Empty>;
+  if (loading) return <Empty icon={<Loader2 size={24} className="animate-spin" />}>{tx("Laden…", "Loading…")}</Empty>;
+  if (!t) return <Empty icon={<Search size={24} />}>{tx("Melding niet gevonden.", "Ticket not found.")}</Empty>;
   async function send() {
     setBusy(true);
     const ok = await act(reply(id, text, photo).then(() => true));
@@ -53,7 +54,7 @@ function Thread({ id }: { id: number }) {
       <Card data-testid="ticket-head">
         <p className="text-xs text-muted">#{t.id} · {catLabel(t.role, t.category)}{t.order_id ? <> · <Link className="font-semibold text-brand" href={`/order/?id=${t.order_id}`}>{tx("Bestelling", "Order")} #{t.order_id}</Link></> : null}</p>
         <p className="mt-1 font-semibold" data-testid="ticket-status">{statusLabel(t.status)}</p>
-        {t.refund_requested_cents ? <p className="mt-1 text-sm">💶 {tx("Terugbetaling gevraagd", "Refund requested")}: €{(t.refund_requested_cents / 100).toFixed(2).replace(".", ",")}{t.refund_status && t.refund_status !== "requested" ? ` · ${t.refund_status === "simulated" || t.refund_status === "refunded" || t.refund_status === "pending" || t.refund_status === "queued" ? tx("goedgekeurd", "approved") : t.refund_status}` : ""}</p> : null}
+        {t.refund_requested_cents ? <p className="mt-1 flex items-center gap-1.5 text-sm"><Euro size={14} aria-hidden />{tx("Terugbetaling gevraagd", "Refund requested")}: €{(t.refund_requested_cents / 100).toFixed(2).replace(".", ",")}{t.refund_status && t.refund_status !== "requested" ? ` · ${t.refund_status === "simulated" || t.refund_status === "refunded" || t.refund_status === "pending" || t.refund_status === "queued" ? tx("goedgekeurd", "approved") : t.refund_status}` : ""}</p> : null}
       </Card>
       <div className="mt-3 space-y-2" aria-live="polite" data-testid="thread">
         {msgs.map((m) => <Bubble key={m.id} m={m} mine={m.author_id === profile?.id} />)}
@@ -62,7 +63,7 @@ function Thread({ id }: { id: number }) {
       <div className="sticky bottom-20 mt-3 rounded-2xl bg-white p-2 shadow-lg">
         <textarea data-testid="reply-body" value={text} onChange={(e) => setText(e.target.value)} rows={2} maxLength={2000} placeholder={tx("Typ een bericht…", "Type a message…")} className="w-full resize-none rounded-xl border border-line p-2 text-sm" />
         <div className="mt-1 flex items-center gap-2">
-          <label className="text-xs text-muted">📷<input type="file" accept="image/*" className="ml-1 w-40 text-xs" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} /></label>
+          <label aria-label={tx("Foto toevoegen", "Add photo")} className="grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-xl border border-line text-muted"><Camera size={18} aria-hidden /><input type="file" accept="image/*" className="ml-1 w-40 text-xs" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} /></label>
           <button data-testid="reply-send" disabled={busy || !text.trim()} onClick={send} className="ml-auto rounded-xl bg-brand px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{tx("Stuur", "Send")}</button>
         </div>
       </div>
@@ -79,12 +80,12 @@ export function SupportView() {
     <>
       <Header subtitle={tx("Hulp & meldingen", "Help & tickets")} />
       <main id="main" className="p-4 pb-40">
-        {!ready ? <Empty icon="⏳">{tx("Laden…", "Loading…")}</Empty> : !profile ? <Empty icon="🔐">{tx("Log in om je meldingen te zien.", "Sign in to see your tickets.")}</Empty>
+        {!ready ? <Empty icon={<Loader2 size={24} className="animate-spin" />}>{tx("Laden…", "Loading…")}</Empty> : !profile ? <Empty icon={<LogIn size={24} />}>{tx("Log in om je meldingen te zien.", "Sign in to see your tickets.")}</Empty>
           : id ? <><Link href="/support/" className="mb-2 block text-sm font-semibold text-brand">← {tx("Alle meldingen", "All tickets")}</Link><Thread id={id} /></>
           : (
             <>
               <div className="mb-3 flex items-center justify-between"><h1 className="font-display text-2xl">{tx("Mijn meldingen", "My tickets")}</h1><HelpButton role={role} label={tx("Nieuwe melding", "New ticket")} /></div>
-              {rows === null ? <Empty icon="⏳">{tx("Laden…", "Loading…")}</Empty> : rows.length === 0 ? <Empty icon="🙌">{tx("Geen meldingen. Hulp nodig bij een bestelling? Open de bestelling en tik op Hulp.", "No tickets. Need help with an order? Open it and tap Help.")}</Empty> : (
+              {rows === null ? <Empty icon={<Loader2 size={24} className="animate-spin" />}>{tx("Laden…", "Loading…")}</Empty> : rows.length === 0 ? <Empty icon={<LifeBuoy size={24} />}>{tx("Geen meldingen. Hulp nodig bij een bestelling? Open de bestelling en tik op Hulp.", "No tickets. Need help with an order? Open it and tap Help.")}</Empty> : (
                 <div className="space-y-2" data-testid="my-tickets">
                   {rows.map((t) => (
                     <Link key={t.id} href={`/support/?id=${t.id}`} className="block rounded-2xl bg-white p-3 shadow-[0_2px_10px_rgba(0,0,0,.05)]">

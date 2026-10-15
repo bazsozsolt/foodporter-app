@@ -37,7 +37,7 @@ function Delivery({ range }: { range: Range }) {
       </div>
       <h3 className="mb-2 text-sm font-bold">Late deliveries ({late.length})</h3>
       <Table head={["Order", "Restaurant", "Rider", "ETA", "Late by", "Delivered"]} empty={late.length === 0}>
-        {late.map((l) => <tr key={String(l.id)}><Td><Link className="text-brand" href={`/admin/orders?id=${l.id}`}>#{String(l.id)}</Link></Td><Td>{String(l.restaurant ?? "")}</Td><Td>{String(l.rider ?? "")}</Td><Td>{String(l.eta)} min</Td><Td>{String(l.minutes_late)} min{l.stacked ? " 🧩" : ""}</Td><Td>{fmtDateTime(l.delivered_at)}</Td></tr>)}
+        {late.map((l) => <tr key={String(l.id)}><Td><Link className="text-brand" href={`/admin/orders?id=${l.id}`}>#{String(l.id)}</Link></Td><Td>{String(l.restaurant ?? "")}</Td><Td>{String(l.rider ?? "")}</Td><Td>{String(l.eta)} min</Td><Td>{String(l.minutes_late)} min{l.stacked ? " · stacked" : ""}</Td><Td>{fmtDateTime(l.delivered_at)}</Td></tr>)}
       </Table>
     </Panel>
   );

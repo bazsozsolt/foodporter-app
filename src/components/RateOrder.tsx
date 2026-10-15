@@ -38,7 +38,7 @@ export function RateOrder({ orderId, hasRider }: { orderId: string; hasRider: bo
       <div className="mt-2">
         <Stars label={tx("Eten", "Food")} value={food} onChange={setFood} />
         {hasRider && <Stars label={tx("Bezorging", "Delivery")} value={rider} onChange={setRider} />}
-        <textarea className="mt-1 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-2.5 text-sm" rows={2} maxLength={500}
+        <textarea className="mt-1 w-full rounded-xl border border-line p-2.5 text-sm" rows={2} maxLength={500}
           placeholder={tx("Nog iets wat we moeten weten? (optioneel)", "Anything we should know? (optional)")} value={comment} onChange={(e) => setComment(e.target.value)} />
         <Button disabled={!food} onClick={async () => { if (await act(actions.rate(orderId, food, rider || null, comment), tx("Bedankt voor je feedback!", "Thanks for your feedback!"))) setDone(true); }}>{tx("Beoordeling versturen", "Send rating")}</Button>
       </div>

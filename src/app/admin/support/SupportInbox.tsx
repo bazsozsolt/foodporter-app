@@ -19,7 +19,7 @@ const CANNED: [string, string][] = [
   ["Item unavailable → customer", "Het restaurant liet weten dat een item op was. We betalen dat deel terug."],
 ];
 const PRI_ORDER: Record<string, number> = { urgent: 0, high: 1, normal: 2, low: 3 };
-const priTone = (p: string) => (p === "urgent" ? "bg-[#c40000] text-white" : p === "high" ? "bg-brand-soft text-brand" : p === "normal" ? "bg-[#f1ede8] text-ink" : "bg-white text-muted");
+const priTone = (p: string) => (p === "urgent" ? "bg-[#c40000] text-white" : p === "high" ? "bg-brand-soft text-brand" : p === "normal" ? "bg-subtle text-ink" : "bg-white text-muted");
 
 function useNow(ms = 30000) {
   const [now, setNow] = useState(() => Date.now());
@@ -135,7 +135,7 @@ function Detail({ id }: { id: number }) {
         <Link href="/admin/support" className="text-sm font-semibold text-brand">← Inbox</Link></>}>
         <div className="space-y-2" data-testid="admin-thread">
           {msgs.map((m) => (
-            <div key={m.id} className={`rounded-xl p-2 text-sm ${m.internal ? "border border-dashed border-gold bg-gold-soft" : m.author_role === "admin" ? "bg-brand-soft" : m.author_role === "system" ? "bg-[#f1ede8]" : "bg-white"}`}>
+            <div key={m.id} className={`rounded-xl p-2 text-sm ${m.internal ? "border border-dashed border-gold bg-gold-soft" : m.author_role === "admin" ? "bg-brand-soft" : m.author_role === "system" ? "bg-subtle" : "bg-white"}`}>
               <p className="text-[11px] font-semibold text-muted">{m.internal ? "internal note · " : ""}{m.author_role} · {fmtDateTime(m.created_at)}</p>
               <p className="whitespace-pre-wrap break-words">{m.body}</p>
               {m.photo_path && <AdminPhoto path={m.photo_path} />}

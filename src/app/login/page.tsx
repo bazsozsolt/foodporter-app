@@ -1,4 +1,5 @@
 "use client";
+import { Mail } from "lucide-react";
 import { tx } from "@/lib/i18n";
 import { T } from "@/components/LangToggle";
 import { Footer } from "@/components/Footer";
@@ -54,7 +55,7 @@ export default function LoginPage() {
     <>
       <Header />
       <main id="main" className="p-4">
-        <h2 className="mb-1 text-lg font-bold">{tx("Welkom 👋", "Welcome 👋")}</h2>
+        <h2 className="mb-1 text-lg font-bold">{tx("Welkom", "Welcome")}</h2>
         <p className="mb-3 text-sm text-muted">{tx("Bestel bij de favoriete lokale zaken van Tilburg. Riders bieden om het snel bij je te brengen.", "Order from Tilburg’s favourite local spots. Riders bid to bring it to you fast.")}</p>
         <Card>
           <input className={input} placeholder={tx("jij@voorbeeld.nl", "you@example.com")} aria-label={tx("E-mailadres", "Email address")} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -62,7 +63,7 @@ export default function LoginPage() {
           <Button disabled={busy || !email} onClick={() => go(actions.signInWithPassword(email, password), afterAuth)}><T nl="Inloggen" en="Sign in" /></Button>
           <Button variant="ghost" disabled={busy || !email || password.length < 6} onClick={() => go(actions.signUp(email, password), afterAuth)}>{tx("Account aanmaken", "Create account")}</Button>
           <button className="mt-3 w-full text-center text-sm font-semibold text-brand disabled:opacity-50" disabled={busy || !email} onClick={() => go(actions.magicLink(email), afterAuth)}>
-            ✉️ {tx("Stuur me liever een inloglink", "Email me a magic link instead")}
+            <Mail size={16} className="mr-1.5 inline" aria-hidden />{tx("Stuur me liever een inloglink", "Email me a magic link instead")}
           </button>
         </Card>
         {/* Only show social logins that are actually enabled in Supabase Auth (they returned a 400 error page before). */}
