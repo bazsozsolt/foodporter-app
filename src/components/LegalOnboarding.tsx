@@ -107,7 +107,7 @@ export function LegalOnboarding({ st, reload, who }: { st: LegalStatus | null; r
     const sb = getSupabase();
     if (!sb || !key) return;
     void sb.from("legal_templates").select("id, version, title, pdf_path, html_path, sha256, effective_date").in("id", key.split(","))
-      .lte("effective_date", new Date().toISOString().slice(0, 10)).order("effective_date", { ascending: false })
+      .lte("effective_date", new Date().toISOString().slice(0, 10)).order("effective_date", { ascending: false }).order("created_at", { ascending: false }).order("created_at", { ascending: false })
       .then(({ data }) => { const seen = new Set<string>(); setTpls(((data ?? []) as Tpl[]).filter((x) => !seen.has(x.id) && seen.add(x.id))); });
   }, [key]);
   if (!st || st.ready) return null;
