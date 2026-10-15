@@ -4,7 +4,12 @@ const anon = client();
 const admin = await login("ADMIN"), c1 = await login("SIMC1"), c2 = await login("SIMC2"), staff = await login("STAFF"), rider = await login("SIMR1"), out = await login("OUTSIDER");
 const err = (r) => r.error?.message ?? null;
 await admin.sb.rpc("fp_test_reset_rate_limits"); // repeated runs would otherwise hit the 6/hour limit
-const delivered = async (u) => (await admin.sb.from("orders").select("id, subtotal_cents, delivery_fee_cents, restaurant_id, rider_id").eq("customer_id", u.id).eq("status", "delivered").like("mollie_payment_id", "tr_sim_%").order("id", { ascending: false }).limit(1).single()).data;
+// latest delivered simulated test order that has no support refunds yet (other suites may have refunded theirs in full)
+const delivered = async (u) => {
+  const list = (await admin.sb.from("orders").select("id, subtotal_cents, delivery_fee_cents, restaurant_id, rider_id").eq("customer_id", u.id).eq("status", "delivered").like("mollie_payment_id", "tr_sim_%").is("refund_cents", null).order("id", { ascending: false }).limit(30)).data ?? [];
+  const used = new Set(((await admin.sb.from("support_tickets").select("order_id").in("order_id", list.map((o) => o.id)).gt("refund_cents", 0)).data ?? []).map((t) => t.order_id));
+  return list.find((o) => !used.has(o.id)) ?? null;
+};
 const o1 = await delivered(c1), o2 = await delivered(c2);
 ok("test orders found", !!o1 && !!o2, `${o1?.id} ${o2?.id}`);
 
@@ -69,7 +74,7 @@ ok("non-admin cannot resolve/assign", !!err(await c1.sb.rpc("support_admin_updat
 ok("admin assigns + resolves", !err(await admin.sb.rpc("support_admin_update", { p_ticket: tid, p_assign: admin.id, p_status: "resolved" })) && (await c1.sb.from("support_tickets").select("status").eq("id", tid).single()).data.status === "resolved");
 
 // restaurant: item unavailable
-const { data: ko } = await admin.sb.from("orders").select("id, order_items(id, menu_item_id, name, price_cents, qty)").eq("restaurant_id", staff.restaurantId ?? "187f751c-bebb-4a34-9d4b-9b1a9e8851db").eq("is_test", true).not("paid_at", "is", null).order("id", { ascending: false }).limit(1).single();
+const { data: ko } = await admin.sb.from("orders").select("id, order_items(id, menu_item_id, name, price_cents, qty)").eq("restaurant_id", staff.restaurantId ?? "187f751c-bebb-4a34-9d4b-9b1a9e8851db").eq("is_test", true).not("paid_at", "is", null).eq("credit_cents", 0).eq("discount_cents", 0).is("refund_cents", null).order("id", { ascending: false }).limit(1).single();
 const item = ko.order_items[0];
 const iu = await staff.sb.rpc("support_item_unavailable", { p_order: ko.id, p_order_item: item.id, p_sold_out: true, p_note: "op" });
 const st = iu.data ? (await staff.sb.from("support_tickets").select("category, refund_requested_cents").eq("id", iu.data).single()).data : null;
