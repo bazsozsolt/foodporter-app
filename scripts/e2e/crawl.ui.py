@@ -71,7 +71,7 @@ def crawl(ctx, role, url, lang, view):
             if DESTRUCTIVE.search(lab) or el.is_disabled(): stats["skipped"] += 1; continue
             if el.get_attribute("aria-pressed") == "true": continue   # already-selected chip: no-op by design
             before = pg.evaluate(SNAP); dl0 = len(downloads)
-            if tag == "SELECT" and el.get_attribute("data-persist") is not None: stats["skipped"] += 1; continue   # writes to DB on change
+            if el.get_attribute("data-persist") is not None: stats["skipped"] += 1; continue   # writes to DB on change/click
             if tag == "SELECT":
                 opts = el.evaluate("e => [...e.options].map(o => o.value)")
                 if len(opts) < 2: continue
