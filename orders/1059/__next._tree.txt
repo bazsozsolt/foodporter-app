@@ -1,7 +1,7 @@
-:HL["/foodporter-app/_next/static/chunks/3f8se0bk2djed.css","style"]
+:HL["/foodporter-app/_next/static/chunks/05ep4j714l4le.css","style"]
 :HL["/foodporter-app/_next/static/media/2039e8342bda6056-s.p.1hiu0hj9qpr9g.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/foodporter-app/_next/static/media/fabcf92ba1ccea36-s.p.1w_qz2ahumqmz.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":{"n":"id","t":"d","k":"1059","s":[]},"h":96,"c":"$Q3"}]]
 1:[["children",{"s":"orders","h":96,"c":"$Q2"}]]
-0:{"b":"qhwX_tTIHe2n6e6hxLWSc","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"-icEFrnFPLPVvTmEOTbGg","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
