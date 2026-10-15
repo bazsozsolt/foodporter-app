@@ -106,7 +106,7 @@ export default function RestaurantsAdmin() {
               <div className="text-xs text-muted">{String(r.cuisine ?? "")} · {String(r.area ?? "")} · {Number(r.commission_pct)}% commission · ~{String(r.avg_prep_minutes)} min prep · {String((r.menu_items as Row[])?.[0]?.count ?? 0)} items</div>
             </div>
             <div className="flex gap-2">
-              <SmallBtn onClick={async () => { if (await act(must(sb().from("restaurants").update({ active: !r.active }).eq("id", String(r.id))), r.active ? "Deactivated" : "Activated") !== undefined) { q.reload(); actions.reloadCatalog(); } }}>{r.active ? "Deactivate" : "Activate"}</SmallBtn>
+              <SmallBtn onClick={async () => { if (!confirm(r.active ? `Deactivate ${String(r.name)}? Customers will no longer see it or be able to order.` : `Activate ${String(r.name)}? It becomes visible to customers.`)) return; if (await act(must(sb().from("restaurants").update({ active: !r.active }).eq("id", String(r.id))), r.active ? "Deactivated" : "Activated") !== undefined) { q.reload(); actions.reloadCatalog(); } }}>{r.active ? "Deactivate" : "Activate"}</SmallBtn>
               <SmallBtn onClick={() => setEdit(edit === r.id ? null : String(r.id))}>Edit</SmallBtn>
               <SmallBtn tone="dark" onClick={() => setMenu(menu === r.id ? null : String(r.id))}>{menu === r.id ? "Hide menu" : "Menu"}</SmallBtn>
             </div>

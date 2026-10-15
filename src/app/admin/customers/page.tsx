@@ -61,7 +61,7 @@ export default function CustomersAdmin() {
               <Td>{s.n}</Td><Td>{eur(s.spent)}</Td><Td>{fmtDateTime(s.last)}</Td>
               <Td className="text-right">
                 {p.role !== "admin" && (p.status === "blocked"
-                  ? <SmallBtn tone="ok" onClick={async () => { if (await act(update(String(p.id), { status: "active", status_reason: null }), "Unblocked") !== undefined) q.reload(); }}>Unblock</SmallBtn>
+                  ? <SmallBtn tone="ok" onClick={async () => { if (!confirm("Unblock this customer?")) return; if (await act(update(String(p.id), { status: "active", status_reason: null }), "Unblocked") !== undefined) q.reload(); }}>Unblock</SmallBtn>
                   : <SmallBtn tone="danger" onClick={async () => { const why = prompt("Reason for blocking?"); if (why === null) return; if (await act(update(String(p.id), { status: "blocked", status_reason: why }), "Blocked (can no longer order)") !== undefined) q.reload(); }}>Block</SmallBtn>)}
               </Td>
             </tr>

@@ -34,6 +34,7 @@ function OrderDetail({ id }: { id: string }) {
     if (ok) setTimeout(q.reload, 2500);
   }
   async function retryRefund(oid: string) {
+    if (!confirm(`Retry the refund for order #${oid} via Mollie?`)) return;
     const ok = await act((async () => {
       const { error } = await sb().from("orders").update({ refund_status: null }).eq("id", Number(oid));
       if (error) throw new Error(error.message);

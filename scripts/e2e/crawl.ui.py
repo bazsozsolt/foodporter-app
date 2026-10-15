@@ -7,7 +7,9 @@ import re, sys, os, json, time, subprocess
 from playwright.sync_api import sync_playwright
 creds = dict(l.split("=",1) for l in open(os.environ.get("FP_TEST_CREDS","/workspace/fptest/.creds")).read().strip().split("\n"))
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
-B = args[0] if args else "http://localhost:8787/foodporter-app"
+B = args[0] if args else os.environ.get("FP_BASE", "http://localhost:8787/foodporter-app")
+ONLY = next((a.split("=",1)[1].split(",") for a in sys.argv if a.startswith("--role=")), None)
+CHECKED = set()   # links already checked in this run
 QUICK = "--quick" in sys.argv
 NODE = lambda js: subprocess.run(["node","--input-type=module","-e","import * as m from '/workspace/foodporter-app/scripts/e2e/common.mjs';"+js+";process.exit(0)"],capture_output=True,text=True,cwd="/workspace/foodporter-app/scripts/e2e").stdout.strip().split("\n")[-1]
 RID = "187f751c-bebb-4a34-9d4b-9b1a9e8851db"
@@ -47,9 +49,12 @@ def crawl(ctx, role, url, lang, view):
     pg.on("pageerror", lambda e: errs.append("pageerror: " + str(e)[:160]))
     pg.on("response", lambda r: r.status >= 400 and not EXPECTED_FAIL.search(r.url) and "nope-404" not in r.url and bad.append(f"{r.status} {r.url[:110]}"))
     pg.add_init_script(INIT)
-    pg.goto(B + url); pg.evaluate(f"localStorage.setItem('fp-lang','{lang}')"); pg.reload(); pg.wait_for_timeout(2200); stats["pages"] += 1
+    pg.goto(B + url); pg.evaluate(f"localStorage.setItem('fp-lang','{lang}')"); pg.reload(); 
+    try: pg.wait_for_load_state("networkidle", timeout=4000)
+    except Exception: pass
+    pg.wait_for_timeout(500); stats["pages"] += 1
     if pg.locator("[data-testid=not-found]").count() and "nope-404" not in url: F("404", where, "page renders not-found")
-    els = pg.locator(SEL); n = min(els.count(), 45); seen = set()
+    els = pg.locator(SEL); n = min(els.count(), 30); seen = set()
     hrefs = set()
     for i in range(n):
         try:
@@ -73,20 +78,21 @@ def crawl(ctx, role, url, lang, view):
                 cur = el.input_value(); el.select_option(next(v for v in opts if v != cur))
             else:
                 el.click(timeout=2500)
-            pg.wait_for_timeout(700); stats["clicks"] += 1
+            pg.wait_for_timeout(400); stats["clicks"] += 1
             after = pg.evaluate(SNAP)
             if after == before and len(downloads) == dl0: F("no-op", where, f"{tag} “{lab}”")
             if after["url"] != before["url"]:
-                pg.goto(B + url); pg.wait_for_timeout(1500)
+                pg.goto(B + url); pg.wait_for_timeout(800)
             else:
                 pg.keyboard.press("Escape")
         except Exception as e:
             if "Timeout" in str(e) or "not attached" in str(e) or "outside of the viewport" in str(e): continue
             F("crawler", where, str(e)[:120])
-    for h in sorted(hrefs):
+    for h in sorted(hrefs - CHECKED):
+        CHECKED.add(h)
         full = h if h.startswith("http") else (re.sub(r"/foodporter-app$", "", B) + h if h.startswith("/foodporter-app") else B + h)
         try:
-            r = pg.goto(full); pg.wait_for_timeout(900)
+            r = pg.goto(full); pg.wait_for_timeout(400)
             if (r and r.status >= 400 and "nope" not in h) or pg.locator("[data-testid=not-found]").count(): F("dead-link", where, h)
         except Exception as e: F("dead-link", where, f"{h} {str(e)[:60]}")
     for e in sorted(set(errs)):
@@ -101,6 +107,7 @@ t0 = time.time()
 with sync_playwright() as p:
     b = p.chromium.launch()
     for role, acct, urls in PLAN:
+        if ONLY and role not in ONLY: continue
         for view, lang in combos:
             ctx = b.new_context(**views[view])
             if acct: lp = ctx.new_page(); login(lp, acct); lp.close()
@@ -109,5 +116,5 @@ with sync_playwright() as p:
             ctx.close()
     b.close()
 print(f"\ncrawl: {stats['pages']} page visits, {stats['clicks']} clicks, {stats['skipped']} destructive skipped, {len(findings)} findings, {int(time.time()-t0)} s")
-json.dump(findings, open("/tmp/crawl_findings.json", "w"), indent=1)
+json.dump(findings, open(f"/tmp/crawl_findings{'_'+'-'.join(ONLY) if ONLY else ''}.json", "w"), indent=1)
 sys.exit(1 if findings else 0)

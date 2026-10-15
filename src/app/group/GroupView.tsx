@@ -274,7 +274,7 @@ export function GroupView() {
             <button className="mt-3 w-full text-center text-sm text-muted underline" onClick={() => { if (confirm(t("Groepsbestelling annuleren?", "Cancel this group order?"))) void run(rpc("group_cancel", { p_group: group.id })); }}>{t("Groepsbestelling annuleren", "Cancel group order")}</button>
           </Card>
         )}
-        {!isHost && group.status === "open" && <button className="w-full text-center text-sm text-muted underline" onClick={() => run(rpc("group_leave", { p_group: group.id })).then(() => router.push("/"))}>{t("Groep verlaten", "Leave group")}</button>}
+        {!isHost && group.status === "open" && <button className="w-full text-center text-sm text-muted underline" onClick={() => confirm(t("Groep verlaten? Je gerechten worden uit het mandje gehaald.", "Leave the group? Your dishes are removed from the basket.")) && run(rpc("group_leave", { p_group: group.id })).then(() => router.push("/"))}>{t("Groep verlaten", "Leave group")}</button>}
         {!isHost && group.status === "locked" && <p className="text-center text-sm text-muted">{t("De host rekent nu af.", "The host is checking out.")}</p>}
       </main></>
   );
