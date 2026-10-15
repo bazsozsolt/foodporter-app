@@ -69,7 +69,7 @@ def crawl(ctx, role, url, lang, view):
                 if href.startswith(("tel:", "mailto:", "#")): continue
                 hrefs.add(href); continue
             if DESTRUCTIVE.search(lab) or el.is_disabled(): stats["skipped"] += 1; continue
-            if el.get_attribute("aria-pressed") == "true": continue   # already-selected chip: no-op by design
+            if el.get_attribute("aria-pressed") == "true" or el.get_attribute("aria-selected") == "true": continue   # already-selected chip: no-op by design
             before = pg.evaluate(SNAP); dl0 = len(downloads)
             if el.get_attribute("data-persist") is not None: stats["skipped"] += 1; continue   # writes to DB on change/click
             if tag == "SELECT":

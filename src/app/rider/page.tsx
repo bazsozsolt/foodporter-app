@@ -14,7 +14,6 @@ import { HelpButton } from "@/components/SupportSheet";
 import { SosButton } from "@/components/SosButton";
 import { act } from "@/lib/act";
 import { Button, Card, Chips, Empty, Header, Pill, SectionHeader } from "@/components/ui";
-import { restaurantStyle } from "@/lib/mock-data";
 import { eur, hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
 import { STATUS_LABEL, STATUS_LABEL_NL, type Order } from "@/lib/types";
@@ -22,7 +21,7 @@ import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap, type MapMarker } from "@/components/LiveMap";
 import { navUrl, osmNavUrl, useShareLocation } from "@/lib/location";
 import { CallButton, OrderChat } from "@/components/OrderChat";
-import { AlarmClock, Bike, ChefHat, ChevronRight, Hourglass, House, Inbox, MapPin, Navigation, Power, Timer, Wallet } from "lucide-react";
+import { AlarmClock, Bike, ChefHat, ChevronRight, Hourglass, House, Inbox, Navigation, Power, Timer, Wallet } from "lucide-react";
 
 const riderBody = (n: number) => tx(`${n} ${n > 1 ? "bestellingen" : "bestelling"} in de buurt: bied nu je bezorgtijd`, `${n} order${n > 1 ? "s" : ""} open for bids near you`);
 

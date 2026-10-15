@@ -13,7 +13,7 @@ import { HelpButton } from "@/components/SupportSheet";
 import { ItemUnavailable } from "@/components/ItemUnavailable";
 import { hhmm } from "@/lib/format";
 import { eur } from "@/lib/format";
-import { acceptedBid, actions, useStore } from "@/lib/store";
+import { actions, useStore } from "@/lib/store";
 import { STATUS_LABEL, STATUS_LABEL_NL, type Order } from "@/lib/types";
 import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap } from "@/components/LiveMap";
@@ -115,7 +115,7 @@ export default function RestaurantPage() {
         <RoleGate role="restaurant">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div role="tablist" className="flex rounded-xl bg-subtle p-1 text-sm font-semibold">
-            {(["orders", "menu"] as const).map((k) => <button key={k} role="tab" aria-selected={tab === k} aria-pressed={tab === k} data-testid={`rtab-${k}`} onClick={() => setTab(k)} className={`min-h-10 rounded-lg px-4 ${tab === k ? "bg-white shadow-sm" : "text-muted"}`}>{k === "orders" ? tx("Bestellingen", "Orders") : tx("Menu & foto's", "Menu & photos")}</button>)}
+            {(["orders", "menu"] as const).map((k) => <button key={k} role="tab" aria-selected={tab === k} data-testid={`rtab-${k}`} onClick={() => setTab(k)} className={`min-h-10 rounded-lg px-4 ${tab === k ? "bg-white shadow-sm" : "text-muted"}`}>{k === "orders" ? tx("Bestellingen", "Orders") : tx("Menu & foto's", "Menu & photos")}</button>)}
           </div>
           <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
         </div>

@@ -1,7 +1,6 @@
 "use client";
 import { HelpButton } from "@/components/SupportSheet";
 import { tx } from "@/lib/i18n";
-import Link from "next/link";
 import { RoleGate } from "@/components/RoleGate";
 import { Card, Header, Stat } from "@/components/ui";
 import { eur } from "@/lib/format";

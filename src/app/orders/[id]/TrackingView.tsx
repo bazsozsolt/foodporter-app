@@ -3,13 +3,12 @@ import { AlertTriangle, CircleCheck, CreditCard, Hourglass, Search, Smartphone, 
 import { CustomerPushCard } from "@/components/OrderAlerts";
 import { HelpButton } from "@/components/SupportSheet";
 import { useT, tx } from "@/lib/i18n";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { act } from "@/lib/act";
 import { Card, Empty, Header } from "@/components/ui";
 import { hhmm } from "@/lib/format";
-import { acceptedBid, actions, useStore } from "@/lib/store";
+import { actions, useStore } from "@/lib/store";
 import { cancelReason, PICKUP_STEPS, STATUS_LABEL, STATUS_LABEL_NL, STATUS_STEPS } from "@/lib/types";
 import { RateOrder } from "@/components/RateOrder";
 import { ReorderButton } from "@/components/ReorderButton";
