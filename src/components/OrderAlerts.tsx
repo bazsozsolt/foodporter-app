@@ -1,4 +1,5 @@
 "use client";
+import { Bell, BellOff } from "lucide-react";
 import { toast } from "@/components/Toaster";
 import { tx } from "@/lib/i18n";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
@@ -187,8 +188,8 @@ export function AlertsToggle() {
   return (
     <div className="col-span-2 sm:col-span-1">
       <button onClick={toggle} data-testid="alerts-toggle" aria-pressed={on}
-        className={`mb-2 w-full rounded-xl border-[1.5px] px-3 py-2 text-sm font-semibold ${on ? "border-ok bg-[#eaf8ef] text-ok" : "border-[#e2ded8] bg-white text-muted"}`}>
-        {on ? `🔔 ${tx("Meldingen aan", "Alerts on")}` : `🔕 ${tx("Zet geluid + meldingen aan voor nieuwe bestellingen", "Turn on sound + notifications for new orders")}`}
+        className={`mb-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold ${on ? "border-ok bg-[#eaf8ef] text-ok" : "border-gold bg-gold-soft text-ink"}`}>
+        {on ? <Bell size={16} aria-hidden /> : <BellOff size={16} aria-hidden />}{on ? tx("Meldingen aan", "Alerts on") : tx("Zet meldingen en geluid aan", "Turn on alerts and sound")}
       </button>
       {on && perm === "default" && (
         <div data-testid="notify-prompt" role="dialog" aria-labelledby="np-title" className="mb-3 rounded-xl border-2 border-gold bg-gold-soft p-3 text-sm">
