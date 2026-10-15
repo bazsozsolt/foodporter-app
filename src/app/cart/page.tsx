@@ -2,6 +2,7 @@
 import { useT, tx } from "@/lib/i18n";
 import Link from "next/link";
 import { Card, Empty, Header } from "@/components/ui";
+import { ShoppingBag, X } from "lucide-react";
 import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
 import { Photo } from "@/components/Photo";
@@ -17,8 +18,8 @@ export default function CartPage() {
     <>
       <Header />
       <main id="main" className="p-4">
-        <h2 className="mb-3 text-lg font-bold">{t("Je winkelmand", "Your cart")}</h2>
-        {!r || lines.length === 0 ? <Empty icon="🛒">{t("Je winkelmand is leeg.", "Your cart is empty.")} <Link className="text-brand" href="/">{t("Bekijk restaurants", "Browse restaurants")}</Link></Empty> : (
+        <h1 className="mb-3 text-[28px]">{t("Je winkelmand", "Your cart")}</h1>
+        {!r || lines.length === 0 ? <Empty icon={<ShoppingBag size={26} />}>{t("Je winkelmand is leeg.", "Your cart is empty.")} <Link className="text-brand" href="/">{t("Bekijk restaurants", "Browse restaurants")}</Link></Empty> : (
           <>
             <Card>
               <b>{r.name}</b>
@@ -26,14 +27,14 @@ export default function CartPage() {
                 <div key={item.id} className="mt-2 flex items-center justify-between">
                   <span className="flex min-w-0 items-center gap-2"><Photo src={item.image_url} alt={item.name} className="w-12 shrink-0 rounded-lg text-sm" sizes="48px" /><span>{q}× {item.name}</span></span>
                   <span className="flex items-center gap-2">{eur(q * item.price_cents)}
-                    <button className="text-muted" aria-label={tx("Item verwijderen", "Remove item")} onClick={() => actions.setQty(r.id, item.id, 0)}>✕</button></span>
+                    <button className="grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-subtle" aria-label={tx("Item verwijderen", "Remove item")} onClick={() => actions.setQty(r.id, item.id, 0)}><X size={16} /></button></span>
                 </div>
               ))}
-              <hr className="my-3 border-dashed" />
+              <hr className="my-3 border-line" />
               <div className="flex justify-between text-sm text-muted"><span>{tx("Bezorgkosten (vast)", "Delivery fee (flat)")}</span><span>{eur(DELIVERY_FEE_CENTS)}</span></div>
               <div className="flex justify-between font-bold"><span>{tx("Totaal", "Total")}</span><span>{eur(sub + DELIVERY_FEE_CENTS)}</span></div>
             </Card>
-            <Link href="/checkout" className="block rounded-2xl bg-brand py-3.5 text-center font-bold text-white">{tx("Naar afrekenen", "Go to checkout")}</Link>
+            <Link href="/checkout" className="block min-h-12 rounded-xl bg-brand py-3.5 text-center font-semibold text-white">{tx("Naar afrekenen", "Go to checkout")}</Link>
           </>
         )}
       </main>

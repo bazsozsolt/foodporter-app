@@ -15,7 +15,7 @@ function Photo({ path }: { path: string }) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => { let alive = true; void signedPhoto(path).then((u) => { if (alive) setUrl(u); }); return () => { alive = false; }; }, [path]);
   // eslint-disable-next-line @next/next/no-img-element
-  return url ? <a href={url} target="_blank" rel="noreferrer noopener"><img src={url} alt={tx("Foto bij melding", "Photo attached")} className="mt-2 max-h-48 rounded-lg" /></a> : <p className="mt-1 text-xs text-muted">📷 …</p>;
+  return url ? <a href={url} target="_blank" rel="noreferrer noopener"><img src={url} alt={tx("Foto bij melding", "Photo attached")} className="mt-2 max-h-48 rounded-lg" /></a> : <p className="mt-1 text-xs text-muted">…</p>;
 }
 
 function Bubble({ m, mine }: { m: Message; mine: boolean }) {
@@ -60,7 +60,7 @@ function Thread({ id }: { id: number }) {
         <div ref={end} />
       </div>
       <div className="sticky bottom-20 mt-3 rounded-2xl bg-white p-2 shadow-lg">
-        <textarea data-testid="reply-body" value={text} onChange={(e) => setText(e.target.value)} rows={2} maxLength={2000} placeholder={tx("Typ een bericht…", "Type a message…")} className="w-full resize-none rounded-xl border-[1.5px] border-[#e2ded8] p-2 text-sm" />
+        <textarea data-testid="reply-body" value={text} onChange={(e) => setText(e.target.value)} rows={2} maxLength={2000} placeholder={tx("Typ een bericht…", "Type a message…")} className="w-full resize-none rounded-xl border border-line p-2 text-sm" />
         <div className="mt-1 flex items-center gap-2">
           <label className="text-xs text-muted">📷<input type="file" accept="image/*" className="ml-1 w-40 text-xs" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} /></label>
           <button data-testid="reply-send" disabled={busy || !text.trim()} onClick={send} className="ml-auto rounded-xl bg-brand px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{tx("Stuur", "Send")}</button>
@@ -83,7 +83,7 @@ export function SupportView() {
           : id ? <><Link href="/support/" className="mb-2 block text-sm font-semibold text-brand">← {tx("Alle meldingen", "All tickets")}</Link><Thread id={id} /></>
           : (
             <>
-              <div className="mb-3 flex items-center justify-between"><h1 className="font-display text-2xl">🛟 {tx("Mijn meldingen", "My tickets")}</h1><HelpButton role={role} label={tx("Nieuwe melding", "New ticket")} /></div>
+              <div className="mb-3 flex items-center justify-between"><h1 className="font-display text-2xl">{tx("Mijn meldingen", "My tickets")}</h1><HelpButton role={role} label={tx("Nieuwe melding", "New ticket")} /></div>
               {rows === null ? <Empty icon="⏳">{tx("Laden…", "Loading…")}</Empty> : rows.length === 0 ? <Empty icon="🙌">{tx("Geen meldingen. Hulp nodig bij een bestelling? Open de bestelling en tik op Hulp.", "No tickets. Need help with an order? Open it and tap Help.")}</Empty> : (
                 <div className="space-y-2" data-testid="my-tickets">
                   {rows.map((t) => (

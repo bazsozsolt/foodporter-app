@@ -21,7 +21,7 @@ export default function LoginPage() {
     if (!hasSupabase || !url || !key) return;
     fetch(`${url}/auth/v1/settings`, { headers: { apikey: key } }).then((r) => r.json()).then((d) => setProviders({ google: !!d?.external?.google, apple: !!d?.external?.apple })).catch(() => {});
   }, []);
-  const input = "mb-2 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-3";
+  const input = "mb-2 w-full rounded-xl border border-line p-3";
 
   const goNext = () => router.push(new URLSearchParams(window.location.search).get("next") || "/");
 

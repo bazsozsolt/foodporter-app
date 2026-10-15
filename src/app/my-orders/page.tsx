@@ -3,6 +3,7 @@ import { tx } from "@/lib/i18n";
 import Link from "next/link";
 import { ReorderButton } from "@/components/ReorderButton";
 import { Card, Empty, Header, Pill } from "@/components/ui";
+import { LifeBuoy, LogIn, Receipt } from "lucide-react";
 import { eur } from "@/lib/format";
 import { orderHref } from "@/lib/orders";
 import { useStore } from "@/lib/store";
@@ -13,14 +14,12 @@ export default function MyOrders() {
   const mine = [...orders].filter((o) => mode === "mock" || o.customer_id === profile?.id).sort((a, b) => Number(b.id) - Number(a.id));
   return (
     <>
-      <Header subtitle={tx("Jouw bestellingen", "Your orders")} />
+      <Header />
       <main id="main" className="p-4">
-        <Link href="/support/" data-testid="my-tickets-link" className="mb-3 block text-right text-sm font-semibold text-brand">🛟 {tx("Mijn meldingen", "My tickets")}</Link>
-        <Link href="/" className="text-sm text-muted">← {tx("Home", "Home")}</Link>
-        <h2 className="my-3 text-lg font-bold">{tx("Bestelgeschiedenis", "Order history")}</h2>
+        <div className="mb-3 flex items-center justify-between"><h1 className="text-[28px]">{tx("Bestellingen", "Orders")}</h1><Link href="/support/" data-testid="my-tickets-link" className="inline-flex min-h-9 items-center gap-1 text-sm font-semibold text-brand"><LifeBuoy size={16} aria-hidden />{tx("Mijn meldingen", "My tickets")}</Link></div>
         {!ready ? <p className="text-muted">{tx("Laden…", "Loading…")}</p>
-          : !signedIn ? <Empty icon="🔐"><Link className="text-brand" href="/login?next=/my-orders">{tx("Log in", "Sign in")}</Link> {tx("om je bestellingen te zien.", "to see your orders.")}</Empty>
-          : mine.length === 0 ? <Empty icon="🧾">{tx("Nog geen bestellingen.", "No orders yet.")} <Link className="text-brand" href="/">{tx("Zoek iets lekkers", "Find something tasty")}</Link></Empty>
+          : !signedIn ? <Empty icon={<LogIn size={24} />}><Link className="text-brand" href="/login?next=/my-orders">{tx("Log in", "Sign in")}</Link> {tx("om je bestellingen te zien.", "to see your orders.")}</Empty>
+          : mine.length === 0 ? <Empty icon={<Receipt size={24} />}>{tx("Nog geen bestellingen.", "No orders yet.")} <Link className="text-brand" href="/">{tx("Zoek iets lekkers", "Find something tasty")}</Link></Empty>
           : mine.map((o) => (
             <Link key={o.id} href={orderHref(o.id)}>
               <Card>

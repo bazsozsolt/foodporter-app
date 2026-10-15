@@ -11,6 +11,7 @@ import { AddressField } from "@/components/AddressField";
 import { hasSupabase } from "@/lib/supabase";
 import { orderHref } from "@/lib/orders";
 import { TestModeCheckoutNote } from "@/components/TestModeBanner";
+import { ArrowLeft, Lock, ShoppingBag } from "lucide-react";
 
 export default function CheckoutPage() {
   const { cart, signedIn, menuItems, settings } = useStore();
@@ -25,9 +26,9 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [method, setMethod] = useState<"iDEAL" | "Card">("iDEAL");
   const sub = Object.entries(cart.qty).reduce((a, [id, q]) => a + q * (menuItems.find((m) => m.id === id)?.price_cents ?? 0), 0);
-  const input = "mb-2.5 mt-1 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-3";
+  const input = "mb-2.5 mt-1 w-full rounded-xl border border-line p-3";
 
-  if (sub === 0) return <><Header /><main id="main" className="p-4"><Empty icon="🛒">{t("Er is niets om af te rekenen.", "Nothing to check out.")} <Link className="text-brand" href="/">{t("Bekijk restaurants", "Browse")}</Link></Empty></main></>;
+  if (sub === 0) return <><Header /><main id="main" className="p-4"><Empty icon={<ShoppingBag size={26} />}>{t("Er is niets om af te rekenen.", "Nothing to check out.")} <Link className="text-brand" href="/">{t("Bekijk restaurants", "Browse")}</Link></Empty></main></>;
 
   async function pay() {
     if (!signedIn) { router.push("/login?next=/checkout"); return; }
@@ -46,8 +47,8 @@ export default function CheckoutPage() {
     <>
       <Header />
       <main id="main" className="p-4">
-        <Link href="/cart" className="text-sm text-muted">← {t("Terug naar winkelmand", "Back to cart")}</Link>
-        <h2 className="my-3 text-lg font-bold">{t("Afrekenen", "Checkout")}</h2>
+        <Link href="/cart" className="inline-flex min-h-9 items-center gap-1 text-sm font-semibold text-muted"><ArrowLeft size={16} aria-hidden />{t("Terug naar winkelmand", "Back to cart")}</Link>
+        <h1 className="my-3 text-[28px]">{t("Afrekenen", "Checkout")}</h1>
         <Card>
           <label className="text-[13px] text-muted">{t("Bezorgadres", "Delivery address")}</label>
           <AddressField value={address} onChange={setAddress} geo={geo} onGeo={setGeo} center={center} radiusKm={settings.zone_radius_km} />
@@ -61,7 +62,7 @@ export default function CheckoutPage() {
         </Card>
         <TestModeCheckoutNote />
         <Card><b>{t("Betalen met Mollie", "Pay with Mollie")}</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} render={(v) => v === "Card" ? t("Kaart", "Card") : v} value={method} onChange={setMethod} /></div></Card>
-        <Button onClick={pay} disabled={busy || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS)} met ${method === "Card" ? "kaart" : method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}`) : t("Log in om te betalen", "Sign in to pay")}</Button>
+        <Button icon={<Lock size={16} aria-hidden />} onClick={pay} disabled={busy || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS)} met ${method === "Card" ? "kaart" : method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS)} with ${method}`) : t("Log in om te betalen", "Sign in to pay")}</Button>
         <p className="mt-3 text-center text-xs text-muted">{t("Door te betalen ga je akkoord met onze", "By paying you agree to our")} <Link className="underline" href="/terms">{t("Voorwaarden", "Terms")}</Link> {t("en", "and")} <Link className="underline" href="/privacy">{t("Privacybeleid", "Privacy policy")}</Link>. {t("Geannuleerde bestellingen worden volledig terugbetaald.", "Cancelled orders are refunded in full.")}</p>
       </main>
     </>

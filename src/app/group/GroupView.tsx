@@ -106,7 +106,7 @@ export function GroupView() {
   const nameOf = (uid: string) => members.find((m) => m.user_id === uid)?.display_name ?? "?";
   const shares = group ? splitShares(members, items, fee, group.host_id) : [];
   const shareUrl = typeof window !== "undefined" ? `${window.location.origin}${BASE}/group/?code=${code}` : "";
-  const input = "mt-1 w-full rounded-xl border-[1.5px] border-[#e2ded8] p-3";
+  const input = "mt-1 w-full rounded-xl border border-line p-3";
 
   async function run<T>(p: Promise<T>, ok?: string) { setBusy(true); const v = await act(p, ok); setBusy(false); await load(); return v; }
 
@@ -215,7 +215,7 @@ export function GroupView() {
               <div key={m.id} className="flex items-center justify-between border-b border-[#f1ede8] py-2 last:border-0">
                 <div><div className="font-semibold">{m.name}</div><div className="text-[13px] text-muted">{eur(m.price_cents)}</div></div>
                 <div className="flex items-center gap-2.5">
-                  {it && <button aria-label={t("Eén minder", "Remove one")} className="h-8 w-8 rounded-full bg-[#f1ede8] font-bold" disabled={busy} onClick={() => run(rpc("group_set_qty", { p_item: it.id, p_qty: it.qty - 1 }))}>−</button>}
+                  {it && <button aria-label={t("Eén minder", "Remove one")} className="h-8 w-8 rounded-full bg-subtle font-bold" disabled={busy} onClick={() => run(rpc("group_set_qty", { p_item: it.id, p_qty: it.qty - 1 }))}>−</button>}
                   {it && <b>{it.qty}</b>}
                   <button aria-label={t(`${m.name} toevoegen`, `Add ${m.name}`)} data-testid="group-add" className="h-8 w-8 rounded-full bg-brand font-bold text-white" disabled={busy} onClick={() => run(rpc("group_add_item", { p_group: group.id, p_menu_item: m.id, p_qty: 1 }))}>+</button>
                 </div>
@@ -256,12 +256,12 @@ export function GroupView() {
             {group.status === "open" && <>
               <p className="mt-2 text-[13px] text-muted">{t("Deadline", "Deadline")}</p>
               <div className="mt-1 flex flex-wrap gap-2">
-                {[15, 30, 45, 60].map((m) => <button key={m} className="rounded-full bg-[#f1ede8] px-3 py-1.5 text-sm font-semibold" onClick={() => run(rpc("group_set_deadline", { p_group: group.id, p_minutes: m }), t(`Deadline over ${m} min`, `Deadline in ${m} min`))}>{m} min</button>)}
+                {[15, 30, 45, 60].map((m) => <button key={m} className="rounded-full bg-subtle px-3 py-1.5 text-sm font-semibold" onClick={() => run(rpc("group_set_deadline", { p_group: group.id, p_minutes: m }), t(`Deadline over ${m} min`, `Deadline in ${m} min`))}>{m} min</button>)}
                 {group.deadline && <button className="rounded-full px-3 py-1.5 text-sm text-muted" onClick={() => run(rpc("group_set_deadline", { p_group: group.id, p_minutes: null }))}>{t("Geen", "None")}</button>}
               </div>
             </>}
             <Button variant={group.status === "open" ? "dark" : "ghost"} disabled={busy} onClick={() => run(rpc("group_set_locked", { p_group: group.id, p_locked: group.status === "open" }), group.status === "open" ? t("Mand vergrendeld", "Basket locked") : t("Mand weer open", "Basket reopened"))}>
-              {group.status === "open" ? "🔒 " + t("Mand vergrendelen", "Lock basket") : "🔓 " + t("Mand weer openen", "Reopen basket")}</Button>
+              {group.status === "open" ? "" + t("Mand vergrendelen", "Lock basket") : "🔓 " + t("Mand weer openen", "Reopen basket")}</Button>
             {group.status === "locked" && items.length > 0 && <>
               <p className="mt-4 font-bold">{t("Afrekenen (jij betaalt voor iedereen)", "Checkout (you pay for everyone)")}</p>
               <label className="text-[13px] text-muted">{t("Eén bezorgadres", "One delivery address")}</label>

@@ -1,4 +1,5 @@
 "use client";
+import { LifeBuoy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { tx } from "@/lib/i18n";
@@ -56,7 +57,7 @@ export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role
           <div className="grid gap-2" data-testid="support-categories">
             <p className="text-sm font-semibold">{tx("Waar kunnen we mee helpen?", "What can we help with?")}</p>
             {CATEGORIES[role].map(([k, nl, en]) => (
-              <button key={k} data-testid={`cat-${k}`} onClick={() => setCat(k)} className="rounded-xl border-[1.5px] border-[#e2ded8] bg-white px-3 py-3 text-left text-sm font-semibold">{tx(nl, en)}</button>
+              <button key={k} data-testid={`cat-${k}`} onClick={() => setCat(k)} className="rounded-xl border border-line bg-white px-3 py-3 text-left text-sm font-semibold">{tx(nl, en)}</button>
             ))}
           </div>
         ) : (
@@ -64,7 +65,7 @@ export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role
             <button onClick={() => setCat(null)} className="text-left text-sm font-semibold text-brand">← {catLabel(role, cat)}</button>
             <label className="text-sm font-semibold">{tx("Wat is er gebeurd?", "What happened?")}
               <textarea data-testid="support-body" value={body} onChange={(e) => setBody(e.target.value)} maxLength={2000} rows={4}
-                className="mt-1 w-full rounded-xl border-[1.5px] border-[#e2ded8] bg-white p-3 text-sm font-normal" placeholder={tx("Vertel het kort in je eigen woorden", "Tell us briefly in your own words")} />
+                className="mt-1 w-full rounded-xl border border-line bg-white p-3 text-sm font-normal" placeholder={tx("Vertel het kort in je eigen woorden", "Tell us briefly in your own words")} />
             </label>
             <label className="text-sm font-semibold">📷 {tx("Foto (optioneel)", "Photo (optional)")}
               <input data-testid="support-photo" type="file" accept="image/*" capture="environment" onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} className="mt-1 block w-full text-sm font-normal" />
@@ -76,7 +77,7 @@ export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role
                   <label key={v} className="mr-3 inline-flex items-center gap-1"><input type="radio" name="refund" checked={refund === v} onChange={() => setRefund(v)} />
                     {v === "none" ? tx("Nee", "No") : v === "partial" ? tx("Deels", "Partly") : tx(`Alles (€${(orderTotalCents! / 100).toFixed(2).replace(".", ",")})`, `All (€${(orderTotalCents! / 100).toFixed(2)})`)}</label>
                 ))}
-                {refund === "partial" && <input data-testid="support-amount" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="€ 0,00" className="mt-2 w-full rounded-xl border-[1.5px] border-[#e2ded8] px-3 py-2" />}
+                {refund === "partial" && <input data-testid="support-amount" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="€ 0,00" className="mt-2 w-full rounded-xl border border-line px-3 py-2" />}
                 <p className="mt-1 text-[12px] text-muted">{tx("Ons team beoordeelt je verzoek, meestal binnen een paar uur.", "Our team reviews your request, usually within a few hours.")}</p>
               </fieldset>
             )}
@@ -95,7 +96,7 @@ export function HelpButton({ role, orderId, orderTotalCents, label }: { role: Su
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button data-testid="help-button" onClick={() => setOpen(true)} className="rounded-xl border-[1.5px] border-[#e2ded8] bg-white px-3 py-2 text-sm font-semibold">🛟 {label ?? tx("Hulp", "Help")}</button>
+      <button data-testid="help-button" onClick={() => setOpen(true)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-line bg-white px-3 text-sm font-semibold"><LifeBuoy size={16} className="text-brand" aria-hidden />{label ?? tx("Hulp", "Help")}</button>
       {open && <SupportSheet role={role} orderId={orderId} orderTotalCents={orderTotalCents} onClose={() => setOpen(false)} />}
     </>
   );

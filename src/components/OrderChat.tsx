@@ -1,4 +1,5 @@
 "use client";
+import { ChevronDown, ChevronUp, Phone } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { tx } from "@/lib/i18n";
 import { act } from "@/lib/act";
@@ -12,8 +13,8 @@ export function CallButton({ orderId, status, side, asAdmin = false }: { orderId
   if (!ACTIVE.includes(status)) return null;
   return (
     <button data-testid="call-btn" disabled={busy} onClick={async () => { setBusy(true); await act(callOther(orderId, asAdmin ? (side === "customer" ? "rider" : "customer") : undefined)); setBusy(false); }}
-      className="rounded-full border-[1.5px] border-brand px-3 py-1.5 text-sm font-semibold text-brand disabled:opacity-50">
-      📞 {side === "customer" ? tx("Bel bezorger", "Call rider") : tx("Bel klant", "Call customer")}
+      className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-line bg-white px-3 text-sm font-semibold text-ink disabled:opacity-50">
+      <Phone size={16} className="text-brand" aria-hidden />{side === "customer" ? tx("Bel bezorger", "Call rider") : tx("Bel klant", "Call customer")}
     </button>
   );
 }
@@ -50,19 +51,19 @@ export function OrderChat({ orderId, channel, side, readOnly, title, order }: { 
   const mine = (r: string) => r === side;
   const who = (r: string) => ({ customer: tx("Klant", "Customer"), rider: tx("Bezorger", "Rider"), restaurant: tx("Restaurant", "Restaurant"), admin: "Admin" } as Record<string, string>)[r] ?? r;
   return (
-    <div className="rounded-2xl border border-[#ece8e1] bg-white" data-testid={`chat-${channel}`}>
-      <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between px-3 py-2 text-left text-sm font-semibold" data-testid={`chat-toggle-${channel}`}>
+    <div className="rounded-2xl border border-line bg-white" data-testid={`chat-${channel}`}>
+      <button onClick={() => setOpen(!open)} className="flex min-h-12 w-full items-center justify-between px-3 py-2 text-left text-sm font-semibold" data-testid={`chat-toggle-${channel}`}>
         <span>💬 {label}</span>
-        <span className="text-xs text-[#8a847a]">{unread > 0 && !open ? `${unread} ${tx("bericht(en)", "message(s)")}` : open ? "▲" : "▼"}</span>
+        <span className="text-xs text-muted">{unread > 0 && !open ? `${unread} ${tx("bericht(en)", "message(s)")}` : open ? "▲" : "▼"}</span>
       </button>
       {open && (
-        <div className="border-t border-[#ece8e1] p-3">
+        <div className="border-t border-line p-3">
           <div className="max-h-64 space-y-2 overflow-y-auto" data-testid="chat-list">
-            {rows === null && <p className="text-xs text-[#8a847a]">{tx("Laden…", "Loading…")}</p>}
-            {rows?.length === 0 && <p className="text-xs text-[#8a847a]">{readOnly ? "No messages" : tx("Nog geen berichten. Je telefoonnummer blijft privé.", "No messages yet. Your phone number stays private.")}</p>}
+            {rows === null && <p className="text-xs text-muted">{tx("Laden…", "Loading…")}</p>}
+            {rows?.length === 0 && <p className="text-xs text-muted">{readOnly ? "No messages" : tx("Nog geen berichten. Je telefoonnummer blijft privé.", "No messages yet. Your phone number stays private.")}</p>}
             {rows?.map((m) => (
               <div key={m.id} className={`flex ${mine(m.author_role) ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[80%] rounded-2xl px-3 py-1.5 text-sm ${mine(m.author_role) ? "bg-brand text-white" : "bg-[#f4f1ec]"}`}>
+                <div className={`max-w-[80%] rounded-2xl px-3 py-1.5 text-sm ${mine(m.author_role) ? "bg-brand text-white" : "bg-subtle"}`}>
                   {!mine(m.author_role) && <div className="text-[10px] font-semibold opacity-70">{who(m.author_role)}</div>}
                   {m.body}
                   <div className="text-right text-[10px] opacity-60">{new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
@@ -71,17 +72,17 @@ export function OrderChat({ orderId, channel, side, readOnly, title, order }: { 
             ))}
             <div ref={end} />
           </div>
-          {closed && <p className="mt-2 rounded-xl bg-[#f4f1ec] p-2 text-xs text-muted" data-testid="chat-closed">🔒 {tx("Deze chat is gesloten. Hulp nodig? Gebruik de Hulp-knop.", "This chat is closed. Need help? Use the Help button.")}</p>}
+          {closed && <p className="mt-2 rounded-xl bg-subtle p-2 text-xs text-muted" data-testid="chat-closed">{tx("Deze chat is gesloten. Hulp nodig? Gebruik de Hulp-knop.", "This chat is closed. Need help? Use the Help button.")}</p>}
           {!readOnly && !closed && (
             <>
               <div className="mt-2 flex flex-wrap gap-1.5" data-testid="chat-quick">
                 {(QUICK[side] ?? []).map(([nl, en]) => (
-                  <button key={nl} disabled={busy} onClick={() => send(tx(nl, en), true)} className="rounded-full bg-[#fad228] px-2.5 py-1 text-xs font-semibold">{tx(nl, en)}</button>
+                  <button key={nl} disabled={busy} onClick={() => send(tx(nl, en), true)} className="min-h-9 rounded-full border border-line bg-subtle px-3 py-1.5 text-xs font-semibold">{tx(nl, en)}</button>
                 ))}
               </div>
               <form className="mt-2 flex gap-2" onSubmit={(e) => { e.preventDefault(); void send(text); }}>
                 <input data-testid="chat-input" value={text} maxLength={500} onChange={(e) => setText(e.target.value)} placeholder={tx("Typ een bericht…", "Type a message…")}
-                  className="min-w-0 flex-1 rounded-xl border-[1.5px] border-[#e2ded8] px-3 py-2 text-sm" />
+                  className="min-w-0 flex-1 rounded-xl border border-line px-3 py-2 text-sm" />
                 <button data-testid="chat-send" disabled={busy || !text.trim()} className="rounded-xl bg-brand px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{tx("Stuur", "Send")}</button>
               </form>
             </>
@@ -103,7 +104,7 @@ export function AdminOrderContact({ orderId }: { orderId: number }) {
     <div className="space-y-2" data-testid="admin-contact">
       <OrderChat orderId={orderId} channel="rider" side="admin" readOnly title="Chat customer ↔ rider" />
       <OrderChat orderId={orderId} channel="restaurant" side="admin" readOnly title="Chat customer ↔ restaurant" />
-      <div className="text-xs text-[#8a847a]" data-testid="call-audit">📞 Calls: {calls === null ? "…" : calls.length === 0 ? "none" : calls.map((c) => `${c.caller_role}→${c.callee_role} ${new Date(c.created_at).toLocaleString()} (${c.provider})`).join(" · ")}</div>
+      <div className="text-xs text-muted" data-testid="call-audit">📞 Calls: {calls === null ? "…" : calls.length === 0 ? "none" : calls.map((c) => `${c.caller_role}→${c.callee_role} ${new Date(c.created_at).toLocaleString()} (${c.provider})`).join(" · ")}</div>
     </div>
   );
 }

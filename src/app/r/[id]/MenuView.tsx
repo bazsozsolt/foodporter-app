@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { act } from "@/lib/act";
 import { useT, tx } from "@/lib/i18n";
 import { getSupabase, hasSupabase } from "@/lib/supabase";
-import { Card, Header } from "@/components/ui";
+import { Badge, Card, Header, SectionHeader } from "@/components/ui";
+import { ArrowLeft, ChevronRight, Clock, Minus, Plus, ShoppingBag, Users } from "lucide-react";
 import { restaurantStyle } from "@/lib/mock-data";
 import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
@@ -35,33 +36,35 @@ export function MenuView({ id }: { id: string }) {
     <>
       <Header />
       <main id="main" className="p-4">
-        <Link href="/" className="text-sm text-muted">← {tx("Alle restaurants", "All restaurants")}</Link>
+        <Link href="/" className="inline-flex min-h-9 items-center gap-1 text-sm font-semibold text-muted"><ArrowLeft size={16} aria-hidden />{tx("Alle restaurants", "All restaurants")}</Link>
         <Photo src={r.image_url} alt={r.name} emoji={restaurantStyle(r.id).emoji} ratio="16/7" eager className="mt-2.5 rounded-2xl text-3xl" sizes="(max-width: 640px) 100vw, 640px" />
         <Card className="mt-2.5 flex items-center gap-3">
           {r.logo_url && <Photo src={r.logo_url} alt={`${r.name} logo`} ratio="1/1" className="w-14 shrink-0 rounded-full" sizes="56px" />}
-          <div><h3 className="font-bold">{r.name}</h3><div className="text-[13px] text-muted">{cuisineLabel(r.cuisine)} · ~{r.avg_prep_minutes} {tx("min bereiding", "min prep")}</div>{r.address && <div className="text-[12px] text-muted">{r.address}</div>}{r.is_test && <div className="mt-1 rounded-lg bg-amber-50 px-2 py-1 text-[12px] font-semibold text-amber-800" data-testid="test-label">🧪 {tx("Testdata van OpenStreetMap, geen partner", "Test data from OpenStreetMap, not a partner")} · {tx("voorbeeldmenu en -prijzen", "example menu and prices")} · © {tx("OpenStreetMap-bijdragers", "OpenStreetMap contributors")} (ODbL)</div>}</div>
+          <div className="min-w-0"><h1 className="text-[28px] leading-none">{r.name}</h1><div className="mt-1 flex flex-wrap items-center gap-1.5 text-[13px] text-muted">{cuisineLabel(r.cuisine)} <Badge><Clock size={12} aria-hidden />~{r.avg_prep_minutes} {tx("min bereiding", "min prep")}</Badge></div>{r.address && <div className="mt-0.5 text-[12px] text-muted">{r.address}</div>}{r.is_test && <div className="mt-2 rounded-lg bg-gold-soft px-2 py-1 text-[12px] text-warn" data-testid="test-label">{tx("Testdata van OpenStreetMap, geen partner", "Test data from OpenStreetMap, not a partner")} · {tx("voorbeeldmenu en -prijzen", "example menu and prices")} · © {tx("OpenStreetMap-bijdragers", "OpenStreetMap contributors")} (ODbL)</div>}</div>
         </Card>
         {hasSupabase && (
-          <button data-testid="start-group" onClick={startGroup} className="mb-3 flex w-full items-center justify-between rounded-2xl border-2 border-dashed border-brand bg-gold-soft px-4 py-3 text-left">
-            <span><b className="text-brand">👥 {t("Groepsbestelling starten", "Start a group order")}</b><span className="block text-[12px] text-muted">{t("Deel een link, iedereen kiest zelf, één bezorging", "Share a link, everyone picks their own, one delivery")}</span></span>
-            <span className="text-xl text-brand">→</span>
+          <button data-testid="start-group" onClick={startGroup} className="mb-3 flex min-h-14 w-full items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 text-left shadow-[var(--shadow-card)]">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand"><Users size={20} aria-hidden /></span>
+            <span className="flex-1"><b>{t("Groepsbestelling starten", "Start a group order")}</b><span className="block text-[12px] text-muted">{t("Deel een link, iedereen kiest zelf, één bezorging", "Share a link, everyone picks their own, one delivery")}</span></span>
+            <ChevronRight size={18} className="text-muted" aria-hidden />
           </button>
         )}
+        <SectionHeader>{tx("Menu", "Menu")}</SectionHeader>
         {items.map((m) => (
-          <Card key={m.id} className="flex items-center justify-between gap-3">
+          <Card key={m.id} className="flex items-center justify-between gap-3 !p-3">
             <Photo src={m.image_url} alt={m.name} emoji={restaurantStyle(r.id).emoji} className="w-20 shrink-0 rounded-xl text-lg" sizes="80px" />
-            <div className="min-w-0 flex-1"><b>{m.name}</b><div className="text-[13px] text-muted">{eur(m.price_cents)}</div></div>
+            <div className="min-w-0 flex-1"><b className="block leading-snug">{m.name}</b><div className="mt-0.5 text-[14px] font-semibold text-ink/80">{eur(m.price_cents)}</div></div>
             <div className="flex items-center gap-2.5">
-              <button aria-label={tx("Eén minder", "Remove one")} disabled={!qty[m.id]} className="h-8 w-8 rounded-full bg-[#f1ede8] font-bold disabled:opacity-40" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) - 1)}>−</button>
-              <b>{qty[m.id] ?? 0}</b>
-              <button aria-label={tx("Eén meer", "Add one")} className="h-8 w-8 rounded-full bg-[#f1ede8] font-bold" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) + 1)}>+</button>
+              <button aria-label={tx("Eén minder", "Remove one")} disabled={!qty[m.id]} className="grid h-10 w-10 place-items-center rounded-full border border-line bg-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) - 1)}><Minus size={16} /></button>
+              <b className="w-4 text-center">{qty[m.id] ?? 0}</b>
+              <button aria-label={tx("Eén meer", "Add one")} className="grid h-10 w-10 place-items-center rounded-full bg-brand text-white" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) + 1)}><Plus size={16} /></button>
             </div>
           </Card>
         ))}
         <PhotoCredits credits={[r.image_credit, ...items.map((m) => m.image_credit)]} />
         {count > 0 && (
-          <Link href="/cart" className="mt-2 block rounded-2xl bg-brand py-3.5 text-center font-bold text-white">
-            {tx("Bekijk winkelmand", "View cart")} · {count} item{count > 1 ? "s" : ""} · {eur(total)}
+          <Link href="/cart" data-testid="view-cart" className="sticky bottom-20 z-30 mt-2 flex min-h-14 items-center gap-3 rounded-2xl bg-brand px-4 py-3 font-semibold text-white shadow-[var(--shadow-pop)]">
+            <ShoppingBag size={20} aria-hidden /><span className="flex-1">{tx("Bekijk winkelmand", "View cart")} · {count} item{count > 1 ? "s" : ""}</span><span>{eur(total)}</span>
           </Link>
         )}
       </main>
