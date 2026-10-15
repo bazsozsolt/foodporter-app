@@ -121,9 +121,15 @@ export function useMyTickets() {
   useEffect(() => {
     const sb = getSupabase(); if (!sb) return;
     let alive = true;
-    const load = () => sb.from("support_tickets").select("*").order("last_message_at", { ascending: false }).limit(50).then(({ data }) => { if (alive) setRows((data as Ticket[]) ?? []); });
+    // Signed-out visitors (e.g. via the Help tab) have no tickets: skip the query instead of getting a 401.
+    const load = async () => {
+      const { data: s } = await sb.auth.getSession();
+      if (!s.session) { if (alive) setRows([]); return; }
+      const { data } = await sb.from("support_tickets").select("*").order("last_message_at", { ascending: false }).limit(50);
+      if (alive) setRows((data as Ticket[]) ?? []);
+    };
     const first = setTimeout(load, 0);
-    const ch = sb.channel(`my-tickets-${Math.random().toString(36).slice(2, 7)}`).on("postgres_changes", { event: "*", schema: "public", table: "support_tickets" }, load).subscribe();
+    const ch = sb.channel(`my-tickets-${Math.random().toString(36).slice(2, 7)}`).on("postgres_changes", { event: "*", schema: "public", table: "support_tickets" }, () => void load()).subscribe();
     return () => { alive = false; clearTimeout(first); void sb.removeChannel(ch); };
   }, []);
   return rows;
