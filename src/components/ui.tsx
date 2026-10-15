@@ -46,12 +46,12 @@ export const btn: Record<BtnVariant, string> = {
   ok: "bg-ok text-white hover:brightness-95",
 };
 export const btnBase = "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition disabled:cursor-not-allowed disabled:opacity-50";
-export function Button({ children, onClick, variant = "primary", disabled, size = "lg", className = "", icon, "data-testid": testId, type = "button" }: {
-  children: ReactNode; onClick?: () => void; variant?: BtnVariant; disabled?: boolean; size?: "sm" | "md" | "lg"; className?: string; icon?: ReactNode; "data-testid"?: string; type?: "button" | "submit";
+export function Button({ children, onClick, variant = "primary", disabled, size = "lg", className = "", icon, "data-testid": testId, type = "button", "data-persist": persist }: {
+  children: ReactNode; onClick?: () => void; variant?: BtnVariant; disabled?: boolean; size?: "sm" | "md" | "lg"; className?: string; icon?: ReactNode; "data-testid"?: string; type?: "button" | "submit"; "data-persist"?: boolean;
 }) {
   const sz = size === "sm" ? "px-3 py-2 text-sm" : size === "md" ? "px-4 py-2.5 text-[15px]" : "mt-2 w-full px-4 py-3.5 text-[15px]";
   return (
-    <button type={type} data-testid={testId} onClick={onClick} disabled={disabled} className={`${btnBase} ${sz} ${btn[variant]} ${className}`}>
+    <button type={type} data-testid={testId} data-persist={persist ? "" : undefined} onClick={onClick} disabled={disabled} className={`${btnBase} ${sz} ${btn[variant]} ${className}`}>
       {icon}{children}
     </button>
   );

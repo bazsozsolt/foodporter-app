@@ -10,6 +10,8 @@ import { restaurantStyle } from "@/lib/mock-data";
 import { eur } from "@/lib/format";
 import type { Order, Restaurant } from "@/lib/types";
 import { Photo } from "@/components/Photo";
+import { nextLabel, openState } from "@/lib/hours";
+import { useLang } from "@/lib/i18n";
 
 const PAGE = 20;
 const km = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
@@ -69,6 +71,7 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
   }
 
   const t = useT();
+  const en = useLang() === "en";
   const chip = (on: boolean) => `min-h-9 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] font-semibold ${on ? "border-ink bg-ink text-white" : "border-line bg-white text-ink"}`;
   return (
     <section>
@@ -86,18 +89,18 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
         {!origin && <button className="inline-flex min-h-9 items-center gap-1 font-semibold text-brand" onClick={locate}><LocateFixed size={14} aria-hidden />{t("gebruik mijn locatie", "use my location")}</button>}
       </div>
       {list.length === 0 && <p className="text-sm text-muted">{t("Geen restaurants gevonden voor", "No restaurants match")} “{q}”.</p>}
-      {list.slice(0, shown).map(({ r, d }, i) => (
+      {list.slice(0, shown).map(({ r, d }, i) => { const os = openState(r); return (
         <Link key={r.id} href={`/r?id=${r.id}`} className="mb-4 block overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-card)] ring-1 ring-black/[.04]">
             <Photo src={r.image_url} alt={r.name} emoji={restaurantStyle(r.id).emoji} ratio="16/7" className="w-full text-2xl" sizes="(max-width: 420px) 100vw, 420px" eager={i < 2} />
             <div className="p-3.5">
               <div className="flex items-start justify-between gap-2"><h3 className="truncate text-[16px] font-bold">{r.name}</h3>{(r.rating_count ?? 0) > 0 && <span className="flex shrink-0 items-center gap-1 text-[13px] font-semibold"><Star size={14} className="fill-gold text-gold" aria-hidden />{Number(r.rating_avg).toFixed(1)} <span className="font-normal text-muted">({r.rating_count})</span></span>}</div>
               <div className="text-[13px] text-muted">{cuisineLabel(r.cuisine)} · {r.area}{d != null ? ` · ${d.toFixed(1)} km` : ""}</div>
-              <div className="mt-2 flex flex-wrap items-center gap-1.5"><Badge><Clock size={12} aria-hidden />~{r.avg_prep_minutes + 12} min</Badge><Badge>{eur(fee)} {t("bezorging", "delivery")}</Badge>
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">{!os.open && <Badge tone="warn"><span data-testid="closed-label">{os.reason === "paused" ? t("Even gepauzeerd", "Paused") : t("Gesloten", "Closed")} · {nextLabel(os, en)}</span></Badge>}<Badge><Clock size={12} aria-hidden />~{r.avg_prep_minutes + (r.busy_extra_minutes ?? 0) + 12} min</Badge>{(r.busy_extra_minutes ?? 0) > 0 && <Badge tone="warn"><span data-testid="busy-label">{t("Druk", "Busy")}</span></Badge>}<Badge>{eur(fee)} {t("bezorging", "delivery")}</Badge>
                 {r.is_test ? <Badge tone="warn" className="!font-medium" ><span data-testid="test-label">{t("Testdata · geen partner", "Test data · not a partner")}</span></Badge>
                 : <Badge tone="ok"><span data-testid="partner-label">{t("Pilotpartner", "Pilot partner")}</span></Badge>}</div>
             </div>
         </Link>
-      ))}
+      ); })}
       {shown < list.length && (
         <div ref={sentinel} className="py-2 text-center">
           <button data-testid="show-more" className="min-h-11 rounded-xl border border-line bg-white px-4 py-2 text-sm font-semibold" onClick={more}>{t(`Meer tonen (nog ${list.length - shown})`, `Show more (${list.length - shown} left)`)}</button>

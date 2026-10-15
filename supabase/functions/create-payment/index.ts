@@ -74,6 +74,10 @@ Deno.serve(async (req) => {
   const minOrder = Number(rest?.min_order_cents ?? 0);
   if (subtotal < minOrder) return json({ error: `Minimum order at this restaurant is €${(minOrder / 100).toFixed(2)} (food only).`, code: "min_order" }, 422);
 
+  // Opening hours / holiday closure / pause (v17 P3)
+  const { data: isOpen } = await admin.rpc("fp_restaurant_open", { p_rid: order.restaurant_id });
+  if (isOpen === false) return json({ error: "This restaurant is closed right now. You can order later.", code: "closed" }, 422);
+
   // Delivery zone: geocode the address server-side (PDOK Locatieserver, free NL geocoder) and check the radius.
   const { data: s } = await admin.from("settings").select("zone_radius_km, zone_center_lat, zone_center_lng, delivery_fee_cents, service_fee_cents").maybeSingle();
   const fee = Math.min(500, Math.max(0, Number(s?.delivery_fee_cents ?? order.delivery_fee_cents)));

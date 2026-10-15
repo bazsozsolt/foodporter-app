@@ -6,6 +6,7 @@ export interface Restaurant {
   id: string; name: string; cuisine: string; area: string; emoji: string; color: string;
   avg_prep_minutes: number; commission_pct: number; active: boolean; lat?: number | null; lng?: number | null; rating_avg?: number | null; rating_count?: number;
   is_test?: boolean; min_order_cents?: number; description?: string | null; address?: string | null; image_url?: string | null; logo_url?: string | null; image_credit?: string | null;
+  opening_hours?: Record<string, [string, string][]> | null; closed_dates?: string[]; paused_until?: string | null; busy_extra_minutes?: number; hours_test?: boolean;
 }
 export interface OrderLine { item_id: string; name: string; qty: number; price_cents: number; guest_name?: string | null; line_id?: string }
 export interface Bid { id: string; rider_id: string; rider_name: string; eta_minutes: number; accepted: boolean; created_at: string }

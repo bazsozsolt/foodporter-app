@@ -1,4 +1,5 @@
 "use client";
+import { PauseBusyPanel, HoursPanel } from "@/components/AvailabilityPanel";
 import { RestaurantPhotos } from "@/components/PhotoUpload";
 import { useT , tx } from "@/lib/i18n";
 import { useEffect, useState } from "react";
@@ -110,6 +111,7 @@ export default function RestaurantPage() {
           <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
         </div>
         {tab === "orders" ? (<>
+        {profile?.restaurant_id && <PauseBusyPanel restaurantId={profile.restaurant_id} />}
         <div className="mb-4 flex gap-2.5"><Stat value={String(handed.length)} label={tx("Overgedragen", "Handed over")} /><Stat value={eur(revenue)} label={tx("Omzet", "Revenue")} /><Stat value={eur(Math.round((revenue * pct) / 100))} label={tx(`Commissie ${pct}%`, `Commission ${pct}%`)} /></div>
         {open.length === 0 && cols[2].rows.length === 0 ? <Empty icon={<ChefHat size={24} />}>{t("Op dit moment geen open bestellingen.", "No open orders right now.")}</Empty> : (
           <div className="grid gap-4 lg:grid-cols-3" data-testid="order-board">
@@ -122,7 +124,7 @@ export default function RestaurantPage() {
           </div>
         )}
         </>) : (
-          profile?.restaurant_id ? <><RestaurantPhotos restaurantId={profile.restaurant_id} /><MenuAllergens restaurantId={profile.restaurant_id} /></> : <Empty icon={<ChefHat size={24} />}>{tx("Geen restaurant gekoppeld aan dit account.", "No restaurant linked to this account.")}</Empty>
+          profile?.restaurant_id ? <><HoursPanel restaurantId={profile.restaurant_id} /><RestaurantPhotos restaurantId={profile.restaurant_id} /><MenuAllergens restaurantId={profile.restaurant_id} /></> : <Empty icon={<ChefHat size={24} />}>{tx("Geen restaurant gekoppeld aan dit account.", "No restaurant linked to this account.")}</Empty>
         )}
         <div className="mt-6 flex flex-wrap gap-2"><HelpButton role="restaurant" label={t("Contact met support", "Contact support")} /></div>
         </RoleGate>

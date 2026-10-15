@@ -1,4 +1,6 @@
 "use client";
+import { nextLabel, openState } from "@/lib/hours";
+import { HoursPanel } from "@/components/AvailabilityPanel";
 import { RestaurantPhotos } from "@/components/PhotoUpload";
 import { geocode } from "@/lib/geo";
 import { useState } from "react";
@@ -105,17 +107,18 @@ export default function RestaurantsAdmin() {
         <div key={String(r.id)} className="border-b border-line py-3 last:border-0">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <b>{String(r.name)}</b> <StatusBadge s={r.active ? "active" : "suspended"} />
+              <b>{String(r.name)}</b> <StatusBadge s={r.active ? "active" : "suspended"} /> {(() => { const os = openState(r as never); return <span data-testid="admin-open" className={`ml-1 rounded px-1.5 text-[11px] font-semibold ${os.open ? "bg-[#e3f7ee] text-ok" : "bg-gold-soft text-warn"}`}>{os.open ? "Open now" : `${os.reason === "paused" ? "Paused" : os.reason === "holiday" ? "Holiday" : "Closed"} · ${nextLabel(os, true)}`}{Number(r.busy_extra_minutes ?? 0) > 0 ? ` · busy +${r.busy_extra_minutes} min` : ""}</span>; })()}
               <div className="text-xs text-muted">{String(r.cuisine ?? "")} · {String(r.area ?? "")} · {Number(r.commission_pct)}% commission · min order €{(Number(r.min_order_cents ?? 0) / 100).toFixed(2)} · ~{String(r.avg_prep_minutes)} min prep · {String((r.menu_items as Row[])?.[0]?.count ?? 0)} items</div>
             </div>
             <div className="flex gap-2">
               <SmallBtn onClick={async () => { if (!confirm(r.active ? `Deactivate ${String(r.name)}? Customers will no longer see it or be able to order.` : `Activate ${String(r.name)}? It becomes visible to customers.`)) return; if (await act(must(sb().from("restaurants").update({ active: !r.active }).eq("id", String(r.id))), r.active ? "Deactivated" : "Activated") !== undefined) { q.reload(); actions.reloadCatalog(); } }}>{r.active ? "Deactivate" : "Activate"}</SmallBtn>
+              <SmallBtn onClick={async () => { const paused = r.paused_until && new Date(String(r.paused_until)) > new Date(); if (await act(must(sb().rpc("restaurant_set_availability", { p_rid: String(r.id), p_pause_minutes: paused ? 0 : 60 })), paused ? "Resumed" : "Paused for 60 min") !== undefined) { q.reload(); actions.reloadCatalog(); } }}>{r.paused_until && new Date(String(r.paused_until)) > new Date() ? "Resume" : "Pause 60 min"}</SmallBtn>
               <SmallBtn onClick={() => setEdit(edit === r.id ? null : String(r.id))}>Edit</SmallBtn>
               <SmallBtn tone="dark" onClick={() => setMenu(menu === r.id ? null : String(r.id))}>{menu === r.id ? "Hide menu" : "Menu"}</SmallBtn>
             </div>
           </div>
           {edit === r.id && <div className="mt-3"><RestaurantForm initial={{ ...blank, ...(r as unknown as RForm), commission_pct: Number(r.commission_pct) }} onDone={done} /></div>}
-          {menu === r.id && <Menu restaurantId={String(r.id)} />}
+          {menu === r.id && <><HoursPanel restaurantId={String(r.id)} english /><Menu restaurantId={String(r.id)} /></>}
         </div>
       ))}
       <p className="mt-2 text-xs text-muted">Restaurant staff accounts: set role “restaurant” and link the restaurant under Customers → account (or via SQL).</p>

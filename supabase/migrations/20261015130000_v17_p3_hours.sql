@@ -47,3 +47,37 @@ grant execute on function public.fp_restaurant_open(uuid, timestamptz) to anon, 
 update restaurants set opening_hours = '{"1":[["11:00","21:30"]],"2":[["11:00","21:30"]],"3":[["11:00","21:30"]],"4":[["11:00","22:00"]],"5":[["11:00","23:00"]],"6":[["12:00","23:00"]],"7":[["12:00","21:00"]]}'::jsonb,
   hours_test = true
 where is_test and opening_hours is null and id <> '187f751c-bebb-4a34-9d4b-9b1a9e8851db';
+
+-- Restaurant staff (own restaurant) and admins change hours / closures / pause / busy through this RPC only.
+create or replace function public.restaurant_set_availability(p_rid uuid, p_hours jsonb default null, p_set_hours boolean default false,
+  p_closed date[] default null, p_pause_minutes int default null, p_busy int default null) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare me profiles; r restaurants;
+begin
+  select * into me from profiles where id = auth.uid();
+  if me.id is null or not (me.role = 'admin' or (me.role = 'restaurant' and me.restaurant_id = p_rid)) then raise exception 'not allowed'; end if;
+  if p_set_hours then
+    if not fp_valid_hours(p_hours) then raise exception 'Ongeldige openingstijden'; end if;
+    update restaurants set opening_hours = p_hours, hours_test = false where id = p_rid;
+  end if;
+  if p_closed is not null then
+    if cardinality(p_closed) > 60 then raise exception 'Te veel sluitingsdagen'; end if;
+    update restaurants set closed_dates = (select coalesce(array_agg(distinct d order by d), '{}') from unnest(p_closed) d where d >= current_date - 1) where id = p_rid;
+  end if;
+  if p_pause_minutes is not null then
+    if p_pause_minutes < 0 or p_pause_minutes > 720 then raise exception 'Pauze tussen 0 en 720 minuten'; end if;
+    update restaurants set paused_until = case when p_pause_minutes = 0 then null else now() + make_interval(mins => p_pause_minutes) end where id = p_rid;
+  end if;
+  if p_busy is not null then
+    if p_busy < 0 or p_busy > 60 then raise exception 'Drukte-toeslag tussen 0 en 60 minuten'; end if;
+    update restaurants set busy_extra_minutes = p_busy where id = p_rid;
+  end if;
+  insert into audit_events (type, from_value, to_value, actor) values ('restaurant_availability', p_rid::text,
+    concat_ws(' ', case when p_set_hours then 'hours' end, case when p_closed is not null then 'closures' end,
+      case when p_pause_minutes is not null then 'pause=' || p_pause_minutes end, case when p_busy is not null then 'busy=' || p_busy end), me.id);
+  select * into r from restaurants where id = p_rid;
+  return jsonb_build_object('opening_hours', r.opening_hours, 'closed_dates', r.closed_dates, 'paused_until', r.paused_until, 'busy_extra_minutes', r.busy_extra_minutes, 'open_now', fp_restaurant_open(p_rid));
+end $$;
+revoke all on function public.restaurant_set_availability(uuid, jsonb, boolean, date[], int, int) from public, anon;
+grant execute on function public.restaurant_set_availability(uuid, jsonb, boolean, date[], int, int) to authenticated;
+grant select (opening_hours, closed_dates, paused_until, busy_extra_minutes, hours_test) on restaurants to anon, authenticated;

@@ -10,6 +10,7 @@ import { actions, useStore, type Geo } from "@/lib/store";
 import { AddressField } from "@/components/AddressField";
 import { hasSupabase } from "@/lib/supabase";
 import { orderHref } from "@/lib/orders";
+import { openState } from "@/lib/hours";
 import { TestModeCheckoutNote } from "@/components/TestModeBanner";
 import { ArrowLeft, Lock, ShoppingBag } from "lucide-react";
 
@@ -32,6 +33,7 @@ export default function CheckoutPage() {
   const sub = Object.entries(cart.qty).reduce((a, [id, q]) => a + q * (menuItems.find((m) => m.id === id)?.price_cents ?? 0), 0);
   const minOrder = rest?.min_order_cents ?? 0;
   const belowMin = sub < minOrder;
+  const closedNow = rest ? !openState(rest).open : false;
   const input = "mb-2.5 mt-1 w-full rounded-xl border border-line p-3";
 
   if (sub === 0) return <><Header /><main id="main" className="p-4"><Empty icon={<ShoppingBag size={26} />}>{t("Er is niets om af te rekenen.", "Nothing to check out.")} <Link className="text-brand" href="/">{t("Bekijk restaurants", "Browse")}</Link></Empty></main></>;
@@ -69,6 +71,7 @@ export default function CheckoutPage() {
           <div className="flex justify-between text-sm"><span>{t("Fooi (100% voor de rider)", "Tip (100% to the rider)")}</span><span data-testid="tip-line">{eur(tip)}</span></div>
           <hr className="my-2 border-line" />
           <div className="flex justify-between font-bold" data-testid="total"><span>{t("Totaal (incl. btw)", "Total (incl. VAT)")}</span><span>{eur(sub + DELIVERY_FEE_CENTS + SERVICE + tip)}</span></div>
+          {closedNow && <p data-testid="closed-warning" className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{t("Dit restaurant is nu gesloten of gepauzeerd. Je kunt bestellen zodra het weer open is.", "This restaurant is closed or paused right now. You can order once it reopens.")}</p>}
           {belowMin && <p data-testid="min-order-warning" className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{t(`Minimale bestelling bij dit restaurant is ${eur(minOrder)}. Voeg nog ${eur(minOrder - sub)} toe.`, `This restaurant's minimum order is ${eur(minOrder)}. Add ${eur(minOrder - sub)} more.`)}</p>}
         </Card>
         <Card data-testid="tip-picker">
@@ -88,7 +91,7 @@ export default function CheckoutPage() {
         </Card>
         <TestModeCheckoutNote />
         <Card><b>{t("Betalen met Mollie", "Pay with Mollie")}</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} render={(v) => v === "Card" ? t("Kaart", "Card") : v} value={method} onChange={setMethod} /></div></Card>
-        <Button icon={<Lock size={16} aria-hidden />} onClick={pay} disabled={busy || belowMin || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS + SERVICE + tip)} met ${method === "Card" ? "kaart" : method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS + SERVICE + tip)} with ${method}`) : t("Log in om te betalen", "Sign in to pay")}</Button>
+        <Button icon={<Lock size={16} aria-hidden />} onClick={pay} disabled={busy || belowMin || closedNow || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS + SERVICE + tip)} met ${method === "Card" ? "kaart" : method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS + SERVICE + tip)} with ${method}`) : t("Log in om te betalen", "Sign in to pay")}</Button>
         <p className="mt-3 text-center text-xs text-muted">{t("Door te betalen ga je akkoord met onze", "By paying you agree to our")} <Link className="underline" href="/terms">{t("Voorwaarden", "Terms")}</Link> {t("en", "and")} <Link className="underline" href="/privacy">{t("Privacybeleid", "Privacy policy")}</Link>. {t("Geannuleerde bestellingen worden volledig terugbetaald.", "Cancelled orders are refunded in full.")}</p>
       </main>
     </>
