@@ -55,7 +55,7 @@ export function MenuView({ id }: { id: string }) {
         {!os.open && (
           <div data-testid="closed-banner" role="status" className="mb-3 rounded-2xl bg-gold-soft p-3 text-[14px] text-warn">
             <b className="block">{os.reason === "paused" ? tx("Dit restaurant neemt even geen bestellingen aan", "This restaurant has paused orders") : os.reason === "holiday" ? tx("Vandaag gesloten", "Closed today") : tx("Nu gesloten", "Closed now")} · {nextLabel(os, en)}</b>
-            {tx("Bekijk gerust het menu. Later bestellen? Kom terug zodra we open zijn.", "Feel free to browse the menu. Order later? Come back once we're open.")}
+            {tx("Later bestellen kan: kies je gerechten en plan bij het afrekenen een tijd waarop we open zijn.", "You can order for later: pick your dishes and choose a time when we're open at checkout.")}
           </div>
         )}
         {r.opening_hours && (
@@ -87,7 +87,7 @@ export function MenuView({ id }: { id: string }) {
             <div className="flex items-center gap-2.5">
               <button aria-label={tx("Eén minder", "Remove one")} disabled={!qty[m.id]} className="grid h-10 w-10 place-items-center rounded-full border border-line bg-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) - 1)}><Minus size={16} /></button>
               <b className="w-4 text-center">{qty[m.id] ?? 0}</b>
-              <button aria-label={tx("Eén meer", "Add one")} disabled={!os.open} className="grid h-10 w-10 place-items-center rounded-full bg-brand text-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) + 1)}><Plus size={16} /></button>
+              <button aria-label={tx("Eén meer", "Add one")} className="grid h-10 w-10 place-items-center rounded-full bg-brand text-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) + 1)}><Plus size={16} /></button>
             </div>
           </Card>
         ))}

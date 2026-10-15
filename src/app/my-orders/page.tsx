@@ -1,6 +1,7 @@
 "use client";
 import { tx } from "@/lib/i18n";
 import Link from "next/link";
+import { ReferralCard } from "@/components/ReferralCard";
 import { ReorderButton } from "@/components/ReorderButton";
 import { Card, Empty, Header, Pill } from "@/components/ui";
 import { LifeBuoy, LogIn, Receipt } from "lucide-react";
@@ -17,6 +18,7 @@ export default function MyOrders() {
       <Header />
       <main id="main" className="p-4">
         <div className="mb-3 flex items-center justify-between"><h1 className="text-[28px]">{tx("Bestellingen", "Orders")}</h1><Link href="/support/" data-testid="my-tickets-link" className="inline-flex min-h-9 items-center gap-1 text-sm font-semibold text-brand"><LifeBuoy size={16} aria-hidden />{tx("Mijn meldingen", "My tickets")}</Link></div>
+        {ready && signedIn && mode === "supabase" && <ReferralCard />}
         {!ready ? <p className="text-muted">{tx("Laden…", "Loading…")}</p>
           : !signedIn ? <Empty icon={<LogIn size={24} />}><Link className="text-brand" href="/login?next=/my-orders">{tx("Log in", "Sign in")}</Link> {tx("om je bestellingen te zien.", "to see your orders.")}</Empty>
           : mine.length === 0 ? <Empty icon={<Receipt size={24} />}>{tx("Nog geen bestellingen.", "No orders yet.")} <Link className="text-brand" href="/">{tx("Zoek iets lekkers", "Find something tasty")}</Link></Empty>

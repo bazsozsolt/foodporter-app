@@ -45,3 +45,16 @@ export function nextLabel(s: OpenState, en: boolean) {
   if (inDays === 1) return en ? `opens tomorrow ${time}` : `opent morgen ${time}`;
   return en ? `opens ${DAYS_EN[dow - 1]} ${time}` : `opent ${DAYS_NL[dow - 1]} ${time}`;
 }
+
+/** Scheduled-order slots (v17 P6): every 15 min, 45 min to 3 days ahead, inside opening hours and not on closure days. Server re-checks. */
+export function slots(r: Pick<Restaurant, "opening_hours" | "closed_dates" | "paused_until">, now = new Date(), days = 3): Date[] {
+  const out: Date[] = [];
+  const start = new Date(Math.ceil((now.getTime() + 45 * 60000) / (15 * 60000)) * 15 * 60000);
+  const end = now.getTime() + days * 864e5;
+  const noPause = { ...r, paused_until: null };
+  for (let t = start.getTime(); t <= end && out.length < 400; t += 15 * 60000) {
+    const d = new Date(t);
+    if (openState(noPause, d).open) out.push(d);
+  }
+  return out;
+}

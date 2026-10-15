@@ -45,6 +45,7 @@ function OrderCard({ o }: { o: Order }) {
   const loc = useOrderLocation(o.id, ["assigned", "ready"].includes(o.status), o.rider_id ?? null, o.assigned_at ?? null);
   return (
     <Card>
+      {o.scheduled_for && <div data-testid="scheduled-badge" className="mb-1 inline-flex rounded bg-gold-soft px-2 py-0.5 text-[12px] font-bold text-warn">{t("GEPLAND", "SCHEDULED")} · {hhmm(new Date(o.scheduled_for))}</div>}
       <div className="flex items-center justify-between"><b className="text-[17px]">#{o.id}</b><Pill tone={o.status === "placed" ? "brand" : o.status === "ready" ? "ok" : "neutral"}>{o.status === "placed" ? t("NIEUW", "NEW") : SL[o.status]}</Pill></div>
       {o.group_order_id ? (
         <div className="my-1.5 text-[13px] text-muted" data-testid="group-lines">
@@ -90,8 +91,12 @@ export default function RestaurantPage() {
   const { orders, profile, mode, restaurants } = useStore();
   const pct = Number(restaurants.find((r) => r.id === profile?.restaurant_id)?.commission_pct ?? 12);
   const mine = mode === "supabase" && profile?.role === "restaurant" ? orders.filter((o) => o.restaurant_id === profile.restaurant_id) : orders;
-  const open = mine.filter((o) => ["placed", "accepted", "assigned"].includes(o.status));
-  useOrderAlerts(mine.filter((o) => o.status === "placed").map((o) => o.id), tx("Food Porter · nieuwe bestelling", "Food Porter · new order"), alertBody, "/restaurant/");
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => { const i = setInterval(() => setNowMs(Date.now()), 30000); return () => clearInterval(i); }, []);
+  const released = (o: Order) => !o.release_at || new Date(o.release_at).getTime() <= nowMs + 5 * 60000;
+  const scheduledLater = mine.filter((o) => o.status === "placed" && !released(o));
+  const open = mine.filter((o) => ["placed", "accepted", "assigned"].includes(o.status) && (o.status !== "placed" || released(o)));
+  useOrderAlerts(open.filter((o) => o.status === "placed").map((o) => o.id), tx("Food Porter · nieuwe bestelling", "Food Porter · new order"), alertBody, "/restaurant/");
   const handed = mine.filter((o) => ["ready", "picked_up", "delivered"].includes(o.status));
   const revenue = handed.reduce((a, o) => a + o.subtotal_cents, 0);
   const [tab, setTab] = useState<"orders" | "menu">("orders");
@@ -115,6 +120,12 @@ export default function RestaurantPage() {
         {tab === "orders" ? (<>
         {profile?.restaurant_id && <PauseBusyPanel restaurantId={profile.restaurant_id} />}
         <div className="mb-4 flex gap-2.5"><Stat value={String(handed.length)} label={tx("Overgedragen", "Handed over")} /><Stat value={eur(revenue)} label={tx("Omzet", "Revenue")} /><Stat value={eur(Math.round((revenue * pct) / 100))} label={tx(`Commissie ${pct}%`, `Commission ${pct}%`)} /></div>
+        {scheduledLater.length > 0 && (
+          <section data-testid="col-scheduled" className="mb-4 rounded-2xl bg-subtle/70 p-2">
+            <h2 className="mb-2 px-1 !font-sans !text-[13px] font-bold uppercase tracking-wide text-muted">{tx("Gepland", "Scheduled")} <span className="rounded-full bg-white px-2 text-ink">{scheduledLater.length}</span></h2>
+            {scheduledLater.map((o) => <Card key={o.id} className="!p-3"><b>#{o.id}</b> · {tx("klant wil het om", "customer wants it at")} <b>{hhmm(new Date(o.scheduled_for!))}</b><div className="text-[13px] text-muted">{tx(`Verschijnt bij Nieuw om ${hhmm(new Date(o.release_at!))}`, `Moves to New at ${hhmm(new Date(o.release_at!))}`)} · {o.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}</div></Card>)}
+          </section>
+        )}
         {open.length === 0 && cols[2].rows.length === 0 ? <Empty icon={<ChefHat size={24} />}>{t("Op dit moment geen open bestellingen.", "No open orders right now.")}</Empty> : (
           <div className="grid gap-4 lg:grid-cols-3" data-testid="order-board">
             {cols.map((c) => (

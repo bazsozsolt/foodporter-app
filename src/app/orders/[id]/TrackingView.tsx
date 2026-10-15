@@ -96,6 +96,8 @@ export function TrackingView({ id }: { id: string }) {
         )}
         {o.status !== "cancelled" && <Card>
           <b>{r?.name}</b>
+          {o.scheduled_for && <p data-testid="scheduled-info" className="mt-1 rounded-xl bg-gold-soft p-2 text-[13px] text-warn"><b>{tx("Gepland", "Scheduled")}</b> · {tx("voor", "for")} {new Date(o.scheduled_for).toLocaleString("nl-NL", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Amsterdam" })}. {tx("Het restaurant begint op tijd.", "The restaurant starts in time.")}</p>}
+          {(o.discount_cents ?? 0) + (o.credit_cents ?? 0) > 0 && <p data-testid="order-discount" className="mt-1 text-[13px] text-ok">{tx("Korting en tegoed", "Discount and credit")}: −{eur((o.discount_cents ?? 0) + (o.credit_cents ?? 0))}</p>}
           {pickup && <p data-testid="pickup-info" className="mt-1 rounded-xl bg-brand-soft p-2 text-[13px] text-brand"><b>{tx("Afhalen", "Pickup")}</b> · {r?.address ?? ""} · {o.status === "ready" ? tx("Je bestelling staat klaar. Noem je bestelnummer aan de balie.", "Your order is ready. Give your order number at the counter.") : tx("We sturen een bericht zodra je bestelling klaarstaat.", "We'll notify you when your order is ready.")}</p>}
           <ul className="mt-2">
             {steps.map((s, j) => (

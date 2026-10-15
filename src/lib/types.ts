@@ -12,7 +12,7 @@ export interface OrderLine { item_id: string; name: string; qty: number; price_c
 export interface Bid { id: string; rider_id: string; rider_name: string; eta_minutes: number; accepted: boolean; created_at: string }
 export interface Order {
   id: string; restaurant_id: string; customer_id: string; status: OrderStatus;
-  lines: OrderLine[]; subtotal_cents: number; delivery_fee_cents: number; tip_cents?: number; leave_at_door?: boolean; fulfilment?: "delivery" | "pickup"; delivery_photo_path?: string | null;
+  lines: OrderLine[]; subtotal_cents: number; delivery_fee_cents: number; tip_cents?: number; leave_at_door?: boolean; fulfilment?: "delivery" | "pickup"; scheduled_for?: string | null; release_at?: string | null; discount_cents?: number; credit_cents?: number; delivery_photo_path?: string | null;
   address: string; phone: string; prep_minutes: number | null; ready_at: string | null;
   group_order_id?: string | null;
   bids: Bid[]; created_at: string; delivered_at: string | null; accepted_at?: string | null;

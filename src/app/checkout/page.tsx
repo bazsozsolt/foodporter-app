@@ -11,11 +11,14 @@ import { AddressField } from "@/components/AddressField";
 import { hasSupabase } from "@/lib/supabase";
 import { orderHref } from "@/lib/orders";
 import { openState } from "@/lib/hours";
+import { PromoBox, SchedulePicker, type Quote } from "@/components/CheckoutExtras";
 import { TestModeCheckoutNote } from "@/components/TestModeBanner";
 import { ArrowLeft, Lock, ShoppingBag } from "lucide-react";
 
 export default function CheckoutPage() {
-  const { cart, signedIn, menuItems, settings, restaurants } = useStore();
+  const { cart, signedIn, menuItems, settings, restaurants, profile } = useStore();
+  const [quote, setQuote] = useState<{ q: Quote | null; code: string; credit: boolean }>({ q: null, code: "", credit: false });
+  const [when, setWhen] = useState<string | null>(null);
   const rest = restaurants.find((x) => x.id === cart.restaurant_id);
   const SERVICE = settings.service_fee_cents ?? 0;
   const [geo, setGeo] = useState<Geo | null>(null);
@@ -38,6 +41,8 @@ export default function CheckoutPage() {
   const minOrder = rest?.min_order_cents ?? 0;
   const belowMin = sub < minOrder;
   const closedNow = rest ? !openState(rest).open : false;
+  const OFF = quote.q && !quote.q.error ? quote.q.discount_cents + quote.q.credit_cents : 0;
+  const blockedClosed = closedNow && !when;
   const input = "mb-2.5 mt-1 w-full rounded-xl border border-line p-3";
 
   if (sub === 0) return <><Header /><main id="main" className="p-4"><Empty icon={<ShoppingBag size={26} />}>{t("Er is niets om af te rekenen.", "Nothing to check out.")} <Link className="text-brand" href="/">{t("Bekijk restaurants", "Browse")}</Link></Empty></main></>;
@@ -49,7 +54,7 @@ export default function CheckoutPage() {
     if (!id) { setBusy(false); return; }
     if (!hasSupabase) { setBusy(false); router.push(orderHref(id)); return; }
     // Mollie hosted checkout (iDEAL / card are chosen there); amount is computed server-side.
-    const checkoutUrl = await act(actions.startPayment(id, TIP));
+    const checkoutUrl = await act(actions.startPayment(id, TIP, { promo_code: quote.code || undefined, use_credit: quote.credit, scheduled_for: when }));
     setBusy(false);
     if (checkoutUrl) window.location.href = checkoutUrl;
     else router.push(orderHref(id)); // order exists unpaid; tracking page offers "Pay now"
@@ -73,15 +78,19 @@ export default function CheckoutPage() {
           <label className="text-[13px] text-muted">{t("Telefoon (voor SMS-updates)", "Phone (for SMS updates)")}</label>
           <input className={input} data-testid="phone" type="tel" placeholder={t("Mobiel nummer, bv. 06 12345678", "Mobile number, e.g. 06 12345678")} value={phone} onChange={(e) => setPhone(e.target.value)} />
         </Card>
+        {rest && hasSupabase && <SchedulePicker restaurant={rest} value={when} onChange={setWhen} mustSchedule={closedNow} />}
+        {hasSupabase && <PromoBox customerId={profile?.id} subtotal={sub} onQuote={(q, code, credit) => setQuote({ q, code, credit })} />}
         <Card data-testid="price-breakdown">
           <b className="mb-2 block">{t("Prijsoverzicht", "Price breakdown")}</b>
           <div className="flex justify-between text-sm"><span>{t("Gerechten", "Items")}</span><span>{eur(sub)}</span></div>
           <div className="flex justify-between text-sm"><span>{pickup ? t("Bezorgkosten (afhalen)", "Delivery fee (pickup)") : t("Bezorgkosten (vast, 100% voor de rider)", "Delivery fee (flat, 100% to the rider)")}</span><span>{eur(DELIVERY_FEE_CENTS)}</span></div>
           <div className="flex justify-between text-sm"><span>{t("Servicekosten", "Service fee")}</span><span>{eur(SERVICE)}</span></div>
           <div className="flex justify-between text-sm"><span>{t("Fooi (100% voor de rider)", "Tip (100% to the rider)")}</span><span data-testid="tip-line">{eur(TIP)}</span></div>
+          {OFF > 0 && <div className="flex justify-between text-sm text-ok" data-testid="discount-line"><span>{t("Korting en tegoed", "Discount and credit")}</span><span>−{eur(OFF)}</span></div>}
+          {when && <div className="flex justify-between text-sm" data-testid="when-line"><span>{t("Gepland voor", "Scheduled for")}</span><span>{new Date(when).toLocaleString("nl-NL", { weekday: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Amsterdam" })}</span></div>}
           <hr className="my-2 border-line" />
-          <div className="flex justify-between font-bold" data-testid="total"><span>{t("Totaal (incl. btw)", "Total (incl. VAT)")}</span><span>{eur(sub + DELIVERY_FEE_CENTS + SERVICE + TIP)}</span></div>
-          {closedNow && <p data-testid="closed-warning" className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{t("Dit restaurant is nu gesloten of gepauzeerd. Je kunt bestellen zodra het weer open is.", "This restaurant is closed or paused right now. You can order once it reopens.")}</p>}
+          <div className="flex justify-between font-bold" data-testid="total"><span>{t("Totaal (incl. btw)", "Total (incl. VAT)")}</span><span>{eur(sub + DELIVERY_FEE_CENTS + SERVICE + TIP - OFF)}</span></div>
+          {blockedClosed && <p data-testid="closed-warning" className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{t("Dit restaurant is nu gesloten of gepauzeerd. Je kunt bestellen zodra het weer open is.", "This restaurant is closed or paused right now. You can order once it reopens.")}</p>}
           {belowMin && <p data-testid="min-order-warning" className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{t(`Minimale bestelling bij dit restaurant is ${eur(minOrder)}. Voeg nog ${eur(minOrder - sub)} toe.`, `This restaurant's minimum order is ${eur(minOrder)}. Add ${eur(minOrder - sub)} more.`)}</p>}
         </Card>
         {!pickup && <Card data-testid="tip-picker">
@@ -101,7 +110,7 @@ export default function CheckoutPage() {
         </Card>}
         <TestModeCheckoutNote />
         <Card><b>{t("Betalen met Mollie", "Pay with Mollie")}</b><div className="mt-2"><Chips options={["iDEAL", "Card"] as const as ("iDEAL" | "Card")[]} render={(v) => v === "Card" ? t("Kaart", "Card") : v} value={method} onChange={setMethod} /></div></Card>
-        <Button icon={<Lock size={16} aria-hidden />} onClick={pay} disabled={busy || belowMin || closedNow || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS + SERVICE + TIP)} met ${method === "Card" ? "kaart" : method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS + SERVICE + TIP)} with ${method}`) : t("Log in om te betalen", "Sign in to pay")}</Button>
+        <Button icon={<Lock size={16} aria-hidden />} onClick={pay} disabled={busy || belowMin || blockedClosed || (Boolean(signedIn) && (outOfZone || phone.replace(/\D/g, "").length < 9))}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : signedIn ? t(`Betaal ${eur(sub + DELIVERY_FEE_CENTS + SERVICE + TIP - OFF)} met ${method === "Card" ? "kaart" : method}`, `Pay ${eur(sub + DELIVERY_FEE_CENTS + SERVICE + TIP - OFF)} with ${method}`) : t("Log in om te betalen", "Sign in to pay")}</Button>
         <p className="mt-3 text-center text-xs text-muted">{t("Door te betalen ga je akkoord met onze", "By paying you agree to our")} <Link className="underline" href="/terms">{t("Voorwaarden", "Terms")}</Link> {t("en", "and")} <Link className="underline" href="/privacy">{t("Privacybeleid", "Privacy policy")}</Link>. {t("Geannuleerde bestellingen worden volledig terugbetaald.", "Cancelled orders are refunded in full.")}</p>
       </main>
     </>

@@ -48,8 +48,8 @@ Deno.serve(async (req) => {
   const { data: { user } } = await userClient.auth.getUser();
   if (!user) return json({ error: "not signed in" }, 401);
 
-  let orderId: number; let tip = 0;
-  try { const b = await req.json(); orderId = Number(b.order_id); tip = Number(b.tip_cents ?? 0); } catch { return json({ error: "bad request" }, 400); }
+  let orderId: number; let tip = 0; let promo = ""; let useCredit = false; let schedRaw: string | null = null;
+  try { const b = await req.json(); orderId = Number(b.order_id); tip = Number(b.tip_cents ?? 0); promo = String(b.promo_code ?? "").slice(0, 20); useCredit = b.use_credit === true; schedRaw = b.scheduled_for ? String(b.scheduled_for) : null; } catch { return json({ error: "bad request" }, 400); }
   // Tip: whole cents, €0–€20, 100% to the rider (credited on delivery)
   if (!Number.isInteger(tip) || tip < 0 || tip > 2000) return json({ error: "Tip must be between €0 and €20.", code: "tip" }, 422);
   if (!Number.isInteger(orderId)) return json({ error: "order_id required" }, 400);
@@ -75,8 +75,21 @@ Deno.serve(async (req) => {
   if (subtotal < minOrder) return json({ error: `Minimum order at this restaurant is €${(minOrder / 100).toFixed(2)} (food only).`, code: "min_order" }, 422);
 
   // Opening hours / holiday closure / pause (v17 P3)
-  const { data: isOpen } = await admin.rpc("fp_restaurant_open", { p_rid: order.restaurant_id });
-  if (isOpen === false) return json({ error: "This restaurant is closed right now. You can order later.", code: "closed" }, 422);
+  // Scheduled order (v17 P6): slot 30 min – 7 days ahead and within opening hours; otherwise the restaurant must be open now.
+  let scheduled: Date | null = null, releaseAt: string | null = null;
+  if (schedRaw) {
+    scheduled = new Date(schedRaw);
+    const ms = scheduled.getTime() - Date.now();
+    if (!Number.isFinite(ms) || ms < 30 * 60000 || ms > 7 * 86400000) return json({ error: "Pick a time between 30 minutes and 7 days from now.", code: "schedule" }, 422);
+    const { data: openAt } = await admin.rpc("fp_restaurant_open", { p_rid: order.restaurant_id, p_at: scheduled.toISOString() });
+    if (openAt === false) return json({ error: "The restaurant is closed at that time.", code: "schedule" }, 422);
+    const { data: rr } = await admin.from("restaurants").select("avg_prep_minutes, busy_extra_minutes").eq("id", order.restaurant_id).maybeSingle();
+    const lead = Number(rr?.avg_prep_minutes ?? 15) + Number(rr?.busy_extra_minutes ?? 0) + 25; // prep + bidding + ride
+    releaseAt = new Date(Math.max(Date.now(), scheduled.getTime() - lead * 60000)).toISOString();
+  } else {
+    const { data: isOpen } = await admin.rpc("fp_restaurant_open", { p_rid: order.restaurant_id });
+    if (isOpen === false) return json({ error: "This restaurant is closed right now. You can order later.", code: "closed" }, 422);
+  }
 
   // Delivery zone: geocode the address server-side (PDOK Locatieserver, free NL geocoder) and check the radius.
   const { data: s } = await admin.from("settings").select("zone_radius_km, zone_center_lat, zone_center_lng, delivery_fee_cents, service_fee_cents").maybeSingle();
@@ -93,7 +106,13 @@ Deno.serve(async (req) => {
     if (dist > radius) return json({ error: `Sorry, ${geo.label} is ${dist.toFixed(1)} km from the centre. During the pilot we deliver within ${radius} km of central Tilburg.` }, 422);
   }
   const service = Math.min(300, Math.max(0, Number(s?.service_fee_cents ?? 0)));
-  const total = subtotal + fee + service + tip;
+  // Promo / referral code and credit (v17 P6), validated in the database
+  const { data: q, error: qe } = await admin.rpc("fp_quote_discount", { p_customer: user.id, p_subtotal: subtotal, p_code: promo, p_use_credit: useCredit, p_order: order.id });
+  if (qe) return json({ error: "could not check the code" }, 500);
+  if (q?.error) return json({ error: q.error, code: "promo" }, 422);
+  const discount = Math.max(0, Math.min(subtotal, Number(q?.discount_cents ?? 0)));
+  const credit = Math.max(0, Math.min(subtotal - discount, Number(q?.credit_cents ?? 0)));
+  const total = subtotal + fee + service + tip - discount - credit;
   if (total < 100 || total > 50000) return json({ error: "order total out of range" }, 400);
 
   const res = await fetch("https://api.mollie.com/v2/payments", {
@@ -113,7 +132,8 @@ Deno.serve(async (req) => {
 
   await admin.from("orders").update({
     mollie_payment_id: payment.id, payment_status: payment.status, subtotal_cents: subtotal,
-    delivery_fee_cents: fee, service_fee_cents: service, tip_cents: tip, status: "awaiting_payment",
+    delivery_fee_cents: fee, service_fee_cents: service, tip_cents: tip, discount_cents: discount, credit_cents: credit, promo_code: q?.kind === "promo" ? q.code : null, referral_code: q?.kind === "referral" ? q.code : null,
+    scheduled_for: scheduled ? scheduled.toISOString() : null, release_at: releaseAt, status: "awaiting_payment",
   }).eq("id", order.id);
 
   return json({ checkoutUrl: payment._links?.checkout?.href, paymentId: payment.id, testmode: payment.mode === "test" });
