@@ -1,5 +1,5 @@
 "use client";
-import { ChevronDown, ChevronUp, Phone } from "lucide-react";
+import { ChevronDown, ChevronUp, MessageCircle, Phone } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { tx } from "@/lib/i18n";
 import { act } from "@/lib/act";
@@ -53,8 +53,8 @@ export function OrderChat({ orderId, channel, side, readOnly, title, order }: { 
   return (
     <div className="rounded-2xl border border-line bg-white" data-testid={`chat-${channel}`}>
       <button onClick={() => setOpen(!open)} className="flex min-h-12 w-full items-center justify-between px-3 py-2 text-left text-sm font-semibold" data-testid={`chat-toggle-${channel}`}>
-        <span>💬 {label}</span>
-        <span className="text-xs text-muted">{unread > 0 && !open ? `${unread} ${tx("bericht(en)", "message(s)")}` : open ? "▲" : "▼"}</span>
+        <span className="flex items-center gap-2"><MessageCircle size={16} className="text-brand" aria-hidden />{label}</span>
+        <span className="text-xs text-muted">{unread > 0 && !open ? `${unread} ${tx("bericht(en)", "message(s)")}` : open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</span>
       </button>
       {open && (
         <div className="border-t border-line p-3">

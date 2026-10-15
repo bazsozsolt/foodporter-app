@@ -10,7 +10,7 @@ import { useWakeLock } from "@/lib/wakeLock";
 import { HelpButton } from "@/components/SupportSheet";
 import { SosButton } from "@/components/SosButton";
 import { act } from "@/lib/act";
-import { Button, Card, Chips, Empty, Header, Pill } from "@/components/ui";
+import { Button, Card, Chips, Empty, Header, Pill, SectionHeader } from "@/components/ui";
 import { restaurantStyle } from "@/lib/mock-data";
 import { eur, hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
@@ -19,6 +19,7 @@ import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap, type MapMarker } from "@/components/LiveMap";
 import { navUrl, osmNavUrl, useShareLocation } from "@/lib/location";
 import { CallButton, OrderChat } from "@/components/OrderChat";
+import { AlarmClock, Bike, ChefHat, ChevronRight, Hourglass, House, Inbox, MapPin, Navigation, Power, Timer, Wallet } from "lucide-react";
 
 const riderBody = (n: number) => tx(`${n} ${n > 1 ? "bestellingen" : "bestelling"} in de buurt: bied nu je bezorgtijd`, `${n} order${n > 1 ? "s" : ""} open for bids near you`);
 
@@ -46,14 +47,14 @@ function BidCard({ o, activeCount }: { o: Order; activeCount: number }) {
   const r = restaurants.find((x) => x.id === o.restaurant_id);
   return (
     <Card>
-      <div className="flex items-center justify-between"><b>{restaurantStyle(o.restaurant_id).emoji} {r?.name}</b><Pill tone="ok">{eur(o.delivery_fee_cents)}</Pill></div>
+      <div className="flex items-center justify-between"><b className="text-[16px]">{r?.name}</b><Pill tone="ok">{eur(o.delivery_fee_cents)}</Pill></div>
       <div className="my-1.5 text-[13px] text-muted">{tx("Klaar over ~", "Ready in ~")}{prep} min{o.ready_at ? ` (~${hhmm(new Date(o.ready_at))})` : ""} · {o.address}</div>
-      {r?.lat && o.lat ? <div data-testid="dropoff" className="text-[13px] font-semibold">🚲 {distanceKm({ lat: r.lat, lng: r.lng! }, { lat: o.lat, lng: o.lng! }).toFixed(1)} km {tx("naar de klant vanaf", "drop-off from")} {r.area}</div> : null}
-      {o.renotified_at && <div className="mt-1 text-[13px] font-semibold text-brand">⏰ {tx("Wacht nog op een rider — bied nu", "Still waiting for a rider — bid now")}</div>}
-      {left != null && <p data-testid="auction" className="mt-2 text-[13px] font-semibold">⏱ {tx("Bieden sluit over", "Bidding closes in")} {mmss(left)}{left === 0 ? tx(" · winnaar wordt gekozen…", " · choosing the winner…") : ""}</p>}
+      {r?.lat && o.lat ? <div data-testid="dropoff" className="flex items-center gap-1.5 text-[13px] font-semibold"><Bike size={14} aria-hidden />{distanceKm({ lat: r.lat, lng: r.lng! }, { lat: o.lat, lng: o.lng! }).toFixed(1)} km {tx("naar de klant vanaf", "drop-off from")} {r.area}</div> : null}
+      {o.renotified_at && <div className="mt-1 text-[13px] font-semibold text-brand"><AlarmClock size={14} className="mr-1 inline" aria-hidden />{tx("Wacht nog op een rider — bied nu", "Still waiting for a rider — bid now")}</div>}
+      {left != null && <p data-testid="auction" className="mt-2 flex items-center gap-1.5 text-[13px] font-semibold"><Timer size={14} aria-hidden />{tx("Bieden sluit over", "Bidding closes in")} {mmss(left)}{left === 0 ? tx(" · winnaar wordt gekozen…", " · choosing the winner…") : ""}</p>}
       {activeCount > 0 && !mine && (reason === null
-        ? <p data-testid="stack-ok" className="mt-2 rounded-xl bg-emerald-50 p-2 text-[13px] font-semibold text-emerald-800">🧩 {tx(`Op je route: combineer met je huidige rit. Bied de tijd tot deze klant zijn eten heeft (na je andere stop${activeCount > 1 ? "s" : ""}).`, `On your route: stack it with your current job. Bid the time until this customer gets their food (after your other stop${activeCount > 1 ? "s" : ""}).`)}</p>
-        : reason ? <p data-testid="stack-no" className="mt-2 rounded-xl bg-[#f1ede8] p-2 text-[13px] text-muted">🚫 {tx("Combineren kan niet", "Can't stack")}: {reason}</p> : null)}
+        ? <p data-testid="stack-ok" className="mt-2 rounded-xl bg-emerald-50 p-2 text-[13px] font-semibold text-emerald-800">{tx(`Op je route: combineer met je huidige rit. Bied de tijd tot deze klant zijn eten heeft (na je andere stop${activeCount > 1 ? "s" : ""}).`, `On your route: stack it with your current job. Bid the time until this customer gets their food (after your other stop${activeCount > 1 ? "s" : ""}).`)}</p>
+        : reason ? <p data-testid="stack-no" className="mt-2 rounded-xl bg-subtle p-2 text-[13px] text-muted">{tx("Combineren kan niet", "Can't stack")}: {reason}</p> : null)}
       {mine ? (
         <p data-testid="my-bid" className="mt-3 rounded-xl bg-brand-soft p-3 text-sm">{tx("Jouw bod", "Your bid")}: <b>{mine.eta_minutes} min</b>. {tx("Laagste tijd wint als het venster sluit (gelijk: vroegste bod).", "Lowest ETA wins when the window closes (ties: earliest bid).")}</p>
       ) : left === 0 || (activeCount > 0 && reason !== null) ? null : (<>
@@ -69,7 +70,7 @@ function BidCard({ o, activeCount }: { o: Order; activeCount: number }) {
 export default function RiderPage() {
   const t = useT();
   const SL = t("nl", "en") === "nl" ? STATUS_LABEL_NL : STATUS_LABEL;
-  const { orders, profile, mode, restaurants } = useStore();
+  const { orders, profile, mode, restaurants, earnings } = useStore();
   const open = orders.filter((o) => o.status === "accepted" && !acceptedBid(o));
   useOrderAlerts(open.map((o) => `${o.id}:${o.renotified_at ?? ""}`), tx("Beep-beep! Nieuwe bestelling om op te bieden", "Beep-beep! New order to bid on"), riderBody, "/rider/");
   const [name, setName] = useState<string | null>(null);
@@ -90,27 +91,31 @@ export default function RiderPage() {
   const stops = useMyStops(mode === "supabase" ? active.map((o) => `${o.id}:${o.status}`).join(",") : "");
   return (
     <>
-      <Header tagline={t("Jouw tijd, jouw regels, jouw verdiensten", "Your time, your rules, your earnings")} subtitle={t("Rider-app · Tilburg Centrum", "Rider app · Tilburg Centrum")} />
+      <Header subtitle={t("Rider · Tilburg Centrum", "Rider · Tilburg Centrum")} />
       <main id="main" className="p-4">
         <RoleGate role="rider">
-        <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
         {mode === "supabase" && profile && (
-          <div className="mb-3 flex gap-2">
-            <input aria-label={tx("Jouw naam", "Your name")} className="flex-1 rounded-xl border-[1.5px] border-[#e2ded8] p-2.5 text-sm" placeholder={tx("Je voornaam (zichtbaar voor klanten)", "Your first name (shown to customers)")}
+          <button data-testid="online-toggle" onClick={toggleOnline} aria-pressed={online}
+            className={`mb-3 flex min-h-16 w-full items-center gap-3 rounded-2xl px-4 text-left text-white shadow-[var(--shadow-card)] ${online ? "bg-ok" : "bg-ink"}`}>
+            <span className={`grid h-10 w-10 place-items-center rounded-full ${online ? "bg-white/20" : "bg-white/10"}`}><Power size={20} aria-hidden /></span>
+            <span className="flex-1"><b className="block text-[17px]">{online ? tx("Je bent online", "You're online") : tx("Je bent offline", "You're offline")}</b>
+              <span className="text-[13px] text-white/80">{online ? tx("Tik om offline te gaan", "Tap to go offline") : tx("Tik om online te gaan en opdrachten te krijgen", "Tap to go online and get jobs")}</span></span>
+          </button>
+        )}
+        <div className="mb-3 grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
+        {mode === "supabase" && profile && (
+          <details className="mb-3 rounded-2xl bg-white px-4 py-1 shadow-[var(--shadow-card)] ring-1 ring-black/[.04]">
+            <summary className="flex min-h-11 cursor-pointer items-center text-sm font-semibold">{tx("Jouw naam", "Your name")}: <span className="ml-1 font-normal text-muted">{profile.full_name || tx("nog niet ingesteld", "not set yet")}</span></summary>
+            <div className="mb-3 flex gap-2">
+            <input aria-label={tx("Jouw naam", "Your name")} className="flex-1 rounded-xl border border-line p-2.5 text-sm" placeholder={tx("Je voornaam (zichtbaar voor klanten)", "Your first name (shown to customers)")}
               value={name ?? profile.full_name ?? ""} onChange={(e) => setName(e.target.value)} />
             {name !== null && name !== (profile.full_name ?? "") && <button className="rounded-xl bg-ink px-3 text-sm font-bold text-white" onClick={async () => { if (await act(actions.setMyName(name), tx("Naam opgeslagen", "Name saved")) !== undefined) setName(null); }}>{tx("Opslaan", "Save")}</button>}
-          </div>
+            </div>
+          </details>
         )}
-        {mode === "supabase" && profile && (
-          <div className="mb-3 flex items-center gap-2">
-            <button data-testid="online-toggle" onClick={toggleOnline}
-              className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-bold ${online ? "bg-ok text-white" : "bg-ink text-white"}`}>
-              {online ? tx("🟢 Online · tik om offline te gaan", "🟢 Online · tap to go offline") : tx("⚪ Offline · tik om online te gaan", "⚪ Offline · tap to go online")}</button>
-          </div>
-        )}
-        {(online || job) && <p data-testid="gps" className="-mt-1 mb-1 text-xs text-muted">{gpsError ? `⚠️ ${gpsError}` : me ? tx(`📍 Locatie wordt gedeeld (${me.lat.toFixed(4)}, ${me.lng.toFixed(4)}), elke ~7 s`, `📍 Sharing location (${me.lat.toFixed(4)}, ${me.lng.toFixed(4)}) every ~7 s`) : tx("📍 Wachten op GPS…", "📍 Waiting for GPS…")}</p>}
+        {(online || job) && <p data-testid="gps" className="-mt-1 mb-1 text-xs text-muted">{gpsError ? gpsError : me ? tx(`Locatie wordt gedeeld (${me.lat.toFixed(4)}, ${me.lng.toFixed(4)}), elke ~7 s`, `Sharing location (${me.lat.toFixed(4)}, ${me.lng.toFixed(4)}) every ~7 s`) : tx("Wachten op GPS…", "Waiting for GPS…")}</p>}
         {(online || job) && <SosButton lat={me?.lat} lng={me?.lng} orderId={job?.id ?? null} />}
-        {(online || job) && wake !== "unsupported" && <p data-testid="wake-lock" data-state={wake} className="mb-3 text-xs text-muted">{wake === "on" ? tx("📱 Scherm blijft aan zolang je online bent", "📱 Screen stays on while you're online") : tx("📱 Scherm kan uitgaan: houd de app open voor meldingen", "📱 Screen may turn off: keep the app open for alerts")}</p>}
+        {(online || job) && wake !== "unsupported" && <p data-testid="wake-lock" data-state={wake} className="mb-3 text-xs text-muted">{wake === "on" ? tx("Scherm blijft aan zolang je online bent", "Screen stays on while you're online") : tx("Scherm kan uitgaan: houd de app open voor meldingen", "Screen may turn off: keep the app open for alerts")}</p>}
         {stops.length > 0 && (
           <Card data-testid="route">
             <div className="flex items-center justify-between"><b>{t("Jouw route", "Your route")}{active.length > 1 ? t(` · ${active.length} bestellingen gecombineerd`, ` · ${active.length} orders stacked`) : ""}</b><Pill>{stops.length} stop{stops.length > 1 ? "s" : ""}</Pill></div>
@@ -122,8 +127,8 @@ export default function RiderPage() {
               {stops.map((x, i) => (
                 <li key={`${x.kind}-${x.order_id}`} className={`flex items-center gap-2 rounded-xl p-2 text-sm ${i === 0 ? "bg-brand-soft" : "bg-white"}`}>
                   <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink text-xs font-bold text-white">{x.seq}</span>
-                  <span className="min-w-0 flex-1"><b>{x.kind === "pickup" ? tx("🍳 Ophalen", "🍳 Pickup") : tx("🏠 Afleveren", "🏠 Drop-off")}</b> #{x.order_id} · <span className="text-muted">{x.label}</span></span>
-                  {x.lat != null && <a data-testid="stop-nav" className="rounded-lg bg-[#1a73e8] px-2 py-1 text-xs font-semibold text-white" href={navUrl({ lat: x.lat, lng: x.lng! }, i === 0 ? me : stops[i - 1].lat != null ? { lat: stops[i - 1].lat!, lng: stops[i - 1].lng! } : null)} target="_blank" rel="noreferrer">🧭 {tx("Ga", "Go")}</a>}
+                  <span className="min-w-0 flex-1"><b>{x.kind === "pickup" ? tx("Ophalen", "Pickup") : tx("Afleveren", "Drop-off")}</b> #{x.order_id} · <span className="text-muted">{x.label}</span></span>
+                  {x.lat != null && <a data-testid="stop-nav" className="inline-flex min-h-9 items-center gap-1 rounded-lg bg-[#1a73e8] px-3 text-xs font-semibold text-white" href={navUrl({ lat: x.lat, lng: x.lng! }, i === 0 ? me : stops[i - 1].lat != null ? { lat: stops[i - 1].lat!, lng: stops[i - 1].lng! } : null)} target="_blank" rel="noreferrer"><Navigation size={13} aria-hidden />{tx("Ga", "Go")}</a>}
                 </li>
               ))}
             </ol>
@@ -142,24 +147,32 @@ export default function RiderPage() {
           ];
           return (
             <Card key={o.id}>
-              <div className="flex items-center justify-between"><b>{t("Actief", "Active")} · #{o.id}</b><Pill>{SL[o.status]}</Pill></div>
+              <div className="flex items-center justify-between"><span className="t-label">{t("Huidige opdracht", "Current job")} · #{o.id}</span><Pill>{SL[o.status]}</Pill></div>
+              <ol className="mt-3 space-y-2" data-testid="job-steps">
+                <li className={`flex items-start gap-3 rounded-xl p-2.5 ${o.status !== "picked_up" ? "bg-brand-soft" : "opacity-60"}`}><ChefHat size={20} className="mt-0.5 shrink-0 text-brand" aria-hidden /><span><b className="block">1. {tx("Ophalen", "Pickup")}: {rest?.name}</b><span className="text-[13px] text-muted">{tx("Eten klaar", "Food ready")} ~{o.ready_at ? hhmm(new Date(o.ready_at)) : "?"}</span></span></li>
+                <li className={`flex items-start gap-3 rounded-xl p-2.5 ${o.status === "picked_up" ? "bg-brand-soft" : ""}`}><House size={20} className="mt-0.5 shrink-0 text-brand" aria-hidden /><span><b className="block">2. {tx("Afleveren", "Drop-off")}</b><span className="text-[13px] text-muted">{o.address}</span></span></li>
+              </ol>
               <p className="mt-1 text-[13px] text-muted">{tx("Jouw tijd", "Your ETA")} {bid?.eta_minutes ?? "?"} min · {tx("eten klaar", "food ready")} ~{o.ready_at ? hhmm(new Date(o.ready_at)) : "?"} ({o.prep_minutes} min {tx("bereiding", "prep")}) · {tx("naar", "to")} {o.address}</p>
               {markers.length > 0 && active.length === 1 && <div className="mt-2"><LiveMap markers={markers} /></div>}
               {target && <div className="mt-2 flex gap-2 text-sm font-semibold">
-                <a data-testid="nav-link" className="flex-1 rounded-xl bg-[#1a73e8] py-2 text-center text-white" href={navUrl(target, me)} target="_blank" rel="noreferrer">🧭 {o.status === "picked_up" ? tx("Navigeer naar de klant", "Navigate to drop-off") : tx("Navigeer naar het restaurant", "Navigate to pickup")}</a>
-                <a className="rounded-xl border-[1.5px] border-[#e2ded8] px-3 py-2 text-center" href={osmNavUrl(target, me)} target="_blank" rel="noreferrer">OSM</a>
+                <a data-testid="nav-link" className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-[#1a73e8] text-center text-white" href={navUrl(target, me)} target="_blank" rel="noreferrer"><Navigation size={16} aria-hidden />{o.status === "picked_up" ? tx("Navigeer naar de klant", "Navigate to drop-off") : tx("Navigeer naar het restaurant", "Navigate to pickup")}</a>
+                <a className="inline-flex min-h-12 items-center rounded-xl border border-line px-3 text-center" href={osmNavUrl(target, me)} target="_blank" rel="noreferrer">OSM</a>
               </div>}
-              {o.status === "assigned" && <Empty icon="⏳">{t("Wachten tot het restaurant de bestelling klaar meldt…", "Waiting for the restaurant to mark ready…")}</Empty>}
-              {o.status === "ready" && <Button onClick={() => act(actions.pickUp(o.id), t("Klant geïnformeerd: je eten is onderweg", "Customer notified: your food is on the way"))}>{t("Opgehaald", "Picked up")}</Button>}
-              <div className="mt-2 flex flex-wrap justify-end gap-2"><CallButton orderId={Number(o.id)} status={o.status} side="rider" asAdmin={o.rider_id !== profile?.id} /><HelpButton role="rider" orderId={Number(o.id)} label={tx("Probleem melden", "Report a problem")} /></div>
+              {o.status === "assigned" && <Empty icon={<Hourglass size={24} />}>{t("Wachten tot het restaurant de bestelling klaar meldt…", "Waiting for the restaurant to mark ready…")}</Empty>}
+              {o.status === "ready" && <Button className="min-h-14 text-[17px]" onClick={() => act(actions.pickUp(o.id), t("Klant geïnformeerd: je eten is onderweg", "Customer notified: your food is on the way"))}>{t("Opgehaald", "Picked up")}</Button>}
+              <div className="mt-3 flex gap-2"><CallButton orderId={Number(o.id)} status={o.status} side="rider" asAdmin={o.rider_id !== profile?.id} /><HelpButton role="rider" orderId={Number(o.id)} label={tx("Probleem melden", "Report a problem")} /></div>
               <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="rider" side={o.rider_id === profile?.id ? "rider" : "admin"} order={o} /></div>
-              {o.status === "picked_up" && <Button variant="ok" onClick={() => act(actions.deliver(o.id), tx(`Bezorgd ✅ · ${eur(o.delivery_fee_cents)} bij je verdiensten`, `Delivered ✅ · ${eur(o.delivery_fee_cents)} added to earnings`))}>{t("Bezorgd", "Delivered")}</Button>}
+              {o.status === "picked_up" && <Button variant="ok" className="min-h-14 text-[17px]" onClick={() => act(actions.deliver(o.id), tx(`Bezorgd · ${eur(o.delivery_fee_cents)} bij je verdiensten`, `Delivered · ${eur(o.delivery_fee_cents)} added to earnings`))}>{t("Bezorgd", "Delivered")}</Button>}
             </Card>
           );
         })}
-        <h2 className="mb-3 mt-1 text-lg font-bold">{t("Open bestellingen", "Open orders")}</h2>
-        {open.length === 0 ? <Empty icon="📭">{t("Op dit moment geen bestellingen om op te bieden.", "No orders to bid on right now.")}</Empty> : open.map((o) => <BidCard key={o.id} o={o} activeCount={active.length} />)}
-        <Link href="/rider/earnings" className="mt-2 block rounded-2xl border-[1.5px] border-[#e2ded8] bg-white py-3.5 text-center font-bold">💶 {tx("Verdiensten", "Earnings history")}</Link>
+        <SectionHeader action={<span className="text-xs text-muted">{open.length}</span>}>{t("Open opdrachten", "Open jobs")}</SectionHeader>
+        {open.length === 0 ? <Empty icon={<Inbox size={24} />}>{t("Op dit moment geen bestellingen om op te bieden.", "No orders to bid on right now.")}</Empty> : open.map((o) => <BidCard key={o.id} o={o} activeCount={active.length} />)}
+        <Link href="/rider/earnings" data-testid="earnings-link" className="mt-4 flex min-h-16 items-center gap-3 rounded-2xl bg-white px-4 shadow-[var(--shadow-card)] ring-1 ring-black/[.04]">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-gold-soft text-warn"><Wallet size={20} aria-hidden /></span>
+          <span className="flex-1"><b className="block">{tx("Jouw verdiensten", "Your earnings")}</b><span className="text-[13px] text-muted">{tx("Nog uit te betalen", "Still to be paid")}: {eur(earnings.filter((e) => !e.payout_id).reduce((a, e) => a + e.amount_cents, 0))}</span></span>
+          <ChevronRight size={18} className="text-muted" aria-hidden />
+        </Link>
         </RoleGate>
       </main>
     </>

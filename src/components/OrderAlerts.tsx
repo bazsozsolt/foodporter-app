@@ -103,8 +103,8 @@ function synth() {
 
 export function TestSoundButton() {
   return (
-    <button data-testid="test-sound" onClick={() => { beep(); navigator.vibrate?.([120, 80, 120]); toast(tx("🔊 Testgeluid afgespeeld. Hoorde je niks? Zet je volume hoger en de stille modus uit.", "🔊 Test sound played. Heard nothing? Turn up the volume and switch off silent mode.")); }}
-      className="mb-3 w-full rounded-xl border-[1.5px] border-[#e2ded8] bg-white px-3 py-2 text-sm font-semibold">🔊 {tx("Testgeluid afspelen", "Test alert sound")}</button>
+    <button data-testid="test-sound" onClick={() => { beep(); navigator.vibrate?.([120, 80, 120]); toast(tx("Testgeluid afgespeeld. Hoorde je niks? Zet je volume hoger en de stille modus uit.", "Test sound played. Heard nothing? Turn up the volume and switch off silent mode.")); }}
+      className="mb-3 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm font-semibold">{tx("Testgeluid afspelen", "Test alert sound")}</button>
   );
 }
 
@@ -192,15 +192,15 @@ export function AlertsToggle() {
       </button>
       {on && perm === "default" && (
         <div data-testid="notify-prompt" role="dialog" aria-labelledby="np-title" className="mb-3 rounded-xl border-2 border-gold bg-gold-soft p-3 text-sm">
-          <b id="np-title">🔔 {tx("Meldingen toestaan?", "Allow notifications?")}</b>
+          <b id="np-title">{tx("Meldingen toestaan?", "Allow notifications?")}</b>
           <p className="mt-1 text-[13px]">{tx("Dan hoor je de beep-beep en zie je een melding zodra er een bestelling klaarstaat, ook als Food Porter op de achtergrond open staat. Je telefoon vraagt hierna om toestemming.", "You'll hear the beep-beep and get a notification as soon as an order is waiting, even while Food Porter is open in the background. Your phone will ask for permission next.")}</p>
           <button data-testid="notify-allow" onClick={ask} className="mt-2 w-full rounded-xl bg-brand px-3 py-2 font-bold text-white">{tx("Meldingen toestaan", "Allow notifications")}</button>
         </div>
       )}
-      {on && perm === "denied" && <p data-testid="notify-denied" className="mb-3 text-[12px] text-muted">🔕 {tx("Meldingen zijn geblokkeerd. Je krijgt alleen geluid. Sta meldingen toe via de site-instellingen van je browser.", "Notifications are blocked; you'll get sound only. Allow them in your browser's site settings.")}</p>}
-      {on && perm === "needs-install" && <p data-testid="notify-install" className="mb-3 text-[12px] text-muted">📲 {tx("Op iPhone werken meldingen alleen als je Food Porter op je beginscherm zet (Deel → Zet op beginscherm). Tot die tijd krijg je geluid zolang de app open is.", "On iPhone, notifications only work after adding Food Porter to your home screen (Share → Add to Home Screen). Until then you get sound while the app is open.")}</p>}
+      {on && perm === "denied" && <p data-testid="notify-denied" className="mb-3 text-[12px] text-muted">{tx("Meldingen zijn geblokkeerd. Je krijgt alleen geluid. Sta meldingen toe via de site-instellingen van je browser.", "Notifications are blocked; you'll get sound only. Allow them in your browser's site settings.")}</p>}
+      {on && perm === "needs-install" && <p data-testid="notify-install" className="mb-3 text-[12px] text-muted">{tx("Op iPhone werken meldingen alleen als je Food Porter op je beginscherm zet (Deel → Zet op beginscherm). Tot die tijd krijg je geluid zolang de app open is.", "On iPhone, notifications only work after adding Food Porter to your home screen (Share → Add to Home Screen). Until then you get sound while the app is open.")}</p>}
       {on && perm === "unsupported" && <p data-testid="notify-unsupported" className="mb-3 text-[12px] text-muted">ℹ️ {tx("Deze browser ondersteunt geen meldingen. Je krijgt geluid en trillen zolang de app open is.", "This browser doesn't support notifications. You'll get sound and vibration while the app is open.")}</p>}
-      {on && perm === "granted" && <p data-testid="notify-granted" className="mb-3 text-[12px] text-ok">✓ {push
+      {on && perm === "granted" && <p data-testid="notify-granted" className="mb-3 text-[12px] text-ok">{push
         ? tx("Pushmeldingen staan aan: je krijgt ze ook als Food Porter dicht is.", "Push notifications on: you'll get them even when Food Porter is closed.")
         : tx("Meldingen staan aan zolang Food Porter open is.", "Notifications on while Food Porter is open.")}<span data-testid={push ? "push-on" : "push-off"} /></p>}
     </div>
@@ -220,10 +220,10 @@ export function CustomerPushCard() {
     setState((await enablePush()) ? "on" : "idle");
   }
   return (
-    <div data-testid="customer-push" className="mt-3 rounded-xl border-[1.5px] border-[#e2ded8] bg-white p-3 text-sm">
-      {state === "on" ? <p data-testid="customer-push-on" className="text-ok">🔔 {tx("Je krijgt een melding bij elke stap van je bestelling.", "You'll get a notification at every step of your order.")}</p>
-        : state === "denied" ? <p className="text-muted">🔕 {tx("Meldingen zijn geblokkeerd in je browser. Je kunt deze pagina openhouden om de status te volgen.", "Notifications are blocked in your browser. Keep this page open to follow the status.")}</p>
-        : <button data-testid="customer-push-allow" onClick={allow} className="w-full font-semibold text-brand">🔔 {tx("Stuur me een melding als mijn eten onderweg is", "Notify me when my food is on the way")}</button>}
+    <div data-testid="customer-push" className="mt-3 rounded-xl border border-line bg-white p-3 text-sm">
+      {state === "on" ? <p data-testid="customer-push-on" className="text-ok">{tx("Je krijgt een melding bij elke stap van je bestelling.", "You'll get a notification at every step of your order.")}</p>
+        : state === "denied" ? <p className="text-muted">{tx("Meldingen zijn geblokkeerd in je browser. Je kunt deze pagina openhouden om de status te volgen.", "Notifications are blocked in your browser. Keep this page open to follow the status.")}</p>
+        : <button data-testid="customer-push-allow" onClick={allow} className="w-full font-semibold text-brand">{tx("Stuur me een melding als mijn eten onderweg is", "Notify me when my food is on the way")}</button>}
     </div>
   );
 }

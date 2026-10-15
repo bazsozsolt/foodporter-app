@@ -13,10 +13,9 @@ export default function EarningsPage() {
   const total = unpaid.reduce((a, e) => a + e.amount_cents, 0);
   return (
     <>
-      <Header subtitle={tx("Rider-app · Verdiensten", "Rider app · Earnings")} />
+      <Header subtitle={tx("Rider · Verdiensten", "Rider · Earnings")} />
       <main id="main" className="p-4">
         <div className="mb-3 flex justify-end"><HelpButton role="rider" label={tx("Vraag over uitbetaling", "Payout question")} /></div>
-        <Link href="/rider" className="text-sm text-muted">← {tx("Bestellingen", "Order feed")}</Link>
         <RoleGate role="rider">
         <div className="mt-2.5 flex gap-2.5"><Stat value={eur(total)} label={tx("Openstaand · uitbetaald komende maandag", "Unpaid · paid next Monday")} /><Stat value={String(earnings.length)} label={tx("Bezorgingen", "Deliveries")} /></div>
         <Card className="mt-3">
@@ -26,7 +25,7 @@ export default function EarningsPage() {
               <b>{eur(e.amount_cents)}</b>
             </div>
           ))}
-          <p className="mt-3 text-[13px] text-muted">💶 {tx("Elke maandag worden de verdiensten van vorige week per bankoverschrijving uitbetaald. Je houdt 100% van de bezorgvergoeding.", "Each Monday, last week’s earnings are paid out by bank transfer. You keep 100% of the delivery fee.")}</p>
+          <p className="mt-3 text-[13px] text-muted">{tx("Elke maandag worden de verdiensten van vorige week per bankoverschrijving uitbetaald. Je houdt 100% van de bezorgvergoeding.", "Each Monday, last week’s earnings are paid out by bank transfer. You keep 100% of the delivery fee.")}</p>
         </Card>
         </RoleGate>
       </main>
