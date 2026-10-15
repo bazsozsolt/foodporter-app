@@ -2,6 +2,7 @@
 import { RestaurantPhotos } from "@/components/PhotoUpload";
 import { geocode } from "@/lib/geo";
 import { useState } from "react";
+import { AllergenEditor } from "@/components/AllergenEditor";
 import { ErrorNote, Field, inputCls, Panel, SmallBtn, StatusBadge, Table, Td } from "@/components/admin";
 import { toast } from "@/components/Toaster";
 import { act } from "@/lib/act";
@@ -9,7 +10,7 @@ import { sb, useAdminQuery, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
 import { actions } from "@/lib/store";
 
-const blank = { name: "", cuisine: "", area: "", address: "", avg_prep_minutes: 15, commission_pct: 12, active: true };
+const blank = { name: "", cuisine: "", area: "", address: "", avg_prep_minutes: 15, commission_pct: 12, min_order_cents: 0, active: true };
 type RForm = typeof blank & { id?: string };
 
 async function must<T>(p: PromiseLike<{ data: T; error: { message: string } | null }>) {
@@ -25,7 +26,7 @@ function RestaurantForm({ initial, onDone }: { initial: RForm; onDone: () => voi
     if (!f.name.trim()) return toast("Name is required");
     const id = f.id;
     const payload = { name: f.name.trim(), cuisine: f.cuisine || null, area: f.area || null, address: f.address || null,
-      avg_prep_minutes: Number(f.avg_prep_minutes), commission_pct: Number(f.commission_pct), active: f.active } as Row;
+      avg_prep_minutes: Number(f.avg_prep_minutes), commission_pct: Number(f.commission_pct), min_order_cents: Math.max(0, Math.round(Number(f.min_order_cents) || 0)), active: f.active } as Row;
     // Geocode real addresses (PDOK) so riders see drop-off distances; example addresses keep their area pin.
     if (f.address && !/^example/i.test(f.address)) {
       const p = await geocode(f.address).catch(() => null);
@@ -41,6 +42,7 @@ function RestaurantForm({ initial, onDone }: { initial: RForm; onDone: () => voi
       <Field label="Area"><input className={inputCls} value={f.area ?? ""} onChange={(e) => set("area", e.target.value)} /></Field>
       <Field label="Address"><input className={inputCls} value={f.address ?? ""} onChange={(e) => set("address", e.target.value)} /></Field>
       <Field label="Avg prep (min)"><input type="number" min={5} max={120} className={inputCls} value={f.avg_prep_minutes} onChange={(e) => set("avg_prep_minutes", e.target.value)} /></Field>
+      <Field label="Minimum order (€, food only; enforced at payment)"><input data-testid="min-order-input" type="number" min={0} max={100} step={0.5} className={inputCls} value={Number(f.min_order_cents) / 100} onChange={(e) => set("min_order_cents", Math.round(Number(e.target.value) * 100))} /></Field>
       <Field label="Commission % (10–15)"><input type="number" min={10} max={15} step={0.5} className={inputCls} value={f.commission_pct} onChange={(e) => set("commission_pct", e.target.value)} /></Field>
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.active} onChange={(e) => set("active", e.target.checked)} /> Active (visible to customers)</label>
       <div className="flex gap-2 md:col-span-2 md:justify-end"><SmallBtn onClick={onDone}>Cancel</SmallBtn><SmallBtn tone="brand" onClick={save}>Save</SmallBtn></div>
@@ -66,7 +68,7 @@ function Menu({ restaurantId }: { restaurantId: string }) {
     <div className="mt-3 rounded-xl bg-paper p-3">
       <ErrorNote error={q.error} />
       <div className="mb-2"><RestaurantPhotos restaurantId={restaurantId} english /></div>
-      <Table head={["Item", "Price", "Available", ""]} empty={q.data?.length === 0}>
+      <Table head={["Item", "Price", "Allergens", "Available", ""]} empty={q.data?.length === 0}>
         {(q.data ?? []).map((m) => (
           <tr key={String(m.id)}>
             <Td>{String(m.name)}</Td>
@@ -74,6 +76,7 @@ function Menu({ restaurantId }: { restaurantId: string }) {
               <input aria-label={`Price ${m.name}`} className={`${inputCls} w-24`} defaultValue={(Number(m.price_cents) / 100).toFixed(2)}
                 onBlur={(e) => { const c = Math.round(Number(e.target.value.replace(",", ".")) * 100); if (c > 0 && c !== Number(m.price_cents)) void update(String(m.id), { price_cents: c }, `Price → ${eur(c)}`); }} />
             </Td>
+            <Td><AllergenEditor itemId={String(m.id)} value={(m.allergens as string[]) ?? []} english />{m.allergens_test ? <div className="mt-1 text-[11px] italic text-muted">test values</div> : null}</Td>
             <Td><input type="checkbox" checked={Boolean(m.available)} onChange={(e) => update(String(m.id), { available: e.target.checked }, e.target.checked ? "Available" : "Marked unavailable")} /></Td>
             <Td className="text-right"><SmallBtn onClick={async () => { if (confirm(`Delete ${m.name}?`) && await act(must(sb().from("menu_items").delete().eq("id", String(m.id))), "Item deleted") !== undefined) { q.reload(); actions.reloadCatalog(); } }}>Delete</SmallBtn></Td>
           </tr>
@@ -103,7 +106,7 @@ export default function RestaurantsAdmin() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <b>{String(r.name)}</b> <StatusBadge s={r.active ? "active" : "suspended"} />
-              <div className="text-xs text-muted">{String(r.cuisine ?? "")} · {String(r.area ?? "")} · {Number(r.commission_pct)}% commission · ~{String(r.avg_prep_minutes)} min prep · {String((r.menu_items as Row[])?.[0]?.count ?? 0)} items</div>
+              <div className="text-xs text-muted">{String(r.cuisine ?? "")} · {String(r.area ?? "")} · {Number(r.commission_pct)}% commission · min order €{(Number(r.min_order_cents ?? 0) / 100).toFixed(2)} · ~{String(r.avg_prep_minutes)} min prep · {String((r.menu_items as Row[])?.[0]?.count ?? 0)} items</div>
             </div>
             <div className="flex gap-2">
               <SmallBtn onClick={async () => { if (!confirm(r.active ? `Deactivate ${String(r.name)}? Customers will no longer see it or be able to order.` : `Activate ${String(r.name)}? It becomes visible to customers.`)) return; if (await act(must(sb().from("restaurants").update({ active: !r.active }).eq("id", String(r.id))), r.active ? "Deactivated" : "Activated") !== undefined) { q.reload(); actions.reloadCatalog(); } }}>{r.active ? "Deactivate" : "Activate"}</SmallBtn>

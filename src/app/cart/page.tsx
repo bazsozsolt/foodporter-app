@@ -6,6 +6,7 @@ import { ShoppingBag, X } from "lucide-react";
 import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
 import { Photo } from "@/components/Photo";
+import { AllergenInfo } from "@/components/AllergenInfo";
 
 export default function CartPage() {
   const t = useT();
@@ -25,7 +26,7 @@ export default function CartPage() {
               <b>{r.name}</b>
               {lines.map(({ item, q }) => (
                 <div key={item.id} className="mt-2 flex items-center justify-between">
-                  <span className="flex min-w-0 items-center gap-2"><Photo src={item.image_url} alt={item.name} className="w-12 shrink-0 rounded-lg text-sm" sizes="48px" /><span>{q}× {item.name}</span></span>
+                  <span className="flex min-w-0 items-center gap-2"><Photo src={item.image_url} alt={item.name} className="w-12 shrink-0 rounded-lg text-sm" sizes="48px" /><span>{q}× {item.name}<AllergenInfo allergens={item.allergens} test={item.allergens_test} /></span></span>
                   <span className="flex items-center gap-2">{eur(q * item.price_cents)}
                     <button className="grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-subtle" aria-label={tx("Item verwijderen", "Remove item")} onClick={() => actions.setQty(r.id, item.id, 0)}><X size={16} /></button></span>
                 </div>

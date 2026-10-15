@@ -18,6 +18,8 @@ import { LiveMap } from "@/components/LiveMap";
 import { useOrderLocation } from "@/lib/location";
 import { OrderChat } from "@/components/OrderChat";
 import { useRiderInfo } from "@/lib/orders";
+import { AllergenEditor } from "@/components/AllergenEditor";
+import { SectionHeader } from "@/components/ui";
 import { ChefHat, CircleCheck, Inbox, Users } from "lucide-react";
 
 function Countdown({ from }: { from: string }) {
@@ -120,11 +122,25 @@ export default function RestaurantPage() {
           </div>
         )}
         </>) : (
-          profile?.restaurant_id ? <RestaurantPhotos restaurantId={profile.restaurant_id} /> : <Empty icon={<ChefHat size={24} />}>{tx("Geen restaurant gekoppeld aan dit account.", "No restaurant linked to this account.")}</Empty>
+          profile?.restaurant_id ? <><RestaurantPhotos restaurantId={profile.restaurant_id} /><MenuAllergens restaurantId={profile.restaurant_id} /></> : <Empty icon={<ChefHat size={24} />}>{tx("Geen restaurant gekoppeld aan dit account.", "No restaurant linked to this account.")}</Empty>
         )}
         <div className="mt-6 flex flex-wrap gap-2"><HelpButton role="restaurant" label={t("Contact met support", "Contact support")} /></div>
         </RoleGate>
       </main>
     </>
+  );
+}
+
+/** Allergens per dish (EU 14). Saved per tap; shown to customers before they add a dish to the cart. */
+function MenuAllergens({ restaurantId }: { restaurantId: string }) {
+  const items = useStore().menuItems.filter((m) => m.restaurant_id === restaurantId);
+  return (
+    <section data-testid="menu-allergens">
+      <SectionHeader>{tx("Allergenen per gerecht", "Allergens per dish")}</SectionHeader>
+      <p className="mb-2 text-[13px] text-muted">{tx("Tik de allergenen aan die in een gerecht zitten (EU-verplichting). Klanten zien dit vóór ze bestellen.", "Tap the allergens each dish contains (EU requirement). Customers see this before they order.")}</p>
+      {items.map((m) => (
+        <Card key={m.id} className="!p-3"><b className="mb-2 block">{m.name}{m.allergens_test ? <span className="ml-2 text-[11px] font-normal italic text-muted">{tx("testwaarden, controleer", "test values, please check")}</span> : null}</b><AllergenEditor itemId={m.id} value={m.allergens ?? []} /></Card>
+      ))}
+    </section>
   );
 }

@@ -66,7 +66,7 @@ export default function RidersAdmin() {
             return (
               <tr key={String(r.id)}>
                 <Td><button className="text-left font-semibold text-brand" onClick={() => setOpen(open === r.id ? null : String(r.id))}>{String(r.full_name ?? "—")}</button><div className="text-xs text-muted">{String(r.email ?? "")}</div>
-                  {open === r.id && <div className="mt-2 text-xs text-muted">Joined {fmtDateTime(r.created_at)} · phone {String(r.phone ?? "—")} · IBAN {r.iban ? "on file" : "missing"} · total earned {eur(s.total)} · last delivery {fmtDateTime(s.last)}{r.status_reason ? ` · note: ${r.status_reason}` : ""}</div>}
+                  {open === r.id && <div className="mt-2 text-xs text-muted">Joined {fmtDateTime(r.created_at)} · phone {String(r.phone ?? "—")} · IBAN {r.iban ? "on file" : "missing"} · total earned {eur(s.total)} · last delivery {fmtDateTime(s.last)}{r.status_reason ? ` · note: ${r.status_reason}` : ""}<StatusLog id={String(r.id)} /></div>}
                 </Td>
                 <Td><StatusBadge s={String(r.status)} /></Td>
                 <Td>{s.deliveries}</Td>
@@ -74,14 +74,21 @@ export default function RidersAdmin() {
                 <Td>{s.avgBid == null ? "—" : `${s.avgBid}s`}</Td>
                 <Td className="whitespace-nowrap text-right">
                   {r.status !== "active" && <SmallBtn tone="ok" onClick={async () => { if (await act(setStatus(String(r.id), "active"), r.status === "pending" ? "Rider approved" : "Rider reactivated") !== undefined) q.reload(); }}>{r.status === "pending" ? "Approve" : "Reactivate"}</SmallBtn>}{" "}
-                  {r.status !== "suspended" && r.role !== "admin" && <SmallBtn tone="danger" onClick={async () => { const why = prompt("Reason for suspension?") ?? undefined; if (why === undefined) return; if (await act(setStatus(String(r.id), "suspended", why), "Rider suspended") !== undefined) q.reload(); }}>Suspend</SmallBtn>}
+                  {r.status !== "suspended" && r.role !== "admin" && <SmallBtn tone="danger" onClick={async () => { const why = prompt("Reason for suspension? (required; the rider sees it and can appeal through Support)") ?? undefined; if (why === undefined) return; if (!why.trim()) { toast("A written reason is required"); return; } if (await act(setStatus(String(r.id), "suspended", why), "Rider suspended") !== undefined) q.reload(); }}>Suspend</SmallBtn>}
                 </Td>
               </tr>
             );
           })}
         </Table>
-        <p className="mt-2 text-xs text-muted">Pending and suspended riders cannot bid (enforced in the database). Earnings and payouts: <Link className="font-semibold text-brand" href="/admin/payouts">Finance → Rider payouts</Link>.</p>
+        <p className="mt-2 text-xs text-muted">Human review: suspensions are only made by an admin, need a written reason, are logged, and riders can appeal through Support (see <Link className="font-semibold text-brand" href="/rider-info">rider transparency page</Link>). Pending and suspended riders cannot bid (enforced in the database). Earnings and payouts: <Link className="font-semibold text-brand" href="/admin/payouts">Finance → Rider payouts</Link>.</p>
       </Panel>
     </>
   );
+}
+
+/** Status changes for one account (who, when, reason) from account_status_log. */
+function StatusLog({ id }: { id: string }) {
+  const q = useAdminQuery<Row[]>(async () => sb().from("account_status_log").select("*").eq("profile_id", id).order("created_at", { ascending: false }).limit(10), [id]);
+  if (!q.data?.length) return <div className="mt-1" data-testid="status-log">No status changes logged.</div>;
+  return <ul className="mt-1 list-disc pl-4" data-testid="status-log">{q.data.map((l) => <li key={String(l.id)}>{fmtDateTime(l.created_at)}: {String(l.old_status)} → {String(l.new_status)}{l.reason ? ` (“${String(l.reason)}”)` : ""}</li>)}</ul>;
 }

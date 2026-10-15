@@ -12,6 +12,10 @@ import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
 import { Photo } from "@/components/Photo";
 import { PhotoCredits } from "@/components/PhotoCredits";
+import { AllergenInfo } from "@/components/AllergenInfo";
+import { HelpButton } from "@/components/SupportSheet";
+import { ALLERGENS } from "@/lib/allergens";
+import { useState } from "react";
 
 export function MenuView({ id }: { id: string }) {
   const { cart, restaurants, menuItems, ready, signedIn } = useStore();
@@ -26,10 +30,12 @@ export function MenuView({ id }: { id: string }) {
     })());
     if (res?.code) router.push(`/group?code=${res.code}`);
   }
+  const [avoid, setAvoid] = useState<string[]>([]);
   const r = restaurants.find((x) => x.id === id);
   if (!r) return <><Header /><main id="main" className="p-4">{ready ? tx("Restaurant niet gevonden.", "Restaurant not found.") : tx("Laden…", "Loading…")}</main></>;
   const qty = cart.restaurant_id === id ? cart.qty : {};
-  const items = menuItems.filter((m) => m.restaurant_id === id);
+  const all = menuItems.filter((m) => m.restaurant_id === id);
+  const items = all.filter((m) => !avoid.some((a) => (m.allergens ?? []).includes(a)));
   const count = Object.values(qty).reduce((a, b) => a + b, 0);
   const total = items.reduce((a, m) => a + (qty[m.id] ?? 0) * m.price_cents, 0);
   return (
@@ -49,11 +55,19 @@ export function MenuView({ id }: { id: string }) {
             <ChevronRight size={18} className="text-muted" aria-hidden />
           </button>
         )}
-        <SectionHeader>{tx("Menu", "Menu")}</SectionHeader>
+        {(r.min_order_cents ?? 0) > 0 && <p data-testid="min-order" className="mb-2 text-[13px] text-muted">{tx(`Minimale bestelling ${eur(r.min_order_cents!)} (excl. bezorging)`, `Minimum order ${eur(r.min_order_cents!)} (excl. delivery)`)}</p>}
+        <SectionHeader action={<HelpButton role="customer" label={tx("Vraag het restaurant", "Ask the restaurant")} />}>{tx("Menu", "Menu")}</SectionHeader>
+        <details className="mb-3 rounded-2xl bg-white px-4 py-1 shadow-[var(--shadow-card)] ring-1 ring-black/[.04]" data-testid="allergen-filter">
+          <summary className="flex min-h-11 cursor-pointer items-center text-sm font-semibold">{tx("Allergenen filteren", "Filter by allergen")}{avoid.length ? <span className="ml-2 rounded-full bg-ink px-2 text-xs text-white">{avoid.length}</span> : null}</summary>
+          <p className="text-[12px] text-muted">{tx("Verberg gerechten met:", "Hide dishes containing:")}</p>
+          <div className="my-2 flex flex-wrap gap-1.5">{ALLERGENS.map(([c, nl, en]) => <button key={c} aria-pressed={avoid.includes(c)} onClick={() => setAvoid(avoid.includes(c) ? avoid.filter((x) => x !== c) : [...avoid, c])} className={`min-h-9 rounded-full border px-3 text-[13px] font-semibold ${avoid.includes(c) ? "border-ink bg-ink text-white" : "border-line bg-white"}`}>{tx(nl, en)}</button>)}</div>
+          <p className="mb-2 text-[12px] text-muted">{tx("Allergenen worden door het restaurant opgegeven. Twijfel je of heb je een ernstige allergie? Vraag het restaurant vóór je bestelt.", "Allergens are declared by the restaurant. In doubt or a severe allergy? Ask the restaurant before you order.")}</p>
+        </details>
+        {avoid.length > 0 && <p className="mb-2 text-[12px] text-muted" data-testid="allergen-hidden">{tx(`${all.length - items.length} gerecht(en) verborgen`, `${all.length - items.length} dish(es) hidden`)}</p>}
         {items.map((m) => (
           <Card key={m.id} className="flex items-center justify-between gap-3 !p-3">
             <Photo src={m.image_url} alt={m.name} emoji={restaurantStyle(r.id).emoji} className="w-20 shrink-0 rounded-xl text-lg" sizes="80px" />
-            <div className="min-w-0 flex-1"><b className="block leading-snug">{m.name}</b><div className="mt-0.5 text-[14px] font-semibold text-ink/80">{eur(m.price_cents)}</div></div>
+            <div className="min-w-0 flex-1"><b className="block leading-snug">{m.name}</b><div className="mt-0.5 text-[14px] font-semibold text-ink/80">{eur(m.price_cents)}</div><AllergenInfo allergens={m.allergens} test={m.allergens_test} /></div>
             <div className="flex items-center gap-2.5">
               <button aria-label={tx("Eén minder", "Remove one")} disabled={!qty[m.id]} className="grid h-10 w-10 place-items-center rounded-full border border-line bg-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) - 1)}><Minus size={16} /></button>
               <b className="w-4 text-center">{qty[m.id] ?? 0}</b>

@@ -173,6 +173,7 @@ export default function RiderPage() {
           <span className="flex-1"><b className="block">{tx("Jouw verdiensten", "Your earnings")}</b><span className="text-[13px] text-muted">{tx("Nog uit te betalen", "Still to be paid")}: {eur(earnings.filter((e) => !e.payout_id).reduce((a, e) => a + e.amount_cents, 0))}</span></span>
           <ChevronRight size={18} className="text-muted" aria-hidden />
         </Link>
+        <Link href="/rider-info" data-testid="rider-info-link" className="mt-3 block text-center text-sm font-semibold text-brand">{tx("Zo werken bieden, toewijzen en beoordeling", "How bidding, assignment and review work")}</Link>
         </RoleGate>
       </main>
     </>
