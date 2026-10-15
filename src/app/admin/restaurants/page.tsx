@@ -22,14 +22,14 @@ function RestaurantForm({ initial, onDone }: { initial: RForm; onDone: () => voi
   const [f, setF] = useState<RForm>(initial);
   const set = (k: keyof RForm, v: unknown) => setF((s) => ({ ...s, [k]: v }));
   async function save() {
-    if (!f.name.trim()) return toast("⚠️ Name is required");
+    if (!f.name.trim()) return toast("Name is required");
     const id = f.id;
     const payload = { name: f.name.trim(), cuisine: f.cuisine || null, area: f.area || null, address: f.address || null,
       avg_prep_minutes: Number(f.avg_prep_minutes), commission_pct: Number(f.commission_pct), active: f.active } as Row;
     // Geocode real addresses (PDOK) so riders see drop-off distances; example addresses keep their area pin.
     if (f.address && !/^example/i.test(f.address)) {
       const p = await geocode(f.address).catch(() => null);
-      if (p) { payload.lat = p.lat; payload.lng = p.lng; } else toast("⚠️ Address not found by PDOK; distance will be unknown");
+      if (p) { payload.lat = p.lat; payload.lng = p.lng; } else toast("Address not found by PDOK; distance will be unknown");
     }
     const ok = await act(id ? must(sb().from("restaurants").update(payload).eq("id", id)) : must(sb().from("restaurants").insert(payload)), id ? "Restaurant saved" : "Restaurant added");
     if (ok !== undefined) { actions.reloadCatalog(); onDone(); }
@@ -54,7 +54,7 @@ function Menu({ restaurantId }: { restaurantId: string }) {
   const [price, setPrice] = useState("");
   async function add() {
     const cents = Math.round(Number(price.replace(",", ".")) * 100);
-    if (!name.trim() || !(cents > 0)) return toast("⚠️ Name and price required");
+    if (!name.trim() || !(cents > 0)) return toast("Name and price required");
     if (await act(must(sb().from("menu_items").insert({ restaurant_id: restaurantId, name: name.trim(), price_cents: cents })), "Item added") !== undefined) {
       setName(""); setPrice(""); q.reload(); actions.reloadCatalog();
     }
@@ -97,7 +97,7 @@ export default function RestaurantsAdmin() {
   return (
     <Panel title="Restaurants" actions={<SmallBtn tone="brand" onClick={() => setAdding(true)}>+ Add restaurant</SmallBtn>}>
       <ErrorNote error={q.error} />
-      {adding && <div className="mb-4 rounded-xl border-[1.5px] border-[#e2ded8] p-3"><RestaurantForm initial={blank} onDone={done} /></div>}
+      {adding && <div className="mb-4 rounded-xl border border-line p-3"><RestaurantForm initial={blank} onDone={done} /></div>}
       {(q.data ?? []).map((r) => (
         <div key={String(r.id)} className="border-b border-[#f3f1ee] py-3 last:border-0">
           <div className="flex flex-wrap items-center justify-between gap-2">

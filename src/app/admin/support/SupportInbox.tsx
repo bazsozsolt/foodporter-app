@@ -136,7 +136,7 @@ function Detail({ id }: { id: number }) {
         <div className="space-y-2" data-testid="admin-thread">
           {msgs.map((m) => (
             <div key={m.id} className={`rounded-xl p-2 text-sm ${m.internal ? "border border-dashed border-gold bg-gold-soft" : m.author_role === "admin" ? "bg-brand-soft" : m.author_role === "system" ? "bg-[#f1ede8]" : "bg-white"}`}>
-              <p className="text-[11px] font-semibold text-muted">{m.internal ? "🔒 internal note · " : ""}{m.author_role} · {fmtDateTime(m.created_at)}</p>
+              <p className="text-[11px] font-semibold text-muted">{m.internal ? "internal note · " : ""}{m.author_role} · {fmtDateTime(m.created_at)}</p>
               <p className="whitespace-pre-wrap break-words">{m.body}</p>
               {m.photo_path && <AdminPhoto path={m.photo_path} />}
             </div>
@@ -157,13 +157,13 @@ function Detail({ id }: { id: number }) {
         <Panel title="Ticket">
           <dl className="grid grid-cols-[110px_1fr] gap-y-1 text-sm">
             <dt className="text-muted">From</dt><dd>{String((x?.who as Row)?.full_name ?? "")} · {t.role}{t.is_test ? " 🧪" : ""}</dd>
-            {x?.hist && <><dt className="text-muted">Last 90 days</dt><dd data-testid="abuse-signal" className={x.hist.refunds >= 3 ? "font-bold text-[#c40000]" : ""}>{x.hist.tickets} tickets · {x.hist.refunds} refunds (€{(x.hist.cents / 100).toFixed(2)}){x.hist.refunds >= 3 ? " ⚠️ check for abuse" : ""}</dd></>}
+            {x?.hist && <><dt className="text-muted">Last 90 days</dt><dd data-testid="abuse-signal" className={x.hist.refunds >= 3 ? "font-bold text-[#c40000]" : ""}>{x.hist.tickets} tickets · {x.hist.refunds} refunds (€{(x.hist.cents / 100).toFixed(2)}){x.hist.refunds >= 3 ? " check for abuse" : ""}</dd></>}
             <dt className="text-muted">Category</dt><dd>{t.category}</dd>
             <dt className="text-muted">Status</dt><dd><StatusBadge s={t.status} /></dd>
             <dt className="text-muted">SLA</dt><dd><Sla t={t} now={now} /></dd>
             <dt className="text-muted">Assigned</dt><dd data-testid="assigned">{t.assigned_to ? (t.assigned_to === profile?.id ? "me" : "someone") : "—"}</dd>
             {t.order_id && <><dt className="text-muted">Order</dt><dd><Link className="font-semibold text-brand" href={`/admin/orders?id=${t.order_id}`}>#{t.order_id}</Link> · {String((x?.fact as Row)?.status ?? "")}</dd></>}
-            {mapAt && <><dt className="text-muted">Map</dt><dd><a data-testid="map-link" className="font-semibold text-brand" target="_blank" rel="noreferrer" href={`https://www.google.com/maps/search/?api=1&query=${mapAt.lat},${mapAt.lng}`}>{t.lat != null ? "📍 reported location" : "📍 delivery address"}</a></dd></>}
+            {mapAt && <><dt className="text-muted">Map</dt><dd><a data-testid="map-link" className="font-semibold text-brand" target="_blank" rel="noreferrer" href={`https://www.google.com/maps/search/?api=1&query=${mapAt.lat},${mapAt.lng}`}>{t.lat != null ? "reported location" : "delivery address"}</a></dd></>}
           </dl>
           <div className="mt-3 flex flex-wrap gap-2">
             <SmallBtn onClick={() => upd({ p_assign: profile?.id }, "Assigned to you")}>Assign to me</SmallBtn>

@@ -36,7 +36,7 @@ export default function AdminOverview() {
     <>
       <ErrorNote error={q.error} />
       {(d?.alerts.length ?? 0) > 0 && (
-        <Panel title={`🚨 Needs attention (${d!.alerts.length})`}>
+        <Panel title={`Needs attention (${d!.alerts.length})`}>
           <ul className="divide-y divide-[#eee] text-sm">
             {d!.alerts.map((a) => (
               <li key={String(a.id)} className="flex items-center gap-2 py-2">

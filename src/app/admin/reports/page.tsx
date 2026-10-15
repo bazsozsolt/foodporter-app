@@ -8,7 +8,7 @@ import { act } from "@/lib/act";
 import { downloadCsv, fmtDateTime, preset, sb, toIso, useAdminQuery, type Range, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
 
-const TABS = [["key", "🎯 Key metric"], ["delivery", "🚀 Delivery"], ["quality", "⭐ Quality"], ["safety", "🦺 Safety"], ["payments", "💶 Payments"], ["groups", "👥 Groups"], ["support", "🛟 Support"]] as const;
+const TABS = [["key", "Key metric"], ["delivery", "Delivery"], ["quality", "⭐ Quality"], ["safety", "Safety"], ["payments", "Payments"], ["groups", "Groups"], ["support", "Support"]] as const;
 type Tab = (typeof TABS)[number][0];
 const pct = (v: unknown) => (v == null ? "—" : `${v}%`);
 
@@ -20,7 +20,7 @@ function Toolbar({ range, onCsv, title }: { range: Range; onCsv: () => void; tit
   return (
     <div className="flex gap-2">
       <SmallBtn onClick={onCsv}>⬇ CSV</SmallBtn>
-      <SmallBtn onClick={() => { document.title = `Food Porter ${title} ${range.from}–${range.to}`; window.print(); }}>🖨 Print / PDF</SmallBtn>
+      <SmallBtn onClick={() => { document.title = `Food Porter ${title} ${range.from}–${range.to}`; window.print(); }}>Print / PDF</SmallBtn>
     </div>
   );
 }
@@ -161,7 +161,7 @@ function Quality({ range }: { range: Range }) {
         <Kpi label="Payment failed" value={String(d?.payment_failed ?? "…")} hint={`${d?.awaiting_payment ?? 0} still unpaid`} />
         <Kpi label="Prep extensions" value={String(d?.prep_extensions ?? "…")} hint={`${d?.orders_extended ?? 0} orders · +${d?.extension_minutes ?? 0} min total`} />
         <Kpi label="Avg food rating" value={d?.avg_food_rating != null ? `★ ${Number(d.avg_food_rating).toFixed(1)}` : "—"} hint={`${d?.ratings ?? 0} ratings`} />
-        <Kpi label="Rating: stacked vs single" value={<span data-testid="stacked-rating" className="text-base">★ {String((d?.stacked as Row | undefined)?.stacked_avg_food ?? "—")} vs {String((d?.stacked as Row | undefined)?.single_avg_food ?? "—")}</span>}
+        <Kpi label="Rating: stacked vs single" value={<span data-testid="stacked-rating" className="text-base">{String((d?.stacked as Row | undefined)?.stacked_avg_food ?? "—")} vs {String((d?.stacked as Row | undefined)?.single_avg_food ?? "—")}</span>}
           hint={`food · rider ★ ${String((d?.stacked as Row | undefined)?.stacked_avg_rider ?? "—")} vs ${String((d?.stacked as Row | undefined)?.single_avg_rider ?? "—")} · ${String((d?.stacked as Row | undefined)?.stacked_ratings ?? 0)} / ${String((d?.stacked as Row | undefined)?.single_ratings ?? 0)} ratings`} />
         <Kpi label="Avg delivery rating" value={d?.avg_rider_rating != null ? `★ ${Number(d.avg_rider_rating).toFixed(1)}` : "—"} />
         <Kpi label="Refunds" value={String(d?.refunds ?? "…")} hint={`${eur(Number(d?.refund_cents ?? 0))}${Number(d?.refunds_failed) ? ` · ${d?.refunds_failed} failed` : ""}`} />
@@ -214,7 +214,7 @@ function Safety({ range }: { range: Range }) {
         <Kpi label="Late-night deliveries" value={String(d?.late_night_deliveries ?? "…")} hint="22:00–06:00 NL time" />
       </div>
       {show && (
-        <div className="no-print mb-4 grid gap-2 rounded-xl border-[1.5px] border-[#e2ded8] p-3 md:grid-cols-3">
+        <div className="no-print mb-4 grid gap-2 rounded-xl border border-line p-3 md:grid-cols-3">
           <Field label="Type"><select className={inputCls} value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>{TYPES.map((t) => <option key={t} value={t}>{t.replace("_", " ")}</option>)}</select></Field>
           <Field label="Severity"><select className={inputCls} value={form.severity} onChange={(e) => setForm({ ...form, severity: e.target.value })}>{["low", "medium", "high", "critical"].map((t) => <option key={t}>{t}</option>)}</select></Field>
           <Field label="Order # (optional)"><input className={inputCls} inputMode="numeric" value={form.order_id} onChange={(e) => setForm({ ...form, order_id: e.target.value })} /></Field>
@@ -293,10 +293,10 @@ function Reports() {
       <div className="no-print mb-3 flex flex-wrap gap-1.5">
         {TABS.map(([k, l]) => (
           <button key={k} onClick={() => router.replace(`/admin/reports?tab=${k}`)}
-            className={`rounded-xl px-3 py-1.5 text-sm font-semibold ${tab === k ? "bg-brand text-white" : "bg-white text-muted"}`}>{l}</button>
+            className={`min-h-9 rounded-lg px-3 py-1.5 text-sm font-semibold ${tab === k ? "bg-ink text-white" : "bg-white text-muted ring-1 ring-line"}`}>{l}</button>
         ))}
       </div>
-      <div className="mb-3"><RangePicker value={range} onChange={(r) => { if (r.from > r.to) return toast("⚠️ From must be before To"); setRange(r); }} /></div>
+      <div className="mb-3"><RangePicker value={range} onChange={(r) => { if (r.from > r.to) return toast("From must be before To"); setRange(r); }} /></div>
       <p className="mb-3 hidden text-sm print:block">Food Porter · {tab} report · {range.from} → {range.to} · printed {new Date().toLocaleString("en-GB")}</p>
       {tab === "key" && <KeyMetric range={range} />}
       {tab === "delivery" && <Delivery range={range} />}

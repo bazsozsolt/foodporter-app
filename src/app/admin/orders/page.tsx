@@ -53,7 +53,7 @@ function OrderDetail({ id }: { id: string }) {
           <Panel title={<>Order #{String(o.id)} <StatusBadge s={String(o.status)} /></>} actions={<>
             {!["delivered", "cancelled"].includes(String(o.status)) && <SmallBtn tone="danger" onClick={() => cancelOrder(String(o.id), Boolean(o.paid_at))}>Cancel{o.paid_at ? " & refund" : ""}</SmallBtn>}
             {o.refund_status === "failed" && <SmallBtn tone="brand" onClick={() => retryRefund(String(o.id))}>Retry refund</SmallBtn>}
-            <SmallBtn onClick={() => window.print()}>🖨 Print</SmallBtn></>}>
+            <SmallBtn onClick={() => window.print()}>Print</SmallBtn></>}>
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
               <dt className="text-muted">Restaurant</dt><dd>{String((o.restaurants as Row)?.name ?? "")}</dd>
               <dt className="text-muted">Customer</dt><dd>{String((o.customer as Row)?.email ?? o.customer_id)}</dd>
@@ -68,7 +68,7 @@ function OrderDetail({ id }: { id: string }) {
               {o.status === "cancelled" && <><dt className="text-muted">Cancelled</dt><dd>{String(o.cancel_reason ?? "")} · {fmtDateTime(o.cancelled_at)}</dd>
                 <dt className="text-muted">Refund</dt><dd data-testid="admin-refund">{o.refund_status === "simulated" ? "🧪 simulated test payment, nothing charged (auto-closed)" : o.refund_status ? `${o.refund_status}${o.refund_cents ? ` · ${eur(Number(o.refund_cents))}` : ""}${o.refund_id ? ` · ${o.refund_id}` : ""}` : o.paid_at ? "starting…" : "not paid, nothing to refund"}</dd></>}
               {o.food_stars != null && <><dt className="text-muted">Rating</dt><dd>food {"★".repeat(Number(o.food_stars))}{o.rider_stars ? ` · delivery ${"★".repeat(Number(o.rider_stars))}` : ""}</dd></>}
-              <dt className="text-muted">Result</dt><dd>{o.delivered_at ? (o.on_time ? "✅ on time" : `⏰ ${o.minutes_late} min late`) : "—"}{o.fast_bid ? " · ⚡ fast bid" : ""}</dd>
+              <dt className="text-muted">Result</dt><dd>{o.delivered_at ? (o.on_time ? "on time" : `⏰ ${o.minutes_late} min late`) : "—"}{o.fast_bid ? " · fast bid" : ""}</dd>
             </dl>
             <h3 className="mt-3 text-sm font-bold">Items</h3>
             <ul className="text-sm">{((o.order_items as Row[]) ?? []).map((l) => <li key={String(l.id)}>{String(l.qty)}× {String(l.name)} · {eur(Number(l.price_cents) * Number(l.qty))}</li>)}</ul>
@@ -84,7 +84,7 @@ function OrderDetail({ id }: { id: string }) {
                 </li>
               ))}
             </ol>
-            {q.data!.incidents.length > 0 && <p className="mt-2 text-sm">⚠️ {q.data!.incidents.length} incident(s) linked</p>}
+            {q.data!.incidents.length > 0 && <p className="mt-2 text-sm">{q.data!.incidents.length} incident(s) linked</p>}
             <Link className="no-print mt-2 inline-block text-sm font-semibold text-brand" href={`/admin/reports?tab=safety&order=${o.id}`}>+ Log incident for this order</Link>
           </Panel>
         </div>
@@ -116,7 +116,7 @@ function OrderList() {
   return (
     <Panel title={`Orders (${rows.length})`} actions={<>
       <SmallBtn onClick={() => downloadCsv(`orders_${range.from}_${range.to}.csv`, rows, ["id", "created_at", "status", "restaurant_name", "rider_name", "subtotal_cents", "delivery_fee_cents", "commission_cents", "prep_minutes", "actual_prep_minutes", "prep_extensions", "bid_seconds", "eta_minutes", "fast_bid", "on_time", "minutes_late", "delivered_at", "is_test"])}>⬇ CSV</SmallBtn>
-      <SmallBtn onClick={() => window.print()}>🖨 Print</SmallBtn></>}>
+      <SmallBtn onClick={() => window.print()}>Print</SmallBtn></>}>
       <div className="no-print mb-3 grid gap-2 md:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
         <RangePicker value={range} onChange={setRange} />
         <Field label="Status"><select className={inputCls} value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All</option>{STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}</select></Field>
