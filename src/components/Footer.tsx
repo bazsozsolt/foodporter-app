@@ -1,11 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useT, tx } from "@/lib/i18n";
+import { FeedbackButton } from "@/components/FeedbackButton";
 
 export function Footer() {
   const t = useT();
   return (
-    <footer className="mt-6 pb-4 text-center text-xs text-muted print:hidden">
+    <footer className="mt-8 border-t border-line pb-4 pt-5 text-center text-xs text-muted print:hidden">
+      <FeedbackButton className="mb-4" />
       <div className="flex justify-center gap-3">
         <Link href="/welcome" className="underline">{t("Over ons", "About")}</Link>
         <Link href="/terms" className="underline">{t("Voorwaarden", "Terms")}</Link>

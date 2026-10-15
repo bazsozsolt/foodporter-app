@@ -13,7 +13,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   useEffect(() => { installFreshness(); unlockAudioOnFirstTap(); }, []);
   return (
-    <div className={`relative mx-auto min-h-screen bg-paper pb-36 shadow-2xl print:max-w-none print:pb-0 print:shadow-none ${admin ? "max-w-6xl" : "max-w-[420px]"}`}>
+    <div className={`relative mx-auto min-h-screen bg-paper pb-24 shadow-xl print:max-w-none print:pb-0 print:shadow-none ${admin ? "max-w-6xl" : "max-w-[420px]"}`}>
       <Fragment key={lang}>{children}</Fragment>
     </div>
   );

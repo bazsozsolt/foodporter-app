@@ -5,7 +5,6 @@ import { RoleNav } from "@/components/RoleNav";
 import { Toaster } from "@/components/Toaster";
 import { AppShell } from "@/components/AppShell";
 import { NetworkBanner } from "@/components/NetworkBanner";
-import { FeedbackButton } from "@/components/FeedbackButton";
 import { TestModeBanner } from "@/components/TestModeBanner";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin", "latin-ext"], variable: "--font-bebas", display: "swap" });
@@ -44,7 +43,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <TestModeBanner />
           <NetworkBanner />
           {children}
-          <FeedbackButton />
           <RoleNav />
           <Toaster />
         </AppShell>

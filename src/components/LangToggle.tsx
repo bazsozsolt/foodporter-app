@@ -1,13 +1,13 @@
 "use client";
 import { setLang, useLang } from "@/lib/i18n";
 
-export function LangToggle() {
+export function LangToggle({ tone = "dark" }: { tone?: "dark" | "light" }) {
   const l = useLang();
   return (
-    <div className="flex overflow-hidden rounded-full border border-white/40 text-[11px] font-bold" data-testid="lang-toggle">
+    <div className={`flex overflow-hidden rounded-full border text-[11px] font-bold ${tone === "dark" ? "border-white/40" : "border-line"}`} data-testid="lang-toggle">
       {(["nl", "en"] as const).map((x) => (
         <button key={x} onClick={() => setLang(x)} aria-pressed={l === x}
-          className={`px-2.5 py-1 uppercase ${l === x ? "bg-gold text-brand-dark" : "text-white"}`}>{x}</button>
+          className={`min-h-8 px-2.5 uppercase ${l === x ? (tone === "dark" ? "bg-white text-brand" : "bg-ink text-white") : tone === "dark" ? "text-white" : "text-muted"}`}>{x}</button>
       ))}
     </div>
   );

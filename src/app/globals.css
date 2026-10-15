@@ -8,15 +8,22 @@
   --color-gold: #fad228;
   --color-gold-soft: #fff6cc;
   --color-ink: #1d1b24;
-  --color-muted: #5f5b6b; /* ≥4.5:1 on paper and white (WCAG AA) */
-  --color-paper: #f6f4f1;
+  --color-muted: #5b5f6a; /* ≥4.5:1 on paper and white (WCAG AA) */
+  --color-paper: #f5f5f6; /* calm neutral canvas, red is the accent only */
+  --color-line: #e6e6ea;
+  --color-subtle: #f0f0f2;
+  --color-danger: #b42318;
+  --color-warn: #8a5a00;
+  --radius-card: 1rem;
+  --shadow-card: 0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.06);
+  --shadow-pop: 0 12px 32px rgba(16,24,40,.18);
   --color-ok: #0b7a4e; /* AA on white and on #e3f7ee */
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: var(--font-bebas), "Oswald", "Arial Narrow", sans-serif;
 }
 
 body {
-  background: #e9e5df;
+  background: #ebebee;
   color: var(--color-ink);
 }
 
@@ -33,3 +40,5 @@ body {
 /* Condensed headings echo the FOODPORTER wordmark */
 h1, h2, .font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: .02em; }
 h2 { font-size: 1.45rem !important; line-height: 1.1; }
+/* Type scale (v15): display h1 28px, h2 23px, section label 12px caps, body 15px, meta 13px */
+.t-label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--color-muted); }
