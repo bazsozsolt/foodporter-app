@@ -16,7 +16,7 @@ const CANNED: [string, string][] = [
   ["Looking into it", "Bedankt voor je melding. We zoeken het uit en laten je zo snel mogelijk iets weten."],
   ["Rider on the way", "We hebben contact gehad met de bezorger: je bestelling is onderweg. Excuses voor het wachten!"],
   ["Need photo", "Kun je een foto sturen van wat er mis is? Dan kunnen we het sneller oplossen."],
-  ["Payout schedule", "Uitbetalingen gaan wekelijks op maandag naar je IBAN. Je ziet ze onder Verdiensten."],
+  ["Pay schedule", "Je loon, bezorgbonussen en fooien worden via de loonadministratie uitbetaald; je ziet ze op je loonstrook. Een indicatief weekoverzicht staat in de app onder Uren & loon."],
   ["Item unavailable → customer", "Het restaurant liet weten dat een item op was. We betalen dat deel terug."],
 ];
 const PRI_ORDER: Record<string, number> = { urgent: 0, high: 1, normal: 2, low: 3 };

@@ -1,7 +1,7 @@
 ---
 id: dpia_gps
-title: DPIA-opzet GPS-tracking bezorgers
-version: 0.1
+title: DPIA-opzet GPS-tracking en werktijdregistratie bezorgers
+version: 0.2
 audience: internal
 ---
 # DPIA – GPS-tracking (opzet)
@@ -14,7 +14,8 @@ audience: internal
 4. **Risico's:** het profileren van werkgedrag, ongeoorloofde toegang (klant ziet bezorgers buiten de eigen bestelling), een datalek met woon-werkpatronen, druk om te haasten.
 5. **Maatregelen:** RLS (alleen de betrokken klant, het restaurant en de admin), automatische verwijdering, geen export, logging van admin-inzage, transparantieverklaring, inspraak (OR of riderpanel), een jaarlijkse herbeoordeling.
 6. **Restrisico en besluit:** [laag/midden] – [akkoord FG/directie, datum].
+6a. **Werktijdregistratie (v19):** in- en uitkloktijden, beschikbaarheid, pauzes en meldingen over de Arbeidstijdenwet. Doel: uurloon, loonadministratie en naleving. Alleen de bezorger zelf en admins zien deze gegevens; geen gebruik voor ranking of toewijzing; meldingen worden altijd door een mens beoordeeld; export alleen als CSV voor de loonadministratie; bewaartermijn 7 jaar (fiscaal). Risico: werkdruk en controle; maatregel: geen sancties door het systeem, alleen blokkeren van inklokken waar de wet dat vereist.
 7. **Raadpleging:** riders of hun vertegenwoordiging (verplicht onder richtlijn 2024/2831 art. 13 bij wijzigingen).
 
 ---
-**English summary.** A DPIA outline for rider GPS, mandatory under the AP list. It covers scope (active deliveries only), purposes, necessity, risks (profiling, access, breaches, pressure to hurry), mitigations (RLS, 30-day deletion, no use for performance sanctions, logging, rider consultation) and the sign-off.
+**English summary.** A DPIA outline for rider GPS, mandatory under the AP list. It covers scope (while clocked in), purposes, necessity, risks (profiling, access, breaches, pressure to hurry), plus working-time records (clock-in/out, breaks, ATW alerts: own rider + admin only, no ranking, CSV only for payroll, 7 years), mitigations (RLS, 7-day GPS deletion, no use for performance sanctions, logging, rider consultation) and the sign-off.

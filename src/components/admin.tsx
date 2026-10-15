@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { BarChart3, Bike, ClipboardList, LayoutDashboard, LifeBuoy, Map, MessageSquare, Receipt, Settings, Store, Users, Wallet, Tag, Scale } from "lucide-react";
+import { BarChart3, Bike, ClipboardList, LayoutDashboard, LifeBuoy, Map, MessageSquare, Receipt, Settings, Store, Users, Wallet, Tag, Scale, Clock } from "lucide-react";
 import { preset, type Range } from "@/lib/admin";
 
 const groups: { title: string; items: { href: string; label: string; icon: ReactNode }[] }[] = [
@@ -22,6 +22,7 @@ const groups: { title: string; items: { href: string; label: string; icon: React
   ] },
   { title: "HR & Legal", items: [
     { href: "/admin/legal", label: "Contracts & onboarding", icon: <Scale size={16} /> },
+    { href: "/admin/payroll", label: "Hours & payroll", icon: <Clock size={16} /> },
   ] },
   { title: "Finance", items: [
     { href: "/admin/payments", label: "Payments", icon: <Receipt size={16} /> },

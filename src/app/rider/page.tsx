@@ -8,6 +8,7 @@ import { AlertsToggle, TestSoundButton, useOrderAlerts } from "@/components/Orde
 import { distanceKm } from "@/lib/geo";
 import { RoleGate } from "@/components/RoleGate";
 import { LegalOnboarding, useLegalStatus } from "@/components/LegalOnboarding";
+import { RiderShifts } from "@/components/RiderShifts";
 import { useWakeLock } from "@/lib/wakeLock";
 import { HelpButton } from "@/components/SupportSheet";
 import { SosButton } from "@/components/SosButton";
@@ -60,9 +61,9 @@ function BidCard({ o, activeCount }: { o: Order; activeCount: number }) {
       {mine ? (
         <p data-testid="my-bid" className="mt-3 rounded-xl bg-brand-soft p-3 text-sm">{tx("Jouw bod", "Your bid")}: <b>{mine.eta_minutes} min</b>. {tx("Laagste tijd wint als het venster sluit (gelijk: vroegste bod).", "Lowest ETA wins when the window closes (ties: earliest bid).")}</p>
       ) : left === 0 || (activeCount > 0 && reason !== null) ? null : (<>
-        <p className="mb-2 mt-3 font-bold">{t("Bied je bezorgtijd", "Bid your delivery time")}</p>
+        <p className="mb-2 mt-3 font-bold">{t("Beloof je bezorgtijd", "Promise your delivery time")}</p>
         <Chips options={opts} value={eta} onChange={setEta} render={(m) => `${m} min`} />
-        <p className="mt-2 text-[13px] text-muted">{o.bid_window_closes_at ? tx("Bieden is open", "Bidding is open") : tx("Eerste bod opent een venster van 60 s", "First bid opens a 60 s window")} · {tx("laagste tijd wint, bij gelijkspel het vroegste bod · je houdt de volledige vergoeding", "lowest ETA wins, ties go to the earliest bid · you keep the full fee")}</p>
+        <p className="mt-2 text-[13px] text-muted">{o.bid_window_closes_at ? tx("Bieden is open", "Bidding is open") : tx("Eerste bod opent een venster van 60 s", "First bid opens a 60 s window")} · {tx("je bod is een tijdsbelofte, geen prijs · laagste tijd wint, bij gelijkspel het vroegste bod · de bezorgbonus komt bovenop je uurloon", "your bid is a time promise, not a price · lowest ETA wins, ties go to the earliest bid · the delivery bonus comes on top of your hourly wage")}</p>
         <Button onClick={() => act(actions.placeBid(o.id, eta), t(`Bod geplaatst: ${eta} min. De winnaar wordt gekozen als de biedtijd sluit.`, `Bid placed: ${eta} min. Winner is picked when the window closes.`))}>{t("Bod plaatsen", "Place bid")}</Button>
       </>)}
     </Card>
@@ -104,10 +105,11 @@ export default function RiderPage() {
           <button data-testid="online-toggle" onClick={toggleOnline} aria-pressed={online} disabled={blocked}
             className={`mb-3 flex min-h-16 w-full items-center gap-3 rounded-2xl px-4 text-left text-white shadow-[var(--shadow-card)] disabled:opacity-50 ${online ? "bg-ok" : "bg-ink"}`}>
             <span className={`grid h-10 w-10 place-items-center rounded-full ${online ? "bg-white/20" : "bg-white/10"}`}><Power size={20} aria-hidden /></span>
-            <span className="flex-1"><b className="block text-[17px]">{online ? tx("Je bent online", "You're online") : tx("Je bent offline", "You're offline")}</b>
-              <span className="text-[13px] text-white/80">{online ? tx("Tik om offline te gaan", "Tap to go offline") : blocked ? tx("Rond eerst je onboarding af", "Finish onboarding first") : tx("Tik om online te gaan en opdrachten te krijgen", "Tap to go online and get jobs")}</span></span>
+            <span className="flex-1"><b className="block text-[17px]">{online ? tx("Ingeklokt · je bent online", "Clocked in · you're online") : tx("Uitgeklokt · je bent offline", "Clocked out · you're offline")}</b>
+              <span className="text-[13px] text-white/80">{online ? tx("Tik om uit te klokken (offline)", "Tap to clock out (go offline)") : blocked ? tx("Inklokken kan nu niet, zie hierboven", "Can't clock in right now, see above") : tx("Tik om in te klokken: je uurloon loopt vanaf nu", "Tap to clock in: your hourly wage starts now")}</span></span>
           </button>
         )}
+        {mode === "supabase" && profile?.role === "rider" && <RiderShifts riderId={profile.id} online={online} />}
         <div className="mb-3 grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
         {mode === "supabase" && profile && (
           <details className="mb-3 rounded-2xl bg-white px-4 py-1 shadow-[var(--shadow-card)] ring-1 ring-black/[.04]">
@@ -178,7 +180,7 @@ export default function RiderPage() {
         {open.length === 0 ? <Empty icon={<Inbox size={24} />}>{t("Op dit moment geen bestellingen om op te bieden.", "No orders to bid on right now.")}</Empty> : open.map((o) => <BidCard key={o.id} o={o} activeCount={active.length} />)}
         <Link href="/rider/earnings" data-testid="earnings-link" className="mt-4 flex min-h-16 items-center gap-3 rounded-2xl bg-white px-4 shadow-[var(--shadow-card)] ring-1 ring-black/[.04]">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-gold-soft text-warn"><Wallet size={20} aria-hidden /></span>
-          <span className="flex-1"><b className="block">{tx("Jouw verdiensten", "Your earnings")}</b><span className="text-[13px] text-muted">{tx("Nog uit te betalen", "Still to be paid")}: {eur(earnings.filter((e) => !e.payout_id).reduce((a, e) => a + e.amount_cents, 0))}</span></span>
+          <span className="flex-1"><b className="block">{tx("Uren, loon en bonussen", "Hours, pay and bonuses")}</b><span className="text-[13px] text-muted">{tx("Bonus en fooi nog te verwerken", "Bonus and tips still to process")}: {eur(earnings.filter((e) => !e.payout_id).reduce((a, e) => a + e.amount_cents, 0))}</span></span>
           <ChevronRight size={18} className="text-muted" aria-hidden />
         </Link>
         <Link href="/rider-info" data-testid="rider-info-link" className="mt-3 block text-center text-sm font-semibold text-brand">{tx("Zo werken bieden, toewijzen en beoordeling", "How bidding, assignment and review work")}</Link>

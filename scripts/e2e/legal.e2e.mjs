@@ -69,10 +69,12 @@ try {
   const b15 = new Date(Date.now() - 15 * 365.25 * 864e5).toISOString().slice(0, 10);
   await admin.sb.from("rider_hr").upsert({ profile_id: rider.id, contract_type: "employment", birthdate: b15 });
   ok("under-16 blocked", (await status(rider))?.missing.includes("age_under_16"));
-  await admin.sb.from("rider_hr").upsert({ profile_id: rider.id, contract_type: "zzp", birthdate: null });
-  const z = await status(rider);
-  ok("zzp needs zzp contract + KvK check", z?.missing.includes("contract") && z.missing.includes("step:kvk_checked"), JSON.stringify(z?.missing));
-  ok("rider cannot change own contract type", err(await rider.sb.from("rider_hr").update({ contract_type: "employment" }).eq("profile_id", rider.id)) !== null || (await admin.sb.from("rider_hr").select("contract_type").eq("profile_id", rider.id).single()).data.contract_type === "zzp");
+  ok("zzp contract type rejected (employment only)", err(await admin.sb.from("rider_hr").upsert({ profile_id: rider.id, contract_type: "zzp", birthdate: null })) !== null);
+  ok("zzp template archived, not signable", /unknown template/.test(err(await rider.sb.rpc("legal_accept", { p_template: "rider_zzp", p_sha256: "0".repeat(64) })) ?? "") && (await admin.sb.from("legal_templates").select("status").eq("id", "rider_zzp").limit(1).single()).data?.status === "archived");
+  ok("KvK step no longer exists", err(await admin.sb.from("rider_onboarding").insert({ profile_id: rider.id, step: "kvk_checked" })) !== null);
+  await admin.sb.from("rider_onboarding").delete().eq("profile_id", rider.id).eq("step", "bsn_entered");
+  ok("BSN flag is mandatory", (await status(rider))?.missing.includes("step:bsn_entered"));
+  await admin.sb.from("rider_onboarding").insert({ profile_id: rider.id, step: "bsn_entered", note: "test seed" });
   await admin.sb.from("rider_hr").upsert({ profile_id: rider.id, contract_type: "employment", birthdate: null });
   ok("rider ready again", (await status(rider))?.ready === true);
 

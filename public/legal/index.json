@@ -1,20 +1,20 @@
 [
  {
   "id": "rider_zzp",
-  "title": "Overeenkomst van opdracht bezorger (zzp)",
-  "version": "0.1",
+  "title": "Overeenkomst van opdracht bezorger (zzp) – NIET IN GEBRUIK",
+  "version": "0.2",
   "audience": "rider",
   "file": "01-rider-zzp.md",
-  "pdf": "rider_zzp-v0.1.pdf",
+  "pdf": "rider_zzp-v0.2.pdf",
   "html": "rider_zzp.html"
  },
  {
   "id": "rider_employment",
-  "title": "Arbeidsovereenkomst bezorger (oproep / min-max)",
-  "version": "0.1",
+  "title": "Arbeidsovereenkomst bezorger (direct dienstverband)",
+  "version": "0.2",
   "audience": "rider",
   "file": "02-rider-arbeidsovereenkomst.md",
-  "pdf": "rider_employment-v0.1.pdf",
+  "pdf": "rider_employment-v0.2.pdf",
   "html": "rider_employment.html"
  },
  {
@@ -38,10 +38,10 @@
  {
   "id": "privacy_statement",
   "title": "Privacyverklaring (update v18)",
-  "version": "0.1",
+  "version": "0.2",
   "audience": "all",
   "file": "05-privacyverklaring.md",
-  "pdf": "privacy_statement-v0.1.pdf",
+  "pdf": "privacy_statement-v0.2.pdf",
   "html": "privacy_statement.html"
  },
  {
@@ -65,37 +65,37 @@
  {
   "id": "platform_transparency",
   "title": "Transparantieverklaring algoritmisch management (richtlijn 2024/2831)",
-  "version": "0.1",
+  "version": "0.2",
   "audience": "rider",
   "file": "08-transparantie-algoritme.md",
-  "pdf": "platform_transparency-v0.1.pdf",
+  "pdf": "platform_transparency-v0.2.pdf",
   "html": "platform_transparency.html"
  },
  {
   "id": "dpia_gps",
-  "title": "DPIA-opzet GPS-tracking bezorgers",
-  "version": "0.1",
+  "title": "DPIA-opzet GPS-tracking en werktijdregistratie bezorgers",
+  "version": "0.2",
   "audience": "internal",
   "file": "09-dpia-gps.md",
-  "pdf": "dpia_gps-v0.1.pdf",
+  "pdf": "dpia_gps-v0.2.pdf",
   "html": "dpia_gps.html"
  },
  {
   "id": "processing_register",
   "title": "Register van verwerkingsactiviteiten (art. 30 AVG)",
-  "version": "0.1",
+  "version": "0.2",
   "audience": "internal",
   "file": "10-verwerkingsregister.md",
-  "pdf": "processing_register-v0.1.pdf",
+  "pdf": "processing_register-v0.2.pdf",
   "html": "processing_register.html"
  },
  {
   "id": "rider_onboarding",
   "title": "Onboardingchecklist bezorger",
-  "version": "0.1",
+  "version": "0.2",
   "audience": "internal",
   "file": "11-onboarding-checklist.md",
-  "pdf": "rider_onboarding-v0.1.pdf",
+  "pdf": "rider_onboarding-v0.2.pdf",
   "html": "rider_onboarding.html"
  },
  {

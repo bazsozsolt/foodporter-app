@@ -1,10 +1,12 @@
 ---
 id: rider_zzp
-title: Overeenkomst van opdracht bezorger (zzp)
-version: 0.1
+title: Overeenkomst van opdracht bezorger (zzp) – NIET IN GEBRUIK
+version: 0.2
 audience: rider
 ---
 # Overeenkomst van opdracht – zelfstandig bezorger (zzp)
+> **NIET IN GEBRUIK (gearchiveerd 15-10-2026).** Food Porter werkt met bezorgers in direct dienstverband. Dit concept blijft alleen ter referentie in de bibliotheek. / *Not used: archived; riders are employed directly.*
+
 > **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{BEDRIJFSNAAM}}, {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
 > ⚠️ **Risicowaarschuwing / Risk warning.** Na het Deliveroo-arrest (HR 24-3-2023, ECLI:NL:HR:2023:443) en het Temper-arrest (Hof Amsterdam 16-6-2026) kijkt de rechter naar de **feitelijke uitvoering**, niet naar dit papier. Vanaf **31-12-2026** geldt het rechtsvermoeden van een arbeidsovereenkomst bij een uurtarief onder **€ 38** en vanaf **2-12-2026** het vermoeden uit de EU-richtlijn platformwerk 2024/2831. Deze overeenkomst biedt alleen bescherming als alle hieronder beschreven vrijheden in de praktijk echt bestaan. Belastingdienst-modelovereenkomsten worden sinds 6-9-2024 niet meer beoordeeld; bestaande modellen (zoals "geen werkgeversgezag") blijven bruikbaar t/m 31-12-2029. Deze tekst is gebaseerd op de structuur van de algemene modelovereenkomst "geen werkgeversgezag", maar is **niet** door de Belastingdienst goedgekeurd.

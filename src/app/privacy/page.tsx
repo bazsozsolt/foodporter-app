@@ -13,7 +13,7 @@ export default function Privacy() {
         <li><b>Account:</b> e-mailadres, naam (optioneel), rol, en inloggegevens van Google/Apple als je die gebruikt.</li>
         <li><b>Bestellingen:</b> bezorgadres en de kaartcoördinaten daarvan, telefoonnummer, items, bedragen, tijdstippen, beoordelingen en opmerkingen.</li>
         <li><b>Betalingen:</b> verwerkt door Mollie B.V. We bewaren het betalings-id en de status, nooit je kaart- of bankgegevens.</li>
-        <li><b>Riders:</b> naam, telefoon, IBAN (voor uitbetalingen), biedingen, bezorgtijden en verdiensten.</li>
+        <li><b>Riders (werknemers):</b> naam, telefoon, IBAN, beschikbaarheid, in- en uitkloktijden, gewerkte uren en pauzes (loon en Arbeidstijdenwet, 7 jaar bewaard), biedingen, bezorgtijden, bonussen en fooien. Je BSN verwerkt alleen de loonadministratie.</li>
         <li><b>Locatie van riders (GPS):</b> alleen na toestemming van de rider, en alleen terwijl die <i>online</i> is of bezorgt: positie, nauwkeurigheid, snelheid en richting, ongeveer elke 7 seconden.</li>
         <li><b>Restaurants:</b> zakelijke contactgegevens, menu en verwerkingstijden van bestellingen.</li>
         <li><b>Chat en bellen:</b> berichten in de chat bij een bestelling, en een log (wie, wanneer) als je via de app de rider of klant belt. Je telefoonnummer wordt alleen tijdens een actieve bezorging aan de andere partij gegeven.</li>
@@ -44,7 +44,7 @@ export default function Privacy() {
         <li><b>Account:</b> email address, name (optional), role, and sign-in data from Google/Apple if you use them.</li>
         <li><b>Orders:</b> delivery address and its map coordinates, phone number, items, amounts, timestamps, ratings and comments.</li>
         <li><b>Payments:</b> processed by Mollie B.V. We store the payment id and status, never your card or bank details.</li>
-        <li><b>Riders:</b> name, phone, IBAN (for payouts), bids, delivery times and earnings.</li>
+        <li><b>Riders (employees):</b> name, phone, IBAN, availability, clock-in and clock-out times, hours worked and breaks (pay and Working Hours Act, kept 7 years), bids, delivery times, bonuses and tips. Your BSN is only processed by the payroll provider.</li>
         <li><b>Rider location (GPS):</b> only after the rider consents, and only while they are <i>online</i> or on a delivery: position, accuracy, speed and heading, about every 7 seconds.</li>
         <li><b>Restaurants:</b> business contact details, menu and order handling times.</li>
         <li><b>Chat and calls:</b> messages in an order’s chat, and a log (who, when) when you call the rider or customer through the app. Your phone number is only given to the other party during an active delivery.</li>

@@ -14,14 +14,18 @@ const STEP_LABEL: Record<string, [string, string]> = {
   id_checked: ["Identiteitsbewijs gecontroleerd", "ID document checked"],
   right_to_work: ["Recht om in NL te werken gecontroleerd", "Right to work in NL checked"],
   age_checked: ["Leeftijd gecontroleerd (min. 16)", "Age checked (16+)"],
-  kvk_checked: ["KvK-inschrijving gecontroleerd", "KvK registration checked"],
-  iban: ["IBAN voor uitbetaling ingesteld", "IBAN for payouts set"],
+  iban: ["IBAN gecontroleerd", "IBAN checked"],
+  loonheffing_form: ["Opgaaf loonheffingen (loonheffingskorting) ingeleverd", "Payroll tax form (loonheffingskorting) handed in"],
+  bsn_entered: ["BSN ingevoerd bij de loonadministratie (beveiligd)", "BSN entered with the payroll provider (secure)"],
   safety_briefing: ["Veiligheidsinstructie gevolgd", "Safety briefing completed"],
 };
 const label = (m: string) => {
   if (m.startsWith("step:")) { const s = STEP_LABEL[m.slice(5)]; return s ? tx(s[0], s[1]) : m; }
   if (m.startsWith("doc_expired:")) return tx(`Document verlopen: ${m.slice(12)} — lever een nieuw exemplaar aan`, `Document expired: ${m.slice(12)}: please provide a new one`);
   if (m === "age_under_16") return tx("Je moet minimaal 16 jaar zijn", "You must be at least 16");
+  if (m === "atw_break") return tx("Je hebt 5,5 uur gewerkt: neem eerst minstens 15 minuten pauze", "You've worked 5.5 hours: take a break of at least 15 minutes first");
+  if (m === "atw_max_shift") return tx("Maximale dienstduur voor vandaag bereikt", "Maximum shift length for today reached");
+  if (m === "atw_week_max") return tx("Maximaal aantal uren deze week bereikt", "Maximum hours for this week reached");
   if (m === "youth_night") return tx("Onder 18 mag je niet werken tussen 23:00 en 06:00", "Under 18 you may not work between 23:00 and 06:00");
   return m;
 };
@@ -30,7 +34,7 @@ const label = (m: string) => {
 function toSign(st: LegalStatus): string[] {
   const out = new Set<string>();
   for (const m of st.missing) {
-    if (m === "contract") out.add(st.contract_type === "zzp" ? "rider_zzp" : "rider_employment");
+    if (m === "contract") out.add("rider_employment");
     else if (m === "conduct") out.add("rider_conduct");
     else if (m === "transparency") out.add("platform_transparency");
     else if (m === "restaurant_partner" || m === "dpa_restaurant") out.add(m);
@@ -107,11 +111,11 @@ export function LegalOnboarding({ st, reload, who }: { st: LegalStatus | null; r
       .then(({ data }) => { const seen = new Set<string>(); setTpls(((data ?? []) as Tpl[]).filter((x) => !seen.has(x.id) && seen.add(x.id))); });
   }, [key]);
   if (!st || st.ready) return null;
-  const other = st.missing.filter((m) => m.startsWith("step:") || m.startsWith("doc_expired:") || m.startsWith("age") || m === "youth_night");
+  const other = st.missing.filter((m) => m.startsWith("step:") || m.startsWith("doc_expired:") || m.startsWith("age") || m === "youth_night" || m.startsWith("atw_"));
   return (
     <Card data-testid="legal-onboarding" className="mb-3 !border-2 !border-brand">
-      <b className="flex items-center gap-2 text-[16px]"><ShieldCheck size={18} aria-hidden />{who === "rider" ? tx("Rond je onboarding af om online te gaan", "Finish onboarding to go online") : tx("Onderteken je overeenkomst om bestellingen te ontvangen", "Sign your agreement to receive orders")}</b>
-      <p className="mt-1 text-[13px] text-muted">{who === "rider" ? tx("Je kunt pas online gaan als alles hieronder klaar is.", "You can go online once everything below is done.") : tx("Tot dan staat je restaurant voor klanten op gesloten.", "Until then your restaurant shows as closed to customers.")}</p>
+      <b className="flex items-center gap-2 text-[16px]"><ShieldCheck size={18} aria-hidden />{who === "rider" ? (st.missing.every((m) => m.startsWith("atw_") || m === "youth_night") ? tx("Inklokken kan nu niet (Arbeidstijdenwet)", "You can't clock in right now (Working Hours Act)") : tx("Rond je onboarding af om in te klokken", "Finish onboarding to clock in")) : tx("Onderteken je overeenkomst om bestellingen te ontvangen", "Sign your agreement to receive orders")}</b>
+      <p className="mt-1 text-[13px] text-muted">{who === "rider" ? tx("Je kunt pas inklokken als alles hieronder klaar is.", "You can clock in once everything below is done.") : tx("Tot dan staat je restaurant voor klanten op gesloten.", "Until then your restaurant shows as closed to customers.")}</p>
       {tpls.filter((x) => ids.includes(x.id)).map((x) => <SignDoc key={x.id} tpl={x} onDone={reload} />)}
       {other.length > 0 && (<>
         <p className="mt-3 text-sm font-semibold">{tx("Nog af te ronden met Food Porter:", "Still to complete with Food Porter:")}</p>

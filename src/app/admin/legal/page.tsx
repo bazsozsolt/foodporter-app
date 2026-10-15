@@ -7,11 +7,12 @@ import { act } from "@/lib/act";
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const STEPS: [string, string, boolean][] = [
   ["id_checked", "ID checked", true], ["right_to_work", "Right to work", true], ["age_checked", "Age 16+ checked", true],
-  ["kvk_checked", "KvK checked (zzp)", false], ["iban", "IBAN set", true], ["safety_briefing", "Safety briefing", true],
+  ["iban", "IBAN checked (name matches ID)", true], ["loonheffing_form", "Payroll tax form (loonheffingskorting)", true],
+  ["bsn_entered", "BSN entered at payroll (flag only, never type the number here)", true], ["safety_briefing", "Safety briefing", true],
   ["licence", "Licence (scooter)", false], ["test_ride", "Test ride", false],
 ];
-const DOCS: [string, string][] = [["id", "ID document"], ["right_to_work", "Right to work"], ["kvk", "KvK extract"], ["licence", "Driving licence"], ["insurance", "Insurance"]];
-const RIDER_TPL = ["rider_employment", "rider_zzp", "rider_conduct", "platform_transparency", "deactivation_appeal"];
+const DOCS: [string, string][] = [["id", "ID document"], ["right_to_work", "Right to work"], ["licence", "Driving licence"], ["insurance", "Insurance"]];
+const RIDER_TPL = ["rider_employment", "rider_conduct", "platform_transparency", "deactivation_appeal"];
 const REST_TPL = ["restaurant_partner", "dpa_restaurant"];
 const daysTo = (d: unknown) => d ? Math.ceil((new Date(String(d)).getTime() - Date.now()) / 864e5) : null;
 
@@ -37,12 +38,13 @@ function Library({ tpls }: { tpls: Row[] }) {
   return (
     <Panel title={`Template library (${tpls.length})`}>
       <p className="mb-2 text-xs text-muted">Drafts only: “Concept – laat beoordelen door een Nederlandse jurist voor gebruik”. Not legal advice. Source: legal/templates/*.md → legal/render.py.</p>
-      <Table head={["Template", "Audience", "Version", "Effective", "Signature", "SHA-256", ""]}>
+      <Table head={["Template", "Audience", "Version", "Effective", "Signature", "Status", "SHA-256", ""]}>
         {tpls.map((t) => (
           <tr key={`${t.id}-${t.version}`} data-testid="tpl-row" data-template={String(t.id)}>
             <Td><b>{String(t.title)}</b><div className="text-xs text-muted">{String(t.id)}</div></Td>
             <Td>{String(t.audience)}</Td><Td>{String(t.version)}</Td><Td>{String(t.effective_date)}</Td>
             <Td>{t.requires_acceptance ? "required" : "info"}</Td>
+            <Td>{t.status === "archived" ? <span data-testid="tpl-archived" className="rounded-full bg-subtle px-2 py-0.5 text-xs font-semibold text-muted">not used</span> : "active"}</Td>
             <Td><code className="text-xs">{String(t.sha256).slice(0, 10)}…</code></Td>
             <Td><div className="flex gap-1"><SmallBtn onClick={() => setView(view === t.html_path ? null : String(t.html_path))}>{view === t.html_path ? "Hide" : "View"}</SmallBtn>
               <a className="rounded-lg bg-subtle px-2 py-1 text-xs font-semibold" href={`${BASE}/${String(t.pdf_path)}`} target="_blank" rel="noreferrer">PDF</a></div></Td>
@@ -77,15 +79,14 @@ function RiderDetail({ rider, current, onChange }: { rider: Row; current: Map<st
         {!d.st?.ready && <span className="text-xs text-muted">{d.st?.missing.join(", ")}</span>}</div>
       <div className="grid gap-3 md:grid-cols-3">
         <div>
-          <Field label="Contract type"><select data-testid="contract-type" className={inputCls} value={ctype} onChange={async (e) => { if (await run(sb().from("rider_hr").upsert({ profile_id: id, contract_type: e.target.value, updated_at: new Date().toISOString() }), "Contract type saved")) reload(); }}>
-            <option value="employment">Employment (recommended)</option><option value="zzp">Zzp / freelance (high risk)</option></select></Field>
+          <Field label="Contract type"><span data-testid="contract-type" className="text-sm font-semibold">Direct employment (only option since v19)</span></Field>
           <div className="mt-2"><Field label="Date of birth (youth rules)"><input type="date" className={inputCls} defaultValue={String(d.hr?.birthdate ?? "")} onBlur={async (e) => { if (e.target.value !== String(d.hr?.birthdate ?? "") && await run(sb().from("rider_hr").upsert({ profile_id: id, contract_type: ctype, birthdate: e.target.value || null }), "Birthdate saved")) reload(); }} /></Field></div>
         </div>
         <div data-testid="checklist"><p className="mb-1 text-xs text-muted">Onboarding checklist</p>
           {STEPS.map(([k, l, req]) => { const done = d.steps.find((s) => s.step === k);
             return <label key={k} className="flex items-center gap-2 text-sm"><input type="checkbox" data-testid={`step-${k}`} checked={Boolean(done)} onChange={async (e) => {
               const ok = e.target.checked ? await run(sb().from("rider_onboarding").insert({ profile_id: id, step: k }), `${l}: done`) : await run(sb().from("rider_onboarding").delete().eq("profile_id", id).eq("step", k), `${l}: undone`);
-              if (ok) reload(); }} />{l}{(req || (k === "kvk_checked" && ctype === "zzp")) && <span className="text-red-600">*</span>}{done && <span className="text-xs text-muted">{fmtDateTime(done.done_at)}</span>}</label>; })}
+              if (ok) reload(); }} />{l}{req && <span className="text-red-600">*</span>}{done && <span className="text-xs text-muted">{fmtDateTime(done.done_at)}</span>}</label>; })}
         </div>
         <div><p className="mb-1 text-xs text-muted">Documents (expiry only, no copies stored)</p>
           {DOCS.map(([k, l]) => { const doc = d.docs.find((x) => x.kind === k); const n = daysTo(doc?.expires_on);
@@ -151,9 +152,9 @@ export default function AdminLegal() {
       </Panel>
     )}
     <Panel title={`Riders (${d.riders.length})`}>
-      <Table head={["Rider", "Employment / zzp contract", "Conduct", "Transparency", "Open requests", ""]}>
+      <Table head={["Rider", "Employment contract", "Conduct", "Transparency", "Open requests", ""]}>
         {d.riders.map((r) => { const acc = d.acc.filter((a) => a.profile_id === r.id && !a.restaurant_id); const req = d.req.filter((x) => x.profile_id === r.id);
-          const main = contractState("rider_employment", acc, req, current) === "signed" || contractState("rider_zzp", acc, req, current) === "signed" ? "signed" : contractState("rider_employment", acc, req, current);
+          const main = contractState("rider_employment", acc, req, current);
           return (<tr key={String(r.id)} data-testid="legal-rider-row" data-id={String(r.id)}>
             <Td><button className="text-left font-semibold underline" onClick={() => setSel(sel === r.id ? null : String(r.id))}>{String(r.full_name || r.email)}</button>{r.is_test ? <span className="ml-1 text-xs text-muted">test</span> : null}{r.online ? <span className="ml-1 text-xs text-emerald-700">online</span> : null}</Td>
             <Td><StatusChip s={main} /></Td><Td><StatusChip s={contractState("rider_conduct", acc, req, current)} /></Td><Td><StatusChip s={contractState("platform_transparency", acc, req, current)} /></Td>

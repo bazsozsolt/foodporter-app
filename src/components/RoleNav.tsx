@@ -15,7 +15,7 @@ const CUSTOMER: Tab[] = [
 ];
 const RIDER: Tab[] = [
   { href: "/rider", label: ["Opdrachten", "Jobs"], icon: <Bike size={22} />, match: (p) => p === "/rider" || p === "/rider/" },
-  { href: "/rider/earnings", label: ["Verdiensten", "Earnings"], icon: <Wallet size={22} />, match: (p) => p.startsWith("/rider/earnings") },
+  { href: "/rider/earnings", label: ["Uren & loon", "Hours & pay"], icon: <Wallet size={22} />, match: (p) => p.startsWith("/rider/earnings") },
   { href: "/support", label: ["Hulp", "Help"], icon: <LifeBuoy size={22} />, match: (p) => p.startsWith("/support") },
 ];
 const HIDE = /^\/(login|welcome|privacy|terms|cookies|offline)/;

@@ -1,7 +1,7 @@
 ---
 id: processing_register
 title: Register van verwerkingsactiviteiten (art. 30 AVG)
-version: 0.1
+version: 0.2
 audience: internal
 ---
 # Verwerkingsregister
@@ -11,12 +11,13 @@ audience: internal
 |---|---|---|---|---|---|---|---|---|
 | 1 | Klantaccount en bestellingen | klanten | NAW, contact, bestellingen | levering | overeenkomst | restaurant, bezorger, Supabase | 7 jr (fiscaal) | RLS, TLS |
 | 2 | Betalingen | klanten | betaalstatus, Mollie-ID | betaling, terugbetaling | overeenkomst, wettelijk | Mollie | 7 jr | geen kaartdata opgeslagen |
-| 3 | Bezorgeronboarding | bezorgers | ID-controle, geboortedatum, verblijfsrecht, KvK | identificatieplicht, leeftijd | wettelijk, overeenkomst | admin | relatie + 5 jr | aparte private opslag |
+| 3 | Bezorgeronboarding | bezorgers | ID-controle (vinkje), geboortedatum, verblijfsrecht, BSN-vinkje (geen nummer) | identificatieplicht, leeftijd | wettelijk, overeenkomst | admin | relatie + 5 jr | aparte private opslag |
 | 4 | GPS tijdens online-zijn | bezorgers | locatie | zone-toewijzing, tracking, ETA, veiligheid | overeenkomst, GB (DPIA) | admin; klant en restaurant alleen tijdens eigen bezorging | 7 dagen | RLS |
+| 4a | Werktijdregistratie | bezorgers (werknemers) | beschikbaarheid, in-/uitkloktijden, uren, pauzes, ATW-meldingen, bonussen, fooien | loon, loonadministratie, Arbeidstijdenwet | wettelijk, overeenkomst | admin, payrollprovider (CSV) | 7 jr | RLS; bezorger alleen eigen |
 | 5 | Afleverfoto | bezorger, klant(adres) | foto deur | bewijs | overeenkomst | klant, admin | 30 dagen | private bucket, signed URL |
 | 6 | Support en chat | iedereen | berichten, foto's | klachtafhandeling | overeenkomst | admin | 2 jr | RLS |
 | 7 | Contractacceptatie | bezorgers, restaurants | versie, tijd, IP, user-agent | bewijs akkoord | GB | admin | relatie + 5 jr | append-only log |
-| 8 | DAC7 | restaurants, (zzp-)bezorgers | NAW, TIN, IBAN, omzet | rapportage | wettelijk | Belastingdienst | 10 jr | admin-only |
+| 8 | DAC7 | restaurants | NAW, TIN, IBAN, omzet | rapportage | wettelijk | Belastingdienst | 10 jr | admin-only |
 | 9 | Push en SMS | klanten, bezorgers | push-endpoint, telefoon | meldingen | toestemming / overeenkomst | FCM/APNs/autopush, SMS-provider | tot afmelding | service-role only |
 | 10 | Accountstatus en deactivatie | bezorgers, restaurants | reden, besluit | menselijk besluit, bezwaar | GB | admin | relatie + 2 jr | append-only |
 
