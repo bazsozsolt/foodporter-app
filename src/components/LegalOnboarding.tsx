@@ -23,7 +23,12 @@ const label = (m: string) => {
   if (m.startsWith("step:")) { const s = STEP_LABEL[m.slice(5)]; return s ? tx(s[0], s[1]) : m; }
   if (m.startsWith("doc_expired:")) return tx(`Document verlopen: ${m.slice(12)} — lever een nieuw exemplaar aan`, `Document expired: ${m.slice(12)}: please provide a new one`);
   if (m === "age_under_16") return tx("Je moet minimaal 16 jaar zijn", "You must be at least 16");
-  if (m === "atw_break") return tx("Je hebt 5,5 uur gewerkt: neem eerst minstens 15 minuten pauze", "You've worked 5.5 hours: take a break of at least 15 minutes first");
+  if (m === "atw_break") return tx("Je hebt lang achter elkaar gewerkt: neem eerst minstens 15 minuten pauze", "You've worked a long stretch: take a break of at least 15 minutes first");
+  if (m.startsWith("atw_rest:")) {
+    const t = new Date(m.slice(9));
+    const when = t.toLocaleString(tx("nl-NL", "en-GB"), { weekday: "short", hour: "2-digit", minute: "2-digit" });
+    return tx(`Je hebt 12 uur rust nodig tussen twee diensten. Je kunt weer inklokken vanaf ${when}.`, `You need 12 hours' rest between shifts. You can clock in again from ${when}.`);
+  }
   if (m === "atw_max_shift") return tx("Maximale dienstduur voor vandaag bereikt", "Maximum shift length for today reached");
   if (m === "atw_week_max") return tx("Maximaal aantal uren deze week bereikt", "Maximum hours for this week reached");
   if (m === "youth_night") return tx("Onder 18 mag je niet werken tussen 23:00 en 06:00", "Under 18 you may not work between 23:00 and 06:00");

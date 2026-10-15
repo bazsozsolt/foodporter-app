@@ -8,13 +8,27 @@ import { actions } from "@/lib/store";
 const AGES = ["16", "17", "18", "19", "20", "21"];
 const NUMS: [string, string][] = [["holiday_pay_pct", "Holiday pay % (min 8)"], ["holiday_hours_pct", "Holiday hours accrued per hour worked, % (4 weeks/yr = 7.69)"],
   ["atw_max_shift_h", "Max shift, hours (ATW 12)"], ["atw_max_shift_youth_h", "Max shift under 18, hours (ATW 9)"], ["atw_break_after_h", "Break required after, hours (ATW 5.5)"],
-  ["atw_week_max_h", "Max per week, hours (ATW 60)"], ["atw_week_max_youth_h", "Max per week under 18, hours (ATW 45)"]];
+  ["atw_week_max_h", "Max per week, hours (ATW 60)"], ["atw_week_max_youth_h", "Max per week under 18, hours (ATW 45)"],
+  ["atw_break_after_youth_h", "Break required after, under 18 (ATW 4.5)"], ["rest_min_h", "Rest between shifts, hours (ATW 11, we use 12)"],
+  ["surcharge_sat_pct", "Saturday surcharge %"], ["surcharge_sun_pct", "Sunday surcharge %"], ["surcharge_holiday_pct", "Public holiday surcharge %"],
+  ["surcharge_night_pct", "Night surcharge %"], ["overtime_pct", "Overtime surcharge % (Mon–Fri)"], ["overtime_week_h", "Overtime above, h/week (on-call; min-max uses its max)"],
+  ["cao_scale_cents", "CAO lowest scale 21+, cents/h (BGV A1)"], ["min_call_hours", "Minimum paid hours per call-in (7:628a, ≥ 3)"], ["call_notice_days", "Call-in notice, days (7:628a, ≥ 4)"]];
+const TEXTS: [string, string][] = [["night_from", "Night from (HH:MM)"], ["night_to", "Night until (HH:MM)"], ["cao_avv_until", "CAO AVV valid until (YYYY-MM-DD)"],
+  ["pension_fund", "Pension fund (placeholder)"], ["payroll_provider", "Payroll provider (name, placeholder until chosen)"]];
+const OPT_NUMS: [string, string][] = [["pension_employee_pct", "Pension employee % (blank = provider sets)"], ["pension_employer_pct", "Pension employer % (blank = provider sets)"]];
+/** Presets: CAO Beroepsgoederenvervoer (AVV until 1-1-2027, applies to meal delivery per HR 2023:1622) or statutory minimum only. */
+const PRESETS: Record<string, { wml: Record<string, number>; nums: Record<string, number> }> = {
+  bgv: { wml: { 16: 750, 17: 839, 18: 944, 19: 1079, 20: 1244, 21: 1499 }, nums: { holiday_hours_pct: 10.58, atw_break_after_h: 4.5, surcharge_sat_pct: 50, surcharge_sun_pct: 100, surcharge_holiday_pct: 100, surcharge_night_pct: 19, overtime_pct: 30, overtime_week_h: 40, cao_scale_cents: 1471 } },
+  none: { wml: { 16: 517, 17: 592, 18: 750, 19: 899, 20: 1199, 21: 1499 }, nums: { holiday_hours_pct: 7.69, atw_break_after_h: 5.5, surcharge_sat_pct: 0, surcharge_sun_pct: 0, surcharge_holiday_pct: 0, surcharge_night_pct: 0, overtime_pct: 0, overtime_week_h: 40, cao_scale_cents: 0 } },
+};
 
 /** Age-based statutory minimum wage (WML) table + Working Hours Act limits used for the indicative pay summary and clock-in checks. */
 function PaySettings({ data, reload }: { data: Row | null; reload: () => void }) {
   const [wml, setWml] = useState<Record<string, string>>({});
   const [nums, setNums] = useState<Record<string, string>>({});
   const [eff, setEff] = useState("");
+  const [cao, setCao] = useState("bgv");
+  const [texts, setTexts] = useState<Record<string, string>>({});
   useEffect(() => {
     if (!data) return;
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -22,23 +36,38 @@ function PaySettings({ data, reload }: { data: Row | null; reload: () => void })
     setWml(Object.fromEntries(AGES.map((a) => [a, w[a] != null ? (w[a] / 100).toFixed(2) : ""])));
     setNums(Object.fromEntries(NUMS.map(([k]) => [k, String(data[k] ?? "")])));
     setEff(String(data.wml_effective ?? ""));
+    setCao(String(data.cao ?? "bgv"));
+    setTexts(Object.fromEntries([...TEXTS, ...OPT_NUMS].map(([k]) => [k, data[k] == null ? "" : String(data[k]).slice(0, k.startsWith("night") ? 5 : undefined)])));
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [data]);
   async function save() {
     const p: Row = { wml_cents: Object.fromEntries(AGES.filter((a) => wml[a]).map((a) => [a, Math.round(Number(wml[a].replace(",", ".")) * 100)])), wml_effective: eff || null, updated_at: new Date().toISOString() };
     for (const [k] of NUMS) p[k] = Number(nums[k].replace(",", "."));
-    const ok = await act((async () => { const { error } = await sb().from("settings").update(p).eq("id", true); if (error) throw new Error(/check/.test(error.message) ? "Out of the legal range (WML €1–€100/h incl. a 21+ rate, holiday pay ≥ 8%, ATW maxima)" : error.message); return true; })(), "Pay & working-time settings saved");
+    p.cao = cao;
+    for (const [k] of TEXTS) p[k] = texts[k] || null;
+    for (const [k] of OPT_NUMS) p[k] = texts[k] ? Number(texts[k].replace(",", ".")) : null;
+    const ok = await act((async () => { const { error } = await sb().from("settings").update(p).eq("id", true); if (error) throw new Error(/check/.test(error.message) ? "Out of the legal range (WML incl. a 21+ rate, holiday pay ≥ 8%, ATW maxima, rest ≥ 11 h, call-in ≥ 3 h, notice ≥ 4 days)" : error.message); return true; })(), "Pay & working-time settings saved");
     if (ok !== undefined) reload();
+  }
+  function preset(c: string) {
+    setCao(c);
+    const pr = PRESETS[c];
+    setWml(Object.fromEntries(AGES.map((a) => [a, (pr.wml[a] / 100).toFixed(2)])));
+    setNums({ ...nums, ...Object.fromEntries(Object.entries(pr.nums).map(([k, v]) => [k, String(v)])) });
   }
   return (
     <Panel title="Rider pay & working time (direct employment)">
-      <p className="mb-2 text-xs text-muted">Statutory minimum hourly wage by age (WML, gross). Riders are paid at least this for every clocked-in hour; the per-delivery fee and tips come on top as a bonus. The weekly summary is indicative: payroll runs at the payroll provider.</p>
+      <div className="mb-2 max-w-xl"><Field label="CAO (choosing one fills its rates; review and save)"><select data-testid="cao-select" className={inputCls} value={cao} onChange={(e) => preset(e.target.value)}>
+        <option value="bgv">CAO Beroepsgoederenvervoer (AVV, applies to meal delivery)</option><option value="none">No CAO: statutory WML + ATW only</option></select></Field></div>
+      <p className="mb-2 text-xs text-muted">{cao === "bgv" ? "CAO BGV: youth wages as % of WML (16 50% … 20 83%), 21+ = max(WML, scale A1); Sat +50%, Sun/holiday +100%, night 21–05 +19%, overtime +30%; break 30 min after 4.5 h; 24 + 3.5 ATV leave days; Pensioenfonds Vervoer. Check the AVV renewal before " + (texts.cao_avv_until || "2027-01-01") + "." : "No CAO: statutory WML and Working Hours Act minimums only. Only valid if no CAO is generally binding."}</p>
+      <p className="mb-2 text-xs text-muted">Minimum hourly wage by age (gross). Riders are paid at least this for every clocked-in hour; the per-delivery fee and tips come on top as a bonus. The weekly summary is indicative: payroll runs at the payroll provider.</p>
       <div className="grid max-w-xl grid-cols-3 gap-2 md:grid-cols-6" data-testid="wml-table">
         {AGES.map((a) => <Field key={a} label={a === "21" ? "21+ (€/h)" : `${a} (€/h)`}><input data-testid={`wml-${a}`} className={inputCls} inputMode="decimal" value={wml[a] ?? ""} onChange={(e) => setWml({ ...wml, [a]: e.target.value })} /></Field>)}
       </div>
       <div className="mt-2 grid max-w-xl gap-2 md:grid-cols-2">
         <Field label="WML effective from"><input type="date" className={inputCls} value={eff} onChange={(e) => setEff(e.target.value)} /></Field>
         {NUMS.map(([k, l]) => <Field key={k} label={l}><input data-testid={`set-${k}`} className={inputCls} inputMode="decimal" value={nums[k] ?? ""} onChange={(e) => setNums({ ...nums, [k]: e.target.value })} /></Field>)}
+        {[...TEXTS, ...OPT_NUMS].map(([k, l]) => <Field key={k} label={l}><input data-testid={`set-${k}`} className={inputCls} value={texts[k] ?? ""} onChange={(e) => setTexts({ ...texts, [k]: e.target.value })} /></Field>)}
       </div>
       <div className="mt-3"><SmallBtn tone="brand" onClick={save}>Save pay settings</SmallBtn></div>
     </Panel>

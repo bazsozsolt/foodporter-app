@@ -56,6 +56,36 @@ function Library({ tpls }: { tpls: Row[] }) {
   );
 }
 
+/** Contract kind (7:628a BW): 0-hours on-call or min-max, start date (12-month fixed-hours offer) and reference days/hours (information duty). */
+function ContractTerms({ id, hr, reload }: { id: string; hr: Row | null; reload: () => void }) {
+  const [kind, setKind] = useState(String(hr?.contract_kind ?? "on_call"));
+  const [min, setMin] = useState(hr?.min_hours_week == null ? "6" : String(hr.min_hours_week));
+  const [max, setMax] = useState(hr?.max_hours_week == null ? "12" : String(hr.max_hours_week));
+  const [start, setStart] = useState(String(hr?.start_date ?? ""));
+  const [refd, setRefd] = useState(String(hr?.reference_days ?? ""));
+  const [avg, setAvg] = useState<number | null>(null);
+  const [today] = useState(() => Date.now());
+  useEffect(() => { void sb().rpc("fp_avg_week_hours", { p_rider: id }).then(({ data }) => setAvg(data == null ? null : Number(data))); }, [id]);
+  const due = start && !hr?.fixed_offer_at && new Date(start).getTime() <= today - 365 * 864e5;
+  async function save() {
+    const p: Row = { profile_id: id, contract_type: "employment", contract_kind: kind, start_date: start || null, reference_days: refd || null,
+      min_hours_week: kind === "min_max" ? Number(min) : null, max_hours_week: kind === "min_max" ? Number(max) : null };
+    if (await run(sb().from("rider_hr").upsert(p), "Contract terms saved")) reload();
+  }
+  return (
+    <div data-testid="contract-terms" className="mt-2 grid gap-2">
+      <Field label="Contract kind"><select data-testid="contract-kind" className={inputCls} value={kind} onChange={(e) => setKind(e.target.value)}><option value="on_call">0-hours on-call (min 3 h per call-in)</option><option value="min_max">Min-max (minimum paid weekly)</option></select></Field>
+      {kind === "min_max" && <div className="grid grid-cols-2 gap-2"><Field label="Min h/week"><input data-testid="min-hours" className={inputCls} inputMode="decimal" value={min} onChange={(e) => setMin(e.target.value)} /></Field><Field label="Max h/week (≤ 40)"><input data-testid="max-hours" className={inputCls} inputMode="decimal" value={max} onChange={(e) => setMax(e.target.value)} /></Field></div>}
+      <Field label="Start date"><input data-testid="start-date" type="date" className={inputCls} value={start} onChange={(e) => setStart(e.target.value)} /></Field>
+      <Field label="Reference days/hours (when call-ins can happen)"><input data-testid="reference-days" className={inputCls} placeholder="e.g. Mon–Sun 11:00–23:00" value={refd} onChange={(e) => setRefd(e.target.value)} /></Field>
+      <div className="flex flex-wrap items-center gap-2"><SmallBtn tone="brand" onClick={save}>Save contract terms</SmallBtn>
+        <span className="text-xs text-muted">Avg {avg ?? "–"} h/week (52 wk)</span>
+        {due && <span data-testid="offer-due" className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">Fixed-hours offer due ({avg ?? "?"} h/wk)</span>}
+        {hr?.fixed_offer_at ? <span className="text-xs text-muted">Offer made {String(hr.fixed_offer_at)}</span> : start ? <SmallBtn onClick={async () => { if (await run(sb().from("rider_hr").update({ fixed_offer_at: new Date().toISOString().slice(0, 10) }).eq("profile_id", id), "Offer recorded")) reload(); }}>Offer made</SmallBtn> : null}</div>
+    </div>
+  );
+}
+
 function RiderDetail({ rider, current, onChange }: { rider: Row; current: Map<string, string>; onChange: () => void }) {
   const id = String(rider.id);
   const q = useAdminQuery<Row>(async () => {
@@ -81,6 +111,7 @@ function RiderDetail({ rider, current, onChange }: { rider: Row; current: Map<st
         <div>
           <Field label="Contract type"><span data-testid="contract-type" className="text-sm font-semibold">Direct employment (only option since v19)</span></Field>
           <div className="mt-2"><Field label="Date of birth (youth rules)"><input type="date" className={inputCls} defaultValue={String(d.hr?.birthdate ?? "")} onBlur={async (e) => { if (e.target.value !== String(d.hr?.birthdate ?? "") && await run(sb().from("rider_hr").upsert({ profile_id: id, contract_type: ctype, birthdate: e.target.value || null }), "Birthdate saved")) reload(); }} /></Field></div>
+          <ContractTerms key={String(d.hr?.contract_kind) + String(d.hr?.start_date) + String(d.hr?.fixed_offer_at)} id={id} hr={d.hr} reload={reload} />
         </div>
         <div data-testid="checklist"><p className="mb-1 text-xs text-muted">Onboarding checklist</p>
           {STEPS.map(([k, l, req]) => { const done = d.steps.find((s) => s.step === k);
