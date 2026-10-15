@@ -7,3 +7,7 @@ drop policy if exists legal_tpl_read on public.legal_templates;
 drop policy if exists legal_tpl_admin_read on public.legal_templates;
 create policy legal_tpl_read on public.legal_templates for select to anon, authenticated
   using (audience <> 'internal' or (select my_role())::text = 'admin');
+-- fix: anon may not execute my_role(); keep one policy per role instead
+drop policy if exists legal_tpl_read on public.legal_templates;
+create policy legal_tpl_read_anon on public.legal_templates for select to anon using (audience <> 'internal');
+create policy legal_tpl_read_auth on public.legal_templates for select to authenticated using (audience <> 'internal' or (select my_role())::text = 'admin');

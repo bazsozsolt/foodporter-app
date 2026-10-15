@@ -36,7 +36,7 @@ const oid = Number(execSync("node ../sim/one-order.mjs", { encoding: "utf8" }).t
 ok("test order placed + accepted", oid > 0, String(oid));
 const log = async () => { const { data } = await admin.sb.rpc("push_log_for_order", { p_order: oid }); return data ?? []; };
 let rows = [];
-for (let k = 0; k < 20; k++) { rows = await log(); if (rows.some((r) => r.event_key.startsWith("bid:") && r.recipients > 0) && rows.some((r) => r.event_key.startsWith("rest:"))) break; await sleep(2000); }
+for (let k = 0; k < 20; k++) { rows = await log(); if (rows.some((r) => r.event_key.startsWith("bid:") && r.recipients > 0) && rows.some((r) => r.event_key.startsWith("rest:")) && rows.some((r) => r.event_key === `cust:${oid}:accepted` && r.sent > 0)) break; await sleep(2000); }
 const get = (p) => rows.find((r) => r.event_key.startsWith(p));
 ok("restaurant got a 'new order' push", get("rest:")?.sent >= 1, JSON.stringify(get("rest:")));
 ok("online riders got a bid push", get("bid:")?.sent >= 1, JSON.stringify(get("bid:")));
@@ -45,7 +45,7 @@ ok("customer got a status push", get(`cust:${oid}:accepted`)?.sent >= 1, JSON.st
 const again = await fetch(`${SB_URL}/functions/v1/order-push`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ order_id: oid }) }).then((r) => r.json());
 ok("repeat/spoofed call sends nothing extra", again.results.every((r) => r.skipped), JSON.stringify(again.results));
 execSync(`node ../sim/one-order.mjs cancel ${oid}`);
-for (let k = 0; k < 10; k++) { rows = await log(); if (get(`cust:${oid}:cancelled`)) break; await sleep(1500); }
+for (let k = 0; k < 10; k++) { rows = await log(); if (get(`cust:${oid}:cancelled`)?.sent > 0) break; await sleep(1500); }
 ok("customer told about the cancellation", get(`cust:${oid}:cancelled`)?.sent >= 1);
 for (const [u, e] of [[r1, E_OK1], [cust, E_C], [staff, E_S]]) await u.sb.rpc("push_unsubscribe", { p_endpoint: e });
 ok("unsubscribe removes the device", (await cust.sb.from("push_subscriptions").select("id").eq("endpoint", E_C)).data.length === 0);
