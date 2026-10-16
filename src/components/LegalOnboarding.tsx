@@ -92,7 +92,7 @@ function SignDoc({ tpl, onDone }: { tpl: Tpl; onDone: () => void }) {
         <div className="min-w-0 flex-1"><b className="block">{tpl.title}</b><span className="text-xs text-muted">{tx("Versie", "Version")} {tpl.version} · {tx("geldig vanaf", "effective")} {tpl.effective_date}</span></div></div>
       <div className="mt-2 flex flex-wrap gap-2 text-sm">
         <button className="min-h-11 rounded-lg bg-subtle px-3 py-1.5 font-semibold" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? tx("Verbergen", "Hide") : tx("Lezen", "Read")}</button>
-        <a className="rounded-lg bg-subtle px-3 py-1.5 font-semibold" href={`${BASE}/${tpl.pdf_path}`} target="_blank" rel="noreferrer">{tx("PDF downloaden", "Download PDF")}</a>
+        <a className="inline-flex min-h-11 items-center rounded-lg bg-subtle px-3 py-1.5 font-semibold" href={`${BASE}/${tpl.pdf_path}`} target="_blank" rel="noreferrer">{tx("PDF downloaden", "Download PDF")}</a>
       </div>
       {open && <div data-testid="legal-text" className="legal-doc mt-2 max-h-80 overflow-y-auto rounded-lg bg-subtle/60 p-3 text-[13px]" dangerouslySetInnerHTML={{ __html: html ?? tx("Laden…", "Loading…") }} />}
       <p className="mt-2 text-xs text-muted">{tx("De Nederlandse tekst is bindend; onderaan staat een Engelse samenvatting.", "The Dutch text is binding; an English summary is at the end of the document.")}</p>

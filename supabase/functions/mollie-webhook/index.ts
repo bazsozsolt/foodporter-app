@@ -22,9 +22,18 @@ Deno.serve(async (req) => {
 
   const url = Deno.env.get("SUPABASE_URL")!;
   const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-  const { data: order } = await admin.from("orders").select("id, status, mollie_payment_id, refund_id, paid_at").eq("id", orderId).maybeSingle();
+  const { data: order } = await admin.from("orders").select("id, status, mollie_payment_id, refund_id, paid_at, subtotal_cents, delivery_fee_cents, service_fee_cents, tip_cents, discount_cents, credit_cents").eq("id", orderId).maybeSingle();
   if (!order) return new Response("ok");
   const unpaid = order.status === "awaiting_payment" || order.status === "payment_failed";
+  // Defence in depth (v25 audit): only accept a payment whose amount matches the order total we computed.
+  const expected = (order.subtotal_cents ?? 0) + (order.delivery_fee_cents ?? 0) + (order.service_fee_cents ?? 0) + (order.tip_cents ?? 0) - (order.discount_cents ?? 0) - (order.credit_cents ?? 0);
+  const paidCents = Math.round(Number(p.amount?.value ?? 0) * 100);
+  const amountOk = p.amount?.currency === "EUR" && paidCents === expected;
+  if (unpaid && p.status === "paid" && !amountOk) {
+    await admin.from("orders").update({ payment_status: "paid_amount_mismatch" }).eq("id", order.id);
+    await admin.from("ops_alerts").insert({ kind: "other", order_id: order.id, message: `Payment ${id} is ${paidCents / 100} ${p.amount?.currency}, order total is ${expected / 100} EUR. Not released to the restaurant: check and refund in the Mollie dashboard.` });
+    return new Response("ok");
+  }
 
   // A payment that is not the order's current one (customer retried, or paid twice)
   if (order.mollie_payment_id !== id) {
