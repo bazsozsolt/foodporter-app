@@ -1,5 +1,5 @@
 import { LegalPage } from "@/components/Legal";
-import { DataExport } from "./DataExport";
+import { DataExport, DeleteAccount } from "./DataExport";
 
 export const metadata = { title: "Privacy policy · Food Porter" };
 
@@ -35,7 +35,7 @@ export default function Privacy() {
       <p>Bestel- en betaalgegevens: 7 jaar (Nederlandse fiscale wet). Accountgegevens: tot je je account verwijdert. Beoordelingen: tot je vraagt ze te verwijderen. GPS-punten van riders: 7 dagen. Supporttickets (met berichten en foto&apos;s): 2 jaar na het sluiten. Chatberichten bij een bestelling: 6 maanden na afronding van de bestelling. Beide worden elke nacht automatisch verwijderd.</p>
       <h2>Je rechten</h2>
       <p>Je kunt je gegevens inzien, corrigeren, exporteren of laten verwijderen, bezwaar maken tegen verwerking, en een klacht indienen bij de Autoriteit Persoonsgegevens. Download je gegevens hieronder; voor verwijdering of vragen mail je naar <b>privacy@foodporter.nl</b> (pilotcontact, nog te bevestigen). We reageren binnen 30 dagen.</p>
-      <DataExport />
+      <div className="flex flex-wrap gap-2"><DataExport /><DeleteAccount /></div>
       </>}
       en={<>
       <p>Food Porter (“we”) runs a food delivery pilot in Tilburg, the Netherlands. This policy explains which personal data we process, why, and your rights under the GDPR (AVG).</p>
@@ -66,7 +66,7 @@ export default function Privacy() {
       <p>Order and payment records: 7 years (Dutch tax law). Account data: until you delete your account. Ratings: until you ask us to remove them. Rider GPS points: 7 days. Support tickets (with messages and photos): 2 years after closing. Order chat messages: 6 months after the order is completed. Both are deleted automatically every night.</p>
       <h2>Your rights</h2>
       <p>You can access, correct, export or delete your data, object to processing, and complain to the Autoriteit Persoonsgegevens. Download your data below; for deletion or questions contact us at <b>privacy@foodporter.nl</b> (pilot contact, to be confirmed). We reply within 30 days.</p>
-      <DataExport />
+      <div className="flex flex-wrap gap-2"><DataExport /><DeleteAccount /></div>
       </>} />
   );
 }
