@@ -172,7 +172,7 @@ function Detail({ id }: { id: number }) {
             <select data-persist aria-label="Priority" className="rounded-lg border px-2 py-1 text-sm" value={t.priority} onChange={(e) => upd({ p_priority: e.target.value }, "Priority changed")}>
               {["urgent", "high", "normal", "low"].map((p) => <option key={p}>{p}</option>)}
             </select>
-            {t.category === "privacy" && <SmallBtn tone="danger" onClick={() => { if (window.confirm("Anonymise this profile? This cannot be undone. Delete the auth user in the Supabase dashboard afterwards.")) act((async () => { const { error } = await sb().rpc("fp_anonymise_profile", { p_id: (t as unknown as Row).created_by }); if (error) throw new Error(error.message); return true; })(), "Profile anonymised").then(() => reload()); }}>Anonymise profile</SmallBtn>}
+            {t.category === "privacy" && <SmallBtn tone="danger" onClick={() => { if (window.confirm("Anonymise this profile and delete the login? This cannot be undone. Financial records are kept.")) act((async () => { const { error } = await sb().rpc("fp_erase_account", { p_id: (t as unknown as Row).created_by }); if (error) throw new Error(error.message); return true; })(), "Profile anonymised, login deleted").then(() => reload()); }}>Anonymise &amp; delete login</SmallBtn>}
           </div>
         </Panel>
         {o && (o.leave_at_door || o.delivery_photo_path) ? <Panel title="Proof of delivery"><p className="text-sm">{o.leave_at_door ? "Customer chose leave at the door." : "Handed over in person."}</p>{o.delivery_photo_path ? <DeliveryPhoto path={String(o.delivery_photo_path)} english /> : <p className="text-xs text-muted">No photo.</p>}</Panel> : null}

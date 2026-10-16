@@ -11,7 +11,7 @@ Test data only. Mollie test mode. Orders 1043/1046 untouched. No messages sent. 
 - XSS: user text is rendered as React text. dangerouslySetInnerHTML is used only for our own legal HTML.
 - MEDIUM, FIXED: promo codes had no brute-force limit. Now max 10 wrong codes per customer per hour.
 - LOW: fp_chat_open returns a boolean for any order id (no data leak).
-- NEEDS ZSOLT: Auth dashboard: turn on leaked-password protection, and review session length, email confirmation and OTP expiry (no API access).
+- Auth config updated by Zsolt: minimum password length 8, email OTP expiry 15 min. Leaked-password (HIBP) protection needs the Pro plan. Email confirmation is left off because of the default SMTP rate limit.
 
 ## Phase 2: Payments
 - HIGH, FIXED: a customer could add order_items after the Mollie amount was fixed, which inflated the restaurant subtotal. Items are now locked once payment starts.
@@ -26,4 +26,6 @@ Test data only. Mollie test mode. Orders 1043/1046 untouched. No messages sent. 
 - localStorage is functional only (language, cart, favourites, alerts). No tracking cookies, so no consent banner is needed.
 - Third parties (Supabase EU, Mollie, PDOK, OSM tiles, SMS, GitHub Pages) are already in privacy statement v0.4.
 - GPS is shared only while the rider is online or on a job, as the privacy text describes.
-- NEEDS ZSOLT: after anonymising, delete the auth user in the Supabase dashboard. Financial records are kept 7 years (fiscal), anonymised.
+- Erasure now also deletes the Supabase Auth login. The admin action "Anonymise & delete login" calls fp_erase_account (SECURITY DEFINER, admin only). It refuses admins, refuses the owners of orders 1043/1046, and refuses while an order is active. It anonymises the profile, then deletes auth.users.
+  - The profiles to auth.users FK (on delete cascade) was dropped, so the anonymised profile row and all orders, earnings and payouts are kept (fiscal, 7 years).
+  - Tested on throwaway test users (scripts/e2e/erase.e2e.mjs 10/10): the login is gone and the profile row is kept, anonymised.
