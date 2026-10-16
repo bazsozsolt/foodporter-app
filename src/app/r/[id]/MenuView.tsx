@@ -89,7 +89,7 @@ export function MenuView({ id }: { id: string }) {
             <div className="flex items-center gap-2.5">
               <button aria-label={tx("Eén minder", "Remove one")} disabled={!qty[m.id]} className="grid h-11 w-11 place-items-center rounded-full border border-line bg-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) - 1)}><Minus size={16} /></button>
               <b className="w-4 text-center">{qty[m.id] ?? 0}</b>
-              <button aria-label={tx("Eén meer", "Add one")} className="grid h-11 w-11 place-items-center rounded-full bg-brand text-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) + 1)}><Plus size={16} /></button>
+              <button aria-label={tx("Eén meer", "Add one")} className="grid h-11 w-11 place-items-center rounded-full bg-brand text-white disabled:opacity-30" onClick={() => { setSheet(false); actions.setQty(id, m.id, (qty[m.id] ?? 0) + 1); }}><Plus size={16} /></button>
             </div>
           </Card>
         ))}

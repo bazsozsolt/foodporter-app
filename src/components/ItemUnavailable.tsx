@@ -25,7 +25,7 @@ export function ItemUnavailable({ o }: { o: Order }) {
   }
   return (
     <>
-      <button data-testid="item-unavailable" onClick={() => { setLine(lines[0].line_id!); setOpen(true); }} className="rounded-xl border border-line bg-white px-3 py-2 text-sm font-semibold">{tx("Item niet beschikbaar", "Item unavailable")}</button>
+      <button data-testid="item-unavailable" onClick={() => { setLine(lines[0].line_id!); setOpen(true); }} className="min-h-11 rounded-xl border border-line bg-white px-3 py-2 text-sm font-semibold">{tx("Item niet beschikbaar", "Item unavailable")}</button>
       {open && (
         <div role="dialog" aria-modal="true" aria-labelledby="iu-title" className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={() => setOpen(false)}>
           <div className="w-full max-w-[420px] rounded-t-3xl bg-paper p-4 pb-8" onClick={(e) => e.stopPropagation()}>

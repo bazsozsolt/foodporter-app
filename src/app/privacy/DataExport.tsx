@@ -24,5 +24,5 @@ export function DataExport() {
     a.href = URL.createObjectURL(blob); a.download = "foodporter-my-data.json"; a.click();
     return true;
   }
-  return <button className="rounded-xl bg-ink px-4 py-2.5 text-sm font-bold text-white" onClick={() => act(run(), "Download started")}>⬇ Download my data (JSON)</button>;
+  return <button className="min-h-11 rounded-xl bg-ink px-4 py-2.5 text-sm font-bold text-white" onClick={() => act(run(), "Download started")}>⬇ Download my data (JSON)</button>;
 }

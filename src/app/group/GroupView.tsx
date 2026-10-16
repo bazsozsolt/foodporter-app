@@ -259,8 +259,8 @@ export function GroupView() {
             {group.status === "open" && <>
               <p className="mt-2 text-[13px] text-muted">{t("Deadline", "Deadline")}</p>
               <div className="mt-1 flex flex-wrap gap-2">
-                {[15, 30, 45, 60].map((m) => <button key={m} className="rounded-full bg-subtle px-3 py-1.5 text-sm font-semibold" onClick={() => run(rpc("group_set_deadline", { p_group: group.id, p_minutes: m }), t(`Deadline over ${m} min`, `Deadline in ${m} min`))}>{m} min</button>)}
-                {group.deadline && <button className="rounded-full px-3 py-1.5 text-sm text-muted" onClick={() => run(rpc("group_set_deadline", { p_group: group.id, p_minutes: null }))}>{t("Geen", "None")}</button>}
+                {[15, 30, 45, 60].map((m) => <button key={m} className="min-h-11 rounded-full bg-subtle px-3 py-1.5 text-sm font-semibold" onClick={() => run(rpc("group_set_deadline", { p_group: group.id, p_minutes: m }), t(`Deadline over ${m} min`, `Deadline in ${m} min`))}>{m} min</button>)}
+                {group.deadline && <button className="min-h-11 rounded-full px-3 py-1.5 text-sm text-muted" onClick={() => run(rpc("group_set_deadline", { p_group: group.id, p_minutes: null }))}>{t("Geen", "None")}</button>}
               </div>
             </>}
             <Button variant={group.status === "open" ? "dark" : "ghost"} disabled={busy} onClick={() => run(rpc("group_set_locked", { p_group: group.id, p_locked: group.status === "open" }), group.status === "open" ? t("Mand vergrendeld", "Basket locked") : t("Mand weer open", "Basket reopened"))}>

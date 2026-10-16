@@ -141,7 +141,7 @@ export function WeekPay({ riderId }: { riderId: string }) {
   return (
     <Card data-testid="week-pay" className="mt-3">
       <div className="flex items-center justify-between"><b>{tx("Weekoverzicht", "Weekly summary")} · {new Date(w.week_start).toLocaleDateString(loc(lang), { day: "numeric", month: "short" })}</b>
-        <div className="flex gap-1 text-sm"><button className="rounded-lg bg-subtle px-2 py-1" onClick={() => setOffset(offset + 1)} aria-label={tx("Vorige week", "Previous week")}>←</button><button className="rounded-lg bg-subtle px-2 py-1 disabled:opacity-40" disabled={offset === 0} onClick={() => setOffset(offset - 1)} aria-label={tx("Volgende week", "Next week")}>→</button></div></div>
+        <div className="flex gap-1 text-sm"><button className="min-h-11 rounded-lg bg-subtle px-2 py-1" onClick={() => setOffset(offset + 1)} aria-label={tx("Vorige week", "Previous week")}>←</button><button className="rounded-lg bg-subtle px-2 py-1 disabled:opacity-40" disabled={offset === 0} onClick={() => setOffset(offset - 1)} aria-label={tx("Volgende week", "Next week")}>→</button></div></div>
       <p className="mb-2 mt-1 rounded-lg bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-900">{tx("Indicatief, loonadministratie via payroll", "Indicative: payroll is run by the payroll provider")}</p>
       {row(tx(`Gewerkte uren (${w.shifts} diensten)`, `Hours worked (${w.shifts} shifts)`), `${w.hours} × ${eur(w.wml_rate_cents)}`, "wp-hours")}
       {row(tx(`Uurloon (minimumloon/cao${w.age_known ? `, ${w.age} jaar` : ""})`, `Hourly wage (minimum/CAO${w.age_known ? `, age ${w.age}` : ""})`), eur(w.wage_cents), "wp-wage")}

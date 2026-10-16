@@ -83,7 +83,7 @@ export function OrderChat({ orderId, channel, side, readOnly, title, order }: { 
               <form className="mt-2 flex gap-2" onSubmit={(e) => { e.preventDefault(); void send(text); }}>
                 <input data-testid="chat-input" value={text} maxLength={500} onChange={(e) => setText(e.target.value)} placeholder={tx("Typ een bericht…", "Type a message…")}
                   className="min-w-0 flex-1 rounded-xl border border-line px-3 py-2 text-sm" />
-                <button data-testid="chat-send" disabled={busy || !text.trim()} className="rounded-xl bg-brand px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{tx("Stuur", "Send")}</button>
+                <button data-testid="chat-send" disabled={busy || !text.trim()} className="min-h-11 rounded-xl bg-brand px-3 py-2 text-sm font-semibold text-white disabled:opacity-50">{tx("Stuur", "Send")}</button>
               </form>
             </>
           )}

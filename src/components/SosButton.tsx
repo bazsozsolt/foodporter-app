@@ -25,7 +25,7 @@ export function SosButton({ lat, lng, orderId }: { lat?: number; lng?: number; o
   }
   return (
     <div className="mb-3 flex items-center gap-2">
-      <button data-testid="sos" onClick={sos} className="rounded-xl bg-[#c40000] px-4 py-2.5 text-sm font-black tracking-wide text-white shadow">SOS · 112</button>
+      <button data-testid="sos" onClick={sos} className="min-h-11 rounded-xl bg-[#c40000] px-4 py-2.5 text-sm font-black tracking-wide text-white shadow">SOS · 112</button>
       <p className="text-[12px] text-muted">{sent ? tx("Food Porter is gewaarschuwd", "Food Porter has been alerted") : tx("Belt 112 en waarschuwt Food Porter met je locatie", "Calls 112 and alerts Food Porter with your location")}</p>
     </div>
   );
