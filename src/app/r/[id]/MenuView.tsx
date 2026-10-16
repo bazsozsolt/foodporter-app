@@ -18,11 +18,13 @@ import { ALLERGENS } from "@/lib/allergens";
 import { useState } from "react";
 import { DAYS_EN, DAYS_NL, nextLabel, openState, type Hours } from "@/lib/hours";
 import { useLang } from "@/lib/i18n";
+import { CartSummary } from "@/components/CartSummary";
 
 export function MenuView({ id }: { id: string }) {
   const { cart, restaurants, menuItems, ready, signedIn } = useStore();
   const router = useRouter();
   const t = useT();
+  const [sheet, setSheet] = useState(false);
   async function startGroup() {
     if (!signedIn) { router.push(`/login?next=${encodeURIComponent(`/r/${id}`)}`); return; }
     const res = await act((async () => {
@@ -93,9 +95,19 @@ export function MenuView({ id }: { id: string }) {
         ))}
         <PhotoCredits credits={[r.image_credit, ...items.map((m) => m.image_credit)]} />
         {count > 0 && (
-          <Link href="/cart" data-testid="view-cart" className="sticky bottom-20 z-30 mt-2 flex min-h-14 items-center gap-3 rounded-2xl bg-brand px-4 py-3 font-semibold text-white shadow-[var(--shadow-pop)]">
+          <button type="button" onClick={() => setSheet(true)} aria-haspopup="dialog" data-testid="view-cart" className="sticky bottom-20 z-30 mt-2 flex min-h-14 w-full items-center gap-3 rounded-2xl bg-brand px-4 py-3 text-left font-semibold text-white shadow-[var(--shadow-pop)]">
             <ShoppingBag size={20} aria-hidden /><span className="flex-1">{tx("Bekijk winkelmand", "View cart")} · {count} item{count > 1 ? "s" : ""}</span><span>{eur(total)}</span>
-          </Link>
+          </button>
+        )}
+        {sheet && count > 0 && (
+          <div className="fixed inset-0 z-50 flex items-end bg-black/40" onClick={() => setSheet(false)} onKeyDown={(e) => { if (e.key === "Escape") setSheet(false); }}>
+            <div role="dialog" aria-modal="true" aria-labelledby="cart-sheet-title" data-testid="cart-sheet" className="w-full max-w-[520px] mx-auto rounded-t-3xl bg-paper p-4 pb-8 shadow-[var(--shadow-pop)]" onClick={(e) => e.stopPropagation()}>
+              <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-line" aria-hidden />
+              <div className="mb-2 flex items-center justify-between"><h2 id="cart-sheet-title" className="text-[22px]">{tx("Je winkelmand", "Your cart")}</h2>
+                <button type="button" autoFocus onClick={() => setSheet(false)} className="min-h-11 px-3 text-sm font-semibold text-muted">{tx("Sluiten", "Close")}</button></div>
+              <div className="space-y-3"><CartSummary /></div>
+            </div>
+          </div>
         )}
       </main>
     </>
