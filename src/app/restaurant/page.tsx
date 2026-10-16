@@ -7,7 +7,7 @@ import { AlertsToggle, TestSoundButton, useOrderAlerts } from "@/components/Orde
 import { RoleGate } from "@/components/RoleGate";
 import { LegalOnboarding, useLegalStatus } from "@/components/LegalOnboarding";
 import { act } from "@/lib/act";
-import { Button, Card, Empty, Header, Pill, Stat } from "@/components/ui";
+import { Button, Card, Empty, Header, Pill } from "@/components/ui";
 import { PREP_MAX, PrepPicker } from "@/components/PrepPicker";
 import { HelpButton } from "@/components/SupportSheet";
 import { ItemUnavailable } from "@/components/ItemUnavailable";
@@ -122,7 +122,7 @@ export default function RestaurantPage() {
         {mode === "supabase" && profile?.role === "restaurant" && <LegalOnboarding st={legal} reload={() => void reloadLegal()} who="restaurant" />}
         {tab === "orders" ? (<>
         {profile?.restaurant_id && <PauseBusyPanel restaurantId={profile.restaurant_id} />}
-        <div className="mb-4 flex gap-2.5"><Stat value={String(handed.length)} label={tx("Overgedragen", "Handed over")} /><Stat value={eur(revenue)} label={tx("Omzet", "Revenue")} /><Stat value={eur(Math.round((revenue * pct) / 100))} label={tx(`Commissie ${pct}%`, `Commission ${pct}%`)} /></div>
+        <p data-testid="kpi-line" className="mb-3 px-1 text-[13px] text-muted"><b className="text-ink">{handed.length}</b> {tx("overgedragen", "handed over")} · <b className="text-ink">{eur(revenue)}</b> {tx("omzet", "revenue")} · <b className="text-ink">{eur(Math.round((revenue * pct) / 100))}</b> {tx(`commissie ${pct}%`, `commission ${pct}%`)}</p>
         {scheduledLater.length > 0 && (
           <section data-testid="col-scheduled" className="mb-4 rounded-2xl bg-subtle/70 p-2">
             <h2 className="mb-2 px-1 !font-sans !text-[13px] font-bold uppercase tracking-wide text-muted">{tx("Gepland", "Scheduled")} <span className="rounded-full bg-white px-2 text-ink">{scheduledLater.length}</span></h2>
