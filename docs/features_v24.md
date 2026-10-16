@@ -40,3 +40,21 @@
 - After-delivery tip (second Mollie payment): needs a decision on fees and UX before going live.
 - Allergen data is still "test values" for OSM restaurants, so the filter is only as good as the restaurants' own tagging.
 - Later: ETA learning from actual_prep_minutes, rider weekly insights, rating polish.
+
+## v24.6: support/chat retention (approved by Zsolt)
+- Rules:
+  - Support tickets, with their messages and photos, are deleted 2 years after closing (resolved_at).
+  - Order chat is deleted 6 months after the order is completed (delivered_at; created_at for cancelled or payment_failed orders).
+- Implementation:
+  - fp_expired_support_photos() and fp_purge_support_chat(), both service_role only.
+  - The nightly purge-retention edge function (cron 03:25, now v2) removes the support photos from storage first, then the rows. Messages are removed via cascade.
+- Tests:
+  - Rolled-back transaction with backdated test rows: 1 ticket (25 months) and its photo purged, 11 chat messages (7 months) purged, the 23-month ticket and 5-month chat kept. Totals afterwards unchanged (308 tickets, 529 chat messages).
+  - Before going live, 0 rows were past retention. The first live run returned {"removed":0,"support_photos":0,"tickets":0,"chat_messages":0}.
+- Documents:
+  - privacy_statement and processing_register bumped to v0.4 (effective 2026-10-16): HTML, PDF, the source .md in /workspace/foodporter/legal/templates, and the legal_templates rows with the HTML sha256.
+  - In-app /privacy NL+EN updated (date 16 Oct 2026).
+- Checks:
+  - legal 45, support 40, chat 46, chat-admin 10, legal.ui 14, support.ui 14/14 (on live).
+  - a11y 38/38, parity 0 problems.
+- Deploy: gh-pages 929c04b30. Live {"build":"20261016102104"} verified; the v0.4 PDF and the HTML hash match live.
