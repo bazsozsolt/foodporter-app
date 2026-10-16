@@ -106,12 +106,14 @@ function OrderList() {
   const riders = useAdminQuery<Row[]>(async () => sb().from("profiles").select("id, full_name, email").in("role", ["rider", "admin"]), []);
   const q = useAdminQuery<Row[]>(async () => {
     const { p_from, p_to } = toIso(range);
-    let x = sb().from("order_facts").select("*").gte("created_at", p_from).lt("created_at", p_to).order("id", { ascending: false }).limit(500);
+    const byId = /^\d+$/.test(search.trim());
+    let x = sb().from("order_facts").select("*").order("id", { ascending: false }).limit(500);
+    if (!byId) x = x.gte("created_at", p_from).lt("created_at", p_to); // an order number searches all dates
     if (status) x = x.eq("status", status);
     if (restaurant) x = x.eq("restaurant_id", restaurant);
     if (rider) x = x.eq("rider_id", rider);
     if (hideTest) x = x.eq("is_test", false);
-    if (/^\d+$/.test(search.trim())) x = x.eq("id", Number(search.trim()));
+    if (byId) x = x.eq("id", Number(search.trim()));
     return x;
   }, [range.from, range.to, status, restaurant, rider, hideTest, search]);
   const rows = q.data ?? [];
@@ -119,12 +121,12 @@ function OrderList() {
     <Panel title={`Orders (${rows.length})`} actions={<>
       <SmallBtn onClick={() => downloadCsv(`orders_${range.from}_${range.to}.csv`, rows, ["id", "created_at", "status", "restaurant_name", "rider_name", "subtotal_cents", "delivery_fee_cents", "commission_cents", "prep_minutes", "actual_prep_minutes", "prep_extensions", "bid_seconds", "eta_minutes", "fast_bid", "on_time", "minutes_late", "delivered_at", "is_test"])}>⬇ CSV</SmallBtn>
       <SmallBtn onClick={() => window.print()}>Print</SmallBtn></>}>
-      <div className="no-print mb-3 grid gap-2 md:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
+      <div className="no-print mb-3"><Field label="Find order # (all dates)"><input className={inputCls} inputMode="numeric" type="search" data-testid="order-search" placeholder="e.g. 1733" value={search} onChange={(e) => setSearch(e.target.value)} /></Field></div>
+      <div className="no-print mb-3 grid gap-2 md:grid-cols-[2fr_1fr_1fr_1fr]">
         <RangePicker value={range} onChange={setRange} />
         <Field label="Status"><select className={inputCls} value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All</option>{STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}</select></Field>
         <Field label="Restaurant"><select className={inputCls} value={restaurant} onChange={(e) => setRestaurant(e.target.value)}><option value="">All</option>{(rest.data ?? []).map((r) => <option key={String(r.id)} value={String(r.id)}>{String(r.name)}</option>)}</select></Field>
         <Field label="Rider"><select className={inputCls} value={rider} onChange={(e) => setRider(e.target.value)}><option value="">All</option>{(riders.data ?? []).map((r) => <option key={String(r.id)} value={String(r.id)}>{String(r.full_name ?? r.email)}</option>)}</select></Field>
-        <Field label="Order #"><input className={inputCls} inputMode="numeric" placeholder="e.g. 1046" value={search} onChange={(e) => setSearch(e.target.value)} /></Field>
       </div>
       <label className="no-print mb-2 flex items-center gap-2 text-sm text-muted"><input type="checkbox" data-testid="include-test" checked={!hideTest} onChange={(e) => setHideTest(!e.target.checked)} /> Include test orders 🧪</label>
       <ErrorNote error={q.error} />

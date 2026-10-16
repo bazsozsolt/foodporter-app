@@ -105,7 +105,7 @@ function synth() {
 export function TestSoundButton() {
   return (
     <button data-testid="test-sound" onClick={() => { beep(); navigator.vibrate?.([120, 80, 120]); toast(tx("Testgeluid afgespeeld. Hoorde je niks? Zet je volume hoger en de stille modus uit.", "Test sound played. Heard nothing? Turn up the volume and switch off silent mode.")); }}
-      className="mb-3 w-full rounded-xl border border-line bg-white px-3 py-2 text-sm font-semibold">{tx("Testgeluid afspelen", "Test alert sound")}</button>
+      className="mb-2 min-h-11 px-2 text-sm font-semibold text-muted underline">{tx("Test geluid", "Test sound")}</button>
   );
 }
 
