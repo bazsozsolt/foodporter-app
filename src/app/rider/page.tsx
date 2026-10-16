@@ -153,7 +153,7 @@ export default function RiderPage() {
             ...(me ? [{ id: "me", ...me, kind: "me" as const, label: tx("Jij", "You") }] : []),
           ];
           return (
-            <Card key={o.id}>
+            <Card key={o.id} data-testid={`job-${o.id}`}>
               <div className="flex items-center justify-between"><span className="t-label">{t("Huidige opdracht", "Current job")} · #{o.id}</span><Pill>{SL[o.status]}</Pill></div>
               <ol className="mt-3 space-y-2" data-testid="job-steps">
                 <li className={`flex items-start gap-3 rounded-xl p-2.5 ${o.status !== "picked_up" ? "bg-brand-soft" : "opacity-60"}`}><ChefHat size={20} className="mt-0.5 shrink-0 text-brand" aria-hidden /><span><b className="block">1. {tx("Ophalen", "Pickup")}: {rest?.name}</b><span className="text-[13px] text-muted">{tx("Eten klaar", "Food ready")} ~{o.ready_at ? hhmm(new Date(o.ready_at)) : "?"}</span></span></li>
