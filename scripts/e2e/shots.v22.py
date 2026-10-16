@@ -22,6 +22,7 @@ with sync_playwright() as p:
     pg.goto(B + "/"); shot(pg, "c1-home-signedin")
     pg.goto(B + f"/r/?id={RID}"); shot(pg, "c2-menu")
     pg.get_by_role("button", name="Eén meer").first.click(); pg.wait_for_timeout(600); shot(pg, "c2-menu-added")
+    pg.click("[data-testid=view-cart]"); shot(pg, "c3-cart-sheet")
     pg.goto(B + "/cart/"); shot(pg, "c3-cart")
     pg.goto(B + "/checkout/"); shot(pg, "c4-checkout"); shot(pg, "c4-checkout-full", True)
     pg.goto(B + "/my-orders/"); shot(pg, "c5-orders")
