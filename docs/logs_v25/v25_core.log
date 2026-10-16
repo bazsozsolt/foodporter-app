@@ -1,0 +1,42 @@
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS anon cannot read orders — permission denied for table orders
+PASS anon cannot read profiles — permission denied for table profiles
+PASS anon cannot change settings — permission denied for table settings
+PASS customer cannot change settings
+PASS customer cannot make self admin — not allowed to change account status or role
+PASS customer sees no other profiles — 0
+PASS customer cannot purge test data — permission denied for function purge_test_data
+PASS customer cannot read key metric — admin only
+PASS rider cannot read payment report — admin only
+PASS phone column not readable via API — permission denied for table orders
+PASS order insert sanitised (status/rider/fee forced) — {"id":1850,"status":"awaiting_payment","rider_id":null,"delivery_fee_cents":295}
+PASS customer adds items
+PASS item names/prices + subtotal come from the menu — 1385 vs 1385
+PASS other customer cannot see the order
+PASS restaurant cannot see unpaid order
+PASS rider cannot see unpaid order
+PASS other customer cannot start payment
+PASS create-payment (Mollie test mode) — tr_EknsbUzGR6yWKx4orQEYJ
+PASS webhook marks order paid -> placed — {"status":"placed","payment_status":"paid","total":1385}
+PASS customer cannot change status — []
+PASS rider cannot see order before restaurant accepts
+PASS restaurant accepts (created_at pinned) — [{"status":"accepted","created_at":"2026-10-16T10:48:15.116994+00:00"}]
+PASS restaurant cannot skip to delivered — invalid status change: accepted -> delivered
+PASS customer cannot bid — new row violates row-level security policy for table "bids"
+PASS rider bids 25 min
+PASS rider cannot double-bid — duplicate key value violates unique constraint "bids_order_id_rider_id_key"
+PASS auction resolves -> rider assigned — {"status":"assigned","rider_id":"03b28a39-2d04-47ce-b428-baa1e9f0323d"}
+PASS assigned rider can get customer phone
+PASS other user cannot get the phone — null
+PASS restaurant marks ready
+PASS rider picks up
+PASS rider delivers
+PASS rider credited 100% of fee — [{"amount_cents":295}]
+PASS other customer cannot rate — new row violates row-level security policy for table "ratings"
+PASS customer rates
+PASS admin key metric returns day/restaurant/rider breakdown — {"pct":7.7,"paid":235,"rider":{"pct":100,"hits":18,"jobs":18,"rider":"Test Rider Rik","on_time":18}}
+PASS delivered fast + on-time order counts as a hit — {"pct":100,"hits":18,"jobs":18,"rider":"Test Rider Rik","on_time":18}
+PASS real-only filter excludes test orders
+ORDER 1850
+
+38 passed, 0 failed

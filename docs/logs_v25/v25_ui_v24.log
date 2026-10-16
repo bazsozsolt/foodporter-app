@@ -1,0 +1,19 @@
+PASS nl no favourites chip before saving
+PASS nl heart toggles pressed
+PASS nl heart does not open the restaurant
+PASS nl favourites chip filters to 1
+PASS nl allergen filter narrows the list
+PASS nl filter reset
+PASS nl heart on menu page saves too (2 favourites)
+PASS en no favourites chip before saving
+PASS en heart toggles pressed
+PASS en heart does not open the restaurant
+PASS en favourites chip filters to 1
+PASS en allergen filter narrows the list
+PASS en filter reset
+PASS en heart on menu page saves too (2 favourites)
+PASS staff: sold out shows until-time + 'Weer aan'
+PASS staff: back on
+PASS admin today health KPIs
+
+17 passed, 0 failed

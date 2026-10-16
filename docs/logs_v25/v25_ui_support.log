@@ -1,0 +1,19 @@
+PASS Hulp sheet opens with a short Dutch FAQ
+PASS ticket created and thread shown (with photo + refund request) — #361
+PASS admin inbox lists the ticket with SLA timer
+PASS admin detail: photo via signed URL, order timeline, map link, abuse signal
+PASS customer sees the admin reply live (realtime, no reload)
+PASS assign to me
+PASS refund action via order-refund (simulated test payment)
+PASS customer sees the refund confirmation — ng! We hebben een terugbetaling gestart; je ziet het bedrag binnen 1–3 werkdagen terug.
+
+Food Porter · Oct 16, 02:01 PM
+
+Terugbetaling van €2,50 goedgekeurd (testbestelling, er is niets afgeschreven).
+PASS resolve
+PASS support metrics in reports
+PASS SOS: urgent ticket with location + 112 dial attempted — {"id":362,"priority":"urgent","lat":51.5555}
+PASS rider payout question button
+PASS rider categories in Dutch
+PASS no page errors on the customer side — []
+14/14 passed

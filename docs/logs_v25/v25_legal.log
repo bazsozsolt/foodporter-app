@@ -1,0 +1,48 @@
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS anon reads public templates
+PASS internal templates hidden from anon
+PASS admin sees internal templates
+PASS lower version rejected (unique current version)
+PASS one current row per template
+PASS non-admin cannot add templates
+PASS PDF served — status 200 (404 ok before first deploy)
+PASS anon cannot read acceptances
+PASS outsider sees only own acceptances
+PASS no direct insert into acceptances
+PASS acceptance survives admin update/delete attempts
+PASS seeded test rider is ready
+PASS non-admin cannot send requests
+PASS admin sends contract
+PASS open request blocks rider — ["pending:rider_conduct"]
+PASS rider cannot go online while unsigned — legal: onboarding incomplete (pending:rider_conduct)
+PASS rider sees own request
+PASS outsider cannot see it
+PASS stale hash rejected
+PASS customer cannot sign rider docs
+PASS rider signs
+PASS request marked signed
+PASS log stores version/lang/hash — {"version":"0.1","lang":"en","text_sha256":"8e5516ba76bb2277d6e26951121346d8aaa1e7035bd1dddab21436bf27929a3c","ip":"set","method":"click"}
+PASS log stores IP
+PASS re-sign is idempotent
+PASS rider can go online after signing
+PASS rider reads own checklist
+PASS rider cannot tick own steps
+PASS outsider cannot read rider checklist
+PASS missing mandatory step blocks
+PASS admin records doc expiry
+PASS expired ID blocks
+PASS rider sees own docs only
+PASS under-16 blocked
+PASS zzp contract type rejected (employment only)
+PASS zzp template archived, not signable
+PASS KvK step no longer exists
+PASS BSN flag is mandatory
+PASS rider ready again
+PASS restaurant ready (seeded)
+PASS open restaurant request blocks orders
+PASS staff cannot sign rider docs
+PASS staff signs DPA for restaurant
+PASS restaurant receives orders again
+PASS staff sees restaurant acceptances
+
+45 passed, 0 failed

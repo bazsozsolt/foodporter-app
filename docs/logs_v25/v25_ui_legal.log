@@ -1,0 +1,16 @@
+PASS admin library lists all templates + versions — 29
+PASS zzp template marked not used
+PASS nav entry
+PASS template viewer renders
+PASS rider statuses shown
+PASS restaurant status shown
+PASS signature log
+PASS rider detail with checklist (no KvK, BSN flag)
+PASS rider sees onboarding card
+PASS online toggle disabled
+PASS contract text shown
+PASS accept disabled until ticked
+PASS card gone after signing
+PASS online toggle enabled
+
+14 passed, 0 failed

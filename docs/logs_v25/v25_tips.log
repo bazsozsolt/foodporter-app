@@ -1,0 +1,13 @@
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS tip above €20 is refused server-side — 422
+PASS negative tip is refused
+PASS payment with a €2.50 tip is created — 200 {"checkoutUrl":"https://www.mollie.com/checkout/select-method/rxd9aC2o6VDzkURe5REYJ","paymentId":"tr
+PASS tip is stored on the order — {"tip_cents":250,"subtotal_cents":2685,"delivery_fee_cents":295,"service_fee_cents":0}
+PASS customer cannot change the tip afterwards
+PASS customer can read their tip
+PASS admin marks the test order delivered
+PASS rider earns delivery fee + 100% of the tip — {"amount_cents":545,"tip_cents":250}
+PASS rider payouts report shows tips
+PASS customer cannot run the payments report
+
+10 passed, 0 failed

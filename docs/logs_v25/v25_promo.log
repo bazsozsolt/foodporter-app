@@ -1,0 +1,37 @@
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS customer cannot read promo codes
+PASS customer cannot create a promo code
+PASS invalid promo value is rejected
+PASS admin creates a fixed €3 code (min €10, 1 use)
+PASS valid code gives €3 off (case-insensitive) — {"code":"E2E47827674","kind":"promo","error":null,"credit_cents":0,"discount_cents":300}
+PASS below minimum order is refused
+PASS expired code is refused
+PASS first-order code refused for a returning customer
+PASS unknown code is refused
+PASS cannot quote for someone else
+PASS payment with the code is created — 200 {"checkoutUrl":"https://www.mollie.com/checkout/select-method/bbGcQ3ABt5HjH6Mr6REYJ","paymentId":"tr
+PASS discount stored on the order — {"discount_cents":300,"promo_code":"E2E47827674"}
+PASS customer cannot change the discount
+PASS use is counted when paid
+PASS max uses reached -> refused server-side — 422 Deze code is op.
+PASS cancelling the paid order frees the promo use
+PASS customer gets a referral code — 74848829
+PASS referral code is stable
+PASS own referral code is refused
+PASS new customer gets €5 off with a friend's code — {"code":"74848829","kind":"referral","error":null,"credit_cents":0,"discount_cents":500}
+PASS referral payment created — 200 
+PASS no referral credit yet while the order is only paid
+PASS the friend who invited gets €5 credit once it is delivered — 5000 -> 5500 
+PASS credit can be applied at checkout — {"code":null,"kind":null,"error":null,"credit_cents":2685,"discount_cents":0}
+PASS payment with credit created — 200 
+PASS used credit is deducted from the balance
+PASS cancelling a paid order gives the used credit back
+PASS others cannot read someone's credit
+PASS slot less than 30 min ahead is refused
+PASS slot more than 7 days ahead is refused
+PASS scheduled payment created (3 h ahead) — 200 
+PASS release time is before the slot (prep + bidding + ride) — {"scheduled_for":"2026-10-16T13:50:54.237+00:00","release_at":"2026-10-16T13:17:54.237+00:00"}
+PASS restaurant cannot accept before the release time — Geplande bestelling: accepteren kan vanaf 15:17
+PASS customer cannot move the slot after paying
+
+34 passed, 0 failed

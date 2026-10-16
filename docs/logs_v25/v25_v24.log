@@ -1,0 +1,13 @@
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS staff belongs to the test restaurant — 187f751c-bebb-4a34-9d4b-9b1a9e8851db
+PASS staff marks a dish sold out until tomorrow
+PASS customer menu hides the sold-out dish
+PASS payment refused for a sold-out dish — 400
+PASS customer cannot change availability
+PASS staff brings it back on
+PASS customer cannot run the retention purge
+PASS customer cannot run the sold-out restore
+PASS staff cannot run the retention purge
+PASS staff cannot run the sold-out restore
+
+10 passed, 0 failed

@@ -1,0 +1,69 @@
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS scheduled pickup with promo is accepted — 200 
+PASS pickup: no fee, promo applied, slot stored — {"fee":0,"d":400}
+PASS Mollie amount = items + service − discount — 2285 vs 2285
+PASS pickup release = slot − prep only (no ride lead) — 8 min
+PASS tip on scheduled pickup still refused
+PASS not released to restaurant before release_at (status stays placed)
+PASS group checkout creates an order
+PASS host chooses leave-at-door at group payment
+PASS group payment with €2 tip — 200 
+PASS group Mollie amount includes tip + service — 2980 vs 2980
+PASS group order walks to picked up
+PASS group door drop needs the photo
+PASS rider uploads door photo
+PASS photo attached
+PASS group order delivered
+PASS rider gets fee + full group tip — {"amount_cents":495,"tip_cents":200}
+PASS guest cannot see the door photo
+PASS host can see the door photo
+PASS stacked: both delivered — null null
+PASS stacked: each tip credited once to the rider — [{"order_id":1860,"amount_cents":395,"tip_cents":100},{"order_id":1861,"amount_cents":595,"tip_cents":300}]
+PASS stacked: earnings = fees + tips
+PASS credit larger than the order still checks out — 200 
+PASS charge never below €1 Mollie minimum — 100
+PASS only the used credit is deducted — 5500 - 795
+PASS promo below its minimum is refused
+PASS cancel returns the used credit
+PASS closed now: ASAP order refused
+PASS closed now: slot later today (still closed) refused
+PASS closed now: slot tomorrow (open) accepted — 200 
+PASS promo+tip order charged correctly — 2730 vs 2730
+PASS walk promo+tip order to delivered
+PASS refund request above the paid amount is refused
+PASS partial refund request accepted
+PASS partial refund 3,00 simulated — {"status":"simulated","cents":300}
+PASS second refund capped at paid − already refunded (tip incl., discount excl.) — {"status":"simulated","cents":2430} expected 2430
+PASS nothing left to refund after full refund — {"skipped":"nothing remaining"}
+PASS rider keeps fee + tip after customer refunds — {"amount_cents":445,"tip_cents":150}
+PASS cancel refunds exactly what was charged (tip incl., discount excl.) — simulated 2830 vs 2830
+PASS cancel frees the promo use — 1
+PASS no earnings for a cancelled order
+PASS Mollie total = restaurant net + rider earnings + platform share — 9385 = 6913 + 1930 + 542
+PASS restaurant payout report covers these orders — 11639 >= 6913
+PASS rider payout report covers fees + tips — 2770 >= 1930
+PASS commission is on items only, never on tip
+PASS anon cannot read promo codes
+PASS customer cannot read promo codes
+PASS customer cannot create a promo code
+PASS customer cannot raise promo uses
+PASS customer cannot grant themselves credit
+PASS others cannot read someone's credit
+PASS anon cannot read credit
+PASS referral codes not listable by others
+PASS customer cannot insert a referral code for someone else
+PASS anon cannot call my_credit_cents
+PASS anon cannot call my_referral_code
+PASS trigger fn fp_on_paid_p6 not callable
+PASS customer cannot set discount on own order
+PASS anon cannot list proof photos
+PASS outsider cannot list proof photos
+PASS proof bucket is not public
+PASS outsider cannot delete a proof photo
+PASS customer cannot change opening hours directly
+PASS other restaurant staff/customer cannot set availability
+PASS anon cannot read account_status_log
+PASS customer sees only own account_status_log
+PASS customer cannot write account_status_log
+
+66 passed, 0 failed

@@ -1,0 +1,52 @@
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS host creates group — NW3FUU
+PASS guest previews by code (case-insensitive) — {"id":"0bbe5e13-2ed6-4226-958e-47f79ad84df4","status":"open","members":1,"deadline":null,"host_name":"Host Henk","restaurant_id":"187f751c-bebb-4a34-9d4b-9b1a9e8851db","restaurant_name":"'t Kaasbolleke"}
+PASS anon cannot preview — permission denied for function group_preview
+PASS guest joins
+PASS guest adds item
+PASS host adds item
+PASS host sees all 3 items + 2 named members — Gast bGerda/b, Host Henk
+PASS display name sanitised
+PASS server-side price on lines
+PASS outsider cannot read group
+PASS outsider cannot read items
+PASS outsider cannot read members
+PASS anon cannot read items — permission denied for table group_items
+PASS outsider cannot add (not member) — group not found
+PASS anon cannot join — permission denied for function join_group_order
+PASS direct insert blocked — permission denied for table group_items
+PASS direct price update blocked — permission denied for table group_items
+PASS direct group update blocked — permission denied for table group_orders
+PASS direct delete blocked — permission denied for table group_items
+PASS other restaurant's item rejected — item not on this menu
+PASS absurd qty rejected — invalid quantity
+PASS guest cannot edit host's item — item not found
+PASS guest cannot remove host's item — item not found
+PASS guest cannot lock — only the host can do this
+PASS guest cannot set deadline — only the host can do this
+PASS guest cannot check out — only the host can do this
+PASS guest cannot cancel — only the host can do this
+PASS guest edits own qty
+PASS host removes guest item
+PASS host sets 30 min deadline
+PASS host locks
+PASS guest cannot add when locked — this group order is locked
+PASS guest cannot change qty when locked — this group order is locked
+PASS nobody can join when locked — this group order is locked
+PASS host got realtime basket events — UPDATE,UPDATE,UPDATE,UPDATE,UPDATE,UPDATE,UPDATE,UPDATE
+PASS outsider gets no basket contents via realtime — 1 events (DELETE), 0 with data
+PASS host checks out -> order — 1851
+PASS checkout idempotent
+PASS order subtotal computed server-side — 2380 vs 2380
+PASS order lines labelled per person — Host Henk: 1x Club sandwich | Gast bGerda/b: 3x Tosti ham kaas
+PASS order linked to group
+PASS guest cannot read host's order/phone
+PASS guest cannot pay/claim order
+PASS create-payment returns Mollie checkout — tr_cTmzZVGNXBRRjnSC3REYJ
+ORDER 1851 GROUP 0bbe5e13-2ed6-4226-958e-47f79ad84df4 CODE NW3FUU
+CHECKOUT https://www.mollie.com/checkout/select-method/cTmzZVGNXBRRjnSC3REYJ
+PASS Mollie test payment paid -> order placed — {"status":"placed","payment_status":"paid"}
+PASS order appears for restaurant with names — [{"id":1851,"order_items":[{"guest_name":"Host Henk"},{"guest_name":"Gast bGerda/b"}]}]
+PASS guest sees group as checked out — {"status":"checked_out","order_id":1851}
+
+47 passed, 0 failed

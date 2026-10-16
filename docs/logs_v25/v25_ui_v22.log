@@ -1,0 +1,39 @@
+PASS nl header is white
+PASS nl red wordmark loaded
+PASS nl cart bar does not overlap tab bar
+PASS nl sheet opens as dialog
+PASS nl sheet fully on screen
+PASS nl checkout button clickable (not under tab bar)
+PASS nl Esc closes sheet
+PASS nl backdrop tap closes sheet
+PASS nl removing last item closes sheet + bar
+PASS nl sheet → checkout
+PASS nl /cart fallback still works
+PASS en header is white
+PASS en red wordmark loaded
+PASS en cart bar does not overlap tab bar
+PASS en sheet opens as dialog
+PASS en sheet fully on screen
+PASS en checkout button clickable (not under tab bar)
+PASS en Esc closes sheet
+PASS en backdrop tap closes sheet
+PASS en removing last item closes sheet + bar
+PASS en sheet → checkout
+PASS en /cart fallback still works
+PASS rider main: compact shifts line, no full shifts block
+PASS rider main: no availability inputs
+PASS Diensten tab opens /rider/shifts
+PASS Diensten tab is marked current
+PASS compact line links to shifts
+PASS restaurant KPI line
+PASS alerts off: yellow toggle shown
+PASS alerts on + granted: banner collapses to one line
+PASS compact line NL
+PASS settings link reopens the toggle
+PASS permission lost: toggle shown again
+PASS sound off: toggle shown again
+PASS admin search finds an order outside the date range
+PASS admin UI English
+all checked targets >= 44px
+
+36 passed, 0 failed

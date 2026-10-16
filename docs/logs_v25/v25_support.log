@@ -1,0 +1,43 @@
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS test orders found — 1861 1350
+PASS customer uploads a photo to own folder
+PASS upload into someone else's folder is blocked
+PASS non-image upload is rejected
+PASS bucket is private (no public URL access)
+PASS customer opens a ticket on own order (with photo + refund request)
+PASS ticket has priority, SLA and refund request — {"p":"normal","r":"requested"}
+PASS ticket for someone else's order is refused
+PASS refund above the paid amount is refused
+PASS category not allowed for the role is refused
+PASS too long message refused
+PASS photo path from another user refused
+PASS direct insert into tickets blocked
+PASS other customer cannot see the ticket or its messages
+PASS restaurant cannot see the ticket or its messages
+PASS anon cannot see the ticket or its messages
+PASS another user cannot get a signed URL for the photo
+PASS admin gets a working signed URL
+PASS admin internal note
+PASS admin replies
+PASS customer gets the reply in realtime (not the internal note) — 1 events
+PASS customer never sees internal notes — customer,admin
+PASS status → waiting_user and first response recorded
+PASS reply triggers a push to the ticket owner — {"event_key":"sup:526","order_id":null,"recipients":4,"sent":4,"pruned":0,"created_at":"2026-10-16T10:52:33.750504+00:00"}
+PASS customer replies → open again
+PASS customer cannot trigger a refund — {"status":403,"body":{"error":"admin only"}}
+PASS admin partial refund (simulated test payment) — {"status":200,"body":{"status":"simulated","cents":300}}
+PASS second refund on the same ticket is refused
+PASS customer sees the refund message
+PASS non-admin cannot resolve/assign
+PASS admin assigns + resolves
+PASS restaurant reports an unavailable item (refund suggestion = item value) — {"category":"item_unavailable","refund_requested_cents":1790}
+PASS item marked sold out on the menu
+PASS restaurant can't report on another restaurant's order
+PASS rider SOS → urgent ticket with 10-minute SLA
+PASS SOS raises an ops alert with location — SOS from Sim Rider Sem (ticket #348) at 51.55550,5.09130
+PASS rider payout question
+PASS ticket creation is rate limited
+PASS support metrics report — {"sos":18,"open":187,"by_role":{"rider":47,"customer":136,"restaurant":23},"tickets":206,"by_category":{"sos":18,"help":11,"other":104,"payout":29,"privacy":1,"missing_item":31,"item_unavailable":12},"refunded_cents":40090,"sla_breached_pct":18.4,"av
+PASS report is admin-only
+
+40 passed, 0 failed

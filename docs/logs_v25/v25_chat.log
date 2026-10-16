@@ -1,0 +1,51 @@
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS admin-role account can use rider help (was: 'Onbekende categorie voor jouw rol')
+PASS admin-role account can use restaurant help
+PASS ticket role follows the help that was used — ["restaurant","rider"]
+PASS plain customer still can't use a rider category (Dutch error) — Onbekende categorie voor jouw rol
+PASS validation errors come back in Dutch — Beschrijf het probleem in een paar woorden
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS test order placed + accepted — 1871
+PASS customer chats with the restaurant before a rider is assigned
+PASS restaurant sees the message
+PASS restaurant replies
+PASS rider chat is closed while no rider is assigned — Chat is gesloten voor deze bestelling
+PASS call button refused before assignment — Bellen kan alleen tijdens een actieve bezorging
+PASS order assigned to test rider
+PASS customer sends a quick reply to the rider
+PASS rider receives it in realtime — ["Ik sta beneden"]
+PASS rider replies
+PASS other customer cannot read the rider chat
+PASS other rider cannot read the rider chat
+PASS restaurant (rider channel) cannot read the rider chat
+PASS anon cannot read the rider chat
+PASS other rider cannot write into it
+PASS direct insert blocked
+PASS empty message refused
+PASS admin reads both chats — ["customer","restaurant","customer","rider"]
+PASS chat messages trigger a push event — ["rest:1871","bid:1871:0","cust:1871:accepted","cust:1871:assigned","chat:1871:546","chat:1871:545","chat:1871:547","chat:1871:548"]
+PASS customer gets the rider's number during the delivery — {"number":"+31600000011","provider":"direct"}
+PASS rider gets the customer's number during the delivery — {"number":"+31600000000","provider":"direct"}
+PASS other customer cannot get a number
+PASS other rider cannot get a number
+PASS restaurant cannot get a number
+PASS both calls are in the audit log — [{"caller_role":"customer","callee_role":"rider","provider":"direct"},{"caller_role":"rider","callee_role":"customer","provider":"direct"}]
+PASS audit log is admin-only
+PASS admin (not a party) can post in the rider chat of an active order
+PASS customer sees it labelled as admin — {"author_role":"admin"}
+PASS admin acting as rider can call the customer (audited as admin) — {"number":"+31600000000","provider":"direct"}
+PASS admin must say whom to call
+PASS admin call is in the audit log
+PASS still no access for a random customer
+PASS admin cannot post rider locations (the client no longer tries)
+⚠️  Node.js 20 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 22 or later. For more information, visit: https://github.com/orgs/supabase/discussions/45715
+PASS stacked job: rider chats on the second order too
+PASS messages stay on their own order — [{"order_id":1872}]
+PASS rider delivers — [{"status":"delivered"}]
+PASS call refused after delivery
+PASS chat still open right after delivery
+PASS chat locked after the lock window (Dutch error)
+PASS parties can no longer read the locked chat
+PASS admin still reads it
+
+46 passed, 0 failed
