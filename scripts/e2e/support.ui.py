@@ -11,7 +11,7 @@ def login(pg, role):
     pg.fill("input[type=email]", creds[role+"_EMAIL"]); pg.fill("input[type=password]", creds[role+"_PASSWORD"])
     pg.get_by_role("button", name=re.compile("^(Inloggen|Sign in)$")).click(); pg.wait_for_timeout(3500)
 NODE = lambda js: subprocess.run(["node", "--input-type=module", "-e", "import * as m from '/workspace/foodporter-app/scripts/e2e/common.mjs';" + js], capture_output=True, text=True).stdout.strip().split("\n")[-1]
-oid = NODE("const a=await m.login('ADMIN'), c=await m.login('SIMC1'); const {data}=await a.sb.from('orders').select('id').eq('customer_id',c.id).eq('status','delivered').order('id',{ascending:false}).limit(40); const {data:tk}=await a.sb.from('support_tickets').select('order_id').not('order_id','is',null); const used=new Set([1043,1046,...(tk??[]).map(x=>x.order_id)]); console.log((data.find(o=>!used.has(o.id))??data[0]).id); process.exit(0)")
+oid = NODE("const a=await m.login('ADMIN'), c=await m.login('SIMC1'); const {data}=await a.sb.from('orders').select('id').eq('customer_id',c.id).eq('status','delivered').like('mollie_payment_id','tr_sim%').not('lat','is',null).order('id',{ascending:false}).limit(40); const {data:tk}=await a.sb.from('support_tickets').select('order_id').not('order_id','is',null); const used=new Set([1043,1046,...(tk??[]).map(x=>x.order_id)]); console.log((data.find(o=>!used.has(o.id))??data[0]).id); process.exit(0)")
 with sync_playwright() as p:
     b = p.chromium.launch()
     mob = dict(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
