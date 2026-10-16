@@ -108,7 +108,7 @@ export default function RiderPage() {
               <span className="text-[13px] text-white/80">{online ? tx("Tik om uit te klokken (offline)", "Tap to clock out (go offline)") : blocked ? tx("Inklokken kan nu niet, zie hierboven", "Can't clock in right now, see above") : tx("Tik om in te klokken: je uurloon loopt vanaf nu", "Tap to clock in: your hourly wage starts now")}</span></span>
           </button>
         )}
-        {mode === "supabase" && profile?.role === "rider" && <RiderShifts riderId={profile.id} online={online} />}
+        {mode === "supabase" && profile?.role === "rider" && <RiderShifts riderId={profile.id} online={online} compact />}
         <div className="mb-3 grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
         {mode === "supabase" && profile && (
           <details className="mb-3 rounded-2xl bg-white px-4 py-1 shadow-[var(--shadow-card)] ring-1 ring-black/[.04]">

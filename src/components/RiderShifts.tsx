@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { CalendarClock, Coffee, Trash2 } from "lucide-react";
+import { CalendarClock, ChevronRight, Coffee, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";
 import { tx, useLang } from "@/lib/i18n";
 import { act } from "@/lib/act";
@@ -29,7 +30,7 @@ function workStats(sess: Sess[], now: number) {
 }
 
 /** Shift planning for employed riders: availability blocks + today's clocked hours and break reminder. */
-export function RiderShifts({ riderId, online }: { riderId: string; online: boolean }) {
+export function RiderShifts({ riderId, online, compact = false }: { riderId: string; online: boolean; compact?: boolean }) {
   const lang = useLang();
   const [slots, setSlots] = useState<Slot[]>([]);
   const [sess, setSess] = useState<Sess[]>([]);
@@ -80,6 +81,16 @@ export function RiderShifts({ riderId, online }: { riderId: string; online: bool
     if (ok) setRev((r) => r + 1);
   }
   const fmt = (iso: string, o: Intl.DateTimeFormatOptions) => new Date(iso).toLocaleString(loc(lang), o);
+  if (compact) {
+    const next = calls.filter((c) => c.status === "scheduled").length;
+    return (
+      <Link href="/rider/shifts" data-testid="rider-shifts-mini" className="mb-3 flex min-h-12 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm shadow-[var(--shadow-card)] ring-1 ring-black/[.04]">
+        <CalendarClock size={16} aria-hidden /><span className="flex-1"><span data-testid="worked-today">{tx("Vandaag gewerkt", "Worked today")}: <b>{hm(today)}</b> {tx("uur", "h")}</span>{next > 0 && <span className="text-muted"> · {next} {tx("oproep(en)", "call-in(s)")}</span>}
+          {online && stretch >= brkMin - 30 && <span data-testid="break-warning" className="mt-1 flex items-center gap-1.5 font-semibold text-amber-900"><Coffee size={14} aria-hidden />{stretch >= brkMin ? tx("Tijd voor pauze: klok uit (min. 30 min)", "Time for a break: clock out (min. 30 min)") : tx(`Pauze nodig over ${Math.max(0, Math.round(brkMin - stretch))} min`, `Break due in ${Math.max(0, Math.round(brkMin - stretch))} min`)}</span>}</span>
+        <span className="font-semibold text-brand">{tx("Diensten", "Shifts")}</span><ChevronRight size={16} aria-hidden />
+      </Link>
+    );
+  }
   return (
     <section data-testid="rider-shifts" className="mb-3">
       <SectionHeader>{tx("Diensten en uren", "Shifts and hours")}</SectionHeader>
@@ -93,7 +104,7 @@ export function RiderShifts({ riderId, online }: { riderId: string; online: bool
             const short = new Date(c.created_at).getTime() > new Date(c.starts_at).getTime() - noticeDays * 864e5;
             return (<li key={c.id} className="flex items-center justify-between gap-2 rounded-xl bg-subtle px-3 py-1.5 text-sm"><span>{fmt(c.starts_at, { weekday: "short", day: "numeric", month: "short" })} · {fmt(c.starts_at, { hour: "2-digit", minute: "2-digit" })}–{fmt(c.ends_at, { hour: "2-digit", minute: "2-digit" })}
               {c.status !== "scheduled" ? <em className="ml-1 text-muted">({c.status === "declined" ? tx("geweigerd", "declined") : tx("geannuleerd", "cancelled")})</em> : short ? <em className="ml-1 text-amber-800">({tx("korte termijn", "short notice")})</em> : null}</span>
-              {c.status === "scheduled" && short && <button data-testid="callin-decline" className="rounded-lg border border-line px-2 py-0.5 text-xs font-semibold" onClick={() => decline(c.id)}>{tx("Weigeren", "Decline")}</button>}</li>);
+              {c.status === "scheduled" && short && <button data-testid="callin-decline" className="min-h-11 rounded-lg border border-line px-3 text-xs font-semibold" onClick={() => decline(c.id)}>{tx("Weigeren", "Decline")}</button>}</li>);
           })}</ul>)}
         <p className="mt-1 text-xs text-muted">{tx(`Oproepen krijg je minstens ${noticeDays} dagen vooraf. Later opgeroepen? Dan mag je weigeren. Per oproep betalen we minstens 3 uur. Annuleren we binnen ${noticeDays} dagen, dan krijg je de geplande uren betaald.`, `Call-ins are announced at least ${noticeDays} days ahead. Called in later? You may decline. Each call-in pays at least 3 hours. If we cancel within ${noticeDays} days, you're paid the scheduled hours.`)}</p>
         <p className="mt-3 text-sm font-semibold">{tx("Mijn beschikbaarheid", "My availability")}</p>
@@ -106,7 +117,7 @@ export function RiderShifts({ riderId, online }: { riderId: string; online: bool
         {slots.length === 0 ? <p className="mt-2 text-[13px] text-muted">{tx("Nog geen blokken gepland.", "No blocks planned yet.")}</p> : (
           <ul data-testid="slot-list" className="mt-2 space-y-1">{slots.map((s) => (
             <li key={s.id} className="flex items-center justify-between rounded-xl bg-subtle px-3 py-1.5 text-sm"><span>{fmt(s.starts_at, { weekday: "short", day: "numeric", month: "short" })} · {fmt(s.starts_at, { hour: "2-digit", minute: "2-digit" })}–{fmt(s.ends_at, { hour: "2-digit", minute: "2-digit" })}</span>
-              <button aria-label={tx("Verwijderen", "Remove")} className="p-1 text-muted" onClick={() => del(s.id)}><Trash2 size={15} /></button></li>))}</ul>)}
+              <button aria-label={tx("Verwijderen", "Remove")} className="grid h-11 w-11 place-items-center text-muted" onClick={() => del(s.id)}><Trash2 size={15} /></button></li>))}</ul>)}
       </Card>
     </section>
   );

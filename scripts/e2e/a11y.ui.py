@@ -7,7 +7,7 @@ B = next((a for a in sys.argv[1:] if a.startswith("http")), "https://bazsozsolt.
 AXE = open("/workspace/foodporter-app/node_modules/axe-core/axe.min.js").read()
 RID = "187f751c-bebb-4a34-9d4b-9b1a9e8851db"
 PLAN = [(None, ["/", f"/r/?id={RID}", "/cart/", "/login/", "/welcome/", "/privacy/", "/rider-info/"]),
-        ("SIMC1", ["/my-orders/", "/support/", "/checkout/"]), ("SIMR1", ["/rider/", "/rider/earnings/"]), ("STAFF", ["/restaurant/"]),
+        ("SIMC1", ["/my-orders/", "/support/", "/checkout/"]), ("SIMR1", ["/rider/", "/rider/shifts/", "/rider/earnings/"]), ("STAFF", ["/restaurant/"]),
         ("ADMIN", ["/admin/", "/admin/payroll/", "/admin/legal/", "/admin/settings/", "/admin/reports/"])]
 out = {}
 FOCUS = """() => { const el = document.activeElement; if (!el || el === document.body) return 'none';

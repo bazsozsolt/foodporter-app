@@ -31,6 +31,7 @@ with sync_playwright() as p:
     pg.goto(B + "/cart/"); pg.evaluate("localStorage.removeItem('fp-cart')"); c.close()
     c, pg = ctx("SIMR1")
     pg.goto(B + "/rider/"); shot(pg, "r1-rider"); shot(pg, "r1-rider-full", True)
+    pg.goto(B + "/rider/shifts/"); shot(pg, "r3-shifts")
     pg.goto(B + "/rider/earnings/"); shot(pg, "r2-earnings")
     c.close()
     c, pg = ctx("STAFF")

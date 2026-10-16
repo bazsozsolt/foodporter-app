@@ -16,7 +16,7 @@ RID = "187f751c-bebb-4a34-9d4b-9b1a9e8851db"
 oid = NODE("const a=await m.login('ADMIN'), c=await m.login('SIMC1'); const {data}=await a.sb.from('orders').select('id').eq('customer_id',c.id).eq('status','delivered').order('id',{ascending:false}).limit(1).single(); console.log(data.id)")
 tid = NODE("const c=await m.login('SIMC1'); const {data}=await c.sb.from('support_tickets').select('id').order('id',{ascending:false}).limit(1).single(); console.log(data?.id ?? '')")
 CUST = ["/", f"/r/?id={RID}", "/cart/", "/checkout/", "/my-orders/", f"/order/?id={oid}", "/support/", f"/support/?id={tid}", "/group/", "/welcome/", "/privacy/", "/terms/", "/cookies/", "/login/", "/rider-info/", "/accessibility/", "/offline/"]
-RIDER = ["/rider/", "/rider/earnings/"]
+RIDER = ["/rider/", "/rider/shifts/", "/rider/earnings/"]
 REST = ["/restaurant/"]
 ADMIN = ["/admin/", "/admin/orders/", f"/admin/orders/?id={oid}", "/admin/restaurants/", "/admin/riders/", "/admin/customers/", "/admin/map/", "/admin/reports/", "/admin/support/", "/admin/feedback/", "/admin/settings/", "/admin/legal/", "/admin/payroll/", "/admin/promos/", "/admin/payments/", "/admin/payouts/"]
 PLAN = [("anon", None, CUST[:3] + CUST[9:] + ["/rider/", "/restaurant/", "/admin/", "/nope-404/"]),

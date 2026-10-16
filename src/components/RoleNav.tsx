@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bike, ClipboardList, Home, LifeBuoy, Users, Wallet } from "lucide-react";
+import { Bike, CalendarClock, ClipboardList, Home, LifeBuoy, Users, Wallet } from "lucide-react";
 import type { ReactNode } from "react";
 import { useT } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
@@ -15,6 +15,7 @@ const CUSTOMER: Tab[] = [
 ];
 const RIDER: Tab[] = [
   { href: "/rider", label: ["Opdrachten", "Jobs"], icon: <Bike size={22} />, match: (p) => p === "/rider" || p === "/rider/" },
+  { href: "/rider/shifts", label: ["Diensten", "Shifts"], icon: <CalendarClock size={22} />, match: (p) => p.startsWith("/rider/shifts") },
   { href: "/rider/earnings", label: ["Uren & loon", "Hours & pay"], icon: <Wallet size={22} />, match: (p) => p.startsWith("/rider/earnings") },
   { href: "/support", label: ["Hulp", "Help"], icon: <LifeBuoy size={22} />, match: (p) => p.startsWith("/support") },
 ];

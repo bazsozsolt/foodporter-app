@@ -42,7 +42,7 @@ def admin(pg):
     ok("CSV: contract kind, guarantees, surcharges, no BSN", all(k in head for k in ["contract_kind", "guarantee_callin_hours", "surcharge_sun_eur", "paid_hours", "pension_fund"]) and "bsn" not in head.lower(), head[:100])
     pg.screenshot(path=f"{OUT}/admin-payroll-roster.png", full_page=True)
 def rider_nl(pg):
-    pg.goto(B + "/rider/"); pg.wait_for_selector("[data-testid=rider-shifts]", timeout=20000); pg.wait_for_timeout(2000)
+    pg.goto(B + "/rider/shifts/"); pg.wait_for_selector("[data-testid=rider-shifts]", timeout=20000); pg.wait_for_timeout(2000)
     ok("rider: call-in listed as short notice", pg.locator("[data-testid=callin-list] >> text=korte termijn").count() >= 1)
     pg.locator("[data-testid=rider-shifts]").scroll_into_view_if_needed(); pg.screenshot(path=f"{OUT}/rider-callin-nl.png", full_page=True)
     pg.locator("[data-testid=callin-decline]").first.click(); pg.wait_for_timeout(2500)

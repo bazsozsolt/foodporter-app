@@ -16,7 +16,7 @@ def run(acct, view, lang, steps):
         steps(pg); b.close()
 M, D = {"width": 390, "height": 844}, {"width": 1280, "height": 900}
 def rider_nl(pg):
-    pg.goto(B + "/rider/"); pg.wait_for_selector("[data-testid=rider-shifts]", timeout=20000); pg.wait_for_timeout(1500)
+    pg.goto(B + "/rider/shifts/"); pg.wait_for_selector("[data-testid=rider-shifts]", timeout=20000); pg.wait_for_timeout(1500)
     t = pg.inner_text("main")
     ok("rider: clock-in copy", "klokken" in t, t[:80])
     ok("rider: no freelance copy", not re.search(r"volledige vergoeding|verdien wat je wilt|eigen baas", t, re.I))
