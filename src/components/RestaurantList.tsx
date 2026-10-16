@@ -13,6 +13,8 @@ import { Photo } from "@/components/Photo";
 import { nextLabel, openState } from "@/lib/hours";
 import { useLang } from "@/lib/i18n";
 import { useFavourites } from "@/lib/favourites";
+import { useStore } from "@/lib/store";
+import { ALLERGENS } from "@/lib/allergens";
 import { FavButton } from "@/components/FavButton";
 
 const PAGE = 20;
@@ -29,6 +31,10 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
   const [cuisine, setCuisine] = useState<string | null>(null);
   const favs = useFavourites();
   const [favOnly, setFavOnly] = useState(false);
+  const [without, setWithout] = useState("");
+  const { menuItems } = useStore();
+  // Restaurants with at least one dish that has allergen info and does not contain the chosen allergen.
+  const safe = useMemo(() => !without ? null : new Set(menuItems.filter((m) => Array.isArray(m.allergens) && !m.allergens.includes(without)).map((m) => m.restaurant_id)), [menuItems, without]);
   const [sortPref, setSort] = useState<"recommended" | "distance" | null>(null);
   const [page, setPage] = useState({ key: "", n: PAGE });
   const [here, setHere] = useState<{ lat: number; lng: number; label: string } | null>(null);
@@ -49,14 +55,14 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
 
   const list = useMemo(() => {
     const t = norm(q.trim());
-    const rows = active.filter((r) => (!favOnly || favs.includes(r.id)) && (!cuisine || r.cuisine === cuisine) && (!t || norm(`${r.name} ${r.cuisine ?? ""} ${r.area ?? ""}`).includes(t)))
+    const rows = active.filter((r) => (!safe || safe.has(r.id)) && (!favOnly || favs.includes(r.id)) && (!cuisine || r.cuisine === cuisine) && (!t || norm(`${r.name} ${r.cuisine ?? ""} ${r.area ?? ""}`).includes(t)))
       .map((r) => ({ r, d: origin && r.lat != null && r.lng != null ? km(origin, { lat: Number(r.lat), lng: Number(r.lng) }) : null }));
     rows.sort((a, b) => Number(Boolean(a.r.is_test)) - Number(Boolean(b.r.is_test))
       || (sort === "distance" ? (a.d ?? 1e9) - (b.d ?? 1e9) : (b.r.rating_count ?? 0) - (a.r.rating_count ?? 0) || a.r.name.localeCompare(b.r.name)));
     return rows;
-  }, [active, q, cuisine, sort, origin, favOnly, favs]);
+  }, [active, q, cuisine, sort, origin, favOnly, favs, safe]);
 
-  const key = `${q}|${cuisine}|${sort}|${favOnly}`;
+  const key = `${q}|${cuisine}|${sort}|${favOnly}|${without}`;
   const shown = page.key === key ? page.n : PAGE;
   const more = () => setPage((p) => ({ key, n: (p.key === key ? p.n : PAGE) + PAGE }));
   useEffect(() => {
@@ -91,6 +97,10 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
       <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-muted">
         <button className={chip(sort === "recommended")} aria-pressed={sort === "recommended"} onClick={() => setSort("recommended")}>{t("Partners eerst", "Partners first")}</button>
         <button className={chip(sort === "distance")} aria-pressed={sort === "distance"} data-testid="sort-distance" onClick={() => (origin ? setSort("distance") : locate())}>{t("Dichtstbij", "Nearest")}{origin ? ` · ${origin.label}` : ""}</button>
+        <label className="inline-flex min-h-11 items-center gap-1 rounded-full border border-line bg-white px-3 text-[13px] font-semibold text-ink">{t("Zonder", "Without")}
+          <select data-testid="home-allergen" aria-label={t("Restaurants met gerechten zonder dit allergeen", "Restaurants with dishes free of this allergen")} value={without} onChange={(e) => setWithout(e.target.value)} className="min-h-11 bg-transparent font-semibold">
+            <option value="">{t("geen filter", "no filter")}</option>{ALLERGENS.map(([c, nl, en2]) => <option key={c} value={c}>{en ? en2 : nl}</option>)}
+          </select></label>
         {!origin && <button className="inline-flex min-h-11 items-center gap-1 font-semibold text-brand" onClick={locate}><LocateFixed size={14} aria-hidden />{t("gebruik mijn locatie", "use my location")}</button>}
       </div>
       {list.length === 0 && <p className="text-sm text-muted">{t("Geen restaurants gevonden voor", "No restaurants match")} “{q}”.</p>}
