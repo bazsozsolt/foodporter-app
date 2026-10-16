@@ -42,3 +42,7 @@
 - Admin was cut off twice by outside interruptions (an external kill of the run and the browser), not by the crawler; the third run was clean.
 - Load peaked at 6.9 for a moment after the restaurant role, then dropped back below 1.5 before the next role started.
 - Stale test orders 1731/1732 (SIMR1, is_test): confirmed cancelled. Riders have no active test jobs left. 1043/1046 untouched.
+## Phase 5: a11y and visual
+- a11y.ui.py: 38/38 page × language combinations with "axe: none" and no missing focus rings, /rider/shifts included.
+- Visual check of the local HEAD screenshots (/tmp/v23shots): white header and red wordmark on all roles, cart sheet above the tab bar, rider main screen compact, Diensten tab active, restaurant KPI line, admin English. 44 px targets are enforced by v22.ui.py (30/30).
+- Note: the admin "Needs attention" list shows test-only "refund failed: already refunded" alerts from the earlier support.ui runs (caused by the old order-picking), plus test SOS tickets. These are test data and can be resolved in the admin.
