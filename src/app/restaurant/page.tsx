@@ -3,7 +3,7 @@ import { PauseBusyPanel, HoursPanel } from "@/components/AvailabilityPanel";
 import { RestaurantPhotos } from "@/components/PhotoUpload";
 import { useT , tx } from "@/lib/i18n";
 import { useEffect, useState } from "react";
-import { AlertsToggle, TestSoundButton, useOrderAlerts } from "@/components/OrderAlerts";
+import { AlertsBar, useOrderAlerts } from "@/components/OrderAlerts";
 import { RoleGate } from "@/components/RoleGate";
 import { LegalOnboarding, useLegalStatus } from "@/components/LegalOnboarding";
 import { act } from "@/lib/act";
@@ -117,7 +117,7 @@ export default function RestaurantPage() {
           <div role="tablist" className="flex rounded-xl bg-subtle p-1 text-sm font-semibold">
             {(["orders", "menu"] as const).map((k) => <button key={k} role="tab" aria-selected={tab === k} data-testid={`rtab-${k}`} onClick={() => setTab(k)} className={`min-h-11 rounded-lg px-4 ${tab === k ? "bg-white shadow-sm" : "text-muted"}`}>{k === "orders" ? tx("Bestellingen", "Orders") : tx("Menu & foto's", "Menu & photos")}</button>)}
           </div>
-          <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>
+          <AlertsBar />
         </div>
         {mode === "supabase" && profile?.role === "restaurant" && <LegalOnboarding st={legal} reload={() => void reloadLegal()} who="restaurant" />}
         {tab === "orders" ? (<>

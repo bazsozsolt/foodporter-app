@@ -184,6 +184,7 @@ export function AlertsToggle() {
   async function ask() {
     beep();
     try { setPerm((await Notification.requestPermission()) as NotifySupport); } catch { setPerm(notifySupport()); }
+    subs.forEach((l) => l());
   }
   return (
     <div className="col-span-2 sm:col-span-1">
@@ -227,4 +228,26 @@ export function CustomerPushCard() {
         : <button data-testid="customer-push-allow" onClick={allow} className="w-full font-semibold text-brand">{tx("Stuur me een melding als mijn eten onderweg is", "Notify me when my food is on the way")}</button>}
     </div>
   );
+}
+
+/** Restaurant: once alerts + sound are on and notifications are granted, the big toggle collapses into one quiet line
+ *  with a settings link. It comes back by itself when sound is turned off or the permission is lost. */
+export function AlertsBar() {
+  const on = useSyncExternalStore((l) => { subs.add(l); return () => { subs.delete(l); }; }, enabled, () => false);
+  const perm = useSyncExternalStore((l) => {
+    subs.add(l); window.addEventListener("focus", l); document.addEventListener("visibilitychange", l);
+    const t = setInterval(l, 5000); // permission can be revoked in browser settings without any event
+    return () => { subs.delete(l); window.removeEventListener("focus", l); document.removeEventListener("visibilitychange", l); clearInterval(t); };
+  }, notifySupport, () => "unsupported" as NotifySupport);
+  const [open, setOpen] = useState(false);
+  if (on && perm === "granted" && !open) {
+    return (
+      <div data-testid="alerts-compact" className="flex items-center gap-1 text-[13px] text-ok">
+        <Bell size={14} aria-hidden /><span className="font-semibold">{tx("Meldingen en geluid aan", "Alerts and sound on")}</span>
+        <button type="button" data-testid="alerts-settings" onClick={() => setOpen(true)} className="min-h-11 px-2 font-semibold text-muted underline">{tx("Instellingen", "Settings")}</button>
+        <TestSoundButton />
+      </div>
+    );
+  }
+  return <div className="grid grid-cols-[1fr_auto] gap-2"><AlertsToggle /><TestSoundButton /></div>;
 }
