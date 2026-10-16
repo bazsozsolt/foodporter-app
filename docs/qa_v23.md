@@ -46,3 +46,6 @@
 - a11y.ui.py: 38/38 page × language combinations with "axe: none" and no missing focus rings, /rider/shifts included.
 - Visual check of the local HEAD screenshots (/tmp/v23shots): white header and red wordmark on all roles, cart sheet above the tab bar, rider main screen compact, Diensten tab active, restaurant KPI line, admin English. 44 px targets are enforced by v22.ui.py (30/30).
 - Note: the admin "Needs attention" list shows test-only "refund failed: already refunded" alerts from the earlier support.ui runs (caused by the old order-picking), plus test SOS tickets. These are test data and can be resolved in the admin.
+## Phase 6: deploy
+- One deploy: gh-pages 9a426646e. Live version.json {"build":"20261016080010"} matches the local build.
+- Affected suites rerun against live: v22.ui 30/30, v13.ui 15/15, support.ui 14/14. Load stayed under 2.
