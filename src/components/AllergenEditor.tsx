@@ -20,7 +20,7 @@ export function AllergenEditor({ itemId, value, english = false }: { itemId: str
     <div className="flex flex-wrap gap-1" data-testid={`allergen-editor-${itemId}`}>
       {ALLERGENS.map(([c]) => (
         <button key={c} type="button" aria-pressed={sel.includes(c)} data-persist onClick={() => void toggle(c)}
-          className={`min-h-8 rounded-full border px-2.5 text-[12px] font-semibold ${sel.includes(c) ? "border-warn bg-gold-soft text-warn" : "border-line bg-white text-muted"}`}>{allergenLabel(c, english || txLang("nl", "en") === "en")}</button>
+          className={`min-h-11 rounded-full border px-2.5 text-[12px] font-semibold ${sel.includes(c) ? "border-warn bg-gold-soft text-warn" : "border-line bg-white text-muted"}`}>{allergenLabel(c, english || txLang("nl", "en") === "en")}</button>
       ))}
     </div>
   );

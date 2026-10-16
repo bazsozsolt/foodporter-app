@@ -45,7 +45,7 @@ export function PauseBusyPanel({ restaurantId }: { restaurantId: string }) {
       <div className="flex flex-wrap gap-2">
         {[0, 10, 20, 30].map((m) => (
           <button key={m} type="button" data-testid={`busy-${m}`} data-persist aria-pressed={busy === m} onClick={() => save(restaurantId, { p_busy: m }, m ? tx(`+${m} min voor nieuwe bestellingen`, `+${m} min for new orders`) : tx("Normale bereidingstijd", "Normal prep time"))}
-            className={`min-h-10 rounded-full px-4 text-sm font-semibold ring-1 ${busy === m ? "bg-ink text-white ring-ink" : "bg-white ring-line"}`}>{m ? `+${m} min` : tx("Normaal", "Normal")}</button>
+            className={`min-h-11 rounded-full px-4 text-sm font-semibold ring-1 ${busy === m ? "bg-ink text-white ring-ink" : "bg-white ring-line"}`}>{m ? `+${m} min` : tx("Normaal", "Normal")}</button>
         ))}
       </div>
       <p className="mt-2 text-[12px] text-muted">{tx("Klanten zien de langere tijd. Tijdens een pauze kun je niet besteld worden.", "Customers see the longer time. While paused, nobody can order.")}</p>
@@ -93,7 +93,7 @@ export function HoursPanel({ restaurantId, english = false }: { restaurantId: st
       <Card className="!p-3" data-testid="closures">
         {closed.length === 0 && <p className="text-[13px] text-muted">{tx("Geen geplande sluitingsdagen.", "No planned closures.")}</p>}
         <div className="flex flex-wrap gap-1.5">{closed.map((c) => (
-          <button key={c} type="button" data-persist className="min-h-9 rounded-full bg-subtle px-3 text-[13px]" aria-label={tx(`Verwijder ${c}`, `Remove ${c}`)} onClick={() => save(restaurantId, { p_closed: closed.filter((x) => x !== c) }, tx("Sluitingsdag verwijderd", "Closure removed"))}>{c} ×</button>
+          <button key={c} type="button" data-persist className="min-h-11 rounded-full bg-subtle px-3 text-[13px]" aria-label={tx(`Verwijder ${c}`, `Remove ${c}`)} onClick={() => save(restaurantId, { p_closed: closed.filter((x) => x !== c) }, tx("Sluitingsdag verwijderd", "Closure removed"))}>{c} ×</button>
         ))}</div>
         <div className="mt-2 flex gap-2">
           <input type="date" data-testid="closure-date" aria-label={tx("Datum", "Date")} className={input} value={day} onChange={(e) => setDay(e.target.value)} />

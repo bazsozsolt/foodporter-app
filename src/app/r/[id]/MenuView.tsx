@@ -48,7 +48,7 @@ export function MenuView({ id }: { id: string }) {
     <>
       <Header />
       <main id="main" className="p-4">
-        <Link href="/" className="inline-flex min-h-9 items-center gap-1 text-sm font-semibold text-muted"><ArrowLeft size={16} aria-hidden />{tx("Alle restaurants", "All restaurants")}</Link>
+        <Link href="/" className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-muted"><ArrowLeft size={16} aria-hidden />{tx("Alle restaurants", "All restaurants")}</Link>
         <Photo src={r.image_url} alt={r.name} emoji={restaurantStyle(r.id).emoji} ratio="16/7" eager className="mt-2.5 rounded-2xl text-3xl" sizes="(max-width: 640px) 100vw, 640px" />
         <Card className="mt-2.5 flex items-center gap-3">
           {r.logo_url && <Photo src={r.logo_url} alt={`${r.name} logo`} ratio="1/1" className="w-14 shrink-0 rounded-full" sizes="56px" />}
@@ -78,7 +78,7 @@ export function MenuView({ id }: { id: string }) {
         <details className="mb-3 rounded-2xl bg-white px-4 py-1 shadow-[var(--shadow-card)] ring-1 ring-black/[.04]" data-testid="allergen-filter">
           <summary className="flex min-h-11 cursor-pointer items-center text-sm font-semibold">{tx("Allergenen filteren", "Filter by allergen")}{avoid.length ? <span className="ml-2 rounded-full bg-ink px-2 text-xs text-white">{avoid.length}</span> : null}</summary>
           <p className="text-[12px] text-muted">{tx("Verberg gerechten met:", "Hide dishes containing:")}</p>
-          <div className="my-2 flex flex-wrap gap-1.5">{ALLERGENS.map(([c, nl, en]) => <button key={c} aria-pressed={avoid.includes(c)} onClick={() => setAvoid(avoid.includes(c) ? avoid.filter((x) => x !== c) : [...avoid, c])} className={`min-h-9 rounded-full border px-3 text-[13px] font-semibold ${avoid.includes(c) ? "border-ink bg-ink text-white" : "border-line bg-white"}`}>{tx(nl, en)}</button>)}</div>
+          <div className="my-2 flex flex-wrap gap-1.5">{ALLERGENS.map(([c, nl, en]) => <button key={c} aria-pressed={avoid.includes(c)} onClick={() => setAvoid(avoid.includes(c) ? avoid.filter((x) => x !== c) : [...avoid, c])} className={`min-h-11 rounded-full border px-3 text-[13px] font-semibold ${avoid.includes(c) ? "border-ink bg-ink text-white" : "border-line bg-white"}`}>{tx(nl, en)}</button>)}</div>
           <p className="mb-2 text-[12px] text-muted">{tx("Allergenen worden door het restaurant opgegeven. Twijfel je of heb je een ernstige allergie? Vraag het restaurant vóór je bestelt.", "Allergens are declared by the restaurant. In doubt or a severe allergy? Ask the restaurant before you order.")}</p>
         </details>
         {avoid.length > 0 && <p className="mb-2 text-[12px] text-muted" data-testid="allergen-hidden">{tx(`${all.length - items.length} gerecht(en) verborgen`, `${all.length - items.length} dish(es) hidden`)}</p>}
@@ -87,9 +87,9 @@ export function MenuView({ id }: { id: string }) {
             <Photo src={m.image_url} alt={m.name} emoji={restaurantStyle(r.id).emoji} className="w-20 shrink-0 rounded-xl text-lg" sizes="80px" />
             <div className="min-w-0 flex-1"><b className="block leading-snug">{m.name}</b><div className="mt-0.5 text-[14px] font-semibold text-ink/80">{eur(m.price_cents)}</div><AllergenInfo allergens={m.allergens} test={m.allergens_test} /></div>
             <div className="flex items-center gap-2.5">
-              <button aria-label={tx("Eén minder", "Remove one")} disabled={!qty[m.id]} className="grid h-10 w-10 place-items-center rounded-full border border-line bg-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) - 1)}><Minus size={16} /></button>
+              <button aria-label={tx("Eén minder", "Remove one")} disabled={!qty[m.id]} className="grid h-11 w-11 place-items-center rounded-full border border-line bg-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) - 1)}><Minus size={16} /></button>
               <b className="w-4 text-center">{qty[m.id] ?? 0}</b>
-              <button aria-label={tx("Eén meer", "Add one")} className="grid h-10 w-10 place-items-center rounded-full bg-brand text-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) + 1)}><Plus size={16} /></button>
+              <button aria-label={tx("Eén meer", "Add one")} className="grid h-11 w-11 place-items-center rounded-full bg-brand text-white disabled:opacity-30" onClick={() => actions.setQty(id, m.id, (qty[m.id] ?? 0) + 1)}><Plus size={16} /></button>
             </div>
           </Card>
         ))}

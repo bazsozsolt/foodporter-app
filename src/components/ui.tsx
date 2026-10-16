@@ -103,7 +103,7 @@ export function Sheet({ open, onClose, title, children }: { open: boolean; onClo
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={onClose}>
       <div role="dialog" aria-modal className="max-h-[90vh] w-full max-w-[420px] overflow-y-auto rounded-t-3xl bg-white p-5 shadow-[var(--shadow-pop)] sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
-        <div className="mb-3 flex items-center justify-between"><h3 className="text-lg font-bold">{title}</h3><button aria-label="Close" onClick={onClose} className="grid h-9 w-9 place-items-center rounded-full bg-subtle"><X size={18} /></button></div>
+        <div className="mb-3 flex items-center justify-between"><h3 className="text-lg font-bold">{title}</h3><button aria-label="Close" onClick={onClose} className="grid h-11 w-11 place-items-center rounded-full bg-subtle"><X size={18} /></button></div>
         {children}
       </div>
     </div>

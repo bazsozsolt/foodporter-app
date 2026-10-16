@@ -64,7 +64,7 @@ export default function CheckoutPage() {
     <>
       <Header />
       <main id="main" className="p-4">
-        <Link href="/cart" className="inline-flex min-h-9 items-center gap-1 text-sm font-semibold text-muted"><ArrowLeft size={16} aria-hidden />{t("Terug naar winkelmand", "Back to cart")}</Link>
+        <Link href="/cart" className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-muted"><ArrowLeft size={16} aria-hidden />{t("Terug naar winkelmand", "Back to cart")}</Link>
         <h1 className="my-3 text-[28px]">{t("Afrekenen", "Checkout")}</h1>
         <div role="radiogroup" aria-label={t("Bezorgen of afhalen", "Delivery or pickup")} className="mb-3 grid grid-cols-2 rounded-xl bg-subtle p-1 text-sm font-semibold" data-testid="fulfilment">
           {([false, true] as const).map((pk) => <button key={String(pk)} type="button" role="radio" aria-checked={pickup === pk} data-testid={pk ? "choose-pickup" : "choose-delivery"} onClick={() => setPickup(pk)} className={`min-h-11 rounded-lg ${pickup === pk ? "bg-white shadow-sm" : "text-muted"}`}>{pk ? t("Afhalen", "Pickup") : t("Bezorgen", "Delivery")}</button>)}

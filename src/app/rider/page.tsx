@@ -135,7 +135,7 @@ export default function RiderPage() {
                 <li key={`${x.kind}-${x.order_id}`} className={`flex items-center gap-2 rounded-xl p-2 text-sm ${i === 0 ? "bg-brand-soft" : "bg-white"}`}>
                   <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink text-xs font-bold text-white">{x.seq}</span>
                   <span className="min-w-0 flex-1"><b>{x.kind === "pickup" ? tx("Ophalen", "Pickup") : tx("Afleveren", "Drop-off")}</b> #{x.order_id} · <span className="text-muted">{x.label}</span></span>
-                  {x.lat != null && <a data-testid="stop-nav" className="inline-flex min-h-9 items-center gap-1 rounded-lg bg-[#1a73e8] px-3 text-xs font-semibold text-white" href={navUrl({ lat: x.lat, lng: x.lng! }, i === 0 ? me : stops[i - 1].lat != null ? { lat: stops[i - 1].lat!, lng: stops[i - 1].lng! } : null)} target="_blank" rel="noreferrer"><Navigation size={13} aria-hidden />{tx("Ga", "Go")}</a>}
+                  {x.lat != null && <a data-testid="stop-nav" className="inline-flex min-h-11 items-center gap-1 rounded-lg bg-[#1a73e8] px-3 text-xs font-semibold text-white" href={navUrl({ lat: x.lat, lng: x.lng! }, i === 0 ? me : stops[i - 1].lat != null ? { lat: stops[i - 1].lat!, lng: stops[i - 1].lng! } : null)} target="_blank" rel="noreferrer"><Navigation size={13} aria-hidden />{tx("Ga", "Go")}</a>}
                 </li>
               ))}
             </ol>

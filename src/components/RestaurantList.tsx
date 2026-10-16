@@ -72,7 +72,7 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
 
   const t = useT();
   const en = useLang() === "en";
-  const chip = (on: boolean) => `min-h-9 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] font-semibold ${on ? "border-ink bg-ink text-white" : "border-line bg-white text-ink"}`;
+  const chip = (on: boolean) => `min-h-11 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] font-semibold ${on ? "border-ink bg-ink text-white" : "border-line bg-white text-ink"}`;
   return (
     <section>
       <div className="relative mb-3"><Search size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden />
@@ -86,7 +86,7 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
       <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-muted">
         <button className={chip(sort === "recommended")} aria-pressed={sort === "recommended"} onClick={() => setSort("recommended")}>{t("Partners eerst", "Partners first")}</button>
         <button className={chip(sort === "distance")} aria-pressed={sort === "distance"} data-testid="sort-distance" onClick={() => (origin ? setSort("distance") : locate())}>{t("Dichtstbij", "Nearest")}{origin ? ` · ${origin.label}` : ""}</button>
-        {!origin && <button className="inline-flex min-h-9 items-center gap-1 font-semibold text-brand" onClick={locate}><LocateFixed size={14} aria-hidden />{t("gebruik mijn locatie", "use my location")}</button>}
+        {!origin && <button className="inline-flex min-h-11 items-center gap-1 font-semibold text-brand" onClick={locate}><LocateFixed size={14} aria-hidden />{t("gebruik mijn locatie", "use my location")}</button>}
       </div>
       {list.length === 0 && <p className="text-sm text-muted">{t("Geen restaurants gevonden voor", "No restaurants match")} “{q}”.</p>}
       {list.slice(0, shown).map(({ r, d }, i) => { const os = openState(r); return (

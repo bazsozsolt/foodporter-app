@@ -240,7 +240,7 @@ function Reports() {
       <div className="no-print mb-3 flex flex-wrap gap-1.5">
         {TABS.map(([k, l]) => (
           <button key={k} onClick={() => router.replace(`/admin/reports?tab=${k}`)}
-            className={`min-h-9 rounded-lg px-3 py-1.5 text-sm font-semibold ${tab === k ? "bg-ink text-white" : "bg-white text-muted ring-1 ring-line"}`}>{l}</button>
+            className={`min-h-11 rounded-lg px-3 py-1.5 text-sm font-semibold ${tab === k ? "bg-ink text-white" : "bg-white text-muted ring-1 ring-line"}`}>{l}</button>
         ))}
       </div>
       <div className="mb-3"><RangePicker value={range} onChange={(r) => { if (r.from > r.to) return toast("From must be before To"); setRange(r); }} /></div>

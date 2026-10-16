@@ -88,7 +88,7 @@ export function Kpi({ label, value, hint }: { label: string; value: ReactNode; h
 
 export function SmallBtn({ children, onClick, tone = "ghost", disabled, type = "button" }: { children: ReactNode; onClick?: () => void; tone?: "ghost" | "brand" | "dark" | "ok" | "danger"; disabled?: boolean; type?: "button" | "submit" }) {
   const t = { ghost: "border border-line bg-white hover:bg-subtle", brand: "bg-brand text-white", dark: "bg-ink text-white", ok: "bg-ok text-white", danger: "bg-[#d92d20] text-white" }[tone];
-  return <button type={type} disabled={disabled} onClick={onClick} className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold disabled:opacity-50 ${t}`}>{children}</button>;
+  return <button type={type} disabled={disabled} onClick={onClick} className={`inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold disabled:opacity-50 ${t}`}>{children}</button>;
 }
 
 export const inputCls = "w-full rounded-lg border border-line bg-white px-3 py-2 text-sm";

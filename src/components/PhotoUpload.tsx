@@ -13,7 +13,7 @@ function Pick({ label, onFile, testid, english = false }: { label: string; onFil
   const tx = pick(english);
   const [busy, setBusy] = useState(false);
   return (
-    <label className={`inline-flex min-h-9 cursor-pointer items-center rounded-lg border border-line bg-white px-3 text-xs font-semibold text-ink ${busy ? "opacity-50" : ""}`}>
+    <label className={`inline-flex min-h-11 cursor-pointer items-center rounded-lg border border-line bg-white px-3 text-xs font-semibold text-ink ${busy ? "opacity-50" : ""}`}>
       {busy ? tx("Uploaden…", "Uploading…") : label}
       <input data-testid={testid} type="file" accept="image/*" className="hidden" disabled={busy}
         onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ""; if (!f) return; setBusy(true); await onFile(f); setBusy(false); }} />

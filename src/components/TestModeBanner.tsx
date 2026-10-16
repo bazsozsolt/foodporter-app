@@ -24,7 +24,7 @@ export function TestModeBanner() {
   return (
     <div data-testid="test-mode-banner" className="relative z-30 flex items-center justify-between gap-2 bg-ink px-3 py-1 text-[11px] text-white/85 print:hidden">
       <span className="flex min-w-0 items-center gap-1.5 truncate"><FlaskConical size={13} className="shrink-0 text-gold" aria-hidden />{path.startsWith("/admin") ? ADMIN_STRIP : t("Testmodus · geen echt geld", "Test mode · no real money")}</span>
-      <button data-testid="demo-menu" aria-expanded={open} onClick={() => setOpen(!open)} className="flex min-h-7 items-center gap-1 rounded-full bg-white/10 px-2.5 font-semibold text-white">
+      <button data-testid="demo-menu" aria-expanded={open} onClick={() => setOpen(!open)} className="flex min-h-11 items-center gap-1 rounded-full bg-white/10 px-2.5 font-semibold text-white">
         Demo <ChevronDown size={13} aria-hidden />
       </button>
       {open && (

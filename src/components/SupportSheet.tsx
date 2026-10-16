@@ -44,7 +44,7 @@ export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role
       <div className="max-h-[92vh] w-full max-w-[420px] overflow-y-auto rounded-t-3xl bg-paper p-4 pb-8" onClick={(e) => e.stopPropagation()}>
         <div className="mb-2 flex items-center justify-between">
           <h2 id="sup-title" className="font-display text-2xl">{tx("Hulp", "Help")}{orderId ? ` · #${orderId}` : ""}</h2>
-          <button onClick={onClose} aria-label={tx("Sluiten", "Close")} className="grid h-9 w-9 place-items-center rounded-full bg-subtle"><X size={18} /></button>
+          <button onClick={onClose} aria-label={tx("Sluiten", "Close")} className="grid h-11 w-11 place-items-center rounded-full bg-subtle"><X size={18} /></button>
         </div>
         {role === "customer" && !cat && (
           <div className="mb-3 space-y-1">

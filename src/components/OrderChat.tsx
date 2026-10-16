@@ -77,7 +77,7 @@ export function OrderChat({ orderId, channel, side, readOnly, title, order }: { 
             <>
               <div className="mt-2 flex flex-wrap gap-1.5" data-testid="chat-quick">
                 {(QUICK[side] ?? []).map(([nl, en]) => (
-                  <button key={nl} disabled={busy} onClick={() => send(tx(nl, en), true)} className="min-h-9 rounded-full border border-line bg-subtle px-3 py-1.5 text-xs font-semibold">{tx(nl, en)}</button>
+                  <button key={nl} disabled={busy} onClick={() => send(tx(nl, en), true)} className="min-h-11 rounded-full border border-line bg-subtle px-3 py-1.5 text-xs font-semibold">{tx(nl, en)}</button>
                 ))}
               </div>
               <form className="mt-2 flex gap-2" onSubmit={(e) => { e.preventDefault(); void send(text); }}>

@@ -26,7 +26,7 @@ export function ReferralCard() {
       <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand"><Gift size={20} aria-hidden /></span>
       <span className="min-w-0 flex-1 text-sm"><b className="block">{tx("Nodig een vriend uit", "Invite a friend")}: <span data-testid="my-referral-code" className="font-mono">{code}</span></b>
         <span className="text-[13px] text-muted">{tx("Je vriend krijgt €5 korting, jij €5 tegoed.", "Your friend gets €5 off, you get €5 credit.")} {tx("Jouw tegoed", "Your credit")}: <b data-testid="my-credit">{eur(credit)}</b></span></span>
-      <button type="button" onClick={share} className="min-h-10 rounded-xl border border-line px-3 text-sm font-semibold">{tx("Delen", "Share")}</button>
+      <button type="button" onClick={share} className="min-h-11 rounded-xl border border-line px-3 text-sm font-semibold">{tx("Delen", "Share")}</button>
     </Card>
   );
 }
