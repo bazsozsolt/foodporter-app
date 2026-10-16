@@ -52,3 +52,4 @@
 ## v23.1: restaurant alert banner collapses (approved by Zsolt)
 - New `AlertsBar` on /restaurant. When alerts and sound are on and notification permission is granted, the yellow toggle becomes one quiet line, "🔔 Meldingen en geluid aan · Instellingen · Test geluid". The full toggle comes back when sound is off or the permission is lost (re-checked on focus, visibilitychange and every 5 s). Rider screen unchanged.
 - v22.ui.py: 36/36 (6 new alert checks: off, collapse, NL text, settings link, permission lost, sound off). sound 8/8, notify 8/8, a11y 38/38 clean, parity 749 pairs with 0 problems.
+- Deployed: gh-pages 5d53bb5e7, live version.json {"build":"20261016090621"} verified.
