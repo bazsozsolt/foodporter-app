@@ -32,3 +32,13 @@
   - support.ui: 14/14 after a test fix. It had picked an already refunded order, so it hit the refund cap ("niets meer terug te betalen"), which is correct behaviour. It now picks an unrefunded order (never 1043/1046) and polls for the message.
   - v13: 15/15 after a test fix. Rider SIMR1 still has 2 old test orders assigned from yesterday (1731/1732), so the test opened the wrong chat. Job cards now have a `job-<id>` testid and the test targets its own order.
   - push.ui 4/6: headless Chromium has no push service. Known environment limit, not part of run-all; push.e2e passes 24/24 on the server side.
+## Phase 4: crawler (full mode = mobile + desktop × NL + EN, one role at a time, local build of HEAD)
+- anon: 60 visits, 154 clicks, 0 findings.
+- customer: 68 visits, 222 clicks, 0 findings.
+- rider (including /rider/shifts): 16 visits, 48 clicks, 0 findings.
+- restaurant: 8 visits, 24 clicks, 0 findings.
+- admin: 64 visits, 328 clicks, 0 findings.
+- admin-as-roles: 40 visits, 169 clicks, 0 findings.
+- Admin was cut off twice by outside interruptions (an external kill of the run and the browser), not by the crawler; the third run was clean.
+- Load peaked at 6.9 for a moment after the restaurant role, then dropped back below 1.5 before the next role started.
+- Stale test orders 1731/1732 (SIMR1, is_test): confirmed cancelled. Riders have no active test jobs left. 1043/1046 untouched.
