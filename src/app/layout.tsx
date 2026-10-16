@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   icons: { icon: [{ url: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/icons/icon-192.png`, sizes: "192x192", type: "image/png" }], apple: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/icons/apple-touch-icon.png` },
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#9b0708" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#ffffff" };
 
 const SUPA = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/$/, "");
 const CSP = [

@@ -15,18 +15,18 @@ export const tok = {
 /** Slim brand header: mark + wordmark on red, an optional one-line subtitle and an optional right-hand slot. */
 export function Header({ subtitle, tagline, right }: { subtitle?: ReactNode; tagline?: ReactNode; right?: ReactNode }) {
   return (
-    <header className="print:hidden bg-brand px-4 pb-3 pt-3 text-white">
+    <header className="print:hidden border-b-[3px] border-gold bg-white px-4 pb-3 pt-3 text-ink">
       <div className="flex items-center justify-between gap-3">
         <Link href="/" className="flex min-w-0 items-center gap-2" aria-label="Food Porter, home" data-testid="brand-logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`${BASE}/brand/mark-badge.png`} alt="" width={36} height={36} className="h-9 w-9 shrink-0 rounded-full bg-white p-0.5" />
+          <img src={`${BASE}/brand/mark-badge.png`} alt="" width={36} height={36} className="h-9 w-9 shrink-0" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`${BASE}/brand/wordmark.png`} alt="FOODPORTER" width={120} height={20} className="h-5 w-auto" />
+          <img src={`${BASE}/brand/wordmark-red.png`} alt="FOODPORTER" width={120} height={20} className="h-5 w-auto" />
         </Link>
-        <div className="flex items-center gap-2">{right}<LangToggle /></div>
+        <div className="flex items-center gap-2">{right}<LangToggle tone="light" /></div>
       </div>
-      {tagline && <p className="mt-2 text-[14px] font-semibold leading-snug text-gold" data-testid="tagline">{tagline}</p>}
-      {subtitle && <p className="mt-1 truncate text-[13px] text-white/85">{subtitle}</p>}
+      {tagline && <p className="mt-2 text-[14px] font-semibold leading-snug text-brand" data-testid="tagline">{tagline}</p>}
+      {subtitle && <p className="mt-1 truncate text-[13px] text-muted">{subtitle}</p>}
     </header>
   );
 }
