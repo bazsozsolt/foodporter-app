@@ -12,6 +12,8 @@ import type { Order, Restaurant } from "@/lib/types";
 import { Photo } from "@/components/Photo";
 import { nextLabel, openState } from "@/lib/hours";
 import { useLang } from "@/lib/i18n";
+import { useFavourites } from "@/lib/favourites";
+import { FavButton } from "@/components/FavButton";
 
 const PAGE = 20;
 const km = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
@@ -25,6 +27,8 @@ const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u
 export function RestaurantList({ restaurants, orders, profileId, fee }: { restaurants: Restaurant[]; orders: Order[]; profileId?: string; fee: number }) {
   const [q, setQ] = useState("");
   const [cuisine, setCuisine] = useState<string | null>(null);
+  const favs = useFavourites();
+  const [favOnly, setFavOnly] = useState(false);
   const [sortPref, setSort] = useState<"recommended" | "distance" | null>(null);
   const [page, setPage] = useState({ key: "", n: PAGE });
   const [here, setHere] = useState<{ lat: number; lng: number; label: string } | null>(null);
@@ -45,14 +49,14 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
 
   const list = useMemo(() => {
     const t = norm(q.trim());
-    const rows = active.filter((r) => (!cuisine || r.cuisine === cuisine) && (!t || norm(`${r.name} ${r.cuisine ?? ""} ${r.area ?? ""}`).includes(t)))
+    const rows = active.filter((r) => (!favOnly || favs.includes(r.id)) && (!cuisine || r.cuisine === cuisine) && (!t || norm(`${r.name} ${r.cuisine ?? ""} ${r.area ?? ""}`).includes(t)))
       .map((r) => ({ r, d: origin && r.lat != null && r.lng != null ? km(origin, { lat: Number(r.lat), lng: Number(r.lng) }) : null }));
     rows.sort((a, b) => Number(Boolean(a.r.is_test)) - Number(Boolean(b.r.is_test))
       || (sort === "distance" ? (a.d ?? 1e9) - (b.d ?? 1e9) : (b.r.rating_count ?? 0) - (a.r.rating_count ?? 0) || a.r.name.localeCompare(b.r.name)));
     return rows;
-  }, [active, q, cuisine, sort, origin]);
+  }, [active, q, cuisine, sort, origin, favOnly, favs]);
 
-  const key = `${q}|${cuisine}|${sort}`;
+  const key = `${q}|${cuisine}|${sort}|${favOnly}`;
   const shown = page.key === key ? page.n : PAGE;
   const more = () => setPage((p) => ({ key, n: (p.key === key ? p.n : PAGE) + PAGE }));
   useEffect(() => {
@@ -79,7 +83,8 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
       <input data-testid="restaurant-search" aria-label={t("Zoeken", "Search")} className="w-full rounded-xl border border-line bg-white py-3 pl-10 pr-3 text-[15px] shadow-[var(--shadow-card)]" placeholder={t("Zoek restaurant of gerecht", "Search restaurants or dishes")}
         value={q} onChange={(e) => setQ(e.target.value)} /></div>
       <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1" data-testid="cuisine-chips">
-        <button className={chip(!cuisine)} aria-pressed={!cuisine} onClick={() => setCuisine(null)}>{t("Alles", "All")}</button>
+        <button className={chip(!cuisine && !favOnly)} aria-pressed={!cuisine && !favOnly} onClick={() => { setCuisine(null); setFavOnly(false); }}>{t("Alles", "All")}</button>
+        {favs.length > 0 && <button data-testid="fav-chip" className={chip(favOnly)} aria-pressed={favOnly} onClick={() => setFavOnly(!favOnly)}>♥ {t("Favorieten", "Favourites")} ({favs.length})</button>}
         {chips.map((c) => <button key={c} aria-pressed={cuisine === c} className={chip(cuisine === c)} onClick={() => setCuisine(cuisine === c ? null : c)}>{cuisineLabel(c)}</button>)}
       </div>
       <SectionHeader action={<span data-testid="result-count" className="text-xs text-muted">{list.length} restaurant{list.length === 1 ? "" : "s"}</span>}>{t("Restaurants bij jou in de buurt", "Restaurants near you")}</SectionHeader>
@@ -90,7 +95,8 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
       </div>
       {list.length === 0 && <p className="text-sm text-muted">{t("Geen restaurants gevonden voor", "No restaurants match")} “{q}”.</p>}
       {list.slice(0, shown).map(({ r, d }, i) => { const os = openState(r); return (
-        <Link key={r.id} href={`/r?id=${r.id}`} className="mb-4 block overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-card)] ring-1 ring-black/[.04]">
+        <div key={r.id} className="relative mb-4"><FavButton id={r.id} name={r.name} className="absolute right-2 top-2 z-10" />
+        <Link href={`/r?id=${r.id}`} className="block overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-card)] ring-1 ring-black/[.04]">
             <Photo src={r.image_url} alt={r.name} emoji={restaurantStyle(r.id).emoji} ratio="16/7" className="w-full text-2xl" sizes="(max-width: 420px) 100vw, 420px" eager={i < 2} />
             <div className="p-3.5">
               <div className="flex items-start justify-between gap-2"><h3 className="truncate text-[16px] font-bold">{r.name}</h3>{(r.rating_count ?? 0) > 0 && <span className="flex shrink-0 items-center gap-1 text-[13px] font-semibold"><Star size={14} className="fill-gold text-gold" aria-hidden />{Number(r.rating_avg).toFixed(1)} <span className="font-normal text-muted">({r.rating_count})</span></span>}</div>
@@ -99,7 +105,7 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
                 {r.is_test ? <Badge tone="warn" className="!font-medium" ><span data-testid="test-label">{t("Testdata · geen partner", "Test data · not a partner")}</span></Badge>
                 : <Badge tone="ok"><span data-testid="partner-label">{t("Pilotpartner", "Pilot partner")}</span></Badge>}</div>
             </div>
-        </Link>
+        </Link></div>
       ); })}
       {shown < list.length && (
         <div ref={sentinel} className="py-2 text-center">

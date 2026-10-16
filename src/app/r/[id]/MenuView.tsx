@@ -19,6 +19,7 @@ import { useState } from "react";
 import { DAYS_EN, DAYS_NL, nextLabel, openState, type Hours } from "@/lib/hours";
 import { useLang } from "@/lib/i18n";
 import { CartSummary } from "@/components/CartSummary";
+import { FavButton } from "@/components/FavButton";
 
 export function MenuView({ id }: { id: string }) {
   const { cart, restaurants, menuItems, ready, signedIn } = useStore();
@@ -52,7 +53,7 @@ export function MenuView({ id }: { id: string }) {
         <Photo src={r.image_url} alt={r.name} emoji={restaurantStyle(r.id).emoji} ratio="16/7" eager className="mt-2.5 rounded-2xl text-3xl" sizes="(max-width: 640px) 100vw, 640px" />
         <Card className="mt-2.5 flex items-center gap-3">
           {r.logo_url && <Photo src={r.logo_url} alt={`${r.name} logo`} ratio="1/1" className="w-14 shrink-0 rounded-full" sizes="56px" />}
-          <div className="min-w-0"><h1 className="text-[28px] leading-none">{r.name}</h1><div className="mt-1 flex flex-wrap items-center gap-1.5 text-[13px] text-muted">{cuisineLabel(r.cuisine)} <Badge><Clock size={12} aria-hidden />~{r.avg_prep_minutes + (r.busy_extra_minutes ?? 0)} {tx("min bereiding", "min prep")}</Badge>{(r.busy_extra_minutes ?? 0) > 0 && <Badge tone="warn">{tx(`Druk · +${r.busy_extra_minutes} min`, `Busy · +${r.busy_extra_minutes} min`)}</Badge>}</div>{r.address && <div className="mt-0.5 text-[12px] text-muted">{r.address}</div>}{r.is_test && <div className="mt-1 text-[12px] text-muted" data-testid="test-label">🧪 {tx("Testrestaurant (geen partner) · voorbeeldmenu en -prijzen", "Test restaurant (not a partner) · example menu and prices")}</div>}</div>
+          <div className="min-w-0 flex-1"><div className="flex items-start justify-between gap-2"><h1 className="text-[28px] leading-none">{r.name}</h1><FavButton id={r.id} name={r.name} className="-mt-1 shrink-0 !shadow-none ring-1 ring-line" /></div><div className="mt-1 flex flex-wrap items-center gap-1.5 text-[13px] text-muted">{cuisineLabel(r.cuisine)} <Badge><Clock size={12} aria-hidden />~{r.avg_prep_minutes + (r.busy_extra_minutes ?? 0)} {tx("min bereiding", "min prep")}</Badge>{(r.busy_extra_minutes ?? 0) > 0 && <Badge tone="warn">{tx(`Druk · +${r.busy_extra_minutes} min`, `Busy · +${r.busy_extra_minutes} min`)}</Badge>}</div>{r.address && <div className="mt-0.5 text-[12px] text-muted">{r.address}</div>}{r.is_test && <div className="mt-1 text-[12px] text-muted" data-testid="test-label">🧪 {tx("Testrestaurant (geen partner) · voorbeeldmenu en -prijzen", "Test restaurant (not a partner) · example menu and prices")}</div>}</div>
         </Card>
         {!os.open && (
           <div data-testid="closed-banner" role="status" className="mb-3 rounded-2xl bg-gold-soft p-3 text-[14px] text-warn">
