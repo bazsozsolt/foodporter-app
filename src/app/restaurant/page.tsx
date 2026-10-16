@@ -21,6 +21,7 @@ import { useOrderLocation } from "@/lib/location";
 import { OrderChat } from "@/components/OrderChat";
 import { useRiderInfo } from "@/lib/orders";
 import { AllergenEditor } from "@/components/AllergenEditor";
+import { SoldOutPanel } from "@/components/SoldOutPanel";
 import { SectionHeader } from "@/components/ui";
 import { ChefHat, CircleCheck, Inbox, Users } from "lucide-react";
 
@@ -140,7 +141,7 @@ export default function RestaurantPage() {
           </div>
         )}
         </>) : (
-          profile?.restaurant_id ? <><HoursPanel restaurantId={profile.restaurant_id} /><RestaurantPhotos restaurantId={profile.restaurant_id} /><MenuAllergens restaurantId={profile.restaurant_id} /></> : <Empty icon={<ChefHat size={24} />}>{tx("Geen restaurant gekoppeld aan dit account.", "No restaurant linked to this account.")}</Empty>
+          profile?.restaurant_id ? <><SoldOutPanel restaurantId={profile.restaurant_id} /><HoursPanel restaurantId={profile.restaurant_id} /><RestaurantPhotos restaurantId={profile.restaurant_id} /><MenuAllergens restaurantId={profile.restaurant_id} /></> : <Empty icon={<ChefHat size={24} />}>{tx("Geen restaurant gekoppeld aan dit account.", "No restaurant linked to this account.")}</Empty>
         )}
         <div className="mt-6 flex flex-wrap gap-2"><HelpButton role="restaurant" label={t("Contact met support", "Contact support")} /></div>
         </RoleGate>
