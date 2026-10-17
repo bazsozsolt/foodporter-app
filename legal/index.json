@@ -11,10 +11,10 @@
  {
   "id": "rider_employment",
   "title": "Arbeidsovereenkomst bezorger (direct dienstverband)",
-  "version": "0.4",
+  "version": "0.5",
   "audience": "rider",
   "file": "02-rider-arbeidsovereenkomst.md",
-  "pdf": "rider_employment-v0.4.pdf",
+  "pdf": "rider_employment-v0.5.pdf",
   "html": "rider_employment.html"
  },
  {
@@ -29,10 +29,10 @@
  {
   "id": "customer_terms",
   "title": "Algemene voorwaarden klanten",
-  "version": "0.2",
+  "version": "0.3",
   "audience": "customer",
   "file": "04-algemene-voorwaarden-klant.md",
-  "pdf": "customer_terms-v0.2.pdf",
+  "pdf": "customer_terms-v0.3.pdf",
   "html": "customer_terms.html"
  },
  {
@@ -65,10 +65,10 @@
  {
   "id": "platform_transparency",
   "title": "Transparantieverklaring algoritmisch management (richtlijn 2024/2831)",
-  "version": "0.4",
+  "version": "0.5",
   "audience": "rider",
   "file": "08-transparantie-algoritme.md",
-  "pdf": "platform_transparency-v0.4.pdf",
+  "pdf": "platform_transparency-v0.5.pdf",
   "html": "platform_transparency.html"
  },
  {
