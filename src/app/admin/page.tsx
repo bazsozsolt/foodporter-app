@@ -6,7 +6,7 @@ import { act } from "@/lib/act";
 import { fmtDateTime, preset, sb, toIso, useAdminQuery, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
 
-interface Overview { today: Row; month: Row; pay: { restaurants: Row[]; riders: Row[] }; incidents: number; pending: number; recent: Row[]; alerts: Row[]; todayRows: Row[] }
+interface Overview { today: Row; month: Row; pay: { restaurants: Row[]; riders: Row[]; platform?: Row }; incidents: number; pending: number; recent: Row[]; alerts: Row[]; todayRows: Row[] }
 
 export default function AdminOverview() {
   const q = useAdminQuery<Overview>(async () => {
@@ -75,6 +75,7 @@ export default function AdminOverview() {
         <Kpi label="Bid within 3 min" value={pct(d?.month.pct_bid_3min)} />
         <Kpi label="On time" value={pct(d?.month.pct_on_time)} />
         <Kpi label="Commission earned" value={eur(commission)} />
+        <Kpi label="Company revenue" value={eur(Number(d?.pay.platform?.company_revenue_cents ?? 0))} hint="commission + delivery fees − rider bonuses + service fees" />
         <Kpi label="Owed to restaurants" value={eur(owedR)} />
         <Kpi label="Owed to riders" value={eur(owedD)} />
         <Kpi label="Open incidents" value={String(d?.incidents ?? "…")} />

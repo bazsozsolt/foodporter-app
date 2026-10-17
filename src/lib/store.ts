@@ -17,7 +17,7 @@ export interface Settings {
   // v26 business model (financial plan): display only, the server recomputes everything
   delivery_fee_bands?: FeeBand[]; service_fee_on_pickup?: boolean; fee_distance_basis?: "restaurant" | "centre";
   commission_delivery_pct?: number; commission_intro_pct?: number; commission_intro_months?: number; commission_pickup_pct?: number;
-  default_contract_kind?: "min_max" | "on_call"; minmax_default_min_h?: number; minmax_default_max_h?: number;
+  default_contract_kind?: "min_max" | "on_call"; minmax_default_min_h?: number; minmax_default_max_h?: number; rider_bonus_cents?: number;
 }
 export type PriceBreakdown = { subtotal_cents: number; delivery_fee_cents: number; fee_km: number | null; service_fee_cents: number; tip_cents: number; discount_cents: number; credit_cents: number; total_cents: number };
 /** The server total differs from what the customer saw: no payment was created; show the new breakdown and ask again. */
@@ -102,7 +102,7 @@ function mapOrder(o: Row): Order {
     address: o.address as string, phone: (o.phone as string) ?? "", prep_minutes: (o.prep_minutes as number) ?? null,
     ready_at: (o.ready_at as string) ?? null, bids, created_at: o.created_at as string, delivered_at: (o.delivered_at as string) ?? null,
     accepted_at: (o.accepted_at as string) ?? null, paid_at: (o.paid_at as string) ?? null,
-    lat: (o.lat as number) ?? null, lng: (o.lng as number) ?? null, distance_km: o.distance_km == null ? null : Number(o.distance_km), commission_cents: o.commission_cents == null ? null : Number(o.commission_cents), commission_pct: o.commission_pct == null ? null : Number(o.commission_pct), fee_km: o.fee_km == null ? null : Number(o.fee_km),
+    lat: (o.lat as number) ?? null, lng: (o.lng as number) ?? null, distance_km: o.distance_km == null ? null : Number(o.distance_km), commission_cents: o.commission_cents == null ? null : Number(o.commission_cents), commission_pct: o.commission_pct == null ? null : Number(o.commission_pct), fee_km: o.fee_km == null ? null : Number(o.fee_km), rider_bonus_cents: o.rider_bonus_cents == null ? null : Number(o.rider_bonus_cents),
     cancel_reason: (o.cancel_reason as string) ?? null, refund_status: (o.refund_status as string) ?? null,
     refund_cents: (o.refund_cents as number) ?? null, renotified_at: (o.renotified_at as string) ?? null,
     assigned_at: (o.assigned_at as string) ?? null, bid_window_closes_at: (o.bid_window_closes_at as string) ?? null,
@@ -124,7 +124,7 @@ async function loadCatalog() {
       }
       return { data: all };
     })(),
-    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds, max_active_orders, service_fee_cents, delivery_fee_bands, service_fee_on_pickup, fee_distance_basis, commission_delivery_pct, commission_intro_pct, commission_intro_months, commission_pickup_pct, default_contract_kind, minmax_default_min_h, minmax_default_max_h").maybeSingle(),
+    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds, max_active_orders, service_fee_cents, delivery_fee_bands, service_fee_on_pickup, fee_distance_basis, commission_delivery_pct, commission_intro_pct, commission_intro_months, commission_pickup_pct, default_contract_kind, minmax_default_min_h, minmax_default_max_h, rider_bonus_cents").maybeSingle(),
   ]);
   set((s) => ({
     ...s, restaurants: (r.data as Restaurant[]) ?? [], menuItems: (m.data as MenuItem[]) ?? [],
@@ -354,7 +354,7 @@ export const actions = {
       return {
         ...s,
         orders: s.orders.map((x) => x.id === id ? { ...x, status: "delivered" as OrderStatus, delivered_at: new Date().toISOString() } : x),
-        earnings: [...s.earnings, { id: `e-${id}`, rider_id: "rider-demo", order_id: id, restaurant_name: (r?.name ?? "").replace(" (example)", ""), amount_cents: o.delivery_fee_cents, earned_at: new Date().toISOString(), payout_id: null }],
+        earnings: [...s.earnings, { id: `e-${id}`, rider_id: "rider-demo", order_id: id, restaurant_name: (r?.name ?? "").replace(" (example)", ""), amount_cents: (o.fulfilment === "pickup" ? 0 : s.settings.rider_bonus_cents ?? 50) + (o.tip_cents ?? 0), earned_at: new Date().toISOString(), payout_id: null }],
       };
     });
   },

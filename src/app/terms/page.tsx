@@ -11,7 +11,7 @@ export default function Terms() {
       <p>Food Porter brengt je in contact met zelfstandige Tilburgse restaurants en lokale riders. Het restaurant bereidt je eten en is verantwoordelijk voor de kwaliteit, ingrediënten en allergeneninformatie. Riders (in dienst bij Food Porter) bieden een bezorgtijd en bezorgen je bestelling.</p>
       <h2>2. Bestellen &amp; prijzen</h2>
       <ul>
-        <li>Getoonde prijzen zijn inclusief btw. Bij bezorging betaal je bezorgkosten op basis van de afstand (nu €2,49 tot 3 km, €3,49 tot 5 km, €4,99 tot 10 km); die gaan als bezorgbonus naar de rider, bovenop het uurloon. Daarnaast betaal je €0,99 servicekosten per bezorgbestelling. Bij afhalen betaal je geen bezorg- of servicekosten. Bij het afrekenen zie je alle kosten apart; je betaalt nooit meer dan het getoonde totaal.</li>
+        <li>Getoonde prijzen zijn inclusief btw. Bij bezorging betaal je bezorgkosten op basis van de afstand (nu €2,49 tot 3 km, €3,49 tot 5 km, €4,99 tot 10 km). Bezorg- en servicekosten gaan naar Food Porter; de rider is in loondienst en krijgt uurloon plus een vaste bonus per bezorging. Fooi gaat 100% naar de rider. Daarnaast betaal je €0,99 servicekosten per bezorgbestelling. Bij afhalen betaal je geen bezorg- of servicekosten. Bij het afrekenen zie je alle kosten apart; je betaalt nooit meer dan het getoonde totaal.</li>
         <li>We bezorgen alleen binnen de pilotzone (nu 5 km rond het centrum van Tilburg, later maximaal 10 km; de precieze straal zie je bij het afrekenen). Naar adressen buiten de zone kun je niet bestellen.</li>
         <li>Je bestelling is bevestigd zodra de betaling via Mollie (iDEAL of kaart) gelukt is.</li>
       </ul>
@@ -39,7 +39,7 @@ export default function Terms() {
       <p>Food Porter connects you with independent Tilburg restaurants and local riders. The restaurant prepares your food and is responsible for its quality, ingredients and allergen information. Riders (employed by Food Porter) bid a delivery time and deliver your order.</p>
       <h2>2. Ordering &amp; prices</h2>
       <ul>
-        <li>Prices shown include VAT. Delivery orders have a distance-based delivery fee (currently €2.49 up to 3 km, €3.49 up to 5 km, €4.99 up to 10 km); it goes to the rider as a delivery bonus on top of their hourly wage. A €0.99 service fee applies per delivery order. Pickup has no delivery or service fee. Checkout shows every cost separately; you never pay more than the total shown.</li>
+        <li>Prices shown include VAT. Delivery orders have a distance-based delivery fee (currently €2.49 up to 3 km, €3.49 up to 5 km, €4.99 up to 10 km). Delivery and service fees go to Food Porter; the rider is an employee with an hourly wage plus a fixed bonus per delivery. Tips go 100% to the rider. A €0.99 service fee applies per delivery order. Pickup has no delivery or service fee. Checkout shows every cost separately; you never pay more than the total shown.</li>
         <li>We deliver only within the pilot zone (currently 5 km around central Tilburg, at most 10 km later; the exact radius is shown at checkout). Addresses outside the zone can’t be ordered to.</li>
         <li>Your order is confirmed when payment succeeds via Mollie (iDEAL or card).</li>
       </ul>

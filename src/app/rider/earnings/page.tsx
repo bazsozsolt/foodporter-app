@@ -8,7 +8,8 @@ import { useStore } from "@/lib/store";
 import { WeekPay } from "@/components/RiderShifts";
 
 export default function EarningsPage() {
-  const { earnings, profile, mode } = useStore();
+  const { earnings, profile, mode, settings } = useStore();
+  const bonus = eur(settings.rider_bonus_cents ?? 50);
   const unpaid = earnings.filter((e) => !e.payout_id);
   const total = unpaid.reduce((a, e) => a + e.amount_cents, 0);
   return (
@@ -27,7 +28,7 @@ export default function EarningsPage() {
               <span className="text-right"><b>{eur(e.amount_cents)}</b>{(e.tip_cents ?? 0) > 0 && <div data-testid="earning-tip" className="text-[12px] text-ok">{tx(`incl. ${eur(e.tip_cents ?? 0)} fooi`, `incl. ${eur(e.tip_cents ?? 0)} tip`)}</div>}</span>
             </div>
           ))}
-          <p className="mt-3 text-[13px] text-muted">{tx("Je krijgt uurloon (minimaal het cao- en minimumloon voor je leeftijd) voor alle ingeklokte uren en je garantie-uren, plus cao-toeslagen. Per bezorging komt de bezorgbonus erbovenop, plus 100% van elke fooi en 8% vakantiegeld. Uitbetaling via je loonstrook.", "You get an hourly wage (at least the CAO and minimum wage for your age) for every clocked-in hour and your guaranteed hours, plus CAO surcharges. Each delivery adds the delivery bonus on top, plus 100% of every tip and 8% holiday pay. Paid via your payslip.")}</p>
+          <p className="mt-3 text-[13px] text-muted">{tx(`Je krijgt uurloon (minimaal het cao- en minimumloon voor je leeftijd) voor alle ingeklokte uren en je garantie-uren, plus cao-toeslagen. Per bezorging komt een vaste bezorgbonus van ${bonus} erbovenop (bezorgingen van bestellingen betaald vóór 17 oktober 2026 houden de oude bonus), plus 100% van elke fooi en 8% vakantiegeld. Uitbetaling via je loonstrook.`, `You get an hourly wage (at least the CAO and minimum wage for your age) for every clocked-in hour and your guaranteed hours, plus CAO surcharges. Each delivery adds a fixed delivery bonus of ${bonus} (orders paid before 17 October 2026 keep the old bonus), plus 100% of every tip and 8% holiday pay. Paid via your payslip.`)}</p>
         </Card>
         </RoleGate>
       </main>

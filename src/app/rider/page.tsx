@@ -49,7 +49,7 @@ function BidCard({ o, activeCount }: { o: Order; activeCount: number }) {
   const r = restaurants.find((x) => x.id === o.restaurant_id);
   return (
     <Card>
-      <div className="flex items-center justify-between"><b className="text-[16px]">{r?.name}</b><Pill tone="ok">{eur(o.delivery_fee_cents)}</Pill></div>
+      <div className="flex items-center justify-between"><b className="text-[16px]">{r?.name}</b><Pill tone="ok"><span data-testid="rider-bonus">{tx("Bezorgbonus", "Delivery bonus")} {eur(o.rider_bonus_cents ?? o.delivery_fee_cents)}{o.tip_cents ? ` + ${tx("fooi", "tip")} ${eur(o.tip_cents)}` : ""}</span></Pill></div>
       <div className="my-1.5 text-[13px] text-muted">{tx("Klaar over ~", "Ready in ~")}{prep} min{o.ready_at ? ` (~${hhmm(new Date(o.ready_at))})` : ""} · {o.address}</div>
       {r?.lat && o.lat ? <div data-testid="dropoff" className="flex items-center gap-1.5 text-[13px] font-semibold"><Bike size={14} aria-hidden />{distanceKm({ lat: r.lat, lng: r.lng! }, { lat: o.lat, lng: o.lng! }).toFixed(1)} km {tx("naar de klant vanaf", "drop-off from")} {r.area}</div> : null}
       {o.renotified_at && <div className="mt-1 text-[13px] font-semibold text-brand"><AlarmClock size={14} className="mr-1 inline" aria-hidden />{tx("Wacht nog op een rider — bied nu", "Still waiting for a rider — bid now")}</div>}

@@ -108,7 +108,7 @@ function Detail({ id }: { id: number }) {
     // abuse signal: how many tickets / approved refunds this sender had in the last 90 days
     const since = new Date(Date.now() - 90 * 86400000).toISOString();
     const hist = (await c.from("support_tickets").select("id, refund_status, refund_cents").eq("created_by", t.created_by).gte("created_at", since)).data ?? [];
-    const o2 = t.order_id ? (await c.from("orders").select("lat, lng, address, subtotal_cents, delivery_fee_cents, refund_cents, mollie_payment_id, leave_at_door, delivery_photo_path").eq("id", t.order_id).maybeSingle()).data : null;
+    const o2 = t.order_id ? (await c.from("orders").select("lat, lng, address, subtotal_cents, delivery_fee_cents, service_fee_cents, tip_cents, discount_cents, credit_cents, refund_cents, mollie_payment_id, leave_at_door, delivery_photo_path").eq("id", t.order_id).maybeSingle()).data : null;
     return { data: { who: who.data, fact: ord.data, events: ev.data ?? [], order: o2, hist: { tickets: hist.length, refunds: hist.filter((h) => ['refunded', 'pending', 'queued', 'simulated'].includes(String(h.refund_status))).length, cents: hist.reduce((a, h) => a + Number(h.refund_cents ?? 0), 0) } }, error: null };
   }, [t?.id, t?.order_id]);
   if (!t) return <Panel title={`Ticket #${id}`}><p className="text-sm text-muted">Loading…</p></Panel>;
@@ -180,7 +180,7 @@ function Detail({ id }: { id: number }) {
         {t.order_id && (
           <Panel title="Refund">
             <p className="text-sm">Requested: <b>{t.refund_requested_cents ? `€${(t.refund_requested_cents / 100).toFixed(2)}` : "—"}</b>{t.refund_status ? ` · ${t.refund_status}` : ""}{t.refund_cents ? ` · refunded €${(t.refund_cents / 100).toFixed(2)}` : ""}</p>
-            {o && <p className="text-xs text-muted">Order total €{((Number(o.subtotal_cents) + Number(o.delivery_fee_cents)) / 100).toFixed(2)}{o.refund_cents ? ` · already refunded €${(Number(o.refund_cents) / 100).toFixed(2)}` : ""}</p>}
+            {o && <p className="text-xs text-muted">Order total €{((Number(o.subtotal_cents) + Number(o.delivery_fee_cents) + Number(o.service_fee_cents ?? 0) + Number(o.tip_cents ?? 0) - Number(o.discount_cents ?? 0) - Number(o.credit_cents ?? 0)) / 100).toFixed(2)}{o.refund_cents ? ` · already refunded €${(Number(o.refund_cents) / 100).toFixed(2)}` : ""}</p>}
             {!["processing", "refunded", "pending", "queued", "simulated"].includes(t.refund_status ?? "") && (
               <div className="mt-2 flex gap-2"><Field label="Amount (€)"><input data-testid="refund-amount" className={inputCls} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder={t.refund_requested_cents ? (t.refund_requested_cents / 100).toFixed(2) : "0.00"} /></Field>
                 <div className="self-end"><SmallBtn tone="danger" onClick={refund}>Refund via Mollie</SmallBtn></div></div>

@@ -16,7 +16,7 @@ export interface Order {
   address: string; phone: string; prep_minutes: number | null; ready_at: string | null;
   group_order_id?: string | null;
   bids: Bid[]; created_at: string; delivered_at: string | null; accepted_at?: string | null;
-  paid_at?: string | null; lat?: number | null; lng?: number | null; distance_km?: number | null; commission_cents?: number | null; commission_pct?: number | null; fee_km?: number | null;
+  paid_at?: string | null; lat?: number | null; lng?: number | null; distance_km?: number | null; commission_cents?: number | null; commission_pct?: number | null; fee_km?: number | null; rider_bonus_cents?: number | null;
   cancel_reason?: string | null; refund_status?: string | null; refund_cents?: number | null; renotified_at?: string | null;
   assigned_at?: string | null; bid_window_closes_at?: string | null; rider_id?: string | null;
   stacked?: boolean;

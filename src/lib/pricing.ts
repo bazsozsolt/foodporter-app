@@ -7,6 +7,7 @@ export const PLAN_DEFAULTS = {
   delivery_fee_bands: [{ max_km: 3, fee_cents: 249 }, { max_km: 5, fee_cents: 349 }, { max_km: 10, fee_cents: 499 }] as FeeBand[],
   service_fee_cents: 99, service_fee_on_pickup: false, zone_radius_km: 5, fee_distance_basis: "restaurant" as "restaurant" | "centre",
   default_contract_kind: "min_max" as "min_max" | "on_call", minmax_default_min_h: 8, minmax_default_max_h: 16,
+  rider_bonus_cents: 50, // v27: fixed per-delivery rider bonus; the rest of the delivery fee + service fee is Food Porter revenue
 };
 
 /** Same rule as fp_delivery_fee: first band with max_km >= km, else the last band. */
