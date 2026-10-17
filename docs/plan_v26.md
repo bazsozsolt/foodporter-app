@@ -31,3 +31,18 @@ min-max contracts default (3 h shifts), 0-hours banned from 1 Jan 2028; tips 100
   payment, stored = charged, 20%/10% stored at payment, staff/customer can't rewrite, pickup no fees, 5 km zone refusal, historic 12% kept,
   payout report rates) and scripts/e2e/v26.ui.py (26 checks + screenshots). rider_hr default min-max 8–16 h verified in a rolled-back SQL test.
 - employment.e2e: pinned TZ to Europe/Amsterdam (box is in Bucharest; shift-day maths must match the DB).
+## Phase 5 – full recheck + deploy (17 Oct 2026, EEST)
+- Static: tsc 0, eslint 0, NL/EN parity 782 pairs 0 problems (admin-only adminBusiness.tsx added to the parity skip list like adminFinance).
+- Advisors: same as the v25 baseline (security-definer RPC list, leaked-password protection needs Pro); nothing new from v26.
+- E2E, sequential: core 38, group 47, tips 10, promo 34, pickup 15, cross 66, support 40, chat 46, chat-admin 10, legal 45, v24 10,
+  audit 42, erase 10, proof 16, hours 18, compliance 13, employment 36 (max-shift branch exercised after 12:05 Amsterdam), photos 13,
+  push 24, v20 35, v26 36, reports 14 – all green.
+- UI (local, then live where relevant): v22 36, v24 17, support 14, legal 14 (live), manual-assign 4, v19 11, v20 14, admin-smoke 25,
+  notify 8, sound 8, push 7/7 (--chrome; the FCM delivery step is skipped in this sandbox), v13 15, v26 26 (local + live), a11y 38 pages 0 issues,
+  crawler --quick one role at a time: 0 findings (anon/customer/rider/restaurant/admin/admin-as-roles).
+- Box after the reboot: reinstalled the Playwright headless shell, recreated /tmp/fp_photo.png, the /tmp/ghp2 gh-pages worktree and the gh binary.
+- Deployed once: build 20261017100021, live version.json = out/version.json; live legal HTML sha256 = DB.
+- Feedback 8: resolved_at set after the deploy (10:04 UTC = 13:04 EEST). Note: the admin crawl had already clicked "Done" at 12:48 EEST;
+  the crawler now treats Done/Reopen as do-not-click.
+- Screens: /workspace/foodporter/screens_v26/ (checkout-breakdown-nl/en, checkout-pickup-nl/en, restaurant-figures-nl/en,
+  admin-business-settings, admin-restaurant-payouts), retaken on the live site.
