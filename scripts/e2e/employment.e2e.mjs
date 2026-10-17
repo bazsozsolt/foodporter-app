@@ -1,4 +1,5 @@
 // v19 direct employment: clock-in/out via online, availability, WML table in settings, weekly indicative pay,
+process.env.TZ = "Europe/Amsterdam"; // shift-day maths must match the DB (Amsterdam days), whatever the box timezone
 // payroll export RPC, Working Hours Act gates + alerts. Test accounts only (SIMR3); cleans up its sessions.
 import { client, login, ok, summary } from "./common.mjs";
 const anon = client();
