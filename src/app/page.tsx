@@ -1,4 +1,5 @@
 "use client";
+import { feeRange } from "@/lib/pricing";
 import Link from "next/link";
 import { Card, Header } from "@/components/ui";
 import { Bike, ChevronRight, Info } from "lucide-react";
@@ -13,7 +14,8 @@ import { useT } from "@/lib/i18n";
 
 export default function Home() {
   const { orders, signedIn, restaurants, ready, profile } = useStore();
-  const DELIVERY_FEE_CENTS = useStore().settings.delivery_fee_cents;
+  const st = useStore().settings;
+  const { min: DELIVERY_FEE_CENTS, max: FEE_MAX } = feeRange(st.delivery_fee_bands);
   // Show the signed-in customer's own latest open order (admins can see everyone's orders, so filter by owner)
   const t = useT();
   const active = [...orders].reverse().find((o) => (!profile || o.customer_id === profile.id) && !["delivered", "cancelled", "payment_failed"].includes(o.status));
@@ -38,7 +40,7 @@ export default function Home() {
         {!restaurants.length && <div className="min-h-[100vh]" />}
         <Link href="/welcome" className="mt-4 flex items-center gap-3 rounded-2xl bg-white p-4 text-sm shadow-[var(--shadow-card)] ring-1 ring-black/[.04]">
           <Info size={20} className="shrink-0 text-brand" aria-hidden />
-          <span className="flex-1"><b className="block">{t("Zo werkt Food Porter", "How Food Porter works")}</b><span className="text-[13px] text-muted">{t(`Riders bieden hun bezorgtijd · vaste bezorgkosten ${eur(DELIVERY_FEE_CENTS)}, 100% voor de rider`, `Riders bid their delivery time · flat ${eur(DELIVERY_FEE_CENTS)} fee, 100% to the rider`)}</span></span>
+          <span className="flex-1"><b className="block">{t("Zo werkt Food Porter", "How Food Porter works")}</b><span className="text-[13px] text-muted">{t(`Riders bieden hun bezorgtijd · bezorgkosten ${eur(DELIVERY_FEE_CENTS)}–${eur(FEE_MAX)} op afstand, 100% voor de rider`, `Riders bid their delivery time · ${eur(DELIVERY_FEE_CENTS)}–${eur(FEE_MAX)} delivery fee by distance, 100% to the rider`)}</span></span>
           <ChevronRight size={18} className="text-muted" aria-hidden />
         </Link>
         <Footer />

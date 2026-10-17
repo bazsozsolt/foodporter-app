@@ -20,7 +20,7 @@ export function WelcomeView() {
         <h1 className="mt-3 text-[28px] font-extrabold leading-tight">{tx("Sneller je avondeten bezorgd in Tilburg, door lokale riders die zelf hun tempo kiezen.", "Faster dinner delivery in Tilburg, driven by local riders who choose their own speed.")}</h1>
         <p className="mt-3 text-white/90">{tx("Bestel bij de favoriete zelfstandige keukens van de stad. Riders bieden de bezorgtijd die ze echt halen, en jij ziet die voordat je eten vertrekt.", "Order from the city’s favourite independent kitchens. Riders bid the delivery time they can really make, and you see it before your food leaves.")}</p>
         <Link href="/" className="mt-5 inline-block rounded-2xl bg-white px-5 py-3 font-extrabold text-brand shadow">{tx("Nu bestellen →", "Order now →")}</Link>
-        <p className="mt-3 text-xs text-white/80">{tx("Tilburg en omgeving · tot 15 km van het centrum", "Tilburg and surroundings · up to 15 km from the centre")}</p>
+        <p className="mt-3 text-xs text-white/80">{tx("Tilburg · tot 5 km van het centrum (straks tot 10 km)", "Tilburg · up to 5 km from the centre (soon up to 10 km)")}</p>
       </section>
       <section className="space-y-2.5 p-4">
         <h2 className="mt-2 text-lg font-bold">{tx("Zo werkt het", "How it works")}</h2>
@@ -36,7 +36,7 @@ export function WelcomeView() {
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <b className="flex items-center gap-2"><Store size={18} className="text-brand" aria-hidden />{tx("Partnerrestaurants", "Partner restaurants")}</b>
-          <p className="mt-1 text-sm text-muted">{tx("Geen aanmeldkosten en een simpele commissie van 10–15%. Stel per bestelling je eigen bereidingstijd in; wij regelen riders en betalingen.", "No listing fee and a simple 10–15% commission. Set your own prep time per order; we handle riders and payments.")}</p>
+          <p className="mt-1 text-sm text-muted">{tx("Geen aanmeldkosten. Commissie: 25% op bezorgde bestellingen, 20% in je eerste 3 maanden, 10% op afhaalbestellingen. Stel per bestelling je eigen bereidingstijd in; wij regelen riders en betalingen.", "No listing fee. Commission: 25% on delivered orders, 20% in your first 3 months, 10% on pickup orders. Set your own prep time per order; we handle riders and payments.")}</p>
           <a href="mailto:partners@foodporter.nl" className="mt-2 inline-block text-sm font-bold text-brand underline">{tx("Word partner →", "Become a partner →")}</a>
         </div>
       </section>

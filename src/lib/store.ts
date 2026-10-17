@@ -4,6 +4,8 @@ import { ORDER_COLS } from "./orders";
 // Data layer. With NEXT_PUBLIC_SUPABASE_* set it uses Supabase (auth, queries, realtime);
 // otherwise it falls back to mock data in localStorage so the app always runs.
 import { useSyncExternalStore } from "react";
+import { PLAN_DEFAULTS, type FeeBand } from "./pricing";
+import { eur } from "./format";
 import { DELIVERY_FEE_CENTS, menuItems as mockMenu, restaurants as mockRestaurants, seedEarnings } from "./mock-data";
 import { getSupabase, hasSupabase } from "./supabase";
 import type { Bid, Earning, MenuItem, Order, OrderLine, OrderStatus, Restaurant, Role } from "./types";
@@ -12,6 +14,15 @@ export interface Profile { id: string; email: string | null; role: Role; full_na
 export interface Settings {
   delivery_fee_cents: number; zone_radius_km: number; bid_window_seconds: number;
   restaurant_accept_minutes: number; zone_center_lat: number; zone_center_lng: number; auction_seconds: number; max_active_orders: number; service_fee_cents?: number;
+  // v26 business model (financial plan): display only, the server recomputes everything
+  delivery_fee_bands?: FeeBand[]; service_fee_on_pickup?: boolean; fee_distance_basis?: "restaurant" | "centre";
+  commission_delivery_pct?: number; commission_intro_pct?: number; commission_intro_months?: number; commission_pickup_pct?: number;
+  default_contract_kind?: "min_max" | "on_call"; minmax_default_min_h?: number; minmax_default_max_h?: number;
+}
+export type PriceBreakdown = { subtotal_cents: number; delivery_fee_cents: number; fee_km: number | null; service_fee_cents: number; tip_cents: number; discount_cents: number; credit_cents: number; total_cents: number };
+/** The server total differs from what the customer saw: no payment was created; show the new breakdown and ask again. */
+export class PriceChangedError extends Error {
+  constructor(public breakdown: PriceBreakdown) { super(tx(`De prijs is bijgewerkt: het totaal is nu ${eur(breakdown.total_cents)}. Controleer het overzicht en betaal opnieuw.`, `The price was updated: the total is now ${eur(breakdown.total_cents)}. Check the breakdown and pay again.`)); }
 }
 export interface Geo { lat: number; lng: number; label: string; distance_km: number }
 export interface State {
@@ -30,7 +41,7 @@ export interface State {
 const KEY = "foodporter-mock-v2";
 const CART_KEY = "foodporter-cart-v1";
 const initial: State = {
-  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: 15, bid_window_seconds: 180, auction_seconds: 60, max_active_orders: 2, restaurant_accept_minutes: 5, zone_center_lat: 51.5576, zone_center_lng: 5.0913, service_fee_cents: 0 },
+  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: PLAN_DEFAULTS.zone_radius_km, delivery_fee_bands: PLAN_DEFAULTS.delivery_fee_bands, fee_distance_basis: PLAN_DEFAULTS.fee_distance_basis, service_fee_on_pickup: false, bid_window_seconds: 180, auction_seconds: 60, max_active_orders: 2, restaurant_accept_minutes: 5, zone_center_lat: 51.5576, zone_center_lng: 5.0913, service_fee_cents: PLAN_DEFAULTS.service_fee_cents },
   mode: hasSupabase ? "supabase" : "mock", ready: !hasSupabase, signedIn: null, profile: null,
   restaurants: hasSupabase ? [] : mockRestaurants, menuItems: hasSupabase ? [] : mockMenu,
   cart: { restaurant_id: null, qty: {} }, orders: [], earnings: hasSupabase ? [] : seedEarnings,
@@ -91,7 +102,7 @@ function mapOrder(o: Row): Order {
     address: o.address as string, phone: (o.phone as string) ?? "", prep_minutes: (o.prep_minutes as number) ?? null,
     ready_at: (o.ready_at as string) ?? null, bids, created_at: o.created_at as string, delivered_at: (o.delivered_at as string) ?? null,
     accepted_at: (o.accepted_at as string) ?? null, paid_at: (o.paid_at as string) ?? null,
-    lat: (o.lat as number) ?? null, lng: (o.lng as number) ?? null, distance_km: o.distance_km == null ? null : Number(o.distance_km),
+    lat: (o.lat as number) ?? null, lng: (o.lng as number) ?? null, distance_km: o.distance_km == null ? null : Number(o.distance_km), commission_cents: o.commission_cents == null ? null : Number(o.commission_cents), commission_pct: o.commission_pct == null ? null : Number(o.commission_pct), fee_km: o.fee_km == null ? null : Number(o.fee_km),
     cancel_reason: (o.cancel_reason as string) ?? null, refund_status: (o.refund_status as string) ?? null,
     refund_cents: (o.refund_cents as number) ?? null, renotified_at: (o.renotified_at as string) ?? null,
     assigned_at: (o.assigned_at as string) ?? null, bid_window_closes_at: (o.bid_window_closes_at as string) ?? null,
@@ -113,7 +124,7 @@ async function loadCatalog() {
       }
       return { data: all };
     })(),
-    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds, max_active_orders, service_fee_cents").maybeSingle(),
+    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds, max_active_orders, service_fee_cents, delivery_fee_bands, service_fee_on_pickup, fee_distance_basis, commission_delivery_pct, commission_intro_pct, commission_intro_months, commission_pickup_pct, default_contract_kind, minmax_default_min_h, minmax_default_max_h").maybeSingle(),
   ]);
   set((s) => ({
     ...s, restaurants: (r.data as Restaurant[]) ?? [], menuItems: (m.data as MenuItem[]) ?? [],
@@ -254,13 +265,15 @@ export const actions = {
   },
 
   /** Supabase mode: create a Mollie payment server-side and return the checkout URL. */
-  async startPayment(orderId: string, tipCents = 0, extra: { promo_code?: string; use_credit?: boolean; scheduled_for?: string | null; leave_at_door?: boolean } = {}): Promise<string> {
+  async startPayment(orderId: string, tipCents = 0, extra: { promo_code?: string; use_credit?: boolean; scheduled_for?: string | null; leave_at_door?: boolean; expected_total_cents?: number } = {}): Promise<string> {
     const sb = getSupabase();
     if (!sb) throw new Error("Payments need Supabase");
     const { data, error } = await sb.functions.invoke("create-payment", { body: { order_id: Number(orderId), tip_cents: tipCents, ...extra } });
     if (error) {
       let msg = error.message;
-      try { const ctx = (error as { context?: Response }).context; if (ctx) msg = (await ctx.json()).error ?? msg; } catch { /* ignore */ }
+      let body: { error?: string; code?: string; breakdown?: PriceBreakdown } = {};
+      try { const ctx = (error as { context?: Response }).context; if (ctx) { body = await ctx.json(); msg = body.error ?? msg; } } catch { /* ignore */ }
+      if (body.code === "price_changed" && body.breakdown) throw new PriceChangedError(body.breakdown);
       throw new Error(msg);
     }
     if (!data?.checkoutUrl) throw new Error("No checkout URL returned");

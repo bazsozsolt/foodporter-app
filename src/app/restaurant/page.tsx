@@ -1,4 +1,5 @@
 "use client";
+import { commissionRate, introUntil } from "@/lib/pricing";
 import { PauseBusyPanel, HoursPanel } from "@/components/AvailabilityPanel";
 import { RestaurantPhotos } from "@/components/PhotoUpload";
 import { useT , tx } from "@/lib/i18n";
@@ -90,8 +91,12 @@ function OrderCard({ o }: { o: Order }) {
 
 export default function RestaurantPage() {
   const t = useT();
-  const { orders, profile, mode, restaurants } = useStore();
-  const pct = Number(restaurants.find((r) => r.id === profile?.restaurant_id)?.commission_pct ?? 12);
+  const { orders, profile, mode, restaurants, settings } = useStore();
+  const myRest = restaurants.find((r) => r.id === profile?.restaurant_id);
+  // v26: current rates (25% delivered, 20% founding rate for the first months, 10% pickup); figures use the rate stored on each order.
+  const pctDelivery = myRest ? commissionRate(settings, myRest) : (settings.commission_delivery_pct ?? 25);
+  const pctPickup = myRest ? commissionRate(settings, myRest, true) : (settings.commission_pickup_pct ?? 10);
+  const introEnd = myRest && myRest.commission_pct == null ? introUntil(settings.commission_intro_months ?? 3, myRest) : null;
   const mine = mode === "supabase" && profile?.role === "restaurant" ? orders.filter((o) => o.restaurant_id === profile.restaurant_id) : orders;
   const [nowMs, setNowMs] = useState(() => Date.now());
   useEffect(() => { const i = setInterval(() => setNowMs(Date.now()), 30000); return () => clearInterval(i); }, []);
@@ -101,6 +106,7 @@ export default function RestaurantPage() {
   useOrderAlerts(open.filter((o) => o.status === "placed").map((o) => o.id), tx("Food Porter · nieuwe bestelling", "Food Porter · new order"), alertBody, "/restaurant/");
   const handed = mine.filter((o) => ["ready", "picked_up", "delivered"].includes(o.status));
   const revenue = handed.reduce((a, o) => a + o.subtotal_cents, 0);
+  const commission = handed.reduce((a, o) => a + (o.commission_cents ?? Math.round((o.subtotal_cents * commissionRate(settings, myRest ?? {}, o.fulfilment === "pickup")) / 100)), 0);
   const [tab, setTab] = useState<"orders" | "menu">("orders");
   const cols: { key: string; title: string; icon: React.ReactNode; rows: Order[] }[] = [
     { key: "new", title: tx("Nieuw", "New"), icon: <Inbox size={16} aria-hidden />, rows: open.filter((o) => o.status === "placed") },
@@ -123,7 +129,8 @@ export default function RestaurantPage() {
         {mode === "supabase" && profile?.role === "restaurant" && <LegalOnboarding st={legal} reload={() => void reloadLegal()} who="restaurant" />}
         {tab === "orders" ? (<>
         {profile?.restaurant_id && <PauseBusyPanel restaurantId={profile.restaurant_id} />}
-        <p data-testid="kpi-line" className="mb-3 px-1 text-[13px] text-muted"><b className="text-ink">{handed.length}</b> {tx("overgedragen", "handed over")} · <b className="text-ink">{eur(revenue)}</b> {tx("omzet", "revenue")} · <b className="text-ink">{eur(Math.round((revenue * pct) / 100))}</b> {tx(`commissie ${pct}%`, `commission ${pct}%`)}</p>
+        <p data-testid="kpi-line" className="mb-3 px-1 text-[13px] text-muted"><b className="text-ink">{handed.length}</b> {tx("overgedragen", "handed over")} · <b className="text-ink">{eur(revenue)}</b> {tx("omzet", "revenue")} · <b className="text-ink">{eur(commission)}</b> {tx("commissie", "commission")} · <b className="text-ink">{eur(revenue - commission)}</b> {tx("voor jou", "for you")}</p>
+        <p data-testid="commission-rates" className="-mt-2 mb-3 px-1 text-[12px] text-muted">{tx(`Commissie nu: ${pctDelivery}% op bezorgde bestellingen, ${pctPickup}% op afhalen`, `Commission now: ${pctDelivery}% on delivered orders, ${pctPickup}% on pickup`)}{introEnd && new Date() < introEnd ? tx(` · startpartnertarief tot ${introEnd.toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })}, daarna ${settings.commission_delivery_pct ?? 25}%`, ` · founding-partner rate until ${introEnd.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })}, then ${settings.commission_delivery_pct ?? 25}%`) : ""}.</p>
         {scheduledLater.length > 0 && (
           <section data-testid="col-scheduled" className="mb-4 rounded-2xl bg-subtle/70 p-2">
             <h2 className="mb-2 px-1 !font-sans !text-[13px] font-bold uppercase tracking-wide text-muted">{tx("Gepland", "Scheduled")} <span className="rounded-full bg-white px-2 text-ink">{scheduledLater.length}</span></h2>

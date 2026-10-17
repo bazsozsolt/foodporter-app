@@ -99,7 +99,7 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
         <button className={chip(sort === "distance")} aria-pressed={sort === "distance"} data-testid="sort-distance" onClick={() => (origin ? setSort("distance") : locate())}>{t("Dichtstbij", "Nearest")}{origin ? ` · ${origin.label}` : ""}</button>
         <label className="inline-flex min-h-11 items-center gap-1 rounded-full border border-line bg-white px-3 text-[13px] font-semibold text-ink">{t("Zonder", "Without")}
           <select data-testid="home-allergen" aria-label={t("Restaurants met gerechten zonder dit allergeen", "Restaurants with dishes free of this allergen")} value={without} onChange={(e) => setWithout(e.target.value)} className="min-h-11 bg-transparent font-semibold">
-            <option value="">{t("geen filter", "no filter")}</option>{ALLERGENS.map(([c, nl, en2]) => <option key={c} value={c}>{en ? en2 : nl}</option>)}
+            <option value="">{t("… (kies)", "… (choose)")}</option>{ALLERGENS.map(([c, nl, en2]) => <option key={c} value={c}>{en ? en2 : nl}</option>)}
           </select></label>
         {!origin && <button className="inline-flex min-h-11 items-center gap-1 font-semibold text-brand" onClick={locate}><LocateFixed size={14} aria-hidden />{t("gebruik mijn locatie", "use my location")}</button>}
       </div>
@@ -111,7 +111,7 @@ export function RestaurantList({ restaurants, orders, profileId, fee }: { restau
             <div className="p-3.5">
               <div className="flex items-start justify-between gap-2"><h3 className="truncate text-[16px] font-bold">{r.name}</h3>{(r.rating_count ?? 0) > 0 && <span className="flex shrink-0 items-center gap-1 text-[13px] font-semibold"><Star size={14} className="fill-gold text-gold" aria-hidden />{Number(r.rating_avg).toFixed(1)} <span className="font-normal text-muted">({r.rating_count})</span></span>}</div>
               <div className="text-[13px] text-muted">{cuisineLabel(r.cuisine)} · {r.area}{d != null ? ` · ${d.toFixed(1)} km` : ""}</div>
-              <div className="mt-2 flex flex-wrap items-center gap-1.5">{!os.open && <Badge tone="warn"><span data-testid="closed-label">{os.reason === "paused" ? t("Even gepauzeerd", "Paused") : t("Gesloten", "Closed")} · {nextLabel(os, en)}</span></Badge>}<Badge><Clock size={12} aria-hidden />~{r.avg_prep_minutes + (r.busy_extra_minutes ?? 0) + 12} min</Badge>{(r.busy_extra_minutes ?? 0) > 0 && <Badge tone="warn"><span data-testid="busy-label">{t("Druk", "Busy")}</span></Badge>}<Badge>{eur(fee)} {t("bezorging", "delivery")}</Badge>
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">{!os.open && <Badge tone="warn"><span data-testid="closed-label">{os.reason === "paused" ? t("Even gepauzeerd", "Paused") : t("Gesloten", "Closed")} · {nextLabel(os, en)}</span></Badge>}<Badge><Clock size={12} aria-hidden />~{r.avg_prep_minutes + (r.busy_extra_minutes ?? 0) + 12} min</Badge>{(r.busy_extra_minutes ?? 0) > 0 && <Badge tone="warn"><span data-testid="busy-label">{t("Druk", "Busy")}</span></Badge>}<Badge>{t(`bezorging vanaf ${eur(fee)}`, `delivery from ${eur(fee)}`)}</Badge>
                 {r.is_test ? <Badge tone="warn" className="!font-medium" ><span data-testid="test-label">{t("Testdata · geen partner", "Test data · not a partner")}</span></Badge>
                 : <Badge tone="ok"><span data-testid="partner-label">{t("Pilotpartner", "Pilot partner")}</span></Badge>}</div>
             </div>

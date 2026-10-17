@@ -1,5 +1,6 @@
 // POST { order_id } with the customer's Supabase JWT -> { checkoutUrl }
-// The amount is computed server-side from menu_items prices + delivery fee + service fee + tip; the minimum order is enforced here.
+// The amount is computed server-side from menu_items prices + distance-based delivery fee + service fee + tip; the minimum order is enforced here.
+// v26: optional expected_total_cents = the total the customer saw; if the server total differs, no payment is created (409 price_changed + breakdown).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -48,8 +49,8 @@ Deno.serve(async (req) => {
   const { data: { user } } = await userClient.auth.getUser();
   if (!user) return json({ error: "not signed in" }, 401);
 
-  let orderId: number; let tip = 0; let promo = ""; let useCredit = false; let door: boolean | null = null; let schedRaw: string | null = null;
-  try { const b = await req.json(); orderId = Number(b.order_id); tip = Number(b.tip_cents ?? 0); promo = String(b.promo_code ?? "").slice(0, 20); useCredit = b.use_credit === true; schedRaw = b.scheduled_for ? String(b.scheduled_for) : null; door = b.leave_at_door === true ? true : b.leave_at_door === false ? false : null; } catch { return json({ error: "bad request" }, 400); }
+  let orderId: number; let tip = 0; let promo = ""; let useCredit = false; let door: boolean | null = null; let schedRaw: string | null = null; let expected: number | null = null;
+  try { const b = await req.json(); orderId = Number(b.order_id); tip = Number(b.tip_cents ?? 0); promo = String(b.promo_code ?? "").slice(0, 20); useCredit = b.use_credit === true; schedRaw = b.scheduled_for ? String(b.scheduled_for) : null; door = b.leave_at_door === true ? true : b.leave_at_door === false ? false : null; expected = b.expected_total_cents == null ? null : Number(b.expected_total_cents); } catch { return json({ error: "bad request" }, 400); }
   // Tip: whole cents, €0–€20, 100% to the rider (credited on delivery)
   if (!Number.isInteger(tip) || tip < 0 || tip > 2000) return json({ error: "Tip must be between €0 and €20.", code: "tip" }, 422);
   if (!Number.isInteger(orderId)) return json({ error: "order_id required" }, 400);
@@ -70,7 +71,7 @@ Deno.serve(async (req) => {
   if (items.some((i) => !price.has(i.menu_item_id))) return json({ error: "an item is no longer available" }, 409);
   const subtotal = items.reduce((a, i) => a + i.qty * price.get(i.menu_item_id)!, 0);
   // Minimum order per restaurant (food subtotal, before fees)
-  const { data: rest } = await admin.from("restaurants").select("min_order_cents").eq("id", order.restaurant_id).maybeSingle();
+  const { data: rest } = await admin.from("restaurants").select("min_order_cents, lat, lng").eq("id", order.restaurant_id).maybeSingle();
   const minOrder = Number(rest?.min_order_cents ?? 0);
   if (subtotal < minOrder) return json({ error: `Minimum order at this restaurant is €${(minOrder / 100).toFixed(2)} (food only).`, code: "min_order" }, 422);
 
@@ -92,20 +93,27 @@ Deno.serve(async (req) => {
   }
 
   // Delivery zone: geocode the address server-side (PDOK Locatieserver, free NL geocoder) and check the radius.
-  const { data: s } = await admin.from("settings").select("zone_radius_km, zone_center_lat, zone_center_lng, delivery_fee_cents, service_fee_cents").maybeSingle();
+  const { data: s } = await admin.from("settings").select("zone_radius_km, zone_center_lat, zone_center_lng, service_fee_cents, service_fee_on_pickup, fee_distance_basis").maybeSingle();
+  if (!s) return json({ error: "settings unavailable" }, 503);
   const pickup = order.fulfilment === "pickup";
   // Pickup (afhalen, v17 P5): no delivery fee and no address/zone check
-  const fee = pickup ? 0 : Math.min(500, Math.max(0, Number(s?.delivery_fee_cents ?? order.delivery_fee_cents)));
+  let fee = 0; let feeKm: number | null = null;
   if (pickup && tip > 0) return json({ error: "Pickup orders have no rider to tip.", code: "tip" }, 422);
   if (!pickup) {
     const geo = await geocode(String(order.address ?? ""));
     if (!geo) return json({ error: "We couldn't find that address. Please pick it from the suggestions (street + number, Tilburg)." }, 422);
-    const radius = Number(s?.zone_radius_km ?? 3);
-    const dist = distanceKm(Number(s?.zone_center_lat ?? 51.5576), Number(s?.zone_center_lng ?? 5.0913), geo.lat, geo.lng);
-    await admin.from("orders").update({ lat: geo.lat, lng: geo.lng, distance_km: Math.round(dist * 100) / 100 }).eq("id", order.id);
-    if (dist > radius) return json({ error: `Sorry, ${geo.label} is ${dist.toFixed(1)} km from the centre. During the pilot we deliver within ${radius} km of central Tilburg.` }, 422);
+    const radius = Math.min(10, Math.max(5, Number(s.zone_radius_km ?? 5)));
+    const dist = distanceKm(Number(s.zone_center_lat ?? 51.5576), Number(s.zone_center_lng ?? 5.0913), geo.lat, geo.lng);
+    // Fee band distance (v26): restaurant -> customer (straight line), or the zone-centre distance when configured / no restaurant location.
+    const fromRest = s.fee_distance_basis !== "centre" && rest?.lat != null && rest?.lng != null;
+    feeKm = Math.round((fromRest ? distanceKm(Number(rest!.lat), Number(rest!.lng), geo.lat, geo.lng) : dist) * 100) / 100;
+    await admin.from("orders").update({ lat: geo.lat, lng: geo.lng, distance_km: Math.round(dist * 100) / 100, fee_km: feeKm }).eq("id", order.id);
+    if (dist > radius) return json({ error: `Sorry, ${geo.label} is ${dist.toFixed(1)} km from the centre. During the pilot we deliver within ${radius} km of central Tilburg.`, code: "zone" }, 422);
+    const { data: f, error: fe } = await admin.rpc("fp_delivery_fee", { p_km: feeKm });
+    if (fe || !Number.isInteger(f)) return json({ error: "could not compute the delivery fee" }, 500);
+    fee = Math.min(999, Math.max(100, Number(f)));
   }
-  const service = Math.min(300, Math.max(0, Number(s?.service_fee_cents ?? 0)));
+  const service = pickup && !s.service_fee_on_pickup ? 0 : Math.min(300, Math.max(0, Number(s.service_fee_cents ?? 0)));
   // Promo / referral code and credit (v17 P6), validated in the database
   const { data: q, error: qe } = await admin.rpc("fp_quote_discount", { p_customer: user.id, p_subtotal: subtotal, p_code: promo, p_use_credit: useCredit, p_order: order.id });
   if (qe) return json({ error: "could not check the code" }, 500);
@@ -115,6 +123,8 @@ Deno.serve(async (req) => {
   const credit = Math.max(0, Math.min(subtotal - discount, subtotal + fee + service + tip - discount - 100, Number(q?.credit_cents ?? 0)));
   const total = subtotal + fee + service + tip - discount - credit;
   if (total < 100 || total > 50000) return json({ error: "order total out of range" }, 400);
+  const breakdown = { subtotal_cents: subtotal, delivery_fee_cents: fee, fee_km: feeKm, service_fee_cents: service, tip_cents: tip, discount_cents: discount, credit_cents: credit, total_cents: total };
+  if (expected !== null && expected !== total) return json({ error: "The price was updated. Please check the new total.", code: "price_changed", breakdown }, 409);
 
   const res = await fetch("https://api.mollie.com/v2/payments", {
     method: "POST",
@@ -137,5 +147,5 @@ Deno.serve(async (req) => {
     scheduled_for: scheduled ? scheduled.toISOString() : null, release_at: releaseAt, status: "awaiting_payment", ...(door !== null && !pickup ? { leave_at_door: door } : {}),
   }).eq("id", order.id);
 
-  return json({ checkoutUrl: payment._links?.checkout?.href, paymentId: payment.id, testmode: payment.mode === "test", amount_cents: total });
+  return json({ checkoutUrl: payment._links?.checkout?.href, paymentId: payment.id, testmode: payment.mode === "test", amount_cents: total, breakdown });
 });

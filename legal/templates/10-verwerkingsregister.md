@@ -1,7 +1,7 @@
 ---
 id: processing_register
 title: Register van verwerkingsactiviteiten (art. 30 AVG)
-version: 0.3
+version: 0.4
 audience: internal
 ---
 # Verwerkingsregister
@@ -17,11 +17,11 @@ audience: internal
 | 4b | Oproeprooster en contractvorm | bezorgers (werknemers) | contractvorm, min/max-uren, startdatum, referentiedagen, oproepen, annuleringen, weigeringen | art. 7:628a BW, loon | wettelijk, overeenkomst | admin, payrollprovider (export) | 7 jr | RLS; bezorger alleen eigen |
 | 4c | Loonadministratie (extern) | bezorgers (werknemers) | wekelijkse uren-/looncijfers uit de app; BSN, loonheffingskorting, ID-kopie en loonstroken alleen bij de provider | loonbetaling, loonheffing, pensioen | wettelijk, overeenkomst | {{PAYROLL_PROVIDER}} (verwerker), Belastingdienst, Pensioenfonds Vervoer | 7 jr (fiscaal); ID-kopie 5 jr na einde dienstverband | verwerkersovereenkomst; geen BSN in de app |
 | 5 | Afleverfoto | bezorger, klant(adres) | foto deur | bewijs | overeenkomst | klant, admin | 30 dagen | private bucket, signed URL |
-| 6 | Support en chat | iedereen | berichten, foto's | klachtafhandeling | overeenkomst | admin | 2 jr | RLS |
+| 6 | Support en chat | iedereen | berichten, foto's | klachtafhandeling | overeenkomst | admin | support: 2 jr na sluiten ticket; orderchat: 6 mnd na afronding bestelling (nachtelijke automatische verwijdering) | RLS |
 | 7 | Contractacceptatie | bezorgers, restaurants | versie, tijd, IP, user-agent | bewijs akkoord | GB | admin | relatie + 5 jr | append-only log |
 | 8 | DAC7 | restaurants | NAW, TIN, IBAN, omzet | rapportage | wettelijk | Belastingdienst | 10 jr | admin-only |
 | 9 | Push en SMS | klanten, bezorgers | push-endpoint, telefoon | meldingen | toestemming / overeenkomst | FCM/APNs/autopush, SMS-provider | tot afmelding | service-role only |
 | 10 | Accountstatus en deactivatie | bezorgers, restaurants | reden, besluit | menselijk besluit, bezwaar | GB | admin | relatie + 2 jr | append-only |
 
 ---
-**English summary.** An Art. 30 GDPR record of processing for 10 processing activities (accounts, payments, onboarding, GPS, photo proof, support, contract e-sign, DAC7, push/SMS, account status), with legal basis, recipients, retention and security per activity.
+**English summary.** An Art. 30 GDPR record of processing for 10 processing activities (accounts, payments, onboarding, GPS, photo proof, support, contract e-sign, DAC7, push/SMS, account status), with legal basis, recipients, retention and security per activity. v0.4: support tickets 2 years after closing, order chat 6 months after completion, both purged nightly.

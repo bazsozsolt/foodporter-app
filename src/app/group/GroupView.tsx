@@ -12,7 +12,8 @@ import { act } from "@/lib/act";
 import { eur } from "@/lib/format";
 import { useT } from "@/lib/i18n";
 import { orderHref } from "@/lib/orders";
-import { actions, useStore, type Geo } from "@/lib/store";
+import { actions, PriceChangedError, useStore, type Geo } from "@/lib/store";
+import { feeForKm, feeKm, feeRange } from "@/lib/pricing";
 import { getSupabase } from "@/lib/supabase";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -28,7 +29,7 @@ async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<T> {
   return data as T;
 }
 
-/** Split: everyone pays their own food; the flat delivery fee is shared equally by people with items (host takes the rounding cents). */
+/** Split: everyone pays their own food; the delivery + service fee (one trip) is shared equally by people with items (host takes the rounding cents). */
 export function splitShares(members: Member[], items: Item[], fee: number, hostId: string) {
   const food = new Map<string, number>();
   for (const i of items) food.set(i.user_id, (food.get(i.user_id) ?? 0) + i.qty * i.price_cents);
@@ -105,9 +106,16 @@ export function GroupView() {
   const menu = menuItems.filter((m) => m.restaurant_id === group?.restaurant_id);
   const editable = group?.status === "open" && (left === null || left > 0);
   const subtotal = items.reduce((a, i) => a + i.qty * i.price_cents, 0);
-  const fee = settings.delivery_fee_cents;
+  // v26: one trip -> one distance-based delivery fee (from the chosen address) + the service fee; the server recomputes both.
+  const km = geo ? feeKm(geo, restaurant, settings.fee_distance_basis) : null;
+  const fee = km != null ? feeForKm(settings.delivery_fee_bands, km) : feeRange(settings.delivery_fee_bands).min;
+  const service = settings.service_fee_cents ?? 0;
+  const [serverTotal, setServerTotal] = useState<number | null>(null);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setServerTotal(null), [geo, tip]);
+  const payTotal = serverTotal ?? subtotal + fee + service + tip;
   const nameOf = (uid: string) => members.find((m) => m.user_id === uid)?.display_name ?? "?";
-  const shares = group ? splitShares(members, items, fee, group.host_id) : [];
+  const shares = group ? splitShares(members, items, fee + service, group.host_id) : [];
   const shareUrl = typeof window !== "undefined" ? `${window.location.origin}${BASE}/group/?code=${code}` : "";
   const input = "mt-1 w-full rounded-xl border border-line p-3";
 
@@ -125,7 +133,8 @@ export function GroupView() {
     setBusy(true);
     const oid = await act(rpc<number>("group_checkout", { p_group: group!.id, p_address: address, p_phone: phone }));
     if (!oid) { setBusy(false); return; }
-    const url = await act(actions.startPayment(String(oid), tip, { leave_at_door: door }));
+    const url = await act(actions.startPayment(String(oid), tip, { leave_at_door: door, expected_total_cents: payTotal })
+      .catch((e) => { if (e instanceof PriceChangedError) setServerTotal(e.breakdown.total_cents); throw e; }));
     setBusy(false);
     if (url) window.location.href = url; else router.push(orderHref(oid));
   }
@@ -242,14 +251,15 @@ export function GroupView() {
             </div>))}
           <div className="mt-3 border-t border-[#f1ede8] pt-2 text-sm">
             <div className="flex justify-between"><span>{t("Subtotaal", "Subtotal")}</span><span>{eur(subtotal)}</span></div>
-            <div className="flex justify-between text-muted"><span>{t("Bezorgkosten (één rit)", "Delivery fee (one trip)")}</span><span>{eur(fee)}</span></div>
-            <div className="flex justify-between font-bold"><span>{t("Totaal", "Total")}</span><span>{eur(subtotal + fee)}</span></div>
+            <div className="flex justify-between text-muted" data-testid="group-fee-line"><span>{km != null ? t(`Bezorgkosten (één rit, ${km.toFixed(1).replace(".", ",")} km)`, `Delivery fee (one trip, ${km.toFixed(1)} km)`) : t("Bezorgkosten (één rit, vanaf)", "Delivery fee (one trip, from)")}</span><span>{eur(fee)}</span></div>
+            <div className="flex justify-between text-muted"><span>{t("Servicekosten", "Service fee")}</span><span>{eur(service)}</span></div>
+            <div className="flex justify-between font-bold"><span>{t("Totaal", "Total")}</span><span>{eur(subtotal + fee + service)}</span></div>
           </div>
           {items.length > 0 && <button className="mt-2 text-sm font-semibold text-brand" data-testid="group-split-toggle" onClick={() => setShowSplit(!showSplit)}>{showSplit ? "▾" : "▸"} {t("Verdeling per persoon", "Split per person")}</button>}
           {showSplit && (
             <div className="mt-2 rounded-xl bg-[#faf8f5] p-3 text-sm" data-testid="group-split">
               {shares.map((s) => <div key={s.user_id} className="flex justify-between"><span>{s.display_name}</span><span>{eur(s.food)} + {eur(s.fee)} = <b>{eur(s.total)}</b></span></div>)}
-              <p className="mt-1 text-[12px] text-muted">{t("De host betaalt alles via Mollie; dit is wat iedereen de host terugbetaalt (bezorgkosten gelijk verdeeld).", "The host pays everything via Mollie; this is what everyone owes the host (delivery fee split equally).")}</p>
+              <p className="mt-1 text-[12px] text-muted">{t("De host betaalt alles via Mollie; dit is wat iedereen de host terugbetaalt (bezorg- en servicekosten gelijk verdeeld).", "The host pays everything via Mollie; this is what everyone owes the host (delivery and service fee split equally).")}</p>
             </div>)}
         </Card>
 
@@ -280,7 +290,7 @@ export function GroupView() {
                 ))}
               </div>
               <TestModeCheckoutNote />
-              <Button disabled={busy || !geo || geo.distance_km > settings.zone_radius_km || phone.replace(/\D/g, "").length < 9} onClick={checkout}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : t(`Betaal ${eur(subtotal + fee + (settings.service_fee_cents ?? 0) + tip)} met Mollie`, `Pay ${eur(subtotal + fee + (settings.service_fee_cents ?? 0) + tip)} with Mollie`)}</Button>
+              <Button disabled={busy || !geo || geo.distance_km > settings.zone_radius_km || phone.replace(/\D/g, "").length < 9} onClick={checkout}>{busy ? t("Doorsturen naar Mollie…", "Redirecting to Mollie…") : t(`Betaal ${eur(payTotal)} met Mollie`, `Pay ${eur(payTotal)} with Mollie`)}</Button>
             </>}
             <button className="mt-3 w-full text-center text-sm text-muted underline" onClick={() => { if (confirm(t("Groepsbestelling annuleren?", "Cancel this group order?"))) void run(rpc("group_cancel", { p_group: group.id })); }}>{t("Groepsbestelling annuleren", "Cancel group order")}</button>
           </Card>

@@ -4,7 +4,7 @@ export type OrderStatus = "awaiting_payment" | "payment_failed" | "placed" | "ac
 export interface MenuItem { id: string; restaurant_id: string; name: string; price_cents: number; image_url?: string | null; image_credit?: string | null; description?: string | null; allergens?: string[] | null; allergens_test?: boolean }
 export interface Restaurant {
   id: string; name: string; cuisine: string; area: string; emoji: string; color: string;
-  avg_prep_minutes: number; commission_pct: number; active: boolean; lat?: number | null; lng?: number | null; rating_avg?: number | null; rating_count?: number;
+  avg_prep_minutes: number; commission_pct: number | null; partner_since?: string | null; created_at?: string | null; active: boolean; lat?: number | null; lng?: number | null; rating_avg?: number | null; rating_count?: number;
   is_test?: boolean; min_order_cents?: number; description?: string | null; address?: string | null; image_url?: string | null; logo_url?: string | null; image_credit?: string | null;
   opening_hours?: Record<string, [string, string][]> | null; closed_dates?: string[]; paused_until?: string | null; busy_extra_minutes?: number; hours_test?: boolean;
 }
@@ -16,7 +16,7 @@ export interface Order {
   address: string; phone: string; prep_minutes: number | null; ready_at: string | null;
   group_order_id?: string | null;
   bids: Bid[]; created_at: string; delivered_at: string | null; accepted_at?: string | null;
-  paid_at?: string | null; lat?: number | null; lng?: number | null; distance_km?: number | null;
+  paid_at?: string | null; lat?: number | null; lng?: number | null; distance_km?: number | null; commission_cents?: number | null; commission_pct?: number | null; fee_km?: number | null;
   cancel_reason?: string | null; refund_status?: string | null; refund_cents?: number | null; renotified_at?: string | null;
   assigned_at?: string | null; bid_window_closes_at?: string | null; rider_id?: string | null;
   stacked?: boolean;

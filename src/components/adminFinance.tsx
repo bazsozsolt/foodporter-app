@@ -47,12 +47,12 @@ export function Payments({ range, show }: { range: Range; show: "restaurants" | 
   const tot = (rows: Row[], k: string) => rows.reduce((a, r) => a + Number(r[k] ?? 0), 0);
   return (
     <>
-      {show === "restaurants" && <Panel title={`Restaurant payouts · ${range.from} → ${range.to}`} actions={<Toolbar range={range} title="restaurant payouts" onCsv={() => downloadCsv(`restaurant_payouts_${range.from}_${range.to}.csv`, rs, ["restaurant", "commission_pct", "orders", "gross_cents", "commission_cents", "net_cents", "paid_cents", "owed_cents"])} />}>
+      {show === "restaurants" && <Panel title={`Restaurant payouts · ${range.from} → ${range.to}`} actions={<Toolbar range={range} title="restaurant payouts" onCsv={() => downloadCsv(`restaurant_payouts_${range.from}_${range.to}.csv`, rs, ["restaurant", "commission_pct", "pickup_pct", "effective_pct", "partner_since", "orders", "pickup_orders", "gross_cents", "commission_cents", "net_cents", "paid_cents", "owed_cents"])} />}>
         <ErrorNote error={q.error} />
         <Table head={["Restaurant", "Delivered orders", "Gross food sales", "Commission", "Net payout", "Paid", "Owed", ""]} empty={rs.length === 0}>
           {rs.map((r) => (
             <tr key={String(r.restaurant_id)}>
-              <Td>{String(r.restaurant)} <span className="text-xs text-muted">({Number(r.commission_pct)}%)</span></Td><Td>{String(r.orders)}</Td>
+              <Td>{String(r.restaurant)} <span data-testid="fin-rates" className="text-xs text-muted">(now {Number(r.commission_pct)}% delivered / {Number(r.pickup_pct)}% pickup{r.effective_pct != null ? ` · period ${Number(r.effective_pct)}%` : ""})</span></Td><Td>{String(r.orders)}</Td>
               <Td>{eur(Number(r.gross_cents))}</Td><Td>{eur(Number(r.commission_cents))}</Td><Td>{eur(Number(r.net_cents))}</Td>
               <Td>{eur(Number(r.paid_cents))}</Td><Td className="font-bold">{eur(Number(r.owed_cents))}</Td>
               <Td>{Number(r.owed_cents) > 0 && <SmallBtn tone="ok" onClick={() => mark("restaurant", String(r.restaurant_id), String(r.restaurant), Number(r.owed_cents))}>Mark paid</SmallBtn>}</Td>

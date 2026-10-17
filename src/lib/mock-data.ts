@@ -1,13 +1,13 @@
 import type { Earning, MenuItem, Restaurant } from "./types";
 
 // Example data only: these are not real partner restaurants.
-export const DELIVERY_FEE_CENTS = 295;
+export const DELIVERY_FEE_CENTS = 249;
 
 export const restaurants: Restaurant[] = [
-  { id: "11111111-0000-4000-8000-000000000001", name: "Spoorzone Burger Co. (example)", cuisine: "Burgers", area: "Spoorzone", emoji: "🍔", color: "#ffe6d6", avg_prep_minutes: 15, commission_pct: 12, active: true },
-  { id: "11111111-0000-4000-8000-000000000002", name: "Piushaven Pizza (example)", cuisine: "Wood-fired pizza", area: "Piushaven", emoji: "🍕", color: "#ffe9e9", avg_prep_minutes: 20, commission_pct: 12, active: true },
-  { id: "11111111-0000-4000-8000-000000000003", name: "Heuvel Noodle Bar (example)", cuisine: "Asian", area: "Heuvel", emoji: "🍜", color: "#e8f3ff", avg_prep_minutes: 12, commission_pct: 12, active: true },
-  { id: "11111111-0000-4000-8000-000000000004", name: "Korvel Kebab House (example)", cuisine: "Turkish", area: "Korvel", emoji: "🥙", color: "#eef8e6", avg_prep_minutes: 10, commission_pct: 12, active: true },
+  { id: "11111111-0000-4000-8000-000000000001", name: "Spoorzone Burger Co. (example)", cuisine: "Burgers", area: "Spoorzone", emoji: "🍔", color: "#ffe6d6", avg_prep_minutes: 15, commission_pct: null, active: true },
+  { id: "11111111-0000-4000-8000-000000000002", name: "Piushaven Pizza (example)", cuisine: "Wood-fired pizza", area: "Piushaven", emoji: "🍕", color: "#ffe9e9", avg_prep_minutes: 20, commission_pct: null, active: true },
+  { id: "11111111-0000-4000-8000-000000000003", name: "Heuvel Noodle Bar (example)", cuisine: "Asian", area: "Heuvel", emoji: "🍜", color: "#e8f3ff", avg_prep_minutes: 12, commission_pct: null, active: true },
+  { id: "11111111-0000-4000-8000-000000000004", name: "Korvel Kebab House (example)", cuisine: "Turkish", area: "Korvel", emoji: "🥙", color: "#eef8e6", avg_prep_minutes: 10, commission_pct: null, active: true },
 ];
 
 const raw: Record<string, [string, number][]> = {

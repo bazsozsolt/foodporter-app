@@ -60,7 +60,7 @@ function OrderDetail({ id }: { id: string }) {
               <dt className="text-muted">Customer</dt><dd>{String((o.customer as Row)?.email ?? o.customer_id)}</dd>
               <dt className="text-muted">Address</dt><dd>{String(o.address)}</dd>
               <dt className="text-muted">Phone</dt><dd>{String(o.phone)}</dd>
-              <dt className="text-muted">Food / fee</dt><dd>{eur(Number(o.subtotal_cents))} + {eur(Number(o.delivery_fee_cents))}</dd>
+              <dt className="text-muted">Food / delivery / service</dt><dd>{eur(Number(o.subtotal_cents))} + {eur(Number(o.delivery_fee_cents))} + {eur(Number(o.service_fee_cents ?? 0))}</dd>
               <dt className="text-muted">Commission</dt><dd>{eur(Number(o.commission_cents ?? 0))} ({String(o.commission_pct ?? "")}%)</dd>
               <dt className="text-muted">Payment</dt><dd>{String(o.payment_status ?? "—")} {o.mollie_payment_id ? `· ${o.mollie_payment_id}` : ""}</dd>
               <dt className="text-muted">Prep</dt><dd>{o.prep_minutes ? `${o.prep_minutes} min planned` : "—"}{o.actual_prep_minutes != null ? ` · ${o.actual_prep_minutes} min actual` : ""}{Number(o.prep_extensions) ? ` · extended ${o.prep_extensions}×` : ""}</dd>
@@ -119,7 +119,7 @@ function OrderList() {
   const rows = q.data ?? [];
   return (
     <Panel title={`Orders (${rows.length})`} actions={<>
-      <SmallBtn onClick={() => downloadCsv(`orders_${range.from}_${range.to}.csv`, rows, ["id", "created_at", "status", "restaurant_name", "rider_name", "subtotal_cents", "delivery_fee_cents", "commission_cents", "prep_minutes", "actual_prep_minutes", "prep_extensions", "bid_seconds", "eta_minutes", "fast_bid", "on_time", "minutes_late", "delivered_at", "is_test"])}>⬇ CSV</SmallBtn>
+      <SmallBtn onClick={() => downloadCsv(`orders_${range.from}_${range.to}.csv`, rows, ["id", "created_at", "status", "restaurant_name", "rider_name", "subtotal_cents", "delivery_fee_cents", "service_fee_cents", "fulfilment_kind", "commission_pct", "commission_cents", "prep_minutes", "actual_prep_minutes", "prep_extensions", "bid_seconds", "eta_minutes", "fast_bid", "on_time", "minutes_late", "delivered_at", "is_test"])}>⬇ CSV</SmallBtn>
       <SmallBtn onClick={() => window.print()}>Print</SmallBtn></>}>
       <div className="no-print mb-3"><Field label="Find order # (all dates)"><input className={inputCls} inputMode="numeric" type="search" data-testid="order-search" placeholder="e.g. 1733" value={search} onChange={(e) => setSearch(e.target.value)} /></Field></div>
       <div className="no-print mb-3 grid gap-2 md:grid-cols-[2fr_1fr_1fr_1fr]">

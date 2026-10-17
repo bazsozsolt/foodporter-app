@@ -1,4 +1,5 @@
 "use client";
+import { useStore } from "@/lib/store";
 import { useEffect, useState } from "react";
 import { ErrorNote, Field, inputCls, Panel, SmallBtn, Table, Td } from "@/components/admin";
 import { fmtDateTime, sb, useAdminQuery, type Row } from "@/lib/admin";
@@ -58,9 +59,11 @@ function Library({ tpls }: { tpls: Row[] }) {
 
 /** Contract kind (7:628a BW): 0-hours on-call or min-max, start date (12-month fixed-hours offer) and reference days/hours (information duty). */
 function ContractTerms({ id, hr, reload }: { id: string; hr: Row | null; reload: () => void }) {
-  const [kind, setKind] = useState(String(hr?.contract_kind ?? "on_call"));
-  const [min, setMin] = useState(hr?.min_hours_week == null ? "6" : String(hr.min_hours_week));
-  const [max, setMax] = useState(hr?.max_hours_week == null ? "12" : String(hr.max_hours_week));
+  // v26: new riders default to min-max (financial plan); 0-hours stays selectable until it is banned on 1 Jan 2028.
+  const { settings } = useStore();
+  const [kind, setKind] = useState(String(hr?.contract_kind ?? settings.default_contract_kind ?? "min_max"));
+  const [min, setMin] = useState(hr?.min_hours_week == null ? String(settings.minmax_default_min_h ?? 8) : String(hr.min_hours_week));
+  const [max, setMax] = useState(hr?.max_hours_week == null ? String(settings.minmax_default_max_h ?? 16) : String(hr.max_hours_week));
   const [start, setStart] = useState(String(hr?.start_date ?? ""));
   const [refd, setRefd] = useState(String(hr?.reference_days ?? ""));
   const [avg, setAvg] = useState<number | null>(null);
@@ -74,7 +77,8 @@ function ContractTerms({ id, hr, reload }: { id: string; hr: Row | null; reload:
   }
   return (
     <div data-testid="contract-terms" className="mt-2 grid gap-2">
-      <Field label="Contract kind"><select data-testid="contract-kind" className={inputCls} value={kind} onChange={(e) => setKind(e.target.value)}><option value="on_call">0-hours on-call (min 3 h per call-in)</option><option value="min_max">Min-max (minimum paid weekly)</option></select></Field>
+      <Field label="Contract kind"><select data-testid="contract-kind" className={inputCls} value={kind} onChange={(e) => setKind(e.target.value)}><option value="min_max">Min-max (minimum paid weekly, default)</option><option value="on_call">0-hours on-call (min 3 h per call-in; banned from 1 Jan 2028)</option></select></Field>
+      {kind === "on_call" && <p data-testid="zero-hours-note" className="rounded-lg bg-gold-soft p-2 text-xs text-warn">0-hours contracts are banned from 1 Jan 2028 (verboden vanaf 2028). Use min-max for new riders; plan to convert existing 0-hours contracts before then.</p>}
       {kind === "min_max" && <div className="grid grid-cols-2 gap-2"><Field label="Min h/week"><input data-testid="min-hours" className={inputCls} inputMode="decimal" value={min} onChange={(e) => setMin(e.target.value)} /></Field><Field label="Max h/week (≤ 40)"><input data-testid="max-hours" className={inputCls} inputMode="decimal" value={max} onChange={(e) => setMax(e.target.value)} /></Field></div>}
       <Field label="Start date"><input data-testid="start-date" type="date" className={inputCls} value={start} onChange={(e) => setStart(e.target.value)} /></Field>
       <Field label="Reference days/hours (when call-ins can happen)"><input data-testid="reference-days" className={inputCls} placeholder="e.g. Mon–Sun 11:00–23:00" value={refd} onChange={(e) => setRefd(e.target.value)} /></Field>

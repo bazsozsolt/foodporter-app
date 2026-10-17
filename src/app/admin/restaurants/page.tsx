@@ -10,9 +10,10 @@ import { toast } from "@/components/Toaster";
 import { act } from "@/lib/act";
 import { sb, useAdminQuery, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
-import { actions } from "@/lib/store";
+import { actions, useStore } from "@/lib/store";
+import { commissionRate } from "@/lib/pricing";
 
-const blank = { name: "", cuisine: "", area: "", address: "", avg_prep_minutes: 15, commission_pct: 12, min_order_cents: 0, active: true };
+const blank = { name: "", cuisine: "", area: "", address: "", avg_prep_minutes: 15, commission_pct: "" as string | number, partner_since: "", min_order_cents: 0, active: true };
 type RForm = typeof blank & { id?: string };
 
 async function must<T>(p: PromiseLike<{ data: T; error: { message: string } | null }>) {
@@ -28,7 +29,7 @@ function RestaurantForm({ initial, onDone }: { initial: RForm; onDone: () => voi
     if (!f.name.trim()) return toast("Name is required");
     const id = f.id;
     const payload = { name: f.name.trim(), cuisine: f.cuisine || null, area: f.area || null, address: f.address || null,
-      avg_prep_minutes: Number(f.avg_prep_minutes), commission_pct: Number(f.commission_pct), min_order_cents: Math.max(0, Math.round(Number(f.min_order_cents) || 0)), active: f.active } as Row;
+      avg_prep_minutes: Number(f.avg_prep_minutes), commission_pct: String(f.commission_pct ?? "").trim() === "" ? null : Number(String(f.commission_pct).replace(",", ".")), partner_since: f.partner_since || null, min_order_cents: Math.max(0, Math.round(Number(f.min_order_cents) || 0)), active: f.active } as Row;
     // Geocode real addresses (PDOK) so riders see drop-off distances; example addresses keep their area pin.
     if (f.address && !/^example/i.test(f.address)) {
       const p = await geocode(f.address).catch(() => null);
@@ -45,7 +46,8 @@ function RestaurantForm({ initial, onDone }: { initial: RForm; onDone: () => voi
       <Field label="Address"><input className={inputCls} value={f.address ?? ""} onChange={(e) => set("address", e.target.value)} /></Field>
       <Field label="Avg prep (min)"><input type="number" min={5} max={120} className={inputCls} value={f.avg_prep_minutes} onChange={(e) => set("avg_prep_minutes", e.target.value)} /></Field>
       <Field label="Minimum order (€, food only; enforced at payment)"><input data-testid="min-order-input" type="number" min={0} max={100} step={0.5} className={inputCls} value={Number(f.min_order_cents) / 100} onChange={(e) => set("min_order_cents", Math.round(Number(e.target.value) * 100))} /></Field>
-      <Field label="Commission % (10–15)"><input type="number" min={10} max={15} step={0.5} className={inputCls} value={f.commission_pct} onChange={(e) => set("commission_pct", e.target.value)} /></Field>
+      <Field label="Custom delivered commission % (blank = plan rates: 20% for the first months, then 25%; pickup always uses the pickup rate)"><input data-testid="commission-override" inputMode="decimal" placeholder="plan rates" className={inputCls} value={f.commission_pct ?? ""} onChange={(e) => set("commission_pct", e.target.value)} /></Field>
+      <Field label="Partner since (start of the founding-rate period; blank = first signature of the partner agreement)"><input data-testid="partner-since" type="date" className={inputCls} value={f.partner_since ?? ""} onChange={(e) => set("partner_since", e.target.value)} /></Field>
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.active} onChange={(e) => set("active", e.target.checked)} /> Active (visible to customers)</label>
       <div className="flex gap-2 md:col-span-2 md:justify-end"><SmallBtn onClick={onDone}>Cancel</SmallBtn><SmallBtn tone="brand" onClick={save}>Save</SmallBtn></div>
     </div>
@@ -94,6 +96,7 @@ function Menu({ restaurantId }: { restaurantId: string }) {
 }
 
 export default function RestaurantsAdmin() {
+  const { settings } = useStore();
   const q = useAdminQuery<Row[]>(async () => sb().from("restaurants").select("*, menu_items(count)").order("name"), []);
   const [edit, setEdit] = useState<string | null>(null);
   const [menu, setMenu] = useState<string | null>(null);
@@ -108,7 +111,7 @@ export default function RestaurantsAdmin() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <b>{String(r.name)}</b> <StatusBadge s={r.active ? "active" : "suspended"} /> {(() => { const os = openState(r as never); return <span data-testid="admin-open" className={`ml-1 rounded px-1.5 text-[11px] font-semibold ${os.open ? "bg-[#e3f7ee] text-ok" : "bg-gold-soft text-warn"}`}>{os.open ? "Open now" : `${os.reason === "paused" ? "Paused" : os.reason === "holiday" ? "Holiday" : "Closed"} · ${nextLabel(os, true)}`}{Number(r.busy_extra_minutes ?? 0) > 0 ? ` · busy +${r.busy_extra_minutes} min` : ""}</span>; })()}
-              <div className="text-xs text-muted">{String(r.cuisine ?? "")} · {String(r.area ?? "")} · {Number(r.commission_pct)}% commission · min order €{(Number(r.min_order_cents ?? 0) / 100).toFixed(2)} · ~{String(r.avg_prep_minutes)} min prep · {String((r.menu_items as Row[])?.[0]?.count ?? 0)} items</div>
+              <div className="text-xs text-muted">{String(r.cuisine ?? "")} · {String(r.area ?? "")} · <span data-testid="admin-commission">{commissionRate(settings, r as never)}% commission now{r.commission_pct != null ? " (custom)" : ""} · pickup {commissionRate(settings, r as never, true)}%{r.partner_since ? ` · partner since ${String(r.partner_since)}` : ""}</span> · min order €{(Number(r.min_order_cents ?? 0) / 100).toFixed(2)} · ~{String(r.avg_prep_minutes)} min prep · {String((r.menu_items as Row[])?.[0]?.count ?? 0)} items</div>
             </div>
             <div className="flex gap-2">
               <SmallBtn onClick={async () => { if (!confirm(r.active ? `Deactivate ${String(r.name)}? Customers will no longer see it or be able to order.` : `Activate ${String(r.name)}? It becomes visible to customers.`)) return; if (await act(must(sb().from("restaurants").update({ active: !r.active }).eq("id", String(r.id))), r.active ? "Deactivated" : "Activated") !== undefined) { q.reload(); actions.reloadCatalog(); } }}>{r.active ? "Deactivate" : "Activate"}</SmallBtn>
@@ -117,7 +120,7 @@ export default function RestaurantsAdmin() {
               <SmallBtn tone="dark" onClick={() => setMenu(menu === r.id ? null : String(r.id))}>{menu === r.id ? "Hide menu" : "Menu"}</SmallBtn>
             </div>
           </div>
-          {edit === r.id && <div className="mt-3"><RestaurantForm initial={{ ...blank, ...(r as unknown as RForm), commission_pct: Number(r.commission_pct) }} onDone={done} /></div>}
+          {edit === r.id && <div className="mt-3"><RestaurantForm initial={{ ...blank, ...(r as unknown as RForm), commission_pct: r.commission_pct == null ? "" : Number(r.commission_pct), partner_since: String(r.partner_since ?? "") }} onDone={done} /></div>}
           {menu === r.id && <><HoursPanel restaurantId={String(r.id)} english /><Menu restaurantId={String(r.id)} /></>}
         </div>
       ))}

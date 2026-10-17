@@ -11,37 +11,37 @@
  {
   "id": "rider_employment",
   "title": "Arbeidsovereenkomst bezorger (direct dienstverband)",
-  "version": "0.3",
+  "version": "0.4",
   "audience": "rider",
   "file": "02-rider-arbeidsovereenkomst.md",
-  "pdf": "rider_employment-v0.3.pdf",
+  "pdf": "rider_employment-v0.4.pdf",
   "html": "rider_employment.html"
  },
  {
   "id": "restaurant_partner",
   "title": "Partnerovereenkomst restaurant",
-  "version": "0.1",
+  "version": "0.2",
   "audience": "restaurant",
   "file": "03-restaurant-partner.md",
-  "pdf": "restaurant_partner-v0.1.pdf",
+  "pdf": "restaurant_partner-v0.2.pdf",
   "html": "restaurant_partner.html"
  },
  {
   "id": "customer_terms",
   "title": "Algemene voorwaarden klanten",
-  "version": "0.1",
+  "version": "0.2",
   "audience": "customer",
   "file": "04-algemene-voorwaarden-klant.md",
-  "pdf": "customer_terms-v0.1.pdf",
+  "pdf": "customer_terms-v0.2.pdf",
   "html": "customer_terms.html"
  },
  {
   "id": "privacy_statement",
   "title": "Privacyverklaring (update v18)",
-  "version": "0.3",
+  "version": "0.4",
   "audience": "all",
   "file": "05-privacyverklaring.md",
-  "pdf": "privacy_statement-v0.3.pdf",
+  "pdf": "privacy_statement-v0.4.pdf",
   "html": "privacy_statement.html"
  },
  {
@@ -65,10 +65,10 @@
  {
   "id": "platform_transparency",
   "title": "Transparantieverklaring algoritmisch management (richtlijn 2024/2831)",
-  "version": "0.3",
+  "version": "0.4",
   "audience": "rider",
   "file": "08-transparantie-algoritme.md",
-  "pdf": "platform_transparency-v0.3.pdf",
+  "pdf": "platform_transparency-v0.4.pdf",
   "html": "platform_transparency.html"
  },
  {
@@ -83,10 +83,10 @@
  {
   "id": "processing_register",
   "title": "Register van verwerkingsactiviteiten (art. 30 AVG)",
-  "version": "0.3",
+  "version": "0.4",
   "audience": "internal",
   "file": "10-verwerkingsregister.md",
-  "pdf": "processing_register-v0.3.pdf",
+  "pdf": "processing_register-v0.4.pdf",
   "html": "processing_register.html"
  },
  {

@@ -7,6 +7,7 @@ import { eur } from "@/lib/format";
 import { actions, useStore } from "@/lib/store";
 import { Photo } from "@/components/Photo";
 import { AllergenInfo } from "@/components/AllergenInfo";
+import { feeRange } from "@/lib/pricing";
 
 /** Cart lines + total + the one primary "checkout" action. Used by /cart and the menu's bottom sheet. */
 export function useCartLines() {
@@ -14,11 +15,12 @@ export function useCartLines() {
   const r = restaurants.find((x) => x.id === cart.restaurant_id);
   const lines = Object.entries(cart.qty).flatMap(([id, q]) => { const item = menuItems.find((m) => m.id === id); return item && q > 0 ? [{ item, q }] : []; });
   const sub = lines.reduce((a, l) => a + l.q * l.item.price_cents, 0);
-  return { r, lines, sub, fee: settings.delivery_fee_cents };
+  const range = feeRange(settings.delivery_fee_bands);
+  return { r, lines, sub, fee: range.min, feeMax: range.max, service: settings.service_fee_cents ?? 0, servicePickup: Boolean(settings.service_fee_on_pickup) };
 }
 
 export function CartSummary() {
-  const { r, lines, sub, fee } = useCartLines();
+  const { r, lines, sub, fee, feeMax, service, servicePickup } = useCartLines();
   if (!r || lines.length === 0) return null;
   return (
     <>
@@ -32,8 +34,8 @@ export function CartSummary() {
           </div>
         ))}
         <hr className="my-3 border-line" />
-        <div className="flex justify-between text-sm text-muted"><span>{tx("Bezorgkosten (vast)", "Delivery fee (flat)")}</span><span>{eur(fee)}</span></div>
-        <div className="flex justify-between font-bold"><span>{tx("Totaal", "Total")}</span><span>{eur(sub + fee)}</span></div>
+        <div className="flex justify-between font-bold"><span>{tx("Subtotaal gerechten", "Items subtotal")}</span><span data-testid="cart-subtotal">{eur(sub)}</span></div>
+        <p data-testid="cart-fee-note" className="mt-1 text-[13px] text-muted">{tx(`Bij bezorgen: bezorgkosten ${eur(fee)}–${eur(feeMax)} (op afstand) + ${eur(service)} servicekosten. Afhalen: ${servicePickup ? `alleen ${eur(service)} servicekosten` : "geen bezorg- of servicekosten"}. Je ziet het precieze bedrag bij afrekenen.`, `For delivery: a ${eur(fee)}–${eur(feeMax)} delivery fee (by distance) + ${eur(service)} service fee. Pickup: ${servicePickup ? `only the ${eur(service)} service fee` : "no delivery or service fee"}. You'll see the exact amount at checkout.`)}</p>
       </Card>
       <Link href="/checkout" data-testid="go-checkout" className="block min-h-12 rounded-xl bg-brand py-3.5 text-center font-semibold text-white">{tx("Naar afrekenen", "Go to checkout")}</Link>
     </>
