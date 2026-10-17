@@ -29,7 +29,8 @@ for (const st of ["placed", "accepted", "assigned", "ready", "picked_up", "deliv
 }
 ok("admin marks the test order delivered", !err(d), err(d));
 const e = (await rider.sb.from("earnings").select("amount_cents, tip_cents").eq("order_id", o.id).maybeSingle()).data;
-ok("rider earns delivery fee + 100% of the tip", e?.tip_cents === 250 && e.amount_cents === row.delivery_fee_cents + 250, JSON.stringify(e));
+const bonus = (await admin.sb.from("orders").select("rider_bonus_cents").eq("id", o.id).single()).data.rider_bonus_cents;
+ok("rider earns the fixed bonus (v27) + 100% of the tip", bonus === 50 && e?.tip_cents === 250 && e.amount_cents === bonus + 250, JSON.stringify({ e, bonus }));
 const now = new Date(), from = new Date(now.getTime() - 3600e3).toISOString(), to = new Date(now.getTime() + 3600e3).toISOString();
 const rep = await admin.sb.rpc("report_payments", { p_from: from, p_to: to });
 const rr = (rep.data?.riders ?? []).find((x) => x.rider_id === rider.id);

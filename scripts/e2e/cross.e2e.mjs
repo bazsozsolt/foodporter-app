@@ -25,7 +25,7 @@ async function pay(u, id, body = {}) {
   const r = await fetch(`${SB_URL}/functions/v1/create-payment`, { method: "POST", headers: { Authorization: `Bearer ${tok}`, "Content-Type": "application/json", Origin: ORIGIN }, body: JSON.stringify({ order_id: id, ...body }) });
   return { status: r.status, body: await r.json().catch(() => ({})) };
 }
-const COLS = "id, status, subtotal_cents, delivery_fee_cents, service_fee_cents, tip_cents, discount_cents, credit_cents, commission_cents, promo_code, scheduled_for, release_at, refund_status, refund_cents, fulfilment";
+const COLS = "id, status, subtotal_cents, delivery_fee_cents, service_fee_cents, tip_cents, discount_cents, credit_cents, commission_cents, promo_code, scheduled_for, release_at, refund_status, refund_cents, fulfilment, rider_bonus_cents";
 const row = async (id) => (await admin.sb.from("orders").select(COLS).eq("id", id).single()).data;
 const paidTotal = (o) => o.subtotal_cents + o.delivery_fee_cents + (o.service_fee_cents ?? 0) + (o.tip_cents ?? 0) - (o.discount_cents ?? 0) - (o.credit_cents ?? 0);
 // "paid" = simulated test payment (tr_sim_), the same thing mollie-webhook does on a paid status
@@ -89,7 +89,8 @@ try {
   const dv = await rider.sb.from("orders").update({ status: "delivered" }).eq("id", g).select("status");
   ok("group order delivered", dv.data?.[0]?.status === "delivered", err(dv));
   const eg = (await admin.sb.from("earnings").select("amount_cents, tip_cents").eq("order_id", g).maybeSingle()).data;
-  ok("rider gets fee + full group tip", eg?.tip_cents === 200 && eg.amount_cents === rg.delivery_fee_cents + 200, JSON.stringify(eg));
+  const gb = (await row(g)).rider_bonus_cents;
+  ok("rider gets the fixed bonus (v27) + full group tip", gb === 50 && eg?.tip_cents === 200 && eg.amount_cents === gb + 200, JSON.stringify({ eg, gb }));
   ok("guest cannot see the door photo", !(await guest.sb.storage.from("delivery-proof").createSignedUrl(path, 60)).data?.signedUrl);
   ok("host can see the door photo", !!(await host.sb.storage.from("delivery-proof").createSignedUrl(path, 60)).data?.signedUrl);
 
@@ -104,7 +105,7 @@ try {
   const r1 = await row(s1), r2 = await row(s2);
   ok("stacked: both delivered", !w1 && !w2, `${w1} ${w2}`);
   ok("stacked: each tip credited once to the rider", es.length === 2 && es.find((e) => e.order_id === s1)?.tip_cents === 100 && es.find((e) => e.order_id === s2)?.tip_cents === 300, JSON.stringify(es));
-  ok("stacked: earnings = fees + tips", es.reduce((x, e) => x + e.amount_cents, 0) === r1.delivery_fee_cents + r2.delivery_fee_cents + 400);
+  ok("stacked: earnings = rider bonuses + tips", es.reduce((x, e) => x + e.amount_cents, 0) === r1.rider_bonus_cents + r2.rider_bonus_cents + 400 && r1.rider_bonus_cents === 50);
 
   // 4. credit never pushes the charge below €1 (min order) and stays on the balance
   await admin.sb.from("customer_credit").insert({ customer_id: cust.id, cents: 5000, reason: "admin" }).select("id");
@@ -174,7 +175,8 @@ try {
   for (const o of deliv) o.commission_cents = facts[o.id] ?? 0;
   const restNet = deliv.reduce((s, o) => s + o.subtotal_cents - o.commission_cents, 0);
   const riderAll = ((await admin.sb.from("earnings").select("amount_cents").in("order_id", deliv.map((o) => o.id))).data ?? []).reduce((s, e) => s + e.amount_cents, 0);
-  const platform = deliv.reduce((s, o) => s + o.commission_cents + (o.service_fee_cents ?? 0) - (o.discount_cents ?? 0) - (o.credit_cents ?? 0), 0);
+  // v27: platform keeps commission + (delivery fee - rider bonus) + service fee, minus promo/credit it funds
+  const platform = deliv.reduce((s, o) => s + o.commission_cents + o.delivery_fee_cents - (o.rider_bonus_cents ?? o.delivery_fee_cents) + (o.service_fee_cents ?? 0) - (o.discount_cents ?? 0) - (o.credit_cents ?? 0), 0);
   ok("Mollie total = restaurant net + rider earnings + platform share", charged === restNet + riderAll + platform, `${charged} = ${restNet} + ${riderAll} + ${platform}`);
   const repR = (rep?.restaurants ?? []).find((y) => y.restaurant_id === RID), repRider = (rep?.riders ?? []).find((y) => y.rider_id === rider.id);
   ok("restaurant payout report covers these orders", repR && repR.net_cents >= restNet, `${repR?.net_cents} >= ${restNet}`);
