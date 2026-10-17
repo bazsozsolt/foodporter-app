@@ -46,3 +46,23 @@ min-max contracts default (3 h shifts), 0-hours banned from 1 Jan 2028; tips 100
   the crawler now treats Done/Reopen as do-not-click.
 - Screens: /workspace/foodporter/screens_v26/ (checkout-breakdown-nl/en, checkout-pickup-nl/en, restaurant-figures-nl/en,
   admin-business-settings, admin-restaurant-payouts), retaken on the live site.
+
+# v27 – split the delivery fee (Zsolt's decision, 17 Oct 2026)
+- Rule: riders get a fixed per-delivery bonus (settings.rider_bonus_cents, default €0.50, 0–200 cents, admin Business model panel,
+  part of "reset to plan defaults"); the rest of the delivery fee + the service fee is Food Porter revenue; tips 100% to riders.
+- DB (20261017100000_v27_rider_bonus): orders.rider_bonus_cents set once on the payment transition (pickup 0; capped at the delivery fee);
+  clients can't set it (insert sanitised, update guarded); earnings = bonus + tip. Orders paid before v27 keep NULL = old terms (rider gets
+  the full delivery fee); no backfill, so 1043/1046 are untouched. order_facts: rider_bonus_cents, company_revenue_cents, tip_cents;
+  report_payments.platform: commission, delivery fees, rider bonuses, service fees, tips, company revenue.
+- App: rider order card shows "Bezorgbonus €0,50 (+ fooi)"; rider earnings + rider info + help FAQ + checkout explainer + terms page + home copy;
+  admin: Business model rider bonus field, "Food Porter revenue" panel + CSV on Payments, "Company revenue" KPI on the overview, orders detail/CSV.
+  Weekly summary + payroll CSV already read the bonus from earnings (unchanged code, now €0.50 per new delivery).
+- Legal (20261017101000_v27_legal_versions): rider_employment 0.5, platform_transparency 0.5 (fixed bonus), customer_terms 0.3 (fees go to
+  Food Porter); test riders re-signed (test_seed) only.
+- Tests: new v27.e2e (26: bounds/roles, client value discarded, stored at payment, can't be changed by customer/restaurant/rider, later setting
+  change doesn't alter paid orders, earnings = €0.50 + tip, weekly + payroll delta, pickup 0, historic unchanged (272 orders), report totals =
+  sum of facts, bonuses = earnings excl. tips); cross/tips updated to the new rule (Mollie total = restaurant net + rider earnings + platform share).
+- Recheck: core 38, cross 66, tips 10, group 47, pickup 15, promo 34, support 40, proof 16, legal 45, employment 36, v20 35, v24 10, v26 36,
+  v27 26, audit 42, reports 14; UI v26/v27 32, v20 14, legal 14, v22 36, v19 11, admin-smoke 25, manual-assign 4; a11y 38 pages 0 issues;
+  crawler one role at a time 0 findings; tsc/eslint 0; parity 784 pairs 0; advisors unchanged.
+- Note: v26's commission backfill had set commission_pct = 12 on 1043/1046 (amounts unchanged); left as is.
