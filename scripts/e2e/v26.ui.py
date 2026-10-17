@@ -1,4 +1,4 @@
-# v26 UI: transparent price breakdown (distance fee + service fee, pickup without fees), pay hand-off without price_changed,
+# v26/v27 UI: transparent price breakdown (distance fee + service fee, pickup without fees), pay hand-off without price_changed,
 # home fee badge + allergen default label (feedback 8), terms copy, restaurant commission figures, admin business model / restaurants / payouts.
 # Test accounts only; one Mollie TEST checkout is opened and abandoned. Saves screens_v26.
 import re, sys, os
@@ -71,6 +71,7 @@ with sync_playwright() as p:
     ok("admin business model: zone 5, 3 bands, service €0.99, min-max", pg.input_value("[data-testid=bm-zone]") == "5" and pg.locator("[data-testid^=band-km-]").count() == 3
        and pg.input_value("[data-testid=service-fee]") in ("0.99", "0,99") and pg.input_value("[data-testid=bm-contract]") == "min_max")
     ok("admin business model: commission 25/20/3/10", [pg.input_value(f"[data-testid=bm-{k}]") for k in ["commission_delivery_pct", "commission_intro_pct", "commission_intro_months", "commission_pickup_pct"]] == ["25", "20", "3", "10"])
+    ok("v27 admin business model: rider bonus €0.50", pg.input_value("[data-testid=bm-rider-bonus]") in ("0.50", "0,50"))
     pg.locator("[data-testid=business-model]").scroll_into_view_if_needed(); pg.screenshot(path=f"{OUT}/admin-business-settings.png", full_page=True)
     pg.once("dialog", lambda d: d.accept()); pg.get_by_role("button", name="Reset to plan defaults").click(); pg.wait_for_timeout(2500)
     ok("reset to plan defaults saves (toast)", "Plan defaults restored" in pg.inner_text("body"))
@@ -80,6 +81,16 @@ with sync_playwright() as p:
     pg.goto(B + "/admin/payments/"); pg.wait_for_timeout(5000)
     fr = pg.locator("[data-testid=fin-rates]").all_inner_texts()
     ok("admin payouts show delivered/pickup rates", any("delivered" in t and "pickup" in t for t in fr), str(fr[:2]))
+    pg.wait_for_selector("[data-testid=company-revenue]", timeout=20000)
+    ok("v27 payments page shows company revenue", cents(pg.inner_text("[data-testid=company-revenue-total]")) is not None, pg.inner_text("[data-testid=company-revenue]")[:200])
     pg.screenshot(path=f"{OUT}/admin-restaurant-payouts.png", full_page=False); c.close()
+    for lang in ["nl", "en"]:
+        c, pg = ctx("SIMR3", lang)
+        pg.goto(B + "/rider/earnings/"); pg.wait_for_timeout(5000); t = pg.inner_text("main")
+        ok(f"v27 {lang} rider earnings explain the fixed €0.50 bonus", re.search(r"€0[,.]50", t) and ("vaste bezorgbonus" in t if lang == "nl" else "fixed delivery bonus" in t), t[-300:])
+        pg.screenshot(path=f"{OUT}/rider-earnings-{lang}.png", full_page=True)
+        pg.goto(B + "/rider-info/"); pg.wait_for_timeout(1500); ri = pg.inner_text("main")
+        ok(f"v27 {lang} rider info: fixed bonus, no 'equal to the delivery fee'", re.search(r"€0[,.]50", ri) and "gelijk aan de bezorgkosten" not in ri and "equal to the delivery fee" not in ri)
+        c.close()
     b.close()
 print(f"\n{P} passed, {F} failed"); sys.exit(1 if F else 0)
