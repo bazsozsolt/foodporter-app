@@ -53,3 +53,26 @@ Box: no restart since v27 (up 14 h); node_modules, Playwright headless shell, Ch
 - Payouts: rows only via mark_rider_payout / mark_restaurant_payout (assert_admin); RLS insert/update/delete admin-only;
   no cron job touches payouts; the functions call Mollie only for payments and refunds (no transfer/settlement API).
   Nothing is auto-paid.
+
+## Phase 4 – Safety / legal / privacy
+- Suites: employment 34/34, compliance 13/13, hours 18/18, legal 45/45, v20 35/35, v24 10/10, erase 10/10, proof 16/16,
+  photos 13/13. **194/194.**
+- Rider gates (tested): unsigned contract or conduct → cannot go online; under-16 blocked; zzp contract rejected;
+  12 h rest blocks clock-in (rest < 11 h cannot even be configured); break after 4.5 h; ATW alert; call-in > 12 h rejected.
+  Minors: fp_rider_legal_status adds youth_night 23:00–06:00 (Europe/Amsterdam clock) and youth shift/week maxima;
+  fp_legal_housekeeping (cron */10, 144 OK runs) takes minors offline at night. Code-reviewed; the night branch cannot be
+  e2e-tested without faking the clock.
+- SOS: support e2e "SOS raises an ops alert with location" PASS; SOS has its own limit (5/h).
+- Retention jobs (phase 1) match privacy statement v0.4: GPS 7 days, proof photos 30 days, chat 6 months, support 2 years,
+  status log 2 years, rate limits 30 min.
+- Erasure: admin-only, refuses admins, anonymised profile row kept (erase e2e).
+  **FIXED – data export (GDPR art. 15):** the JSON missed rider_hr (birthdate/contract), rider_onboarding, rider_documents,
+  payouts, customer_credit, referral_codes, feedback, work_violations, group_members and account_status_log. All added,
+  RLS-scoped. New v26.ui check downloads the export as a rider.
+- Templates: 13 current templates; live HTML sha256 = DB sha256 for all, every versioned PDF 200. Contract v0.5 has a
+  "€ [0,50]" bonus placeholder ("shown in the app"), transparency v0.5 "now €0.50", customer terms v0.3 fees 249/349/499 + 0.99,
+  restaurant partner commission. All consistent with settings.
+- **FIXED – rider-info:** the hardcoded "nu €0,50" / "now €0.50" is replaced by <LiveBonus/> (settings.rider_bonus_cents,
+  data-testid live-bonus). New v26.ui check: admin sets €0.75 → rider-info shows €0,75 → reset to plan defaults (€0.50).
+- Remaining copy that quotes current numbers: SupportSheet FAQ (fee bands), welcome page (25% commission) and terms page
+  (legal snapshot, "nu"/"currently"). Correct today; they won't follow later admin changes → listed for Zsolt.

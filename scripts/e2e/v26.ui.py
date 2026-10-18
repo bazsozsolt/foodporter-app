@@ -1,7 +1,7 @@
 # v26/v27 UI: transparent price breakdown (distance fee + service fee, pickup without fees), pay hand-off without price_changed,
 # home fee badge + allergen default label (feedback 8), terms copy, restaurant commission figures, admin business model / restaurants / payouts.
 # Test accounts only; one Mollie TEST checkout is opened and abandoned. Saves screens_v26.
-import re, sys, os
+import re, sys, os, json
 from playwright.sync_api import sync_playwright
 creds = dict(l.split("=",1) for l in open("/workspace/fptest/.creds").read().strip().split("\n"))
 B = sys.argv[1] if len(sys.argv) > 1 else "https://bazsozsolt.github.io/foodporter-app"
@@ -73,6 +73,12 @@ with sync_playwright() as p:
     ok("admin business model: commission 25/20/3/10", [pg.input_value(f"[data-testid=bm-{k}]") for k in ["commission_delivery_pct", "commission_intro_pct", "commission_intro_months", "commission_pickup_pct"]] == ["25", "20", "3", "10"])
     ok("v27 admin business model: rider bonus €0.50", pg.input_value("[data-testid=bm-rider-bonus]") in ("0.50", "0,50"))
     pg.locator("[data-testid=business-model]").scroll_into_view_if_needed(); pg.screenshot(path=f"{OUT}/admin-business-settings.png", full_page=True)
+    # v28: rider info reads the live bonus setting (temporarily €0.75, then the reset below restores €0.50)
+    pg.fill("[data-testid=bm-rider-bonus]", "0.75"); pg.get_by_role("button", name="Save business model").click(); pg.wait_for_timeout(2500)
+    pg.goto(B + "/rider-info/"); pg.wait_for_selector("[data-testid=live-bonus]", timeout=20000); pg.wait_for_timeout(2500)
+    lb = pg.locator("[data-testid=live-bonus]").first.inner_text()
+    ok("v28 rider info shows the live bonus setting (€0.75)", re.search(r"0[,.]75", lb) is not None, lb)
+    pg.goto(B + "/admin/settings/"); pg.wait_for_selector("[data-testid=business-model]", timeout=20000); pg.wait_for_timeout(1500)
     pg.once("dialog", lambda d: d.accept()); pg.get_by_role("button", name="Reset to plan defaults").click(); pg.wait_for_timeout(2500)
     ok("reset to plan defaults saves (toast)", "Plan defaults restored" in pg.inner_text("body"))
     pg.goto(B + "/admin/restaurants/"); pg.wait_for_selector("[data-testid=admin-commission]", timeout=20000)
@@ -91,6 +97,12 @@ with sync_playwright() as p:
         pg.screenshot(path=f"{OUT}/rider-earnings-{lang}.png", full_page=True)
         pg.goto(B + "/rider-info/"); pg.wait_for_timeout(1500); ri = pg.inner_text("main")
         ok(f"v27 {lang} rider info: fixed bonus, no 'equal to the delivery fee'", re.search(r"€0[,.]50", ri) and "gelijk aan de bezorgkosten" not in ri and "equal to the delivery fee" not in ri)
+        if lang == "en":  # v28: the GDPR export includes the rider's employment data and the other own tables
+            pg.goto(B + "/privacy/"); pg.wait_for_timeout(3000)
+            with pg.expect_download(timeout=30000) as dl: pg.click("[data-testid=data-export]")
+            data = json.load(open(dl.value.path()))
+            want = ["profile", "earnings", "rider_employment", "rider_onboarding", "payouts", "work_violations", "group_memberships", "account_status_log"]
+            ok("v28 data export has all own sections incl. rider employment", all(k in data for k in want) and isinstance(data.get("rider_employment"), list) and len(data["rider_employment"]) == 1, str([k for k in want if k not in data]))
         c.close()
     b.close()
 print(f"\n{P} passed, {F} failed"); sys.exit(1 if F else 0)
