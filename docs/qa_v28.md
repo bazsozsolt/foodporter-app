@@ -76,3 +76,20 @@ Box: no restart since v27 (up 14 h); node_modules, Playwright headless shell, Ch
   data-testid live-bonus). New v26.ui check: admin sets €0.75 → rider-info shows €0,75 → reset to plan defaults (€0.50).
 - Remaining copy that quotes current numbers: SupportSheet FAQ (fee bands), welcome page (25% commission) and terms page
   (legal snapshot, "nu"/"currently"). Correct today; they won't follow later admin changes → listed for Zsolt.
+
+## Phase 5 – Quality per role (local build with the v28 fixes)
+- Box restarted during the crawl (~13:36 EEST). node_modules, Playwright headless shell, /tmp/site server, /tmp/ghp2
+  worktree and out/ restored (npm ci, playwright install, rebuild, worktree add). Commits were intact.
+- Remaining e2e: core 38/38 (one transient null read in the auction poll; re-run green, loop now null-safe), chat 46/46,
+  chat-admin 10/10, push 24/24, rls 225/225, reports.check 14/14.
+  All e2e suites across phases 3–5: **all green.**
+- UI suites: v26 34/34 (incl. new v28 live-bonus + data-export checks), v22 36/36, v24 17/17, support 14/14, legal 14/14,
+  v19 11/11, admin-smoke 25/25, notify 8/8, sound 8/8, v13 15/15, push (--chrome) 7/7.
+  - manual-assign 3/4 → 4/4: the test read the *first* card in the prep column (a core leftover with rider Rik). It now
+    targets its own order card. Test issue, app correct.
+  - v20 13/14 → 14/14: on a Sunday "tomorrow" is in next week's call-in roster, so the test now clicks Next →
+    (the call-in was saved correctly). The rider rest check now polls instead of a fixed 4 s wait.
+- a11y: 0 critical/serious (axe), 0 missing focus rings. Parity: 94 files, 784 NL/EN pairs, 0 problems.
+- tsc clean. eslint 0 errors, 6 old warnings (unused test vars, one <img>).
+- Test data: the 6 "test rate-limit status" tickets (#438–443, OUTSIDER, is_test) were resolved by a status update
+  (no message insert → no push).
