@@ -11,7 +11,6 @@ const OWN = { // table: [cols that may equal my uid], [cols that may equal my re
   group_orders: [["host_id"], ["restaurant_id"]],
 };
 const ADMIN_ONLY = ["ops_alerts", "promo_codes", "call_config", "push_log", "push_vapid", "rate_limits", "audit_events", "public_holidays_x"];
-const PUBLIC = ["restaurants", "menu_items", "settings", "legal_templates", "legal_templates_current", "public_holidays"];
 const VIA_ORDER = { bids: "order_id", ratings: "order_id", order_metrics: "id" }; // party-of-the-order tables
 const ALL = ["orders", ...Object.keys(VIA_ORDER), ...Object.keys(OWN), ...ADMIN_ONLY.filter(t => !t.endsWith("_x")), "profiles", "order_items", "order_messages", "support_tickets", "support_messages",
   "group_members", "group_items", "incidents", "rider_locations"];
@@ -59,7 +58,7 @@ for (const r of ["HOST", "STAFF", "RIDER"]) {
   const cur = (await S.ADMIN.sb.from("settings").select("id,rider_bonus_cents").single()).data;
   const u1 = await sb.from("settings").update({ rider_bonus_cents: cur.rider_bonus_cents }).eq("id", cur.id).select();
   ok(`${r} cannot update settings`, !!u1.error || (u1.data ?? []).length === 0);
-  const u2 = await sb.from("profiles").update({ role: "admin" }).eq("id", id).select("role");
+  await sb.from("profiles").update({ role: "admin" }).eq("id", id).select("role");
   const after = (await S.ADMIN.sb.from("profiles").select("role").eq("id", id).single()).data?.role;
   ok(`${r} cannot make itself admin`, after !== "admin", `now ${after}`);
   const i1 = await sb.from("earnings").insert({ rider_id: id, amount_cents: 1 }).select();

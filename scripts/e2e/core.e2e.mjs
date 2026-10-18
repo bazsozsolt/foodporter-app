@@ -47,7 +47,7 @@ q = await staff.sb.from("orders").update({ status: "delivered" }).eq("id", OID).
 q = await other.sb.from("bids").insert({ order_id: OID, rider_id: other.id, eta_minutes: 5 }); ok("customer cannot bid", !!q.error, errOf(q));
 q = await rider.sb.from("bids").insert({ order_id: OID, rider_id: rider.id, eta_minutes: 25 }).select("id").single(); ok("rider bids 25 min", !q.error, errOf(q));
 q = await rider.sb.from("bids").insert({ order_id: OID, rider_id: rider.id, eta_minutes: 20 }); ok("rider cannot double-bid", !!q.error, errOf(q));
-let st; for (let k = 0; k < 30; k++) { ({ data: st } = await cust.sb.from("orders").select("status,rider_id").eq("id", OID).single()); if (st.status === "assigned") break; await sleep(5000); }
+let st; for (let k = 0; k < 30; k++) { ({ data: st } = await cust.sb.from("orders").select("status,rider_id").eq("id", OID).single()); if (st?.status === "assigned") break; await sleep(5000); }
 ok("auction resolves -> rider assigned", st.status === "assigned" && st.rider_id === rider.id, JSON.stringify(st));
 r = await rider.sb.rpc("order_phone", { p_order: OID }); ok("assigned rider can get customer phone", r.data === "0612345678");
 r = await other.sb.rpc("order_phone", { p_order: OID }); ok("other user cannot get the phone", !r.data, String(r.data));

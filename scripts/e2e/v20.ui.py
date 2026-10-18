@@ -36,6 +36,8 @@ def admin(pg):
     val = RIDER
     pg.select_option("[data-testid=call-rider]", val); pg.fill("[data-testid=call-date]", tomorrow); pg.fill("[data-testid=call-from]", "17:00"); pg.fill("[data-testid=call-to]", "21:00")
     pg.get_by_role("button", name="Add call-in").click(); pg.wait_for_timeout(2500)
+    if (datetime.date.today() + datetime.timedelta(days=1)).weekday() == 0:  # v28: on Sundays "tomorrow" is in next week's roster
+        pg.get_by_role("button", name="Next →").click(); pg.wait_for_timeout(2500)
     ok("payroll: call-in added, flagged short notice", pg.locator("[data-testid=call-row] >> text=short notice").count() >= 1)
     with pg.expect_download() as dl: pg.get_by_role("button", name="⬇ Payroll CSV").click()
     head = open(dl.value.path()).read().split("\n")[0]
@@ -63,6 +65,9 @@ def rest(lang):
     def f(pg):
         pg.goto(B + "/rider/"); pg.wait_for_timeout(4000)
         t = pg.inner_text("main")
+        for _ in range(32):  # v28: poll instead of a fixed wait (the store can still be loading)
+            if ("rust" in t or "rest" in t) and "Loading" not in t and "Laden" not in t: break
+            pg.wait_for_timeout(500); t = pg.inner_text("main")
         ok(f"rider rest message {lang}", ("12 uur rust" in t and "weer inklokken vanaf" in t) if lang == "nl" else ("12 hours' rest" in t and "clock in again from" in t), t[:160])
         pg.screenshot(path=f"{OUT}/rider-rest-{lang}.png", full_page=True)
     return f

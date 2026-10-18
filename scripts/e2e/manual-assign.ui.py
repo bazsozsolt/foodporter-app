@@ -33,7 +33,7 @@ def page(acct, url, sel, view=None):
                 pg.wait_for_timeout(250); t = pg.inner_text(sel)
         except Exception as e: t = "MISSING " + str(e)[:80]
         b.close(); return t
-t = page("STAFF", "/restaurant/", f"[data-testid=col-prep] [data-testid=assigned-rider]")
+t = page("STAFF", "/restaurant/", f"[data-testid=col-prep] div.rounded-2xl:has(b:text-is('#{oid}')) [data-testid=assigned-rider]")  # v28: this test's own card, not the first one
 ok("restaurant card shows hand-assigned rider + ETA", name in t and "ETA" in t and "bod" not in t, t)
 t = page("SIMC1", f"/order/?id={oid}", "[data-testid=assigned-rider]")
 ok("customer tracking shows hand-assigned rider", name in t, t)
