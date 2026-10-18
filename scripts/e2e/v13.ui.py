@@ -30,7 +30,7 @@ with sync_playwright() as p:
     # ---- 2. failures are shown in a clear Dutch box (not a silent fail)
     cu = b.new_context(**mob).new_page(); login(cu, "SIMC1"); lang(cu, "nl")
     oid_d = NODE("const a=await m.login('ADMIN'), c=await m.login('SIMC1'); const {data}=await a.sb.from('orders').select('id').eq('customer_id',c.id).eq('status','delivered').order('id',{ascending:false}).limit(1).single(); console.log(data.id)")
-    cu.route("**/rest/v1/rpc/support_create", lambda r: r.fulfill(status=400, content_type="application/json", body=json.dumps({"code": "P0429", "message": "Te veel verzoeken, probeer het over een paar minuten opnieuw (rate limit)"})))
+    cu.route("**/rest/v1/rpc/support_create", lambda r: r.fulfill(status=429, content_type="application/json", body=json.dumps({"code": "PT429", "message": "Te veel verzoeken, probeer het over een paar minuten opnieuw (rate limit)"})))
     cu.goto(B + f"/order/?id={oid_d}"); cu.wait_for_selector("[data-testid=help-button]", timeout=20000); cu.click("[data-testid=help-button]")
     cu.click("[data-testid=cat-late]"); cu.fill("[data-testid=support-body]", "Waar blijft mijn eten?"); cu.click("[data-testid=support-submit]")
     cu.wait_for_selector("[data-testid=support-error]", timeout=10000)

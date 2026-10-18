@@ -10,3 +10,26 @@ Box: no restart since v27 (up 14 h); node_modules, Playwright headless shell, Ch
   fp-purge-proofs → purge-retention HTTP 200 at 03:25 UTC: removed 0 photos, 0 tickets, 0 chat (nothing due yet). fp-purge-locations OK (7 days).
 - Logs 24 h: one API 500 = support_create rate limit during the support e2e. Cause: fp_rate_limit raises SQLSTATE P0429, which
   PostgREST maps to 500. Fix in phase 6: PT429 → HTTP 429. Other DB messages are expected test denials (RLS, admin only, push_log de-dup).
+
+## Phase 2 – Security
+- Advisors: security = same 62 functions as the v25 baseline, no new lint types (WARN anon/auth security-definer executable,
+  leaked-password protection needs Pro). Performance: INFO unused indexes only.
+- SECURITY DEFINER review (v26/v27): credit_rider_on_delivery and fp_partner_since_on_sign are trigger-only (no execute
+  for anon/authenticated). report_payments, fp_payroll_week, mark_rider_payout and mark_restaurant_payout call assert_admin();
+  fp_rider_week checks the caller. fp_commission_rate, fp_delivery_fee and fp_order_commission are invoker calculators/triggers.
+  All pin search_path=public.
+- Views order_facts, order_metrics and legal_templates_current are security_invoker (RLS applies).
+- NEW scripts/e2e/rls.e2e.mjs: anon + HOST/OUTSIDER/STAFF/RIDER/SIMR1/ADMIN × 40 tables/views. Every visible row must belong
+  to the caller (or to an order it is a party of). orders.phone not selectable. Non-admin cannot update settings, self-promote
+  to admin, insert earnings/payouts, or call report/payroll/payout RPCs. Anon cannot insert orders. **225/225 PASS.**
+- Storage: support-photos and delivery-proof private (own folder / fp_proof_access), menu-photos public read with writes limited
+  to the own restaurant folder; size and MIME limits on all 3 buckets.
+- Bundle: no service_role, sb_secret key, Mollie/Twilio/VAPID secrets, private keys or JWTs. (The only "sb_secret_" hit is
+  supabase-js's prefix check.) Only .env.example is git-tracked.
+- XSS: React escapes everywhere. dangerouslySetInnerHTML only renders same-origin legal HTML from admin-only template rows.
+  **FIXED:** PhotoCredits made an href from menu_items.image_credit (restaurant-writable); now only http(s) URLs become links.
+- Edge functions without gateway JWT: mollie-webhook re-fetches the payment from Mollie; order-push and order-sms re-read state
+  and de-duplicate (spoof-safe); order-refund getUser + admin; purge-retention has no auth by design (idempotent, only past-retention).
+- Rate limits: order_call 10/h, order_chat 40/10 min, support 6/h (SOS 5/h), support_reply 30/10 min; promo brute force → audit e2e.
+  **FIXED (live DB):** fp_rate_limit SQLSTATE P0429 → PT429, so PostgREST returns HTTP 429 instead of 500
+  (migration 20261018090000; v13.ui mock updated).
