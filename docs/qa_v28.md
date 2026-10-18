@@ -33,3 +33,23 @@ Box: no restart since v27 (up 14 h); node_modules, Playwright headless shell, Ch
 - Rate limits: order_call 10/h, order_chat 40/10 min, support 6/h (SOS 5/h), support_reply 30/10 min; promo brute force → audit e2e.
   **FIXED (live DB):** fp_rate_limit SQLSTATE P0429 → PT429, so PostgREST returns HTTP 429 instead of 500
   (migration 20261018090000; v13.ui mock updated).
+- Verified live: 7th support ticket within the hour → **HTTP 429** code PT429 with the same NL message (it was 500).
+  This created 6 "test rate-limit status" tickets on the OUTSIDER test account.
+
+## Phase 3 – Payments / money
+- Suites (sequential, load < 1): v26 36/36, v27 26/26, cross 66/66 (tamper, Mollie amount = breakdown, partial/full refunds
+  capped at paid − refunded, rider keeps bonus + tip after refunds, reconciliation), tips 10/10, promo 34/34, group 47/47,
+  pickup 15/15, support 40/40 (refund requests, SOS), audit 42/42 (promo brute force 429). **316/316.**
+- DB-wide reconciliation over all 321 delivered orders (excl. 1043/1046):
+  - charge = restaurant net + rider (bonus + tip) + platform share: 0 mismatches;
+  - rider earnings rows = bonus + tip: 0 mismatches, 0 duplicate earnings, 0 earnings on pickup;
+  - commission_cents = subtotal × pct: 0 off;
+  - since v26 every pct ∈ {25, 20, 10} and every real delivery fee ∈ {249, 349, 499};
+  - all 24 orders with a stored bonus have bonus = min(fee, €0.50);
+  - no refund above the charged amount.
+- Service fee 0 on 14 delivery orders from 17 Oct 09:15–10:34 UTC: all are tr_sim_* fixtures (cross/chat-admin mark orders paid
+  as admin, no fee_km), not create-payment checkouts. Every real checkout since v26 carries €0.99. Not a bug.
+- Orders 1431/1432 (14 Oct, pre-v26) are flagged is_test=false; left untouched → for Zsolt.
+- Payouts: rows only via mark_rider_payout / mark_restaurant_payout (assert_admin); RLS insert/update/delete admin-only;
+  no cron job touches payouts; the functions call Mollie only for payments and refunds (no transfer/settlement API).
+  Nothing is auto-paid.
