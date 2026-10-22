@@ -97,3 +97,9 @@ Box: no restart since v27 (up 14 h); node_modules, Playwright headless shell, Ch
   node_modules, Playwright, out/, /tmp/site and /tmp/ghp2 restored.
 - Crawler (CRAWL_CONCURRENCY=1, --quick, mobile NL + desktop EN): anon 30 pages, customer 34, rider 8, restaurant 4,
   admin 32, admin-as-roles 20. **0 findings.**
+
+## Phase 6 – Deploy
+- Fixes deployed ONCE: build 20261022125726 (rider-info LiveBonus, full GDPR export, PhotoCredits http(s)-only).
+  The DB fix (rate limit → HTTP 429) was already live since 18 Oct.
+- Live version.json = out/version.json. Key pages 200. v26.ui against live 34/34, incl. both v28 checks; bonus restored to €0.50.
+- Git credential helper pointed at /usr/bin/gh, which the reboot removed → now /usr/local/bin/gh.
