@@ -103,3 +103,10 @@ Box: no restart since v27 (up 14 h); node_modules, Playwright headless shell, Ch
   The DB fix (rate limit → HTTP 429) was already live since 18 Oct.
 - Live version.json = out/version.json. Key pages 200. v26.ui against live 34/34, incl. both v28 checks; bonus restored to €0.50.
 - Git credential helper pointed at /usr/bin/gh, which the reboot removed → now /usr/local/bin/gh.
+
+## v28b (22 Oct)
+- Orders 1431/1432 set is_test=true (confirmed by Zsolt). No other non-test orders exist besides 1043/1046 (untouched).
+  reports.check 14/14, cross 66/66 (reconciliation), v27 26/26.
+- Live copy: help FAQ (fee bands, service fee, zone), welcome (commission, zone) and terms (fee bands, service fee, zone)
+  now read settings via fillLive/<LiveText/>. New v26.ui checks: admin sets €2.59 / €1.09 / 26% → terms, welcome and FAQ
+  show them → reset to plan defaults (verified 249/349/499, 99, 25%, €0.50). v26.ui 37/37, parity 0 problems, a11y 0 serious.

@@ -74,7 +74,20 @@ with sync_playwright() as p:
     ok("v27 admin business model: rider bonus €0.50", pg.input_value("[data-testid=bm-rider-bonus]") in ("0.50", "0,50"))
     pg.locator("[data-testid=business-model]").scroll_into_view_if_needed(); pg.screenshot(path=f"{OUT}/admin-business-settings.png", full_page=True)
     # v28: rider info reads the live bonus setting (temporarily €0.75, then the reset below restores €0.50)
-    pg.fill("[data-testid=bm-rider-bonus]", "0.75"); pg.get_by_role("button", name="Save business model").click(); pg.wait_for_timeout(2500)
+    pg.fill("[data-testid=bm-rider-bonus]", "0.75")
+    pg.fill("[data-testid=band-fee-0]", "2.59"); pg.fill("[data-testid=service-fee]", "1.09"); pg.fill("[data-testid=bm-commission_delivery_pct]", "26")  # v28b: live copy
+    pg.get_by_role("button", name="Save business model").click(); pg.wait_for_timeout(2500)
+    pg.goto(B + "/terms/"); pg.wait_for_timeout(4000); tt = pg.inner_text("main")
+    ok("v28b terms quote the live fee band + service fee", "€2.59 up to 3 km" in tt and "€1.09" in tt and "€2.49" not in tt, tt[:200])
+    pg.goto(B + "/welcome/"); pg.wait_for_timeout(4000); wt = pg.inner_text("main")
+    ok("v28b welcome quotes the live commission", "26% on delivered" in wt and "25% on delivered" not in wt)
+    pg.goto(B + "/r/?id=187f751c-bebb-4a34-9d4b-9b1a9e8851db")
+    for _ in range(40):
+        if pg.locator("[data-testid=help-button]").count(): break
+        pg.wait_for_timeout(500)
+    fq = ""
+    if pg.locator("[data-testid=help-button]").count(): pg.locator("[data-testid=help-button]").first.click(); pg.wait_for_timeout(1500); fq = pg.text_content("body") or ""
+    ok("v28b help FAQ quotes the live fee band + service fee", "€2.59 up to 3 km" in fq and "€1.09 service fee" in fq)
     pg.goto(B + "/rider-info/"); pg.wait_for_selector("[data-testid=live-bonus]", timeout=20000); pg.wait_for_timeout(2500)
     lb = pg.locator("[data-testid=live-bonus]").first.inner_text()
     ok("v28 rider info shows the live bonus setting (€0.75)", re.search(r"0[,.]75", lb) is not None, lb)

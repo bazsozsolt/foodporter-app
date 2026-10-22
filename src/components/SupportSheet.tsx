@@ -3,6 +3,8 @@ import { Camera, LifeBuoy, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { tx } from "@/lib/i18n";
+import { useStore } from "@/lib/store";
+import { fillLive } from "@/components/LiveBonus";
 import { toast } from "@/components/Toaster";
 import { localizeError } from "@/lib/act";
 import { CATEGORIES, catLabel, createTicket, type SupportRole } from "@/lib/support";
@@ -10,12 +12,13 @@ import { CATEGORIES, catLabel, createTicket, type SupportRole } from "@/lib/supp
 const FAQ: [string, string, string, string][] = [
   ["Waar blijft mijn bestelling?", "Where is my order?", "Op de bestelpagina zie je de status en de bezorger live op de kaart. Is hij later dan de beloofde tijd? Meld het hieronder.", "The order page shows the status and the rider live on the map. Later than promised? Report it below."],
   ["Wanneer krijg ik mijn geld terug?", "When do I get my money back?", "Een goedgekeurde terugbetaling zie je binnen 1–3 werkdagen terug op je rekening (iDEAL/kaart).", "An approved refund shows up within 1–3 working days (iDEAL/card)."],
-  ["Wat kost bezorging en waar bezorgen jullie?", "What does delivery cost and where do you deliver?", "Bezorgkosten hangen af van de afstand: €2,49 tot 3 km, €3,49 tot 5 km, €4,99 tot 10 km. Bezorg- en servicekosten gaan naar Food Porter; riders zijn in loondienst en krijgen uurloon plus een vaste bonus per bezorging. Je fooi gaat 100% naar de rider. Bij bezorging komt er €0,99 servicekosten bij; afhalen is zonder bezorg- en servicekosten. We bezorgen nu tot 5 km rond het centrum van Tilburg (later tot 10 km).", "Delivery cost depends on distance: €2.49 up to 3 km, €3.49 up to 5 km, €4.99 up to 10 km. Delivery and service fees go to Food Porter; riders are employees with an hourly wage plus a fixed bonus per delivery. Your tip goes 100% to the rider. Delivery orders add a €0.99 service fee; pickup has no delivery or service fee. We currently deliver up to 5 km around central Tilburg (later up to 10 km)."],
+  ["Wat kost bezorging en waar bezorgen jullie?", "What does delivery cost and where do you deliver?", "Bezorgkosten hangen af van de afstand: {FEES}. Bezorg- en servicekosten gaan naar Food Porter; riders zijn in loondienst en krijgen uurloon plus een vaste bonus per bezorging. Je fooi gaat 100% naar de rider. Bij bezorging komt er {SERVICE} servicekosten bij; afhalen is zonder bezorg- en servicekosten. We bezorgen nu tot {ZONE} km rond het centrum van Tilburg (later tot 10 km).", "Delivery cost depends on distance: {FEES}. Delivery and service fees go to Food Porter; riders are employees with an hourly wage plus a fixed bonus per delivery. Your tip goes 100% to the rider. Delivery orders add a {SERVICE} service fee; pickup has no delivery or service fee. We currently deliver up to {ZONE} km around central Tilburg (later up to 10 km)."],
   ["Kan ik mijn bestelling nog annuleren?", "Can I still cancel?", "Zolang het restaurant de bestelling nog niet heeft geaccepteerd, krijg je bij annuleren automatisch alles terug.", "Until the restaurant accepts it, cancelling refunds you in full automatically."],
 ];
 
 /** "Hulp" sheet: pick an issue, describe it, optional photo, optional refund request. Creates a ticket for the order. */
 export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role: SupportRole; orderId?: number | null; orderTotalCents?: number | null; onClose: () => void }) {
+  const { settings } = useStore();
   const router = useRouter();
   const [cat, setCat] = useState<string | null>(null);
   const [body, setBody] = useState("");
@@ -50,7 +53,7 @@ export function SupportSheet({ role, orderId, orderTotalCents, onClose }: { role
         {role === "customer" && !cat && (
           <div className="mb-3 space-y-1">
             {FAQ.map(([qn, qe, an, ae]) => (
-              <details key={qn} className="rounded-xl bg-white px-3 py-2 text-sm"><summary className="cursor-pointer font-semibold">{tx(qn, qe)}</summary><p className="mt-1 text-muted">{tx(an, ae)}</p></details>
+              <details key={qn} className="rounded-xl bg-white px-3 py-2 text-sm"><summary className="cursor-pointer font-semibold">{tx(qn, qe)}</summary><p className="mt-1 text-muted">{fillLive(tx(an, ae), settings, tx("nl", "en") === "en")}</p></details>
             ))}
           </div>
         )}
