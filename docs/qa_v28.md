@@ -93,3 +93,7 @@ Box: no restart since v27 (up 14 h); node_modules, Playwright headless shell, Ch
 - tsc clean. eslint 0 errors, 6 old warnings (unused test vars, one <img>).
 - Test data: the 6 "test rate-limit status" tickets (#438–443, OUTSIDER, is_test) were resolved by a status update
   (no message insert → no push).
+- 22 Oct resume: health OK (live build 20261017105052; 10 cron jobs, 24 h, 0 failures). Box rebooted again mid-crawl;
+  node_modules, Playwright, out/, /tmp/site and /tmp/ghp2 restored.
+- Crawler (CRAWL_CONCURRENCY=1, --quick, mobile NL + desktop EN): anon 30 pages, customer 34, rider 8, restaurant 4,
+  admin 32, admin-as-roles 20. **0 findings.**
