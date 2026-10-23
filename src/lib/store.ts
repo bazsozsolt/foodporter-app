@@ -158,7 +158,14 @@ async function initSupabase() {
   const sb = getSupabase()!;
   await loadCatalog();
   await loadUserData();
-  sb.auth.onAuthStateChange(() => refetchSoon());
+  sb.auth.onAuthStateChange((event) => {
+    // Password-reset link: land on the "choose a new password" form.
+    if (event === "PASSWORD_RECOVERY" && !/\/login\/?$/.test(window.location.pathname)) {
+      window.location.assign((process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/login/?reset=1");
+      return;
+    }
+    refetchSoon();
+  });
   sb.channel("fp-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, refetchSoon)
     .on("postgres_changes", { event: "*", schema: "public", table: "bids" }, refetchSoon)
@@ -176,6 +183,10 @@ function authError(m: string) {
   if (/rate limit/i.test(m)) return tx("Er zijn het afgelopen uur te veel e-mails verstuurd. Probeer het later opnieuw (of vraag het Food Porter-team je account te activeren).", "Too many emails were sent in the last hour. Please try again later (or ask the Food Porter team to enable your account).");
   if (/not authorized/i.test(m)) return tx("Aanmeldmails kunnen nog niet naar dit adres worden verstuurd (pilotlimiet). Vraag het Food Porter-team.", "Sign-up emails can't be delivered to this address yet (pilot mail limits). Please ask the Food Porter team.");
   if (/not confirmed/i.test(m)) return tx("Bevestig eerst je e-mailadres via de link die we je stuurden (kijk ook in spam).", "Please confirm your email first: open the link we emailed you (check spam).");
+  if (/should be different/i.test(m)) return tx("Kies een ander wachtwoord dan je huidige.", "Choose a password different from your current one.");
+  if (/weak|at least|characters/i.test(m)) return tx("Wachtwoord te zwak: gebruik minstens 8 tekens.", "Password too weak: use at least 8 characters.");
+  if (/seconds/i.test(m)) return tx("Even geduld: probeer het over een minuut opnieuw.", "Please wait a minute and try again.");
+  if (/already registered|already exists/i.test(m)) return tx("Aanmelden lukt niet met dit adres. Heb je al een account? Log in of herstel je wachtwoord.", "Can't sign up with this address. Already have an account? Sign in or reset your password.");
   if (/invalid login/i.test(m)) return tx("Onjuist e-mailadres of wachtwoord.", "Wrong email or password.");
   return m;
 }
@@ -194,6 +205,7 @@ export const actions = {
   },
   async signUp(email: string, password: string) {
     const sb = getSupabase();
+    if (password.length < 8) throw new Error(tx("Gebruik een wachtwoord van minstens 8 tekens.", "Use a password of at least 8 characters."));
     if (!sb) { set((s) => ({ ...s, signedIn: email || "email" })); return "Account created (mock)"; }
     const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: authRedirect() } });
     if (error) throw new Error(authError(error.message));
@@ -215,11 +227,29 @@ export const actions = {
     if (error) throw new Error(error.message);
     return "Redirecting…";
   },
+  /** Always answers the same way, whether or not the address has an account (no user enumeration). */
+  async resetPassword(email: string) {
+    const sb = getSupabase();
+    const sent = "✉️ " + tx("Als er een account bij dit adres hoort, sturen we een link om je wachtwoord te herstellen. Kijk ook in spam.", "If an account exists for this address, we've emailed a link to reset your password. Check spam too.");
+    if (!sb) return sent;
+    const { error } = await sb.auth.resetPasswordForEmail(email.trim(), { redirectTo: authRedirect() });
+    if (error && /rate limit|seconds/i.test(error.message)) throw new Error(authError(error.message));
+    return sent;
+  },
+  async updatePassword(password: string) {
+    const sb = getSupabase();
+    if (password.length < 8) throw new Error(tx("Gebruik minstens 8 tekens.", "Use at least 8 characters."));
+    if (!sb) return tx("Wachtwoord gewijzigd", "Password changed");
+    const { error } = await sb.auth.updateUser({ password });
+    if (error) throw new Error(authError(error.message));
+    return tx("Wachtwoord gewijzigd", "Password changed");
+  },
   async signOut() {
     const sb = getSupabase();
     await (await import("@/lib/push")).disablePush(); // this device stops getting this user's pushes
     if (sb) await sb.auth.signOut();
     set((s) => ({ ...s, signedIn: null, profile: null, orders: sb ? [] : s.orders }));
+    window.location.assign((process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/login/"); // full reload drops any in-memory data of the old user
   },
 
   // --- cart (local in both modes) ---

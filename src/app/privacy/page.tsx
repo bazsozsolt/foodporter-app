@@ -33,7 +33,7 @@ export default function Privacy() {
       <p>Het restaurant en de toegewezen rider zien wat ze nodig hebben voor je bestelling (items, adres; de rider ziet je telefoonnummer alleen via de belknop tijdens de bezorging). Verwerkers: Supabase (database &amp; inloggen, EU-regio), Mollie (betalingen, NL), PDOK/Kadaster (adres opzoeken, NL), OpenStreetMap (kaarttegels), onze sms-aanbieder (Twilio of Bird) en GitHub Pages (hosting van de app-bestanden). We verkopen geen gegevens en gebruiken geen advertentietrackers.</p>
       <h2>Hoe lang</h2>
       <p>Bestel- en betaalgegevens: 7 jaar (Nederlandse fiscale wet). Accountgegevens: tot je je account verwijdert. Beoordelingen: tot je vraagt ze te verwijderen. GPS-punten van riders: 7 dagen. Supporttickets (met berichten en foto&apos;s): 2 jaar na het sluiten. Chatberichten bij een bestelling: 6 maanden na afronding van de bestelling. Beide worden elke nacht automatisch verwijderd.</p>
-      <h2>Je rechten</h2>
+      <h2 id="rights">Je rechten</h2>
       <p>Je kunt je gegevens inzien, corrigeren, exporteren of laten verwijderen, bezwaar maken tegen verwerking, en een klacht indienen bij de Autoriteit Persoonsgegevens. Download je gegevens hieronder; voor verwijdering of vragen mail je naar <b>privacy@foodporter.nl</b> (pilotcontact, nog te bevestigen). We reageren binnen 30 dagen.</p>
       <div className="flex flex-wrap gap-2"><DataExport /><DeleteAccount /></div>
       </>}
@@ -64,7 +64,7 @@ export default function Privacy() {
       <p>The restaurant and the assigned rider see what they need for your order (items, address; the rider only gets your phone number through the call button during delivery). Processors: Supabase (database &amp; login, EU region), Mollie (payments, NL), PDOK/Kadaster (address lookup, NL), OpenStreetMap (map tiles), our SMS provider (Twilio or Bird) and GitHub Pages (hosting the app files). We do not sell data or use advertising trackers.</p>
       <h2>How long</h2>
       <p>Order and payment records: 7 years (Dutch tax law). Account data: until you delete your account. Ratings: until you ask us to remove them. Rider GPS points: 7 days. Support tickets (with messages and photos): 2 years after closing. Order chat messages: 6 months after the order is completed. Both are deleted automatically every night.</p>
-      <h2>Your rights</h2>
+      <h2 id="rights">Your rights</h2>
       <p>You can access, correct, export or delete your data, object to processing, and complain to the Autoriteit Persoonsgegevens. Download your data below; for deletion or questions contact us at <b>privacy@foodporter.nl</b> (pilot contact, to be confirmed). We reply within 30 days.</p>
       <div className="flex flex-wrap gap-2"><DataExport /><DeleteAccount /></div>
       </>} />
