@@ -99,8 +99,8 @@ for c, a in zip(CU, addrs):
     c['addr'] = f"{a['straatnaam']} {hn}, {a['postcode']} {a['woonplaatsnaam']}"; c['pt'] = pt(a)
 RI = [person(i, 'testrider') for i in range(15)]
 def users(ps, role):
-    W("insert into auth.users (instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,raw_app_meta_data,raw_user_meta_data,created_at,updated_at) values\n" + ",\n".join(
-      f"('00000000-0000-0000-0000-000000000000',{q(p['id'])},'authenticated','authenticated',{q(p['email'])},'',{q(NOW - dt.timedelta(days=40))},'{{\"provider\":\"email\",\"providers\":[\"email\"],\"is_test\":true}}',{q(json.dumps({'full_name': p['name']}))},{q(NOW - dt.timedelta(days=40))},{q(NOW)})" for p in ps) + ";")
+    W("insert into auth.users (instance_id,id,aud,role,email,encrypted_password,email_confirmed_at,raw_app_meta_data,raw_user_meta_data,created_at,updated_at,confirmation_token,recovery_token,email_change_token_new,email_change) values\n" + ",\n".join(
+      f"('00000000-0000-0000-0000-000000000000',{q(p['id'])},'authenticated','authenticated',{q(p['email'])},'',{q(NOW - dt.timedelta(days=40))},'{{\"provider\":\"email\",\"providers\":[\"email\"],\"is_test\":true}}',{q(json.dumps({'full_name': p['name']}))},{q(NOW - dt.timedelta(days=40))},{q(NOW)},'','','','')" for p in ps) + ";")
     W(f"update profiles p set role='{role}', is_test=true, phone=v.phone, full_name=v.name, created_at=v.ts from (values " + ",".join(
       f"({q(p['id'])}::uuid,{q(p['phone'])},{q(p['name'])},{q(NOW - dt.timedelta(days=random.randint(31, 60)))}::timestamptz)" for p in ps) + ") v(id,phone,name,ts) where p.id=v.id;")
 users(CU, 'customer'); users(RI, 'rider')

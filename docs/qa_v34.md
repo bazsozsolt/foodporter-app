@@ -7,3 +7,8 @@ Build 20261024160922 live (gh-pages 02c90742b8).
 - Full suite (CRAWL_CONCURRENCY=1): 725 PASS, 0 FAIL. Crawler had 1 flaky finding (rider /rider/shifts "Add block" no-op); a rerun of the rider role found 0.
 - Real emails: 2 to cdtecniek.bouw@gmail.com (recovery 18:12, magic link 18:13). Auth logs show /recover 200 and /otp 200 with no SMTP errors.
 - Note: auth admin listUsers returns 500 "Database error finding users" on this project (probably the anonymised erased rows). The test helper looks users up with SQL instead.
+
+## Addendum (18:59–19:10 Amsterdam): admin listUsers 500 fixed
+- Cause: 115 seeded example.com test users (seed run of 2026-09-03, inserted straight into auth.users) had NULL confirmation_token, recovery_token, email_change_token_new and email_change, which GoTrue reads as non-null strings. The erase function (v25) deletes the auth row, so it wasn't the cause.
+- Fix: migration 20261024190000_v34_auth_null_tokens.sql (coalesce the token columns to '', run in a transaction, only rows with NULLs, i.e. the 115 test users); scripts/test-data/generate_seed.py now writes ''.
+- Verified: 0 NULL rows left; admin listUsers lists all 134 users across pages with no error; erase.e2e 10/10.
