@@ -1,13 +1,13 @@
 # Food Porter – compliance checklist (v20)
 > **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Status per 15-10-2026. ✅ = in de app/templates, ☐ = nog door Zsolt te regelen, ⚖ = jurist laten bevestigen.
 
-- ✅ Juridische partij (24-10-2026): **Sonic Jobs V.O.F. h.o.d.n. Food Porter** in alle templates (werkgever, platform, verwerkingsverantwoordelijke). ☐ KvK, btw-nummer, adres, payrollprovider en arbodienst blijven placeholders. ⚖ V.O.F.-vennoten zijn hoofdelijk en privé aansprakelijk (art. 7A:1680 BW / 18 WvK) voor alle verplichtingen, ook loon, pensioen en schade: bevestig dat de V.O.F. geschikt is als werkgever (of BV overwegen), dat de SBI-code/activiteiten in KvK maaltijdbezorging en platform dekken, en of "h.o.d.n. Food Porter" als handelsnaam is ingeschreven.
+- ✅ Juridische partij (24-10-2026): **Sonic Jobs V.O.F. h.o.d.n. Food Porter** in alle templates (werkgever, platform, verwerkingsverantwoordelijke). ✅ KvK 42169998, btw NL870021977B01, Amarantstraat 6, 5044 RK Tilburg ingevuld (24-10-2026). ☐ Payrollprovider en arbodienst blijven placeholders. ⚖ V.O.F.-vennoten zijn hoofdelijk en privé aansprakelijk (art. 7A:1680 BW / 18 WvK) voor alle verplichtingen, ook loon, pensioen en schade: bevestig dat de V.O.F. geschikt is als werkgever (of BV overwegen), dat de SBI-code/activiteiten in KvK maaltijdbezorging en platform dekken, en of "h.o.d.n. Food Porter" als handelsnaam is ingeschreven.
 ## Arbeidsrecht (BW 7, Wab, Wtvaa)
 - ✅ Direct dienstverband, geen zzp (Deliveroo-arrest HR 2023:1622). ✅ Contractvorm per bezorger: oproep (0 uur) of min-max.
 - ✅ Oproep: min. 3 uur per oproep, 4 dagen oproeptermijn (weigeren bij later), annulering < 4 dagen betaald, aanbod vaste uren na 12 maanden (melding + "Offer made").
 - ✅ Min-max: minimumuren altijd betaald. ⚖ Overwerkdrempel (max-uren vs. 40 uur) en stapelen van dag- en nachttoeslag.
 - ✅ Proeftijd: geen bij ≤ 6 mnd, max 1 mnd bij > 6 mnd en < 2 jr. ✅ Aanzegging, ketenregeling, geen concurrentiebeding, nevenwerk toegestaan, gratis verplichte scholing, informatieplicht 7:655 (referentiedagen).
-- ☐ Kies contractduur per bezorger en vul de placeholders in ({{KVK}}, {{ADRES}}, {{PAYROLL_PROVIDER}}, {{ARBODIENST}}).
+- ☐ Kies contractduur per bezorger en vul de placeholders in ({{PAYROLL_PROVIDER}}, {{ARBODIENST}}).
 
 ## CAO en loon
 - ✅ CAO Beroepsgoederenvervoer (AVV tot 1-1-2027): jeugdlonen in % van het WML, 21+ = max(WML, A1), toeslagen za 50 / zo 100 / feestdag 100 / nacht 19 / overwerk 30, pauze na 4,5 uur, vakantie-uren 10,58%, alles instelbaar (Settings → CAO).

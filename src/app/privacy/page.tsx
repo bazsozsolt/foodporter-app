@@ -7,7 +7,7 @@ export default function Privacy() {
   return (
     <LegalPage title={["Privacybeleid", "Privacy policy"]} updated={["24 oktober 2026", "24 October 2026"]}
       nl={<>
-      <p>Food Porter (“wij”; Sonic Jobs V.O.F. h.o.d.n. Food Porter, verwerkingsverantwoordelijke) voert een pilot voor maaltijdbezorging uit in Tilburg. Dit beleid legt uit welke persoonsgegevens we verwerken, waarom, en welke rechten je hebt onder de AVG.</p>
+      <p>Food Porter (“wij”; Sonic Jobs V.O.F. h.o.d.n. Food Porter, Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, verwerkingsverantwoordelijke) voert een pilot voor maaltijdbezorging uit in Tilburg. Dit beleid legt uit welke persoonsgegevens we verwerken, waarom, en welke rechten je hebt onder de AVG.</p>
       <h2>Wat we verzamelen</h2>
       <ul>
         <li><b>Account:</b> e-mailadres, naam (optioneel), rol, en inloggegevens van Google/Apple als je die gebruikt.</li>
@@ -38,7 +38,7 @@ export default function Privacy() {
       <div className="flex flex-wrap gap-2"><DataExport /><DeleteAccount /></div>
       </>}
       en={<>
-      <p>Food Porter (“we”; Sonic Jobs V.O.F. trading as Food Porter, the data controller) runs a food delivery pilot in Tilburg, the Netherlands. This policy explains which personal data we process, why, and your rights under the GDPR (AVG).</p>
+      <p>Food Porter (“we”; Sonic Jobs V.O.F. trading as Food Porter, Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, the data controller) runs a food delivery pilot in Tilburg, the Netherlands. This policy explains which personal data we process, why, and your rights under the GDPR (AVG).</p>
       <h2>What we collect</h2>
       <ul>
         <li><b>Account:</b> email address, name (optional), role, and sign-in data from Google/Apple if you use them.</li>

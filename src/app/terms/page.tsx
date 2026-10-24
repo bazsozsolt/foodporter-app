@@ -32,7 +32,7 @@ export default function Terms() {
       <h2>7. Aansprakelijkheid</h2>
       <p>Onze aansprakelijkheid is beperkt tot het bedrag van de betreffende bestelling, behalve bij opzet of grove nalatigheid. Nederlands recht is van toepassing.</p>
       <h2>8. Contact</h2>
-      <p>support@foodporter.nl (pilotcontact, nog te bevestigen). Sonic Jobs V.O.F. h.o.d.n. Food Porter; KvK-nummer en adres worden vóór de publieke lancering toegevoegd.</p>
+      <p>support@foodporter.nl (pilotcontact, nog te bevestigen). Sonic Jobs V.O.F. h.o.d.n. Food Porter, Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, btw NL870021977B01.</p>
       </>}
       en={<>
       <p>Food Porter is a trade name of Sonic Jobs V.O.F. (trading as Food Porter), your contracting party. These terms apply to ordering through Food Porter during the Tilburg pilot.</p>
@@ -60,7 +60,7 @@ export default function Terms() {
       <h2>7. Liability</h2>
       <p>Our liability is limited to the amount of the order concerned, except in case of intent or gross negligence. Dutch law applies.</p>
       <h2>8. Contact</h2>
-      <p>support@foodporter.nl (pilot contact, to be confirmed). Sonic Jobs V.O.F. trading as Food Porter; KvK number and address will be added before public launch.</p>
+      <p>support@foodporter.nl (pilot contact, to be confirmed). Sonic Jobs V.O.F. trading as Food Porter, Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, VAT NL870021977B01.</p>
       </>} />
   );
 }

@@ -1,13 +1,13 @@
 ---
 id: deactivation_appeal
 title: Deactivatie-, bezwaar- en klachtenprocedure
-version: 0.2
+version: 0.3
 audience: all
 ---
 # Deactivatie, bezwaar en klachten
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
-**Verantwoordelijke partij / Responsible party:** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, {{ADRES}}, KvK {{KVK}}.
+**Verantwoordelijke partij / Responsible party:** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, btw NL870021977B01.
 
 **1. Gronden voor pauze of deactivatie** (limitatief): fraude, geweld of intimidatie, ernstige voedselveiligheidsschending, verlopen verplichte documenten, ernstige en herhaalde verkeersovertredingen met bewijs, wettelijke verplichting. **Niet:** het weigeren van opdrachten, het niet inloggen, lage biedingen, een ziekmelding of vakbondsactiviteit.
 **2. Procedure.** (a) Een melding of signaal wordt door een **mens** (admin) beoordeeld; (b) behalve bij acuut gevaar eerst hoor en wederhoor (48 uur reactietermijn); (c) een schriftelijk besluit met de reden, de feiten en de duur; (d) de registratie in het onveranderbare statuslog; (e) bij verlopen documenten een automatische herinnering 30 dagen vooraf en een pauze pas na de vervaldatum.

@@ -1,13 +1,13 @@
 ---
 id: platform_transparency
 title: Transparantieverklaring algoritmisch management (richtlijn 2024/2831)
-version: 0.6
+version: 0.7
 audience: rider
 ---
 # Transparantieverklaring – hoe de app werk verdeelt
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
-**Verantwoordelijke partij / Responsible party:** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, {{ADRES}}, KvK {{KVK}}.
+**Verantwoordelijke partij / Responsible party:** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, btw NL870021977B01.
 
 Op grond van hoofdstuk III van richtlijn (EU) 2024/2831 (implementatie uiterlijk 2-12-2026) en art. 13–15 en 22 AVG lichten wij toe welke **geautomatiseerde systemen** wij gebruiken.
 

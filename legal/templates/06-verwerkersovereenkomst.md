@@ -1,11 +1,11 @@
 ---
 id: dpa_restaurant
 title: Verwerkersovereenkomst (DPA) restaurant + subverwerkers
-version: 0.3
+version: 0.4
 audience: restaurant
 ---
 # Verwerkersovereenkomst (art. 28 AVG)
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
 **Partijen.** [Restaurant] ("Verwerkingsverantwoordelijke" voor klantgegevens die zij voor haar eigen verkoop gebruikt) en **Sonic Jobs V.O.F.** h.o.d.n. Food Porter ("Verwerker" voor zover zij namens het restaurant bestellingen ontvangt, doorgeeft en bewaart).
 *Toelichting:* voor de eigen platformdiensten (account, betaling, bezorging) is Food Porter zelf verantwoordelijk; deze DPA ziet alleen op de verwerking **namens** het restaurant.

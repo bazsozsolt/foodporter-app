@@ -1,13 +1,13 @@
 ---
 id: restaurant_partner
 title: Partnerovereenkomst restaurant
-version: 0.3
+version: 0.4
 audience: restaurant
 ---
 # Partnerovereenkomst restaurant
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
-**Partijen.** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, {{ADRES}}, KvK {{KVK}} ("Food Porter") en [restaurant], KvK [nummer], BTW [nummer] ("Partner").
+**Partijen.** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, btw NL870021977B01 ("Food Porter") en [restaurant], KvK [nummer], BTW [nummer] ("Partner").
 
 **1. Rol.** Food Porter exploiteert een online platform en treedt op als **bemiddelaar en incassogemachtigde** van Partner. De koopovereenkomst voor de maaltijd komt tot stand tussen Partner en de klant. Partner is **verkoper en levensmiddelenbedrijf** in de zin van de Warenwet en de EU-verordeningen 178/2002 en 1169/2011.
 **2. Menu, prijzen en allergenen.** Partner beheert menu, prijzen (inclusief 9% BTW) en de **allergeneninformatie voor de 14 allergenen** in de app, en houdt die actueel. Food Porter toont deze informatie vóór de aankoop. Partner is verantwoordelijk voor de juistheid daarvan; Food Porter controleert dit niet inhoudelijk.

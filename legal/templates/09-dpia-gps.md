@@ -1,13 +1,13 @@
 ---
 id: dpia_gps
 title: DPIA-opzet GPS-tracking en werktijdregistratie bezorgers
-version: 0.4
+version: 0.5
 audience: internal
 ---
 # DPIA – GPS-tracking (opzet)
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
-**Verantwoordelijke partij / Responsible party:** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, {{ADRES}}, KvK {{KVK}}.
+**Verantwoordelijke partij / Responsible party:** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, btw NL870021977B01.
 
 **Waarom verplicht:** de AP-lijst (Stcrt. 2019, 64418) noemt de stelselmatige monitoring van werkenden, inclusief GPS, en grootschalige locatiegegevens.
 1. **Beschrijving:** de rider-app stuurt tijdens een actieve bezorging (status toegewezen → geleverd) elke [10–30] s de locatie; de klant ziet een kaart en de ETA, en het restaurant ziet de aankomst.

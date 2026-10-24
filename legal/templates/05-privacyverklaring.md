@@ -1,13 +1,13 @@
 ---
 id: privacy_statement
 title: Privacyverklaring (update v18)
-version: 0.5
+version: 0.6
 audience: all
 ---
 # Privacyverklaring Food Porter
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
-**Verwerkingsverantwoordelijke:** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, {{ADRES}}, KvK {{KVK}}; privacycontact: [privacy@…].
+**Verwerkingsverantwoordelijke:** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, btw NL870021977B01; privacycontact: privacy@foodporter.nl.
 
 | Wie | Gegevens | Doel | Grondslag | Bewaartermijn |
 |---|---|---|---|---|

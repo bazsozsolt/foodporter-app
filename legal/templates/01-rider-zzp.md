@@ -1,18 +1,18 @@
 ---
 id: rider_zzp
 title: Overeenkomst van opdracht bezorger (zzp) – NIET IN GEBRUIK
-version: 0.3
+version: 0.4
 audience: rider
 ---
 # Overeenkomst van opdracht – zelfstandig bezorger (zzp)
 > **NIET IN GEBRUIK (gearchiveerd 15-10-2026).** Food Porter werkt met bezorgers in direct dienstverband. Dit concept blijft alleen ter referentie in de bibliotheek. / *Not used: archived; riders are employed directly.*
 
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
 > ⚠️ **Risicowaarschuwing / Risk warning.** Na het Deliveroo-arrest (HR 24-3-2023, ECLI:NL:HR:2023:443) en het Temper-arrest (Hof Amsterdam 16-6-2026) kijkt de rechter naar de **feitelijke uitvoering**, niet naar dit papier. Vanaf **31-12-2026** geldt het rechtsvermoeden van een arbeidsovereenkomst bij een uurtarief onder **€ 38** en vanaf **2-12-2026** het vermoeden uit de EU-richtlijn platformwerk 2024/2831. Deze overeenkomst biedt alleen bescherming als alle hieronder beschreven vrijheden in de praktijk echt bestaan. Belastingdienst-modelovereenkomsten worden sinds 6-9-2024 niet meer beoordeeld; bestaande modellen (zoals "geen werkgeversgezag") blijven bruikbaar t/m 31-12-2029. Deze tekst is gebaseerd op de structuur van de algemene modelovereenkomst "geen werkgeversgezag", maar is **niet** door de Belastingdienst goedgekeurd.
 
 **Partijen**
-1. **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, gevestigd te {{ADRES}}, KvK {{KVK}} ("Opdrachtgever"/het Platform);
+1. **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, gevestigd te Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, btw NL870021977B01 ("Opdrachtgever"/het Platform);
 2. [naam bezorger], handelend onder [handelsnaam], KvK [nummer], BTW-id [nummer of KOR] ("Opdrachtnemer").
 
 **Artikel 1 – Aard van de opdracht.** Opdrachtnemer kan via de Food Porter-app opdrachten tot bezorging bekijken en daarop **een eigen bod** (prijs en/of ETA) uitbrengen. Een opdracht komt pas tot stand als het bod wordt geaccepteerd. Er is **geen verplichting** om in te loggen, beschikbaar te zijn, te bieden of een minimum aantal opdrachten aan te nemen.

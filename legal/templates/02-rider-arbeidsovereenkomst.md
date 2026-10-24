@@ -1,13 +1,13 @@
 ---
 id: rider_employment
 title: Arbeidsovereenkomst bezorger (direct dienstverband)
-version: 0.6
+version: 0.7
 audience: rider
 ---
 # Arbeidsovereenkomst – bezorger
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{PAYROLL_PROVIDER}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{PAYROLL_PROVIDER}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
-**Partijen.** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, {{ADRES}}, KvK {{KVK}} ("Werkgever") en [naam], geboren [datum] ("Werknemer").
+**Partijen.** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, Amarantstraat 6, 5044 RK Tilburg, KvK 42169998, btw NL870021977B01 ("Werkgever") en [naam], geboren [datum] ("Werknemer").
 
 **1. Functie en standplaats.** Maaltijdbezorger, standplaats Tilburg. Werknemer bezorgt maaltijden per [fiets/e-bike/scooter] in direct dienstverband bij Werkgever (geen zzp, geen uitzending).
 **2. Ingangsdatum, duur en proeftijd.** Per [datum] voor bepaalde tijd van [__] maanden, eindigend van rechtswege op [datum]. *Proeftijd* (art. 7:652 BW en cao): **geen** bij een contract van 6 maanden of korter; maximaal **één maand** bij langer dan 6 maanden en korter dan 2 jaar; maximaal twee maanden bij 2 jaar of langer. *Aanzegging:* werkgever zegt uiterlijk één maand vóór het einde schriftelijk aan of het contract wordt voortgezet en zo ja op welke voorwaarden (art. 7:668 BW). *Ketenregeling:* na meer dan 3 contracten of meer dan 36 maanden ontstaat een vast contract (art. 7:668a BW).
