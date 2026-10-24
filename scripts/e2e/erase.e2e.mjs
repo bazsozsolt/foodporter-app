@@ -3,7 +3,7 @@ import { login, client, ok, errOf, summary } from "./common.mjs";
 import crypto from "node:crypto";
 const admin = await login("ADMIN"), cust = await login("SIMC1");
 const email = `fp-erase-${crypto.randomBytes(4).toString("hex")}@example.com`;
-const pw = crypto.randomBytes(12).toString("base64url");
+const pw = crypto.randomBytes(12).toString("base64url") + "Aa1!";
 const t = client();
 const su = await t.auth.signUp({ email, password: pw, options: { data: { full_name: "FP TEST erase" } } });
 const tid = su.data?.user?.id; ok("throwaway user created", !!tid && !su.error, errOf(su));

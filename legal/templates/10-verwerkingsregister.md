@@ -1,11 +1,13 @@
 ---
 id: processing_register
 title: Register van verwerkingsactiviteiten (art. 30 AVG)
-version: 0.4
+version: 0.5
 audience: internal
 ---
 # Verwerkingsregister
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{BEDRIJFSNAAM}}, {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+
+**Verantwoordelijke partij / Responsible party:** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, {{ADRES}}, KvK {{KVK}}.
 
 | # | Verwerking | Betrokkenen | Categorieën | Doel | Grondslag | Ontvangers | Termijn | Beveiliging |
 |---|---|---|---|---|---|---|---|---|

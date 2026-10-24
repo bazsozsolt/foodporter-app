@@ -41,6 +41,7 @@ export function WelcomeView() {
           <a href="mailto:partners@foodporter.nl" className="mt-2 inline-block text-sm font-bold text-brand underline">{tx("Word partner →", "Become a partner →")}</a>
         </div>
       </section>
+      <p className="px-4 text-sm text-muted" data-testid="about-sonic">{tx("Food Porter is een project van Sonic Jobs V.O.F.", "Food Porter is a project powered by Sonic Jobs V.O.F.")}</p>
       <div className="px-4"><Footer /></div>
       <p className="mt-4 px-4 text-xs text-muted">{tx("Testmodus: restaurants met 🧪 zijn testdata uit OpenStreetMap (© OpenStreetMap-bijdragers, ODbL, openstreetmap.org/copyright). Het zijn geen Food Porter-partners; menu’s en prijzen zijn voorbeelden.", "Testing mode: restaurants marked 🧪 are test data imported from OpenStreetMap (© OpenStreetMap contributors, ODbL, openstreetmap.org/copyright). They are not Food Porter partners; menus and prices are examples.")}</p>
     </main>

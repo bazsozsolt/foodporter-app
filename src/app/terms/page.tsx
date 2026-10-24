@@ -5,9 +5,9 @@ export const metadata = { title: "Terms · Food Porter" };
 
 export default function Terms() {
   return (
-    <LegalPage title={["Gebruiksvoorwaarden", "Terms of use"]} updated={["13 oktober 2026", "13 October 2026"]}
+    <LegalPage title={["Gebruiksvoorwaarden", "Terms of use"]} updated={["24 oktober 2026", "24 October 2026"]}
       nl={<>
-      <p>Deze voorwaarden gelden voor bestellen via Food Porter tijdens de pilot in Tilburg.</p>
+      <p>Food Porter is een handelsnaam van Sonic Jobs V.O.F. (h.o.d.n. Food Porter), jouw contractspartij. Deze voorwaarden gelden voor bestellen via Food Porter tijdens de pilot in Tilburg.</p>
       <h2>1. Wat we doen</h2>
       <p>Food Porter brengt je in contact met zelfstandige Tilburgse restaurants en lokale riders. Het restaurant bereidt je eten en is verantwoordelijk voor de kwaliteit, ingrediënten en allergeneninformatie. Riders (in dienst bij Food Porter) bieden een bezorgtijd en bezorgen je bestelling.</p>
       <h2>2. Bestellen &amp; prijzen</h2>
@@ -32,10 +32,10 @@ export default function Terms() {
       <h2>7. Aansprakelijkheid</h2>
       <p>Onze aansprakelijkheid is beperkt tot het bedrag van de betreffende bestelling, behalve bij opzet of grove nalatigheid. Nederlands recht is van toepassing.</p>
       <h2>8. Contact</h2>
-      <p>support@foodporter.nl (pilotcontact, nog te bevestigen). Bedrijfsgegevens (KvK-nummer, adres) worden vóór de publieke lancering toegevoegd.</p>
+      <p>support@foodporter.nl (pilotcontact, nog te bevestigen). Sonic Jobs V.O.F. h.o.d.n. Food Porter; KvK-nummer en adres worden vóór de publieke lancering toegevoegd.</p>
       </>}
       en={<>
-      <p>These terms apply to ordering through Food Porter during the Tilburg pilot.</p>
+      <p>Food Porter is a trade name of Sonic Jobs V.O.F. (trading as Food Porter), your contracting party. These terms apply to ordering through Food Porter during the Tilburg pilot.</p>
       <h2>1. What we do</h2>
       <p>Food Porter connects you with independent Tilburg restaurants and local riders. The restaurant prepares your food and is responsible for its quality, ingredients and allergen information. Riders (employed by Food Porter) bid a delivery time and deliver your order.</p>
       <h2>2. Ordering &amp; prices</h2>
@@ -60,7 +60,7 @@ export default function Terms() {
       <h2>7. Liability</h2>
       <p>Our liability is limited to the amount of the order concerned, except in case of intent or gross negligence. Dutch law applies.</p>
       <h2>8. Contact</h2>
-      <p>support@foodporter.nl (pilot contact, to be confirmed). Company details (KvK number, address) will be added before public launch.</p>
+      <p>support@foodporter.nl (pilot contact, to be confirmed). Sonic Jobs V.O.F. trading as Food Porter; KvK number and address will be added before public launch.</p>
       </>} />
   );
 }

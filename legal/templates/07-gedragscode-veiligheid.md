@@ -1,11 +1,13 @@
 ---
 id: rider_conduct
 title: Gedragscode bezorgers en veiligheids- en ongevallenprocedure
-version: 0.1
+version: 0.2
 audience: rider
 ---
 # Gedragscode en veiligheid bezorgers
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{BEDRIJFSNAAM}}, {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+
+**Verantwoordelijke partij / Responsible party:** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, {{ADRES}}, KvK {{KVK}}.
 
 **Gedrag.** Respectvol tegen klanten en restaurantpersoneel; geen alcohol of drugs; geen discriminatie of intimidatie; klantgegevens alleen voor de bezorging gebruiken en niet bewaren; geen contact met de klant buiten de app-chat of het gemaskeerde bellen.
 **Voedsel.** Een schone, gesloten, geïsoleerde tas; warm en koud gescheiden; verpakkingen niet openen; bij een beschadigde verpakking melden via "Hulp".

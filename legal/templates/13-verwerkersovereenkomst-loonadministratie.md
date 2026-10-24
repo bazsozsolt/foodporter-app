@@ -1,13 +1,13 @@
 ---
 id: dpa_payroll
 title: Verwerkersovereenkomst loonadministratie (payrollprovider)
-version: 0.1
+version: 0.2
 audience: internal
 ---
 # Verwerkersovereenkomst loonadministratie (art. 28 AVG)
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{BEDRIJFSNAAM}}, {{KVK}}, {{ADRES}}, {{PAYROLL_PROVIDER}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{PAYROLL_PROVIDER}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
-**Partijen.** {{BEDRIJFSNAAM}}, {{ADRES}}, KvK {{KVK}} ("Verwerkingsverantwoordelijke", de werkgever) en {{PAYROLL_PROVIDER}} ("Verwerker"). *Let op: dit is een verwerkersovereenkomst voor een loonadministratiekantoor of salarissoftware. Een **payrollbedrijf** dat zelf juridisch werkgever wordt, valt onder een andere constructie (art. 7:692 BW, WAADI-registratie) en vraagt een ander contract.*
+**Partijen.** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, {{ADRES}}, KvK {{KVK}} ("Verwerkingsverantwoordelijke", de werkgever) en {{PAYROLL_PROVIDER}} ("Verwerker"). *Let op: dit is een verwerkersovereenkomst voor een loonadministratiekantoor of salarissoftware. Een **payrollbedrijf** dat zelf juridisch werkgever wordt, valt onder een andere constructie (art. 7:692 BW, WAADI-registratie) en vraagt een ander contract.*
 
 1. **Onderwerp:** het voeren van de loonadministratie voor de bezorgers (werknemers) van de verwerkingsverantwoordelijke: loonberekening, loonstroken, loonaangifte, jaaropgaven, pensioenaangifte bij Pensioenfonds Vervoer en betaalbestanden.
 2. **Gegevens:** (a) uit de app, wekelijks als export volgens de *Payroll export spec*: werknemersreferentie, naam, e-mail, contractvorm, uren, garantie-uren, toeslagen, bezorgbonus, fooien, vakantietoeslag en -uren, leeftijd voor het jeugdloon; (b) **rechtstreeks van de werknemer, buiten de app:** BSN, opgaaf loonheffingen (loonheffingskorting), kopie identiteitsbewijs, IBAN, adres. De app slaat geen BSN, loonheffingskorting of loonstroken op.

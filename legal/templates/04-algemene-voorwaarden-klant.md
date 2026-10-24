@@ -1,13 +1,13 @@
 ---
 id: customer_terms
 title: Algemene voorwaarden klanten
-version: 0.3
+version: 0.4
 audience: customer
 ---
 # Algemene voorwaarden Food Porter (klanten)
-> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{BEDRIJFSNAAM}}, {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
+> **Concept – laat beoordelen door een Nederlandse jurist voor gebruik.** Dit is geen juridisch advies. Placeholders: {{KVK}}, {{ADRES}}, {{COMMISSIE_PCT}}. / *Draft – have it reviewed by a Dutch lawyer before use. Not legal advice.*
 
-**1. Wie zijn wij.** {{BEDRIJFSNAAM}}, {{ADRES}}, KvK {{KVK}}, e-mail [support@…]. Food Porter is een platform dat bestellingen bij **restaurants** bemiddelt en laat bezorgen. De maaltijd koopt u van het restaurant; Food Porter regelt de bestelling, de betaling (via Mollie) en de bezorging.
+**1. Wie zijn wij.** **Sonic Jobs V.O.F.** h.o.d.n. Food Porter, {{ADRES}}, KvK {{KVK}}, e-mail [support@…]. Food Porter is een platform dat bestellingen bij **restaurants** bemiddelt en laat bezorgen. De maaltijd koopt u van het restaurant; Food Porter regelt de bestelling, de betaling (via Mollie) en de bezorging.
 **2. Toepasselijkheid.** Deze voorwaarden gelden voor elk gebruik van de app. U ziet ze vóór het afrekenen en kunt ze opslaan of downloaden (art. 6:234 BW).
 **3. Bestellen en prijs.** De totaalprijs (gerechten, bezorgkosten, servicekosten, fooi, korting en tegoed) staat vóór de betaling in het overzicht. Prijzen zijn inclusief BTW. **Bezorgkosten** hangen af van de afstand tussen restaurant en bezorgadres: € 2,49 tot 3 km, € 3,49 tot 5 km en € 4,99 tot 10 km (actuele bedragen staan in de app); de bezorg- en servicekosten zijn een vergoeding voor Food Porter (de bezorger is in loondienst en krijgt loon plus een vaste bonus per bezorging). Per bezorgbestelling komen er **€ 0,99 servicekosten** bij. Bij **afhalen** betaalt u geen bezorg- of servicekosten. Wijkt de prijs bij het betalen af van het getoonde overzicht, dan wordt de betaling niet gestart en ziet u eerst het nieuwe totaal. De bestelling is definitief na de betaling ("bestelling met betalingsverplichting").
 **4. Allergenen.** De allergeneninformatie is afkomstig van het restaurant en staat vóór de aankoop bij elk gerecht. Bij een ernstige allergie raden wij aan het restaurant te bellen; het telefoonnummer staat in de app.

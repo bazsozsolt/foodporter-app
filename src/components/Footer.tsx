@@ -18,6 +18,7 @@ export function Footer() {
         <Link href="/rider-info" className="underline">{t("Voor riders", "For riders")}</Link>
       </div>
       <p className="mt-2">Food Porter · {t("Tilburg-pilot", "Tilburg pilot")} · © 2026</p>
+      <p className="mt-1 font-semibold" data-testid="powered-by">{t("Een project van Sonic Jobs V.O.F.", "Powered by Sonic Jobs V.O.F.")}</p>
       <p className="mt-1" data-testid="company">{COMPANY.name} · KvK {COMPANY.kvk} · {t("btw", "VAT")} {COMPANY.vat} · {COMPANY.address} · {COMPANY.email}</p>
       <p className="mt-1" data-testid="osm-attribution">{tx("Kaarten en testrestaurantdata ©", "Maps and test restaurant data ©")} <a className="underline" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">{tx("OpenStreetMap-bijdragers", "OpenStreetMap contributors")}</a> (ODbL) · {tx("Adressen", "Addresses")}: PDOK/BAG</p>
     </footer>
