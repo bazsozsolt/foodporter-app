@@ -22,6 +22,8 @@ export default function LoginPage() {
   const [newPw, setNewPw] = useState("");
   const [newPw2, setNewPw2] = useState("");
   const [curPw, setCurPw] = useState("");
+  const [sentTo, setSentTo] = useState<string | null>(null); // "check your email" screen after sign-up
+  const [unconfirmed, setUnconfirmed] = useState(false);
   const [providers, setProviders] = useState<{ google?: boolean; apple?: boolean }>({});
   useEffect(() => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -73,6 +75,27 @@ export default function LoginPage() {
     );
   }
 
+  if (sentTo) {
+    return (
+      <>
+        <Header />
+        <main id="main" className="p-4">
+          <Card>
+            <div data-testid="check-email" className="text-center">
+              <Mail size={40} className="mx-auto mb-2 text-brand" aria-hidden />
+              <h2 className="mb-1 text-lg font-bold">{tx("Kijk in je e-mail", "Check your email")}</h2>
+              <p className="mb-1 text-sm">{tx("We hebben een bevestigingslink gestuurd naar", "We've sent a confirmation link to")} <b className="break-all">{sentTo}</b>.</p>
+              <p className="mb-3 text-sm text-muted">{tx("Klik op de link om je account te activeren; daarna ben je meteen ingelogd. Niets ontvangen? Kijk in je spammap of stuur hem opnieuw.", "Click the link to activate your account; you'll be signed in right away. Nothing arrived? Check your spam folder or send it again.")}</p>
+            </div>
+            <Button data-testid="resend-confirmation" variant="ghost" disabled={busy} onClick={() => go(actions.resendConfirmation(sentTo))}>{tx("Stuur de link opnieuw", "Resend the link")}</Button>
+            <button className="mt-3 w-full text-center text-sm font-semibold text-brand" onClick={() => { setSentTo(null); setMode("main"); }}>{tx("Terug naar inloggen", "Back to sign in")}</button>
+          </Card>
+          <Footer />
+        </main>
+      </>
+    );
+  }
+
   return (
     <>
       <Header />
@@ -82,8 +105,12 @@ export default function LoginPage() {
         <Card>
           <input className={input} placeholder={tx("jij@voorbeeld.nl", "you@example.com")} aria-label={tx("E-mailadres", "Email address")} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           {mode === "main" && <><input className={input} placeholder={tx("Wachtwoord", "Password")} aria-label={tx("Wachtwoord", "Password")} type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <Button disabled={busy || !email || !password} onClick={() => go(actions.signInWithPassword(email, password), afterAuth)}><T nl="Inloggen" en="Sign in" /></Button>
-          <Button variant="ghost" disabled={busy || !email || !!passwordProblem(password)} onClick={() => go(actions.signUp(email, password), afterAuth)}>{tx("Account aanmaken", "Create account")}</Button>
+          <Button disabled={busy || !email || !password} onClick={() => { setUnconfirmed(false); go(actions.signInWithPassword(email, password).catch((e: Error) => { if (/bevestig eerst|confirm your email/i.test(e.message)) setUnconfirmed(true); throw e; }), afterAuth); }}><T nl="Inloggen" en="Sign in" /></Button>
+          <Button variant="ghost" disabled={busy || !email || !!passwordProblem(password)} onClick={() => go(actions.signUp(email, password), (m) => { if (m.startsWith("✉️")) { setSentTo(email.trim()); setPassword(""); } else goNext(); })}>{tx("Account aanmaken", "Create account")}</Button>
+          {unconfirmed && <div data-testid="unconfirmed" className="mb-2 rounded-xl border border-gold bg-gold-soft p-3 text-sm">
+            <p className="mb-2">{tx("Je e-mailadres is nog niet bevestigd. Open de link in de e-mail die we je stuurden (kijk ook in spam).", "Your email address isn't confirmed yet. Open the link in the email we sent you (check spam too).")}</p>
+            <button data-testid="resend-confirmation" className="font-semibold text-brand disabled:opacity-50" disabled={busy} onClick={() => go(actions.resendConfirmation(email))}>{tx("Stuur de bevestigingsmail opnieuw", "Resend confirmation email")}</button>
+          </div>}
           {password.length > 0 && passwordProblem(password) && <p className="mb-2 text-xs text-muted">{tx("Nieuw account: ", "New account: ")}{passwordProblem(password)}</p>}
           <button className="mt-3 w-full text-center text-sm font-semibold text-brand disabled:opacity-50" disabled={busy || !email} onClick={() => go(actions.magicLink(email), afterAuth)}>
             <Mail size={16} className="mr-1.5 inline" aria-hidden />{tx("Stuur me liever een inloglink", "Email me a magic link instead")}

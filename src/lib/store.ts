@@ -154,10 +154,22 @@ async function loadUserData() {
 let refetchTimer: ReturnType<typeof setTimeout> | undefined;
 const refetchSoon = () => { clearTimeout(refetchTimer); refetchTimer = setTimeout(() => void loadUserData(), 250); };
 
+// Captured before supabase-js consumes the URL hash: did we land from a sign-up confirmation link?
+const landedError = typeof window !== "undefined" ? new URLSearchParams(window.location.hash.slice(1)).get("error_code") : null;
+const landedFrom = typeof window !== "undefined" ? (new URLSearchParams(window.location.hash.slice(1)).get("type") ?? new URLSearchParams(window.location.search).get("type")) : null;
+
 async function initSupabase() {
   const sb = getSupabase()!;
   await loadCatalog();
   await loadUserData();
+  if (landedFrom === "signup" && state.signedIn) {
+    const { toast } = await import("@/components/Toaster");
+    toast("✅ " + tx("Je e-mailadres is bevestigd. Welkom bij Food Porter!", "Your email address is confirmed. Welcome to Food Porter!"));
+  }
+  if (landedError && !state.signedIn) {
+    const { toast } = await import("@/components/Toaster");
+    toast("⚠️ " + tx("Deze link is verlopen of al gebruikt. Log in of vraag een nieuwe link aan.", "This link has expired or was already used. Sign in or request a new link."));
+  }
   sb.auth.onAuthStateChange((event) => {
     // Password-reset link: land on the "choose a new password" form.
     if (event === "PASSWORD_RECOVERY" && !/\/login\/?$/.test(window.location.pathname)) {
@@ -217,9 +229,19 @@ export const actions = {
     if (!sb) { set((s) => ({ ...s, signedIn: email || "email" })); return "Account created (mock)"; }
     const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: authRedirect() } });
     if (error) throw new Error(authError(error.message));
-    if (!data.session) return "✉️ " + tx("Kijk in je e-mail (en spam) voor de bevestigingslink en log daarna in", "Check your email (and spam folder) for the confirmation link, then come back and sign in");
+    // Email confirmation is on: no session yet. Supabase answers the same for existing addresses (no enumeration).
+    if (!data.session) return "✉️ " + tx("Kijk in je e-mail (ook in spam) en klik op de bevestigingslink.", "Check your email (and spam) and click the confirmation link.");
     await loadUserData();
     return "Account created";
+  },
+  /** Resend the sign-up confirmation email. Same answer whether or not the address exists. */
+  async resendConfirmation(email: string) {
+    const sb = getSupabase();
+    const sent = "✉️ " + tx("Als dit adres nog niet bevestigd is, sturen we een nieuwe bevestigingslink. Kijk ook in spam.", "If this address still needs confirming, we've sent a new confirmation link. Check spam too.");
+    if (!sb) return sent;
+    const { error } = await sb.auth.resend({ type: "signup", email: email.trim(), options: { emailRedirectTo: authRedirect() } });
+    if (error && /rate limit|seconds|too many/i.test(error.message)) throw new Error(/seconds/i.test(error.message) ? tx("Even geduld: je kunt over een minuut opnieuw een link aanvragen.", "Please wait: you can request a new link in a minute.") : authError(error.message));
+    return sent;
   },
   async magicLink(email: string) {
     const sb = getSupabase();

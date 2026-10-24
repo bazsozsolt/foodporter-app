@@ -1,12 +1,14 @@
 // v25: admin erasure deletes the auth login. Uses a throwaway user created here.
 import { login, client, ok, errOf, summary } from "./common.mjs";
+import { createTestUser } from "./admin-user.mjs";
 import crypto from "node:crypto";
 const admin = await login("ADMIN"), cust = await login("SIMC1");
 const email = `fp-erase-${crypto.randomBytes(4).toString("hex")}@example.com`;
 const pw = crypto.randomBytes(12).toString("base64url") + "Aa1!";
 const t = client();
-const su = await t.auth.signUp({ email, password: pw, options: { data: { full_name: "FP TEST erase" } } });
-const tid = su.data?.user?.id; ok("throwaway user created", !!tid && !su.error, errOf(su));
+// v33: email confirmation is on, so create the throwaway confirmed via the admin API (no email sent)
+let tid, cerr = null; try { tid = (await createTestUser(email, pw, { full_name: "FP TEST erase" })).id; } catch (e) { cerr = e.message; }
+ok("throwaway user created", !!tid, cerr ?? "");
 const li = await t.auth.signInWithPassword({ email, password: pw }); ok("throwaway can log in", !li.error, errOf(li));
 const rq = await t.rpc("fp_request_account_deletion"); ok("throwaway requests deletion", !rq.error, errOf(rq));
 let r = await cust.sb.rpc("fp_erase_account", { p_id: tid }); ok("customer cannot erase", !!r.error);
