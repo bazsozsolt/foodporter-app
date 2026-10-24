@@ -32,7 +32,9 @@ q = await rider.sb.from("orders").select("id").eq("id", OID); ok("rider cannot s
 r = await other.sb.functions.invoke("create-payment", { body: { order_id: OID } }); ok("other customer cannot start payment", !!r.error);
 r = await cust.sb.functions.invoke("create-payment", { body: { order_id: OID } });
 ok("create-payment (Mollie test mode)", !!r.data?.checkoutUrl && r.data.testmode === true, r.data?.paymentId);
-execSync(`python3 ${new URL("./pay.py", import.meta.url).pathname} "${r.data.checkoutUrl}"`, { stdio: "ignore", timeout: 90000 });
+const payOut = execSync(`python3 ${new URL("./pay.py", import.meta.url).pathname} "${r.data.checkoutUrl}"`, { encoding: "utf8", timeout: 90000 });
+const backUrl = (payOut.match(/final url: (\S+)/) ?? [])[1] ?? "";
+ok("Mollie returns the customer to the app", backUrl.startsWith((process.env.FP_BASE ?? "https://app.foodporter.nl") + "/"), backUrl);
 for (let k = 0; k < 15; k++) { ({ data: o } = await cust.sb.from("orders").select("status,payment_status,total:subtotal_cents").eq("id", OID).single()); if (o.payment_status === "paid") break; await sleep(2000); }
 ok("webhook marks order paid -> placed", o.status === "placed" && o.payment_status === "paid", JSON.stringify(o));
 q = await cust.sb.from("orders").update({ status: "delivered" }).eq("id", OID).select("status"); ok("customer cannot change status", !!q.error || q.data?.[0]?.status !== "delivered", errOf(q) ?? JSON.stringify(q.data));
