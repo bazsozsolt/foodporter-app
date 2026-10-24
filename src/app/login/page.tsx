@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { Button, Card, Header } from "@/components/ui";
 import { act } from "@/lib/act";
 import { hasSupabase } from "@/lib/supabase";
-import { actions, useStore } from "@/lib/store";
+import { actions, passwordProblem, useStore } from "@/lib/store";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [reset, setReset] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("reset") === "1");
   const [newPw, setNewPw] = useState("");
   const [newPw2, setNewPw2] = useState("");
+  const [curPw, setCurPw] = useState("");
   const [providers, setProviders] = useState<{ google?: boolean; apple?: boolean }>({});
   useEffect(() => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -31,14 +32,17 @@ export default function LoginPage() {
 
   // Only same-app paths are allowed as "next" (no open redirect).
   const goNext = () => { const n = new URLSearchParams(window.location.search).get("next") || "/"; router.push(n.startsWith("/") && !n.startsWith("//") ? n : "/"); };
-  const pwOk = newPw.length >= 8 && newPw === newPw2;
+  const newPwProblem = newPw ? passwordProblem(newPw) : null;
+  const pwOk = !passwordProblem(newPw) && newPw === newPw2 && (reset || curPw.length > 0);
   const newPwForm = (
     <Card>
       <p className="mb-2 font-bold">{tx("Kies een nieuw wachtwoord", "Choose a new password")}</p>
-      <input data-testid="new-password" className={input} placeholder={tx("Nieuw wachtwoord (min. 8 tekens)", "New password (min. 8 characters)")} aria-label={tx("Nieuw wachtwoord", "New password")} type="password" autoComplete="new-password" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
+      {!reset && <input data-testid="current-password" className={input} placeholder={tx("Huidig wachtwoord", "Current password")} aria-label={tx("Huidig wachtwoord", "Current password")} type="password" autoComplete="current-password" value={curPw} onChange={(e) => setCurPw(e.target.value)} />}
+      <input data-testid="new-password" className={input} placeholder={tx("Nieuw wachtwoord", "New password")} aria-label={tx("Nieuw wachtwoord", "New password")} type="password" autoComplete="new-password" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
       <input className={input} placeholder={tx("Herhaal wachtwoord", "Repeat password")} aria-label={tx("Herhaal wachtwoord", "Repeat password")} type="password" autoComplete="new-password" value={newPw2} onChange={(e) => setNewPw2(e.target.value)} />
+      {newPwProblem && <p className="mb-2 text-xs text-muted">{newPwProblem}</p>}
       {newPw2 && newPw !== newPw2 && <p className="mb-2 text-sm text-[#c40000]">{tx("De wachtwoorden zijn niet gelijk.", "Passwords don't match.")}</p>}
-      <Button disabled={busy || !pwOk} onClick={() => go(actions.updatePassword(newPw), () => { setNewPw(""); setNewPw2(""); if (reset) { setReset(false); window.history.replaceState(null, "", window.location.pathname); } })}>{tx("Wachtwoord opslaan", "Save password")}</Button>
+      <Button disabled={busy || !pwOk} onClick={() => go(actions.updatePassword(newPw, reset ? undefined : curPw), () => { setNewPw(""); setNewPw2(""); setCurPw(""); if (reset) { setReset(false); window.history.replaceState(null, "", window.location.pathname); } })}>{tx("Wachtwoord opslaan", "Save password")}</Button>
     </Card>
   );
 
@@ -77,10 +81,10 @@ export default function LoginPage() {
         <p className="mb-3 text-sm text-muted">{tx("Bestel bij de favoriete lokale zaken van Tilburg. Riders bieden om het snel bij je te brengen.", "Order from Tilburg’s favourite local spots. Riders bid to bring it to you fast.")}</p>
         <Card>
           <input className={input} placeholder={tx("jij@voorbeeld.nl", "you@example.com")} aria-label={tx("E-mailadres", "Email address")} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          {mode === "main" && <><input className={input} placeholder={tx("Wachtwoord (min. 8 tekens)", "Password (min. 8 characters)")} aria-label={tx("Wachtwoord", "Password")} type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          {mode === "main" && <><input className={input} placeholder={tx("Wachtwoord", "Password")} aria-label={tx("Wachtwoord", "Password")} type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
           <Button disabled={busy || !email || !password} onClick={() => go(actions.signInWithPassword(email, password), afterAuth)}><T nl="Inloggen" en="Sign in" /></Button>
-          <Button variant="ghost" disabled={busy || !email || password.length < 8} onClick={() => go(actions.signUp(email, password), afterAuth)}>{tx("Account aanmaken", "Create account")}</Button>
-          {password.length > 0 && password.length < 8 && <p className="mb-2 text-xs text-muted">{tx("Nieuw account: minstens 8 tekens.", "New account: at least 8 characters.")}</p>}
+          <Button variant="ghost" disabled={busy || !email || !!passwordProblem(password)} onClick={() => go(actions.signUp(email, password), afterAuth)}>{tx("Account aanmaken", "Create account")}</Button>
+          {password.length > 0 && passwordProblem(password) && <p className="mb-2 text-xs text-muted">{tx("Nieuw account: ", "New account: ")}{passwordProblem(password)}</p>}
           <button className="mt-3 w-full text-center text-sm font-semibold text-brand disabled:opacity-50" disabled={busy || !email} onClick={() => go(actions.magicLink(email), afterAuth)}>
             <Mail size={16} className="mr-1.5 inline" aria-hidden />{tx("Stuur me liever een inloglink", "Email me a magic link instead")}
           </button>

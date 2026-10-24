@@ -179,12 +179,20 @@ async function run(p: PromiseLike<{ error: { message: string } | null }>) {
 }
 
 /** Friendlier texts for common Supabase Auth errors. */
+/** Mirrors the Supabase password policy: 8+ chars with a lowercase letter, an uppercase letter, a digit and a symbol. */
+export const passwordProblem = (pw: string) =>
+  pw.length >= 8 && /[a-z]/.test(pw) && /[A-Z]/.test(pw) && /[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw)
+    ? null
+    : tx("Gebruik minstens 8 tekens met een hoofdletter, een kleine letter, een cijfer en een symbool (bijv. !).", "Use at least 8 characters with an uppercase letter, a lowercase letter, a digit and a symbol (e.g. !).");
 function authError(m: string) {
+  if (/current password/i.test(m)) return tx("Je huidige wachtwoord klopt niet.", "Your current password is incorrect.");
+  if (/reauthentication/i.test(m)) return tx("Log voor de zekerheid opnieuw in en probeer het dan nog eens.", "For your security, please sign in again and then try again.");
+  if (/pwned|leak|compromised|known/i.test(m)) return tx("Dit wachtwoord komt voor in bekende datalekken. Kies een ander wachtwoord.", "This password has appeared in known data leaks. Please choose another one.");
   if (/rate limit/i.test(m)) return tx("Er zijn het afgelopen uur te veel e-mails verstuurd. Probeer het later opnieuw (of vraag het Food Porter-team je account te activeren).", "Too many emails were sent in the last hour. Please try again later (or ask the Food Porter team to enable your account).");
   if (/not authorized/i.test(m)) return tx("Aanmeldmails kunnen nog niet naar dit adres worden verstuurd (pilotlimiet). Vraag het Food Porter-team.", "Sign-up emails can't be delivered to this address yet (pilot mail limits). Please ask the Food Porter team.");
   if (/not confirmed/i.test(m)) return tx("Bevestig eerst je e-mailadres via de link die we je stuurden (kijk ook in spam).", "Please confirm your email first: open the link we emailed you (check spam).");
   if (/should be different/i.test(m)) return tx("Kies een ander wachtwoord dan je huidige.", "Choose a password different from your current one.");
-  if (/weak|at least|characters/i.test(m)) return tx("Wachtwoord te zwak: gebruik minstens 8 tekens.", "Password too weak: use at least 8 characters.");
+  if (/weak|at least|characters|should contain/i.test(m)) return passwordProblem("") as string;
   if (/seconds/i.test(m)) return tx("Even geduld: probeer het over een minuut opnieuw.", "Please wait a minute and try again.");
   if (/already registered|already exists/i.test(m)) return tx("Aanmelden lukt niet met dit adres. Heb je al een account? Log in of herstel je wachtwoord.", "Can't sign up with this address. Already have an account? Sign in or reset your password.");
   if (/invalid login/i.test(m)) return tx("Onjuist e-mailadres of wachtwoord.", "Wrong email or password.");
@@ -205,7 +213,7 @@ export const actions = {
   },
   async signUp(email: string, password: string) {
     const sb = getSupabase();
-    if (password.length < 8) throw new Error(tx("Gebruik een wachtwoord van minstens 8 tekens.", "Use a password of at least 8 characters."));
+    { const p = passwordProblem(password); if (p) throw new Error(p); }
     if (!sb) { set((s) => ({ ...s, signedIn: email || "email" })); return "Account created (mock)"; }
     const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: authRedirect() } });
     if (error) throw new Error(authError(error.message));
@@ -236,11 +244,12 @@ export const actions = {
     if (error && /rate limit|seconds/i.test(error.message)) throw new Error(authError(error.message));
     return sent;
   },
-  async updatePassword(password: string) {
+  /** currentPassword is required by Supabase except in a reset-link (recovery) session. */
+  async updatePassword(password: string, currentPassword?: string) {
     const sb = getSupabase();
-    if (password.length < 8) throw new Error(tx("Gebruik minstens 8 tekens.", "Use at least 8 characters."));
+    { const p = passwordProblem(password); if (p) throw new Error(p); }
     if (!sb) return tx("Wachtwoord gewijzigd", "Password changed");
-    const { error } = await sb.auth.updateUser({ password });
+    const { error } = await sb.auth.updateUser(currentPassword ? { password, current_password: currentPassword } : { password });
     if (error) throw new Error(authError(error.message));
     return tx("Wachtwoord gewijzigd", "Password changed");
   },
