@@ -2,7 +2,7 @@
 import re, sys, os
 from playwright.sync_api import sync_playwright
 creds = dict(l.split("=",1) for l in open("/workspace/fptest/.creds").read().strip().split("\n"))
-B = sys.argv[1] if len(sys.argv) > 1 else "https://bazsozsolt.github.io/foodporter-app"
+B = sys.argv[1] if len(sys.argv) > 1 else "https://foodporter.nl"
 OUT = "/workspace/foodporter/screens_v24"; os.makedirs(OUT, exist_ok=True); P = F = 0
 def ok(n, c, d=""):
     global P, F

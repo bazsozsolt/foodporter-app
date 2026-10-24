@@ -1,7 +1,7 @@
 # v29 account-flow check on the live app with a throwaway test account (example.com, autoconfirm => no email sent).
 import re, sys, time
 from playwright.sync_api import sync_playwright
-B = sys.argv[1] if len(sys.argv) > 1 else "https://bazsozsolt.github.io/foodporter-app"
+B = sys.argv[1] if len(sys.argv) > 1 else "https://foodporter.nl"
 EMAIL = sys.argv[2]; PW1, PW2 = "Test-v29-pass1", "Test-v29-pass2"
 res = []; errs = []
 def ok(n, c, x=""): res.append(c); print(("PASS " if c else "FAIL ") + n + (f" — {x}" if x else ""))

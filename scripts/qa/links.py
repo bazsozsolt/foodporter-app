@@ -1,6 +1,6 @@
 # Static link/image check over the static export (out/): internal hrefs/srcs, legal PDFs, plus external links from src (HEAD, sequential).
 import re, pathlib, subprocess, json, sys
-root = pathlib.Path("out"); BP = "/foodporter-app"
+root = pathlib.Path("out"); BP = ""
 bad, ext, seen = [], set(), set()
 def exists(u):
     u = u.split("#")[0].split("?")[0]

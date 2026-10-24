@@ -3,7 +3,7 @@
 import re, sys
 from playwright.sync_api import sync_playwright
 creds = dict(l.split("=",1) for l in open(__import__("os").environ.get("FP_TEST_CREDS","/workspace/fptest/.creds")).read().strip().split("\n"))
-B = sys.argv[1] if len(sys.argv) > 1 else "https://bazsozsolt.github.io/foodporter-app"
+B = sys.argv[1] if len(sys.argv) > 1 else "https://foodporter.nl"
 res = []
 def ok(n, c, x=""): res.append(c); print(("PASS " if c else "FAIL ") + n + (f" — {x}" if x else ""))
 SPY = """window.__played=[]; const op=HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play=function(){window.__played.push(this.currentSrc||this.src); return op.call(this);};"""

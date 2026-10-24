@@ -1,7 +1,7 @@
 import re, sys
 from playwright.sync_api import sync_playwright
 creds = dict(l.split("=",1) for l in open("/workspace/fptest/.creds").read().strip().split("\n"))
-B = sys.argv[1] if len(sys.argv) > 1 else "https://bazsozsolt.github.io/foodporter-app"
+B = sys.argv[1] if len(sys.argv) > 1 else "https://foodporter.nl"
 mobile = "--mobile" in sys.argv
 errs = []; res = []
 def ok(n, c, x=""): res.append(c); print(("PASS " if c else "FAIL ") + n + (f" — {x}" if x else ""))
