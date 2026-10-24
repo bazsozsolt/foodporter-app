@@ -4,7 +4,7 @@
 import re, sys, os, json
 from playwright.sync_api import sync_playwright
 creds = dict(l.split("=",1) for l in open("/workspace/fptest/.creds").read().strip().split("\n"))
-B = sys.argv[1] if len(sys.argv) > 1 else "https://foodporter.nl"
+B = sys.argv[1] if len(sys.argv) > 1 else "https://app.foodporter.nl"
 OUT = "/workspace/foodporter/screens_v26"; os.makedirs(OUT, exist_ok=True); P = F = 0
 RID = "187f751c-bebb-4a34-9d4b-9b1a9e8851db"
 def ok(n, c, d=""):

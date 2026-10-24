@@ -2,7 +2,7 @@
 import re, sys, subprocess
 from playwright.sync_api import sync_playwright
 creds = dict(l.split("=",1) for l in open("/workspace/fptest/.creds").read().strip().split("\n"))
-B = sys.argv[1] if len(sys.argv) > 1 else "https://foodporter.nl"
+B = sys.argv[1] if len(sys.argv) > 1 else "https://app.foodporter.nl"
 def NODE(js): return subprocess.run(["node","--input-type=module","-e","import * as m from '/workspace/foodporter-app/scripts/e2e/common.mjs';"+js+";process.exit(0)"],capture_output=True,text=True,cwd="/workspace/foodporter-app/scripts/e2e").stdout.strip().split("\n")[-1]
 res = []
 def ok(n, c, x=""): res.append(c); print(("PASS " if c else "FAIL ") + n + (f" — {x}" if x else ""))

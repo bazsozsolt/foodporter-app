@@ -3,7 +3,7 @@
 import re, sys, os, subprocess, datetime
 from playwright.sync_api import sync_playwright
 creds = dict(l.split("=",1) for l in open("/workspace/fptest/.creds").read().strip().split("\n"))
-B = sys.argv[1] if len(sys.argv) > 1 else "https://foodporter.nl"
+B = sys.argv[1] if len(sys.argv) > 1 else "https://app.foodporter.nl"
 OUT = "/workspace/foodporter/screens_v20"; os.makedirs(OUT, exist_ok=True)
 HERE = os.path.dirname(os.path.abspath(__file__))
 res = []

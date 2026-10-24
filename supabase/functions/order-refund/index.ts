@@ -7,7 +7,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const ORIGINS = ["https://foodporter.nl", "https://www.foodporter.nl", "https://bazsozsolt.github.io", "http://localhost:3000", "http://localhost:8787"];
+const ORIGINS = ["https://app.foodporter.nl", "https://bazsozsolt.github.io", "http://localhost:3000", "http://localhost:8787"];
 const corsFor = (req: Request) => {
   const o = req.headers.get("Origin") ?? "";
   return { "Access-Control-Allow-Origin": ORIGINS.includes(o) ? o : ORIGINS[0], "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS", Vary: "Origin" };

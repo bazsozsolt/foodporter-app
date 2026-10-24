@@ -2,7 +2,7 @@
 import re, sys, os
 from playwright.sync_api import sync_playwright
 creds = dict(l.split("=",1) for l in open("/workspace/fptest/.creds").read().strip().split("\n"))
-B = sys.argv[1] if len(sys.argv) > 1 else "https://foodporter.nl"
+B = sys.argv[1] if len(sys.argv) > 1 else "https://app.foodporter.nl"
 OUT = "/workspace/foodporter/screens_v19"; os.makedirs(OUT, exist_ok=True)
 res = []
 def ok(n, c, x=""): res.append(bool(c)); print(("PASS " if c else "FAIL ") + n + (f" — {x}" if x else ""))

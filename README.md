@@ -29,7 +29,7 @@ npm run dev
 Roles: everyone signs up as `customer`; promote with the snippets in `seed.sql`. An `admin` can drive every screen (handy for demos).
 
 ## Static preview
-`STATIC_EXPORT=1 npm run build` → `out/` (published to the `gh-pages` branch, served at https://foodporter.nl via public/CNAME; `docs/github-pages-workflow.yml` can be moved to `.github/workflows/` once gh has the `workflow` scope).
+`STATIC_EXPORT=1 npm run build` → `out/` (published to the `gh-pages` branch, served at https://app.foodporter.nl via public/CNAME; `docs/github-pages-workflow.yml` can be moved to `.github/workflows/` once gh has the `workflow` scope).
 
 ## Payments (Mollie)
 - Edge Functions in `supabase/functions/`: `create-payment` (JWT required; recomputes the amount from DB prices, creates a Mollie payment, returns `checkoutUrl`) and `mollie-webhook` (public; re-fetches the payment from Mollie and moves the order `awaiting_payment` -> `placed`, or -> `payment_failed`).

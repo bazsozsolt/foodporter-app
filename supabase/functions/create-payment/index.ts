@@ -5,7 +5,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 // Only the app (and local test servers) may call this from a browser.
-const ORIGINS = ["https://foodporter.nl", "https://www.foodporter.nl", "https://bazsozsolt.github.io", "http://localhost:3000", "http://localhost:8787"];
+const ORIGINS = ["https://app.foodporter.nl", "https://bazsozsolt.github.io", "http://localhost:3000", "http://localhost:8787"];
 let cors: Record<string, string> = {
   "Access-Control-Allow-Origin": ORIGINS[0], Vary: "Origin",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -32,7 +32,7 @@ function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number) {
   return 2 * 6371 * Math.asin(Math.sqrt(a));
 }
 
-const APP_URL = Deno.env.get("APP_URL") ?? "https://foodporter.nl";
+const APP_URL = Deno.env.get("APP_URL") ?? "https://app.foodporter.nl";
 
 Deno.serve(async (req) => {
   const origin = req.headers.get("Origin") ?? "";

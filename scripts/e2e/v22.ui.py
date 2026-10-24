@@ -2,7 +2,7 @@
 import re, sys
 from playwright.sync_api import sync_playwright
 creds = dict(l.split("=",1) for l in open("/workspace/fptest/.creds").read().strip().split("\n"))
-B = sys.argv[1] if len(sys.argv) > 1 else "https://foodporter.nl"
+B = sys.argv[1] if len(sys.argv) > 1 else "https://app.foodporter.nl"
 RID = "187f751c-bebb-4a34-9d4b-9b1a9e8851db"; P = F = 0; small = []
 def ok(n, c, d=""):
     global P, F
