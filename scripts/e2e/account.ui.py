@@ -123,6 +123,11 @@ try:
     ok("forgot-email guidance", "privacy" in body().lower() and ("Food Porter" in body()))
     pg.get_by_text(re.compile("Terug naar inloggen|Back to sign in")).click()
     pg.fill("input[type=password]", PW2); pg.get_by_role("button", name=re.compile("^(Inloggen|Sign in)$")).click(); pg.wait_for_timeout(4000)
+    # v35b: after sign-in goNext() lands on home, so check the signed-in state on /login/
+    pg.goto(B + "/login/")
+    for _ in range(20):
+        if "Ingelogd" in body() or "Signed in" in body(): break
+        pg.wait_for_timeout(500)
     ok("new password works", "Ingelogd" in body() or "Signed in" in body())
     # ?next= is honoured only as a same-origin path. These are the bypasses browsers turn into //host.
     sign_out()
