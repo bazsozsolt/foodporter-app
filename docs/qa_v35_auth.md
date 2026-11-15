@@ -131,3 +131,13 @@ their profiles; 0 left. Checkout returned to `main` (local branch ref deleted), 
 - account.ui.py: "new password works" now opens /login/ and polls for "Ingelogd|Signed in" first. Local static build 20261115095021:
   run 1 41/42 (that check PASS; one flaky miss: the `/\evil.example` sign-in took > 8 s, so the URL still held `?next=…evil.example`; app stayed on
   the login page, no redirect), run 2 **42/42**. Consider a longer wait in that loop if it recurs.
+
+## v35c: deploy (2026-11-15, 10:55 Amsterdam)
+- main pushed: e55a818397 (fixes, fast-forward) + 48bd708910 (test fix + this log). No force push.
+- gh-pages via scripts/deploy-ghpages.sh (worktree /tmp/ghp2, normal push): 5d021f0cc2 "v35: account fixes … (build 20261115095021)".
+  Pages build "pages build and deployment" run 43701589662: success (26 s).
+- Live: https://app.foodporter.nl/version.json = {"build":"20261115095021"}; CNAME app.foodporter.nl; /, /login/, /privacy/, /my-orders/,
+  /welcome/, /terms/, /admin/, /rider/, /restaurant/, /checkout/, /sw.js, /manifest.webmanifest all 200; https://foodporter.nl 200.
+- Live smoke (headless, 1 browser, test account cdtecniek.bouw+fpv35-live@gmail.com, deleted with its profile after): 9/9 —
+  ?next= `/\evil.example`, `/<TAB>/evil.example`, `/%5Cevil.example`, `//evil.example` → /; generateLink recovery link → /login/?reset=1
+  (no current-password field), new password saved and signs in; logout clears cart, favourites and token. 0 real emails.
