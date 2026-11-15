@@ -1,6 +1,7 @@
 // v33: create/delete throwaway test users WITHOUT sending email (email confirmation is on).
 // Service key is fetched at runtime via the Management API (SUPABASE_ACCESS_TOKEN env), never stored or printed.
-// CLI: node admin-user.mjs create <email> <password> [unconfirmed] | delete <email>
+// CLI: node admin-user.mjs create <email> <password> [unconfirmed] | delete <email> | link <email> <recovery|magiclink|signup>
+// `link` prints the app landing URL (it contains a one-time token — do not log it).
 import { createClient } from "@supabase/supabase-js";
 import WS from "ws";
 import { SB_URL } from "./common.mjs";
@@ -25,9 +26,24 @@ export async function deleteTestUser(email) {
   for (const r of rows) { const d = await a.auth.admin.deleteUser(r.id); if (d.error) throw d.error; }
   return rows.length > 0;
 }
+/** Admin generateLink, then the verify redirect (no email is sent). */
+export async function linkFor(email, type) {
+  if (!["recovery", "magiclink", "signup"].includes(type)) throw new Error("unsupported link type");
+  const { data, error } = await (await admin()).auth.admin.generateLink({ type, email });
+  if (error) throw error;
+  const action = data?.properties?.action_link;
+  if (!action) throw new Error("no action link");
+  const res = await fetch(action, { redirect: "manual" });
+  const loc = res.headers.get("location");
+  if (!loc) throw new Error("verify did not redirect");
+  const url = new URL(loc, action);
+  if (!/access_token|code=|error/.test(url.hash + url.search)) throw new Error("verify redirect had no session");
+  return url.toString();
+}
 if (process.argv[1]?.endsWith("admin-user.mjs")) {
   const [cmd, email, pw, flag] = process.argv.slice(2);
   if (cmd === "create") { const u = await createTestUser(email, pw, { confirmed: flag !== "unconfirmed" }); console.log(u.id); }
   else if (cmd === "delete") console.log(await deleteTestUser(email));
+  else if (cmd === "link") console.log(await linkFor(email, pw));
   else { console.error("usage"); process.exit(2); }
 }

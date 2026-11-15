@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Button, Card, Header } from "@/components/ui";
 import { act } from "@/lib/act";
 import { hasSupabase } from "@/lib/supabase";
+import { safeNext } from "@/lib/safeNext";
 import { actions, passwordProblem, useStore } from "@/lib/store";
 
 export default function LoginPage() {
@@ -32,8 +33,8 @@ export default function LoginPage() {
   }, []);
   const input = "mb-2 w-full rounded-xl border border-line p-3";
 
-  // Only same-app paths are allowed as "next" (no open redirect).
-  const goNext = () => { const n = new URLSearchParams(window.location.search).get("next") || "/"; router.push(n.startsWith("/") && !n.startsWith("//") ? n : "/"); };
+  // Only same-origin relative paths are allowed as "next" (no open redirect).
+  const goNext = () => { router.push(safeNext(new URLSearchParams(window.location.search).get("next"), window.location.origin)); };
   const newPwProblem = newPw ? passwordProblem(newPw) : null;
   const pwOk = !passwordProblem(newPw) && newPw === newPw2 && (reset || curPw.length > 0);
   const newPwForm = (

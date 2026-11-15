@@ -19,3 +19,10 @@ export function toggleFavourite(id: string) {
   localStorage.setItem(KEY, JSON.stringify(next)); subs.forEach((l) => l());
   return next.includes(id);
 }
+
+/** Drop favourites kept on this device (shared phone: the next person must not see them). */
+export function clearFavourites() {
+  cache = null; parsed = [];
+  try { localStorage.removeItem(KEY); } catch { /* private mode */ }
+  subs.forEach((l) => l());
+}

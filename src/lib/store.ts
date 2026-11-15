@@ -1,6 +1,8 @@
 "use client";
 import { tx } from "@/lib/i18n";
+import { clearFavourites } from "./favourites";
 import { ORDER_COLS } from "./orders";
+import { passwordMeetsPolicy } from "./password";
 // Data layer. With NEXT_PUBLIC_SUPABASE_* set it uses Supabase (auth, queries, realtime);
 // otherwise it falls back to mock data in localStorage so the app always runs.
 import { useSyncExternalStore } from "react";
@@ -158,26 +160,40 @@ const refetchSoon = () => { clearTimeout(refetchTimer); refetchTimer = setTimeou
 const landedError = typeof window !== "undefined" ? new URLSearchParams(window.location.hash.slice(1)).get("error_code") : null;
 const landedFrom = typeof window !== "undefined" ? (new URLSearchParams(window.location.hash.slice(1)).get("type") ?? new URLSearchParams(window.location.search).get("type")) : null;
 
+/** Recovery links must open the set-new-password screen, not the home page. */
+function onPasswordResetScreen() {
+  return /\/login\/?$/.test(window.location.pathname) && new URLSearchParams(window.location.search).get("reset") === "1";
+}
+function goToPasswordReset() {
+  if (onPasswordResetScreen()) return;
+  window.location.assign((process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/login/?reset=1");
+}
+
 async function initSupabase() {
   const sb = getSupabase()!;
+  // Subscribe before any await. supabase-js emits PASSWORD_RECOVERY from a
+  // setTimeout(0) while it consumes `#…type=recovery`; a listener attached
+  // after loadCatalog/loadUserData misses that event and the user lands signed-in on home.
+  let booted = false;
+  sb.auth.onAuthStateChange((event) => {
+    if (event === "PASSWORD_RECOVERY") {
+      if (!onPasswordResetScreen()) { goToPasswordReset(); return; }
+    }
+    if (booted) refetchSoon();
+  });
   await loadCatalog();
   await loadUserData();
+  booted = true;
   if (landedFrom === "signup" && state.signedIn) {
     const { toast } = await import("@/components/Toaster");
     toast("✅ " + tx("Je e-mailadres is bevestigd. Welkom bij Food Porter!", "Your email address is confirmed. Welcome to Food Porter!"));
   }
+  // Fallback when the recovery event already fired (hash was captured before supabase-js cleared it).
+  if (landedFrom === "recovery" && state.signedIn) goToPasswordReset();
   if (landedError && !state.signedIn) {
     const { toast } = await import("@/components/Toaster");
     toast("⚠️ " + tx("Deze link is verlopen of al gebruikt. Log in of vraag een nieuwe link aan.", "This link has expired or was already used. Sign in or request a new link."));
   }
-  sb.auth.onAuthStateChange((event) => {
-    // Password-reset link: land on the "choose a new password" form.
-    if (event === "PASSWORD_RECOVERY" && !/\/login\/?$/.test(window.location.pathname)) {
-      window.location.assign((process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/login/?reset=1");
-      return;
-    }
-    refetchSoon();
-  });
   sb.channel("fp-live")
     .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, refetchSoon)
     .on("postgres_changes", { event: "*", schema: "public", table: "bids" }, refetchSoon)
@@ -191,11 +207,11 @@ async function run(p: PromiseLike<{ error: { message: string } | null }>) {
 }
 
 /** Friendlier texts for common Supabase Auth errors. */
-/** Mirrors the Supabase password policy: 8+ chars with a lowercase letter, an uppercase letter, a digit and a symbol. */
+/** Same rule as Supabase Auth: 8+ chars with a lowercase letter, an uppercase letter, a digit and an ASCII keyboard symbol. */
 export const passwordProblem = (pw: string) =>
-  pw.length >= 8 && /[a-z]/.test(pw) && /[A-Z]/.test(pw) && /[0-9]/.test(pw) && /[^A-Za-z0-9]/.test(pw)
+  passwordMeetsPolicy(pw)
     ? null
-    : tx("Gebruik minstens 8 tekens met een hoofdletter, een kleine letter, een cijfer en een symbool (bijv. !).", "Use at least 8 characters with an uppercase letter, a lowercase letter, a digit and a symbol (e.g. !).");
+    : tx("Gebruik minstens 8 tekens met een hoofdletter, een kleine letter, een cijfer en een ASCII-symbool (zoals !@#$). Een spatie of € telt niet.", "Use at least 8 characters with an uppercase letter, a lowercase letter, a digit and an ASCII symbol (such as !@#$). A space or € does not count.");
 function authError(m: string) {
   if (/current password/i.test(m)) return tx("Je huidige wachtwoord klopt niet.", "Your current password is incorrect.");
   if (/reauthentication/i.test(m)) return tx("Log voor de zekerheid opnieuw in en probeer het dan nog eens.", "For your security, please sign in again and then try again.");
@@ -266,12 +282,25 @@ export const actions = {
     if (error && /rate limit|seconds/i.test(error.message)) throw new Error(authError(error.message));
     return sent;
   },
-  /** currentPassword is required by Supabase except in a reset-link (recovery) session. */
+  /**
+   * currentPassword is omitted only for a recovery-link session (the user has no current password to give).
+   * Otherwise we re-check it ourselves: GoTrue skips current_password when the session came from an email link (amr "otp").
+   */
   async updatePassword(password: string, currentPassword?: string) {
     const sb = getSupabase();
     { const p = passwordProblem(password); if (p) throw new Error(p); }
     if (!sb) return tx("Wachtwoord gewijzigd", "Password changed");
-    const { error } = await sb.auth.updateUser(currentPassword ? { password, current_password: currentPassword } : { password });
+    if (currentPassword !== undefined) {
+      const { data: { user }, error: userErr } = await sb.auth.getUser();
+      const email = user?.email;
+      if (userErr || !email) throw new Error(tx("Log voor de zekerheid opnieuw in en probeer het dan nog eens.", "For your security, please sign in again and then try again."));
+      const { error: reauthErr } = await sb.auth.signInWithPassword({ email, password: currentPassword });
+      if (reauthErr) {
+        if (/rate limit|seconds|too many/i.test(reauthErr.message)) throw new Error(authError(reauthErr.message));
+        throw new Error(tx("Je huidige wachtwoord klopt niet.", "Your current password is incorrect."));
+      }
+    }
+    const { error } = await sb.auth.updateUser(currentPassword !== undefined ? { password, current_password: currentPassword } : { password });
     if (error) throw new Error(authError(error.message));
     return tx("Wachtwoord gewijzigd", "Password changed");
   },
@@ -279,7 +308,9 @@ export const actions = {
     const sb = getSupabase();
     await (await import("@/lib/push")).disablePush(); // this device stops getting this user's pushes
     if (sb) await sb.auth.signOut();
-    set((s) => ({ ...s, signedIn: null, profile: null, orders: sb ? [] : s.orders }));
+    set((s) => ({ ...s, signedIn: null, profile: null, orders: sb ? [] : s.orders, cart: { restaurant_id: null, qty: {} } }));
+    try { localStorage.removeItem(CART_KEY); } catch { /* private mode */ }
+    clearFavourites(); // shared phone: the next person must not see this cart or these favourites
     window.location.assign((process.env.NEXT_PUBLIC_BASE_PATH ?? "") + "/login/"); // full reload drops any in-memory data of the old user
   },
 
