@@ -9,5 +9,7 @@ create table public.orders (
   id bigint primary key,
   status text not null,
   fulfilment text not null default 'delivery' check (fulfilment in ('delivery', 'pickup')),
-  subtotal_cents int not null
+  subtotal_cents int not null,
+  discount_cents int not null default 0 check (discount_cents >= 0),
+  credit_cents int not null default 0 check (credit_cents >= 0)
 );

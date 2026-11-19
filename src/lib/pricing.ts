@@ -8,7 +8,7 @@ export const PLAN_DEFAULTS = {
   service_fee_cents: 99, service_fee_on_pickup: false, zone_radius_km: 5, fee_distance_basis: "restaurant" as "restaurant" | "centre",
   default_contract_kind: "min_max" as "min_max" | "on_call", minmax_default_min_h: 8, minmax_default_max_h: 16,
   rider_bonus_cents: 50, // v27: fixed per-delivery rider bonus; the rest of the delivery fee + service fee is Food Porter revenue
-  min_delivery_order_cents: 1500, // v38: food subtotal minimum for delivery; pickup is exempt
+  min_delivery_order_cents: 1500, // v38: delivery food total after discount and credit; pickup is exempt
 };
 
 

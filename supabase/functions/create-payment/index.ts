@@ -74,12 +74,6 @@ Deno.serve(async (req) => {
   const { data: rest } = await admin.from("restaurants").select("min_order_cents, lat, lng").eq("id", order.restaurant_id).maybeSingle();
   const minOrder = Number(rest?.min_order_cents ?? 0);
   if (subtotal < minOrder) return json({ error: `Minimum order at this restaurant is €${(minOrder / 100).toFixed(2)} (food only).`, code: "min_order" }, 422);
-  // Platform delivery minimum: food subtotal before fees and discounts. Pickup is exempt.
-  const { data: deliveryMin } = await admin.rpc("fp_delivery_min_violation", { p_fulfilment: order.fulfilment, p_subtotal: subtotal });
-  if (deliveryMin && Number(deliveryMin.min_cents) > 0) {
-    const min = Number(deliveryMin.min_cents);
-    return json({ error: `Delivery orders need a food subtotal of at least €${(min / 100).toFixed(2)} (before fees and discounts).`, code: "min_delivery_order", min_cents: min, shortfall_cents: Number(deliveryMin.shortfall_cents) }, 422);
-  }
 
   // Opening hours / holiday closure / pause (v17 P3)
   // Scheduled order (v17 P6): slot 30 min – 7 days ahead and within opening hours; otherwise the restaurant must be open now.
@@ -127,6 +121,13 @@ Deno.serve(async (req) => {
   const discount = Math.max(0, Math.min(subtotal, subtotal + fee + service + tip - 100, Number(q?.discount_cents ?? 0)));
   // credit never pushes the charge below Mollie's €1 minimum (the rest stays on the balance)
   const credit = Math.max(0, Math.min(subtotal - discount, subtotal + fee + service + tip - discount - 100, Number(q?.credit_cents ?? 0)));
+  // Platform delivery minimum: food total after promo discount and credit, excluding fees and tip. Pickup is exempt.
+  // The restaurant min above is unchanged: item subtotal before discounts.
+  const { data: deliveryMin } = await admin.rpc("fp_delivery_min_violation", { p_fulfilment: order.fulfilment, p_subtotal: subtotal, p_discount: discount, p_credit: credit });
+  if (deliveryMin && Number(deliveryMin.min_cents) > 0) {
+    const min = Number(deliveryMin.min_cents);
+    return json({ error: `Delivery orders need a food total of at least €${(min / 100).toFixed(2)} after discount and credit (before fees).`, code: "min_delivery_order", min_cents: min, shortfall_cents: Number(deliveryMin.shortfall_cents) }, 422);
+  }
   const total = subtotal + fee + service + tip - discount - credit;
   if (total < 100 || total > 50000) return json({ error: "order total out of range" }, 400);
   const breakdown = { subtotal_cents: subtotal, delivery_fee_cents: fee, fee_km: feeKm, service_fee_cents: service, tip_cents: tip, discount_cents: discount, credit_cents: credit, total_cents: total };

@@ -8,7 +8,7 @@ import { actions, useStore } from "@/lib/store";
 import { Photo } from "@/components/Photo";
 import { AllergenInfo } from "@/components/AllergenInfo";
 import { feeRange } from "@/lib/pricing";
-import { effectiveMinOrderCents, minOrderMessage, minOrderShortfall, platformDeliveryMinCents } from "@/lib/minOrder";
+import { evaluateMinOrder, minOrderMessage, platformDeliveryMinCents } from "@/lib/minOrder";
 
 /** Cart lines + total + the one primary "checkout" action. Used by /cart and the menu's bottom sheet. */
 export function useCartLines() {
@@ -27,9 +27,9 @@ export function CartSummary() {
   const lang = useLang();
   // Cart is before the delivery/pickup choice. Warn using the delivery minimum; the link stays
   // enabled so a smaller pickup order can still go to checkout.
-  const deliveryMin = effectiveMinOrderCents({ pickup: false, restaurantMinCents: restaurantMin, platformDeliveryMinCents: platformMin });
-  const belowDeliveryMin = sub < deliveryMin;
-  const minMsg = belowDeliveryMin ? minOrderMessage({ lang, pickup: false, min: eur(deliveryMin), need: eur(minOrderShortfall(sub, deliveryMin)), restaurantMinCents: restaurantMin, platformMinCents: platformMin }) : null;
+  // Cart is before promo/credit; those are applied at checkout and the shortfall updates there.
+  const ev = evaluateMinOrder({ pickup: false, subtotalCents: sub, restaurantMinCents: restaurantMin, platformDeliveryMinCents: platformMin });
+  const minMsg = ev.belowMin ? minOrderMessage({ lang, pickup: false, min: eur(ev.minCents), need: eur(ev.needCents), restaurantMinCents: restaurantMin, platformMinCents: platformMin, bind: ev.bind }) : null;
   if (!r || lines.length === 0) return null;
   return (
     <>

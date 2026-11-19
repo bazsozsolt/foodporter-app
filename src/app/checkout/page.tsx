@@ -14,7 +14,7 @@ import { orderHref } from "@/lib/orders";
 import { openState } from "@/lib/hours";
 import { PromoBox, SchedulePicker, type Quote } from "@/components/CheckoutExtras";
 import { TestModeCheckoutNote } from "@/components/TestModeBanner";
-import { effectiveMinOrderCents, minOrderMessage, minOrderShortfall, platformDeliveryMinCents } from "@/lib/minOrder";
+import { evaluateMinOrder, minOrderMessage, platformDeliveryMinCents } from "@/lib/minOrder";
 import { ArrowLeft, Lock, ShoppingBag } from "lucide-react";
 
 export default function CheckoutPage() {
@@ -48,11 +48,13 @@ export default function CheckoutPage() {
   const sub = Object.entries(cart.qty).reduce((a, [id, q]) => a + q * (menuItems.find((m) => m.id === id)?.price_cents ?? 0), 0);
   const restaurantMin = rest?.min_order_cents ?? 0;
   const platformMin = platformDeliveryMinCents(settings);
-  const minOrder = effectiveMinOrderCents({ pickup, restaurantMinCents: restaurantMin, platformDeliveryMinCents: platformMin });
-  const belowMin = sub < minOrder;
-  const minMsg = belowMin ? minOrderMessage({ lang, pickup, min: eur(minOrder), need: eur(minOrderShortfall(sub, minOrder)), restaurantMinCents: restaurantMin, platformMinCents: platformMin }) : null;
+  const discount = quote.q && !quote.q.error ? Number(quote.q.discount_cents ?? 0) : 0;
+  const credit = quote.q && !quote.q.error ? Number(quote.q.credit_cents ?? 0) : 0;
+  const ev = evaluateMinOrder({ pickup, subtotalCents: sub, discountCents: discount, creditCents: credit, restaurantMinCents: restaurantMin, platformDeliveryMinCents: platformMin });
+  const belowMin = ev.belowMin;
+  const minMsg = ev.belowMin ? minOrderMessage({ lang, pickup, min: eur(ev.minCents), need: eur(ev.needCents), restaurantMinCents: restaurantMin, platformMinCents: platformMin, bind: ev.bind }) : null;
   const closedNow = rest ? !openState(rest).open : false;
-  const OFF = quote.q && !quote.q.error ? quote.q.discount_cents + quote.q.credit_cents : 0;
+  const OFF = discount + credit;
   const blockedClosed = closedNow && !when;
   const input = "mb-2.5 mt-1 w-full rounded-xl border border-line p-3";
   const attemptKey = JSON.stringify([pickup, pickup ? "" : address, phone, door, cart.qty]);
@@ -99,6 +101,14 @@ export default function CheckoutPage() {
         </Card>
         {rest && hasSupabase && <SchedulePicker restaurant={rest} value={when} onChange={setWhen} mustSchedule={closedNow} />}
         {hasSupabase && <PromoBox customerId={profile?.id} subtotal={sub} onQuote={(q, code, credit) => setQuote({ q, code, credit })} />}
+        {!hasSupabase && (
+          <div data-testid="mock-discount-controls" className="mb-3 flex flex-wrap gap-2">
+            <button type="button" data-testid="mock-apply-promo" className="min-h-11 rounded-xl bg-subtle px-3 text-sm" onClick={() => setQuote({ q: { code: "TESTPROMO", kind: "promo", discount_cents: 300, credit_cents: 0, error: null }, code: "TESTPROMO", credit: false })}>{t("Testkorting €3 toepassen", "Apply €3 test discount")}</button>
+            <button type="button" data-testid="mock-apply-credit" className="min-h-11 rounded-xl bg-subtle px-3 text-sm" onClick={() => setQuote({ q: { code: null, kind: "credit", discount_cents: 0, credit_cents: 300, error: null }, code: "", credit: true })}>{t("Testtegoed €3 toepassen", "Apply €3 test credit")}</button>
+            <button type="button" data-testid="mock-apply-full-promo" className="min-h-11 rounded-xl bg-subtle px-3 text-sm" onClick={() => setQuote({ q: { code: "TESTFULL", kind: "promo", discount_cents: sub, credit_cents: 0, error: null }, code: "TESTFULL", credit: false })}>{t("Testkorting 100% toepassen", "Apply 100% test discount")}</button>
+            <button type="button" data-testid="mock-clear-discounts" className="min-h-11 rounded-xl bg-subtle px-3 text-sm" onClick={() => setQuote({ q: null, code: "", credit: false })}>{t("Testkorting wissen", "Clear test discount")}</button>
+          </div>
+        )}
         <Card data-testid="price-breakdown">
           <b className="mb-2 block">{t("Prijsoverzicht", "Price breakdown")}</b>
           <div className="flex justify-between text-sm"><span>{t("Gerechten", "Items")}</span><span>{eur(sub)}</span></div>
