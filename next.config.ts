@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
   ...(isExport ? { output: "export", trailingSlash: true, images: { unoptimized: true } } : {}),
   basePath,
   env: { NEXT_PUBLIC_BASE_PATH: basePath, NEXT_PUBLIC_BUILD_ID: buildId },
+  experimental: { agentUpgrade: "security" },
   turbopack: {
     rules: {
       "*.css": { loaders: ["@tailwindcss/turbopack"], as: "*.css" },
