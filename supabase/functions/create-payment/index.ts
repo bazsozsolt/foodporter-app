@@ -74,6 +74,12 @@ Deno.serve(async (req) => {
   const { data: rest } = await admin.from("restaurants").select("min_order_cents, lat, lng").eq("id", order.restaurant_id).maybeSingle();
   const minOrder = Number(rest?.min_order_cents ?? 0);
   if (subtotal < minOrder) return json({ error: `Minimum order at this restaurant is €${(minOrder / 100).toFixed(2)} (food only).`, code: "min_order" }, 422);
+  // Platform delivery minimum: food subtotal before fees and discounts. Pickup is exempt.
+  const { data: deliveryMin } = await admin.rpc("fp_delivery_min_violation", { p_fulfilment: order.fulfilment, p_subtotal: subtotal });
+  if (deliveryMin && Number(deliveryMin.min_cents) > 0) {
+    const min = Number(deliveryMin.min_cents);
+    return json({ error: `Delivery orders need a food subtotal of at least €${(min / 100).toFixed(2)} (before fees and discounts).`, code: "min_delivery_order", min_cents: min, shortfall_cents: Number(deliveryMin.shortfall_cents) }, 422);
+  }
 
   // Opening hours / holiday closure / pause (v17 P3)
   // Scheduled order (v17 P6): slot 30 min – 7 days ahead and within opening hours; otherwise the restaurant must be open now.

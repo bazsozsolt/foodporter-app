@@ -1,5 +1,5 @@
 "use client";
-import { tx } from "@/lib/i18n";
+import { tx, useLang } from "@/lib/i18n";
 import Link from "next/link";
 import { Card } from "@/components/ui";
 import { X } from "lucide-react";
@@ -8,6 +8,7 @@ import { actions, useStore } from "@/lib/store";
 import { Photo } from "@/components/Photo";
 import { AllergenInfo } from "@/components/AllergenInfo";
 import { feeRange } from "@/lib/pricing";
+import { effectiveMinOrderCents, minOrderMessage, minOrderShortfall, platformDeliveryMinCents } from "@/lib/minOrder";
 
 /** Cart lines + total + the one primary "checkout" action. Used by /cart and the menu's bottom sheet. */
 export function useCartLines() {
@@ -16,11 +17,19 @@ export function useCartLines() {
   const lines = Object.entries(cart.qty).flatMap(([id, q]) => { const item = menuItems.find((m) => m.id === id); return item && q > 0 ? [{ item, q }] : []; });
   const sub = lines.reduce((a, l) => a + l.q * l.item.price_cents, 0);
   const range = feeRange(settings.delivery_fee_bands);
-  return { r, lines, sub, fee: range.min, feeMax: range.max, service: settings.service_fee_cents ?? 0, servicePickup: Boolean(settings.service_fee_on_pickup) };
+  const restaurantMin = r?.min_order_cents ?? 0;
+  const platformMin = platformDeliveryMinCents(settings);
+  return { r, lines, sub, fee: range.min, feeMax: range.max, service: settings.service_fee_cents ?? 0, servicePickup: Boolean(settings.service_fee_on_pickup), restaurantMin, platformMin };
 }
 
 export function CartSummary() {
-  const { r, lines, sub, fee, feeMax, service, servicePickup } = useCartLines();
+  const { r, lines, sub, fee, feeMax, service, servicePickup, restaurantMin, platformMin } = useCartLines();
+  const lang = useLang();
+  // Cart is before the delivery/pickup choice. Warn using the delivery minimum; the link stays
+  // enabled so a smaller pickup order can still go to checkout.
+  const deliveryMin = effectiveMinOrderCents({ pickup: false, restaurantMinCents: restaurantMin, platformDeliveryMinCents: platformMin });
+  const belowDeliveryMin = sub < deliveryMin;
+  const minMsg = belowDeliveryMin ? minOrderMessage({ lang, pickup: false, min: eur(deliveryMin), need: eur(minOrderShortfall(sub, deliveryMin)), restaurantMinCents: restaurantMin, platformMinCents: platformMin }) : null;
   if (!r || lines.length === 0) return null;
   return (
     <>
@@ -36,6 +45,7 @@ export function CartSummary() {
         <hr className="my-3 border-line" />
         <div className="flex justify-between font-bold"><span>{tx("Subtotaal gerechten", "Items subtotal")}</span><span data-testid="cart-subtotal">{eur(sub)}</span></div>
         <p data-testid="cart-fee-note" className="mt-1 text-[13px] text-muted">{tx(`Bij bezorgen: bezorgkosten ${eur(fee)}–${eur(feeMax)} (op afstand) + ${eur(service)} servicekosten. Afhalen: ${servicePickup ? `alleen ${eur(service)} servicekosten` : "geen bezorg- of servicekosten"}. Je ziet het precieze bedrag bij afrekenen.`, `For delivery: a ${eur(fee)}–${eur(feeMax)} delivery fee (by distance) + ${eur(service)} service fee. Pickup: ${servicePickup ? `only the ${eur(service)} service fee` : "no delivery or service fee"}. You'll see the exact amount at checkout.`)}</p>
+        {minMsg && <p data-testid={minMsg.testId} className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{minMsg.text}</p>}
       </Card>
       <Link href="/checkout" data-testid="go-checkout" className="block min-h-12 rounded-xl bg-brand py-3.5 text-center font-semibold text-white">{tx("Naar afrekenen", "Go to checkout")}</Link>
     </>

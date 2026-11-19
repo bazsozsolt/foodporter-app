@@ -19,7 +19,7 @@ export interface Settings {
   // v26 business model (financial plan): display only, the server recomputes everything
   delivery_fee_bands?: FeeBand[]; service_fee_on_pickup?: boolean; fee_distance_basis?: "restaurant" | "centre";
   commission_delivery_pct?: number; commission_intro_pct?: number; commission_intro_months?: number; commission_pickup_pct?: number;
-  default_contract_kind?: "min_max" | "on_call"; minmax_default_min_h?: number; minmax_default_max_h?: number; rider_bonus_cents?: number;
+  default_contract_kind?: "min_max" | "on_call"; minmax_default_min_h?: number; minmax_default_max_h?: number; rider_bonus_cents?: number; min_delivery_order_cents?: number;
 }
 export type PriceBreakdown = { subtotal_cents: number; delivery_fee_cents: number; fee_km: number | null; service_fee_cents: number; tip_cents: number; discount_cents: number; credit_cents: number; total_cents: number };
 /** The server total differs from what the customer saw: no payment was created; show the new breakdown and ask again. */
@@ -43,7 +43,7 @@ export interface State {
 const KEY = "foodporter-mock-v2";
 const CART_KEY = "foodporter-cart-v1";
 const initial: State = {
-  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: PLAN_DEFAULTS.zone_radius_km, delivery_fee_bands: PLAN_DEFAULTS.delivery_fee_bands, fee_distance_basis: PLAN_DEFAULTS.fee_distance_basis, service_fee_on_pickup: false, bid_window_seconds: 180, auction_seconds: 60, max_active_orders: 2, restaurant_accept_minutes: 5, zone_center_lat: 51.5576, zone_center_lng: 5.0913, service_fee_cents: PLAN_DEFAULTS.service_fee_cents },
+  settings: { delivery_fee_cents: DELIVERY_FEE_CENTS, zone_radius_km: PLAN_DEFAULTS.zone_radius_km, delivery_fee_bands: PLAN_DEFAULTS.delivery_fee_bands, fee_distance_basis: PLAN_DEFAULTS.fee_distance_basis, service_fee_on_pickup: false, bid_window_seconds: 180, auction_seconds: 60, max_active_orders: 2, restaurant_accept_minutes: 5, zone_center_lat: 51.5576, zone_center_lng: 5.0913, service_fee_cents: PLAN_DEFAULTS.service_fee_cents, min_delivery_order_cents: PLAN_DEFAULTS.min_delivery_order_cents },
   mode: hasSupabase ? "supabase" : "mock", ready: !hasSupabase, signedIn: null, profile: null,
   restaurants: hasSupabase ? [] : mockRestaurants, menuItems: hasSupabase ? [] : mockMenu,
   cart: { restaurant_id: null, qty: {} }, orders: [], earnings: hasSupabase ? [] : seedEarnings,
@@ -126,7 +126,7 @@ async function loadCatalog() {
       }
       return { data: all };
     })(),
-    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds, max_active_orders, service_fee_cents, delivery_fee_bands, service_fee_on_pickup, fee_distance_basis, commission_delivery_pct, commission_intro_pct, commission_intro_months, commission_pickup_pct, default_contract_kind, minmax_default_min_h, minmax_default_max_h, rider_bonus_cents").maybeSingle(),
+    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds, max_active_orders, service_fee_cents, delivery_fee_bands, service_fee_on_pickup, fee_distance_basis, commission_delivery_pct, commission_intro_pct, commission_intro_months, commission_pickup_pct, default_contract_kind, minmax_default_min_h, minmax_default_max_h, rider_bonus_cents, min_delivery_order_cents").maybeSingle(),
   ]);
   set((s) => ({
     ...s, restaurants: (r.data as Restaurant[]) ?? [], menuItems: (m.data as MenuItem[]) ?? [],

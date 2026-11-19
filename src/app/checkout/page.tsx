@@ -1,5 +1,5 @@
 "use client";
-import { useT } from "@/lib/i18n";
+import { useLang, useT } from "@/lib/i18n";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -14,6 +14,7 @@ import { orderHref } from "@/lib/orders";
 import { openState } from "@/lib/hours";
 import { PromoBox, SchedulePicker, type Quote } from "@/components/CheckoutExtras";
 import { TestModeCheckoutNote } from "@/components/TestModeBanner";
+import { effectiveMinOrderCents, minOrderMessage, minOrderShortfall, platformDeliveryMinCents } from "@/lib/minOrder";
 import { ArrowLeft, Lock, ShoppingBag } from "lucide-react";
 
 export default function CheckoutPage() {
@@ -26,6 +27,7 @@ export default function CheckoutPage() {
 
   const [busy, setBusy] = useState(false);
   const t = useT();
+  const lang = useLang();
   const router = useRouter();
   const [address, setAddress] = useState("Heuvelstraat 12, 5038 AA Tilburg");
   const [phone, setPhone] = useState("");
@@ -44,8 +46,11 @@ export default function CheckoutPage() {
   // An order created on an earlier attempt (e.g. the price changed) is reused instead of creating a second one.
   const [pending, setPending] = useState<{ id: string; key: string; server?: PriceBreakdown } | null>(null);
   const sub = Object.entries(cart.qty).reduce((a, [id, q]) => a + q * (menuItems.find((m) => m.id === id)?.price_cents ?? 0), 0);
-  const minOrder = rest?.min_order_cents ?? 0;
+  const restaurantMin = rest?.min_order_cents ?? 0;
+  const platformMin = platformDeliveryMinCents(settings);
+  const minOrder = effectiveMinOrderCents({ pickup, restaurantMinCents: restaurantMin, platformDeliveryMinCents: platformMin });
   const belowMin = sub < minOrder;
+  const minMsg = belowMin ? minOrderMessage({ lang, pickup, min: eur(minOrder), need: eur(minOrderShortfall(sub, minOrder)), restaurantMinCents: restaurantMin, platformMinCents: platformMin }) : null;
   const closedNow = rest ? !openState(rest).open : false;
   const OFF = quote.q && !quote.q.error ? quote.q.discount_cents + quote.q.credit_cents : 0;
   const blockedClosed = closedNow && !when;
@@ -107,7 +112,7 @@ export default function CheckoutPage() {
           {!pickup && <p data-testid="fee-explainer" className="mt-2 text-[12px] text-muted">{t(`Bezorgkosten hangen af van de afstand tussen restaurant en adres: ${(settings.delivery_fee_bands ?? []).map((b, i, a) => `${i === 0 ? "t/m" : `${String(a[i - 1].max_km).replace(".", ",")}–`}${String(b.max_km).replace(".", ",")} km ${eur(b.fee_cents)}`).join(" · ")}. Bezorg- en servicekosten (${eur(settings.service_fee_cents ?? 0)}) gaan naar Food Porter voor bezorging en platform; de rider (in loondienst) krijgt uurloon plus een vaste bonus per bezorging, en 100% van je fooi.`, `The delivery fee depends on the distance between the restaurant and your address: ${(settings.delivery_fee_bands ?? []).map((b, i, a) => `${i === 0 ? "up to" : `${a[i - 1].max_km}–`}${b.max_km} km ${eur(b.fee_cents)}`).join(" · ")}. Delivery and service fees (${eur(settings.service_fee_cents ?? 0)}) go to Food Porter for delivery and the platform; the rider (an employee) gets an hourly wage plus a fixed bonus per delivery, and 100% of your tip.`)}</p>}
           {pending?.server && <p data-testid="price-changed" role="status" className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{t(`Bijgewerkt door de server: bezorgkosten ${eur(pending.server.delivery_fee_cents)}${pending.server.fee_km != null ? ` (${String(pending.server.fee_km).replace(".", ",")} km)` : ""}, servicekosten ${eur(pending.server.service_fee_cents)}. Totaal ${eur(pending.server.total_cents)}.`, `Updated by the server: delivery fee ${eur(pending.server.delivery_fee_cents)}${pending.server.fee_km != null ? ` (${pending.server.fee_km} km)` : ""}, service fee ${eur(pending.server.service_fee_cents)}. Total ${eur(pending.server.total_cents)}.`)}</p>}
           {blockedClosed && <p data-testid="closed-warning" className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{t("Dit restaurant is nu gesloten of gepauzeerd. Je kunt bestellen zodra het weer open is.", "This restaurant is closed or paused right now. You can order once it reopens.")}</p>}
-          {belowMin && <p data-testid="min-order-warning" className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{t(`Minimale bestelling bij dit restaurant is ${eur(minOrder)}. Voeg nog ${eur(minOrder - sub)} toe.`, `This restaurant's minimum order is ${eur(minOrder)}. Add ${eur(minOrder - sub)} more.`)}</p>}
+          {minMsg && <p data-testid={minMsg.testId} className="mt-2 rounded-xl bg-gold-soft p-2 text-[13px] text-warn">{minMsg.text}</p>}
         </Card>
         {!pickup && <Card data-testid="tip-picker">
           <b className="block">{t("Fooi voor je rider", "Tip your rider")}</b>
