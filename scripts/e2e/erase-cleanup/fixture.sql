@@ -34,6 +34,26 @@ create table if not exists storage.objects (
   user_metadata jsonb
 );
 
+-- Stub of Supabase's statement-level protect_objects_delete. A DELETE from
+-- storage.objects raises unless storage.allow_delete_query='true', even when
+-- zero rows match. Cleanup must never set that flag or issue a direct delete.
+-- Live UPDATE of owner/owner_id is not blocked (only update_objects_updated_at
+-- exists, which we omit here because it is not a guard).
+create or replace function storage.protect_delete() returns trigger
+language plpgsql as $$
+begin
+  if coalesce(current_setting('storage.allow_delete_query', true), 'false') <> 'true' then
+    raise exception 'Direct deletion from storage tables is not allowed. Use the Storage API instead.';
+  end if;
+  return null;
+end $$;
+
+drop trigger if exists protect_objects_delete on storage.objects;
+create trigger protect_objects_delete
+  before delete on storage.objects
+  for each statement
+  execute function storage.protect_delete();
+
 create table public.profiles (
   id uuid primary key,
   role text not null default 'customer',

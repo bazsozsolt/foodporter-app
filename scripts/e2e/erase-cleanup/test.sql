@@ -44,6 +44,21 @@ begin
     (select pg_get_constraintdef(oid) from pg_constraint where conname = 'support_tickets_created_by_fkey') like '%ON DELETE SET NULL%',
     'support tickets are detached instead of cascade-deleted');
 
+  perform assert_true(
+    pg_get_functiondef('public.fp_cleanup_deleted_user(uuid)'::regprocedure)
+      !~* $re$delete[[:space:]]+from[[:space:]]+storage\.objects$re$
+    and pg_get_functiondef('public.fp_cleanup_deleted_user(uuid)'::regprocedure)
+      !~* $re$set_config\([^)]*storage\.allow_delete_query$re$,
+    'cleanup never deletes storage.objects or sets storage.allow_delete_query');
+
+  begin
+    delete from storage.objects where false;
+    raise exception 'protect_objects_delete did not fire';
+  exception when others then
+    if position('Direct deletion from storage tables is not allowed' in sqlerrm) = 0 then raise; end if;
+  end;
+  perform assert_true(true, 'storage.objects direct delete is blocked even with zero rows');
+
   insert into auth.users(id, email) values
     (a, 'fp-erase+tag@example.com'),
     (adm, 'fp-admin@example.com'),
@@ -218,8 +233,13 @@ begin
     exists (select 1 from public.support_tickets where category = 'late' and status = 'open' and created_by is null and subject not ilike '%FP TEST erase%'),
     'in-window support ticket kept, detached and scrubbed');
   perform assert_true(
-    not exists (select 1 from public.support_tickets where subject = 'Oud ticket'),
-    'support ticket past 2 years deleted');
+    exists (
+      select 1 from public.support_tickets t
+      join public.support_messages m on m.ticket_id = t.id
+      where t.subject = 'Oud ticket' and t.status = 'resolved' and t.created_by is null
+        and m.photo_path like '%/old-photo.jpg'
+    ),
+    'expired support ticket kept anonymised so the nightly Storage API purge can still find the photo');
 
   perform assert_true(
     (select customer_id is null and rider_id is null and phone = 'verwijderd' and address = 'verwijderd'
@@ -287,9 +307,9 @@ begin
     'ops alert scrubbed');
   perform assert_true(
     exists (select 1 from storage.objects where name = '2001/recent.jpg' and owner is null and owner_id is null)
-    and not exists (select 1 from storage.objects where name = '2002/old.jpg')
-    and not exists (select 1 from storage.objects where name like '%/old-photo.jpg'),
-    'in-window photo detached, expired photos deleted');
+    and exists (select 1 from storage.objects where name = '2002/old.jpg' and owner is null and owner_id is null)
+    and exists (select 1 from storage.objects where name like '%/old-photo.jpg' and owner is null and owner_id is null),
+    'photos stay in storage with owner detached; expired files are left for the Storage API purge');
   perform assert_true(
     (select address = 'PROTECTED 1046' and customer_id = other and phone = '0644444444' from public.orders where id = 1046),
     'order 1046 unchanged');
@@ -305,7 +325,9 @@ begin
   perform assert_true(
     (select customer_id is null and delivery_photo_path is null and commission_cents = 192 and mollie_payment_id = 'tr_rpc' and subtotal_cents = 1600 from public.orders where id = 2004),
     'RPC erase anonymises the order and clears an expired photo without rewriting the commission');
-  perform assert_true(not exists (select 1 from storage.objects where name = '2004/old.jpg'), 'RPC erase deletes the expired photo object');
+  perform assert_true(
+    exists (select 1 from storage.objects where name = '2004/old.jpg' and owner is null and owner_id is null),
+    'RPC erase leaves the expired photo object for the Storage API purge, owner detached');
 
   perform set_config('fp.erasure', 'off', true);
   update public.orders set subtotal_cents = 8000 where id = 3001;
