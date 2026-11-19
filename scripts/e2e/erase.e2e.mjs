@@ -18,8 +18,10 @@ const { data: o } = await admin.sb.from("orders").select("customer_id").eq("id",
 r = await admin.sb.rpc("fp_erase_account", { p_id: o?.customer_id }); ok("refuses 1043/1046 owner", /protected/i.test(errOf(r) ?? ""), errOf(r));
 r = await admin.sb.rpc("fp_erase_account", { p_id: tid }); ok("admin erases throwaway", !r.error, errOf(r));
 const again = await client().auth.signInWithPassword({ email, password: pw }); ok("login gone", !!again.error, errOf(again));
+// v36: the login delete removes the profile. Retained-row anonymisation is covered by scripts/e2e/erase-cleanup.sh (local only).
 const { data: p } = await admin.sb.from("profiles").select("full_name, email, phone").eq("id", tid).maybeSingle();
-ok("anonymised profile row kept", p?.full_name === "Verwijderde gebruiker" && !p.email && !p.phone, JSON.stringify(p));
-const { data: tk } = await admin.sb.from("support_tickets").select("id").eq("created_by", tid).neq("status", "resolved");
+ok("profile row removed", !p, JSON.stringify(p));
+const { data: tk } = await admin.sb.from("support_tickets").select("id").eq("created_by", tid).eq("category", "privacy").neq("status", "resolved");
+ok("no open privacy ticket left", (tk ?? []).length === 0, JSON.stringify(tk));
 for (const x of tk ?? []) await admin.sb.rpc("support_admin_update", { p_ticket: x.id, p_status: "resolved" });
 process.exit(summary() ? 1 : 0);
