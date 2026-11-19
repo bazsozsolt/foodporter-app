@@ -67,7 +67,8 @@ begin
     (1043, prot, null, rest, 'delivered', 'PROTECTED 1043', '0611111111', 1000, 295, 120, 'tr_protected_1043', null, null, null, null, null, now() - interval '1 day', now() - interval '1 day'),
     (1046, other, null, rest, 'delivered', 'PROTECTED 1046', '0644444444', 1100, 295, 132, 'tr_protected_1046', null, null, null, null, null, now() - interval '1 day', now() - interval '1 day'),
     (2003, active, null, rest, 'picked_up', 'Active street 1', '0622222222', 900, 295, 108, 'tr_active', null, null, null, null, null, null, now()),
-    (2004, via_rpc, via_rpc, rest, 'delivered', 'RPC street 9', '0633333333', 1600, 295, 192, 'tr_rpc', 51.5, 5.1, null, '2004/old.jpg', now() - interval '40 days', now() - interval '40 days', now() - interval '40 days');
+    (2004, via_rpc, via_rpc, rest, 'delivered', 'RPC street 9', '0633333333', 1600, 295, 192, 'tr_rpc', 51.5, 5.1, null, '2004/old.jpg', now() - interval '40 days', now() - interval '40 days', now() - interval '40 days'),
+    (3001, other, null, rest, 'awaiting_payment', 'Other street 3', '0644444444', 1000, 295, null, 'tr_other_open', null, null, null, null, null, null, now());
 
   insert into public.order_items(id, order_id, name, guest_name) values
     ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1', 2001, 'Pizza', 'FP TEST erase');
@@ -161,6 +162,16 @@ begin
     if position('admins cannot be erased' in sqlerrm) = 0 then raise; end if;
   end;
   perform assert_true(exists (select 1 from public.profiles where id = adm), 'admin profile cannot be erased here');
+  begin
+    delete from auth.users where id = adm;
+    raise exception 'expected admin auth delete refusal';
+  exception when others then
+    if position('admins cannot be erased' in sqlerrm) = 0 then raise; end if;
+  end;
+  perform assert_true(
+    exists (select 1 from auth.users where id = adm)
+    and exists (select 1 from public.profiles where id = adm and role = 'admin' and email = 'fp-admin@example.com'),
+    'deleting an admin login is refused and the profile stays');
   perform set_config('fp.test_admin', '', true);
   begin
     perform public.fp_erase_account(via_rpc);
@@ -169,6 +180,22 @@ begin
     if position('admin only' in sqlerrm) = 0 then raise; end if;
   end;
   perform assert_true(true, 'non-admin cannot call erase');
+
+  perform assert_true(
+    (select tgenabled = 'O' from pg_trigger where tgname = 'orders_zz_commission' and tgrelid = 'public.orders'::regclass)
+    and position('disable trigger' in lower(pg_get_functiondef('public.fp_cleanup_deleted_user(uuid)'::regprocedure))) = 0
+    and position('fp.erasure' in pg_get_functiondef('public.fp_order_commission()'::regprocedure)) > 0,
+    'commission trigger stays enabled; erasure only sets a transaction-local flag');
+  update public.orders set status = 'placed', paid_at = now() where id = 3001;
+  perform assert_true(
+    (select commission_cents = 120 and commission_pct = 12 and rider_bonus_cents = 50 and subtotal_cents = 1000 from public.orders where id = 3001),
+    'a non-erase paid-order update still calculates commission');
+  perform set_config('fp.erasure', 'on', true);
+  update public.orders set subtotal_cents = 4000 where id = 3001;
+  perform assert_true(
+    (select commission_cents = 120 and subtotal_cents = 4000 from public.orders where id = 3001),
+    'inside the erasure flag, commission is not recalculated');
+  perform set_config('fp.erasure', 'off', true);
 
   delete from auth.users where id = a;
 
@@ -223,8 +250,8 @@ begin
     (select restaurant_id = rest and rider_id is null and not anonymised and amount_cents = 5000 from public.payouts where id = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc2'),
     'unrelated restaurant payout unchanged');
   perform assert_true(
-    (select customer_id is null and cents = 500 and reason = 'refund' from public.customer_credit where order_id = 2001),
-    'credit ledger kept and detached');
+    (select customer_id is null and cents = 500 and reason = 'erased' from public.customer_credit where order_id = 2001),
+    'credit ledger kept, detached, and reason scrubbed');
   perform assert_true(
     (select rider_id is null and rider_name = 'Verwijderde gebruiker' from public.bids where order_id = 2001),
     'bid kept without the rider name');
@@ -281,6 +308,11 @@ begin
   perform assert_true(not exists (select 1 from storage.objects where name = '2004/old.jpg'), 'RPC erase deletes the expired photo object');
 
   perform set_config('fp.erasure', 'off', true);
+  update public.orders set subtotal_cents = 8000 where id = 3001;
+  perform assert_true(
+    (select commission_cents = 960 and rider_bonus_cents = 50 and subtotal_cents = 8000 from public.orders where id = 3001)
+    and (select tgenabled = 'O' from pg_trigger where tgname = 'orders_zz_commission' and tgrelid = 'public.orders'::regclass),
+    'after erasure the trigger is still enabled and a normal update calculates commission');
   insert into public.legal_acceptances(template_id, profile_id, ip) values ('terms', other, '203.0.113.20');
   begin
     update public.legal_acceptances set ip = null where profile_id = other;

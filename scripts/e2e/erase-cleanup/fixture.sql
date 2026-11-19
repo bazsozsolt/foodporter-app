@@ -56,6 +56,10 @@ create table public.orders (
   subtotal_cents int not null,
   delivery_fee_cents int not null,
   commission_cents int,
+  commission_pct numeric,
+  fulfilment text not null default 'delivery',
+  rider_bonus_cents int,
+  paid_at timestamptz,
   mollie_payment_id text,
   lat double precision,
   lng double precision,
@@ -104,8 +108,18 @@ create table public.customer_credit (
   customer_id uuid not null references public.profiles(id) on delete cascade,
   cents int not null,
   reason text not null,
-  order_id bigint
+  order_id bigint,
+  constraint customer_credit_reason_check check (reason in ('referral_new', 'referral_friend', 'used', 'admin', 'refund'))
 );
+
+create table public.settings (
+  id boolean primary key default true check (id),
+  rider_bonus_cents int not null default 50
+);
+insert into public.settings (id) values (true);
+
+create or replace function public.fp_commission_rate(p_restaurant uuid, p_fulfilment text, p_at timestamptz)
+returns numeric language sql stable as $$ select 12::numeric $$;
 
 create table public.bids (
   id uuid primary key,
@@ -317,7 +331,7 @@ drop trigger if exists orders_guard_proof on public.orders;
 create trigger orders_guard_proof before update on public.orders
   for each row execute function public.fp_guard_proof();
 
--- Would rewrite the commission if the cleanup left it enabled.
+-- Placeholder. The migration replaces this with the real calculator plus the fp.erasure skip.
 create or replace function public.fp_order_commission() returns trigger
 language plpgsql set search_path = public as $$
 begin

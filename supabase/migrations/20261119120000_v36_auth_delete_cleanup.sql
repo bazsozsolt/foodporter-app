@@ -9,8 +9,11 @@
 --   account status log (2 years), delivery photos (30 days).
 --   Past the window, those records are deleted. The privacy ticket is closed and anonymised.
 -- Kept and anonymised, never deleted: orders, payment fields on the order, earnings, payouts,
---   customer credit. Orders 1043 and 1046 are never modified; their owners cannot be erased.
+--   customer credit (the reason code becomes 'erased'). Orders 1043 and 1046 are never modified;
+--   their owners cannot be erased. An admin login cannot be deleted here either.
 -- Legal acceptances stay as proof of which document was accepted, without the person, IP or user agent.
+-- Order updates during erasure set fp.erasure so fp_order_commission skips recalculation in this
+-- transaction only. The trigger stays enabled for every other session.
 
 do $$
 declare
@@ -60,6 +63,43 @@ alter table public.payouts drop constraint if exists payouts_one_party;
 alter table public.payouts add constraint payouts_one_party check (
   ((rider_id is null) <> (restaurant_id is null)) or anonymised
 );
+
+-- Credit reasons are a fixed list. 'erased' is the neutral value once the customer is detached.
+do $$
+declare r record;
+begin
+  for r in
+    select conname from pg_constraint
+    where conrelid = 'public.customer_credit'::regclass and contype = 'c'
+      and pg_get_constraintdef(oid) ilike '%reason%'
+  loop
+    execute format('alter table public.customer_credit drop constraint %I', r.conname);
+  end loop;
+end $$;
+alter table public.customer_credit add constraint customer_credit_reason_check
+  check (reason in ('referral_new', 'referral_friend', 'used', 'admin', 'refund', 'erased'));
+
+-- Skip commission and rider-bonus recalculation only inside the erasure transaction.
+create or replace function public.fp_order_commission() returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  if current_setting('fp.erasure', true) = 'on' then
+    return new;
+  end if;
+  if new.status not in ('awaiting_payment', 'payment_failed', 'cancelled') then
+    if new.commission_pct is null then
+      new.commission_pct := fp_commission_rate(new.restaurant_id, coalesce(new.fulfilment, 'delivery'), coalesce(new.paid_at, now()));
+    end if;
+    new.commission_cents := round(new.subtotal_cents * new.commission_pct / 100.0)::int;
+    if new.rider_bonus_cents is null and (tg_op = 'INSERT' or old.status in ('awaiting_payment', 'payment_failed')) then
+      new.rider_bonus_cents := case when new.fulfilment = 'pickup' then 0
+        else least(new.delivery_fee_cents, (select rider_bonus_cents from settings limit 1)) end;
+    end if;
+  end if;
+  return new;
+end $$;
 
 -- Acceptance rows stay append-only, except the erasure path may drop the personal columns.
 create or replace function public.fp_legal_immutable() returns trigger
@@ -122,7 +162,6 @@ declare
   v_extra text[];
   v_tokens text[] := array[]::text[];
   v_old_photos text[] := array[]::text[];
-  v_reenable boolean := false;
 begin
   if p_id is null then return; end if;
   if exists (select 1 from public.orders where id in (1043, 1046) and (customer_id = p_id or rider_id = p_id)) then
@@ -161,6 +200,8 @@ begin
   ) s;
   v_tokens := v_tokens || coalesce(v_extra, '{}');
 
+  -- Local to this transaction. fp_order_commission and the legal-acceptance trigger read it;
+  -- other sessions keep calculating commission.
   perform set_config('fp.erasure', 'on', true);
   perform set_config('fp.proof', 'on', true);
 
@@ -171,14 +212,6 @@ begin
     and id not in (1043, 1046)
     and delivery_photo_path is not null
     and coalesce(delivery_photo_at, delivered_at, created_at) < now() - interval '30 days';
-
-  if exists (
-    select 1 from pg_trigger
-    where tgname = 'orders_zz_commission' and tgrelid = 'public.orders'::regclass and tgenabled <> 'D'
-  ) then
-    alter table public.orders disable trigger orders_zz_commission;
-    v_reenable := true;
-  end if;
 
   if cardinality(v_old_photos) > 0 then
     if to_regclass('storage.objects') is not null then
@@ -234,16 +267,11 @@ begin
   where (customer_id = p_id or rider_id = p_id)
     and id not in (1043, 1046);
 
-  if v_reenable then
-    alter table public.orders enable trigger orders_zz_commission;
-    v_reenable := false;
-  end if;
-
   update public.earnings set rider_id = null where rider_id = p_id;
   update public.payouts
     set rider_id = null, anonymised = true, reference = public.fp_scrub_identity(reference, v_tokens, 200)
     where rider_id = p_id;
-  update public.customer_credit set customer_id = null where customer_id = p_id;
+  update public.customer_credit set customer_id = null, reason = 'erased' where customer_id = p_id;
   update public.bids set rider_id = null, rider_name = 'Verwijderde gebruiker' where rider_id = p_id;
   update public.ratings
     set customer_id = null, comment = public.fp_scrub_identity(comment, v_tokens, 500)
@@ -357,12 +385,6 @@ begin
 
   insert into public.audit_events(profile_id, type, from_value, to_value, actor)
   values (null, 'profile_erased', null, 'deleted', auth.uid());
-exception
-  when others then
-    if v_reenable then
-      alter table public.orders enable trigger orders_zz_commission;
-    end if;
-    raise;
 end $$;
 
 create or replace function public.fp_auth_user_deleted() returns trigger
@@ -370,7 +392,12 @@ language plpgsql
 security definer
 set search_path = public, auth
 as $$
+declare v_role text;
 begin
+  select role::text into v_role from public.profiles where id = old.id;
+  if v_role = 'admin' then
+    raise exception 'admins cannot be erased here';
+  end if;
   perform public.fp_cleanup_deleted_user(old.id);
   return old;
 end $$;
