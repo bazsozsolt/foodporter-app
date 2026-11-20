@@ -9,6 +9,7 @@ export const PLAN_DEFAULTS = {
   default_contract_kind: "min_max" as "min_max" | "on_call", minmax_default_min_h: 8, minmax_default_max_h: 16,
   rider_bonus_cents: 50, // v27: fixed per-delivery rider bonus; the rest of the delivery fee + service fee is Food Porter revenue
   min_delivery_order_cents: 1500, // v38: delivery food total after discount and credit; pickup is exempt
+  stale_assignment_minutes: 180, // v39: assigned/ready jobs older than this are flagged, not auto-cancelled
 };
 
 

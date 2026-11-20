@@ -1,6 +1,19 @@
 -- v39 (e2e round 1): customer cancel of a placed order; stale assignments are
 -- excluded from stacking, route and ETA, and flagged — never auto-cancelled.
+-- The stuck-assignment window is settings.stale_assignment_minutes (default 180).
 -- THIS FILE IS NOT APPLIED LIVE. Apply only after Zsolt approves.
+
+-- ===== 0) Admin-editable stuck-assignment window (default 3 hours) =====
+alter table public.settings
+  add column if not exists stale_assignment_minutes int not null default 180;
+
+alter table public.settings drop constraint if exists settings_stale_assignment_minutes_check;
+alter table public.settings
+  add constraint settings_stale_assignment_minutes_check
+  check (stale_assignment_minutes between 30 and 1440);
+
+comment on column public.settings.stale_assignment_minutes is
+  'Minutes after expected pickup (ready_at, else assigned_at) after which an assigned or ready order is treated as stale: excluded from stacking, route and ETA, and flagged for admin. Not auto-cancelled. Default 180 (3 hours). Allowed range 30–1440.';
 
 -- ===== 1) Customer can cancel their own order only while it is still 'placed' =====
 -- Race with restaurant accept: USING sees the current row. If the restaurant
@@ -75,13 +88,16 @@ create or replace function public.fp_assignment_stale(
   p_ready_at timestamptz,
   p_now timestamptz default now()
 ) returns boolean
-language sql immutable parallel safe as $$
+language sql stable parallel safe set search_path = public as $$
   select p_status in ('assigned', 'ready')
      and coalesce(p_ready_at, p_assigned_at) is not null
-     and coalesce(p_ready_at, p_assigned_at) < p_now - interval '3 hours';
+     and coalesce(p_ready_at, p_assigned_at) < p_now - make_interval(mins => coalesce(
+       (select stale_assignment_minutes from public.settings limit 1),
+       180
+     ));
 $$;
 comment on function public.fp_assignment_stale(order_status, timestamptz, timestamptz, timestamptz) is
-  'True when an assigned/ready order has not been picked up for more than 3 hours past ready_at (else assigned_at). Used to exclude stale jobs from stacking, route and ETA. Does not cancel or refund.';
+  'True when an assigned/ready order has not been picked up for more than settings.stale_assignment_minutes (default 180) past ready_at (else assigned_at). Used to exclude stale jobs from stacking, route and ETA. Does not cancel or refund.';
 revoke execute on function public.fp_assignment_stale(order_status, timestamptz, timestamptz, timestamptz) from public, anon;
 grant execute on function public.fp_assignment_stale(order_status, timestamptz, timestamptz, timestamptz) to authenticated;
 

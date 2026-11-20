@@ -1,5 +1,5 @@
 // Unit checks for the eight e2e-round-1 fixes. No network, no secrets.
-import { isStaleAssignment, assignmentExpectedAt, STALE_ASSIGNMENT_GRACE_MS, isTodayAmsterdam, amsterdamDay } from "../../src/lib/staleAssignment.ts";
+import { isStaleAssignment, assignmentExpectedAt, STALE_ASSIGNMENT_GRACE_MS, STALE_ASSIGNMENT_GRACE_MINUTES_DEFAULT, staleAssignmentGraceMinutes, staleWindowLabel, isTodayAmsterdam, amsterdamDay } from "../../src/lib/staleAssignment.ts";
 import { riderEarningsCents, paidTotalCents, orderMoneyBreakdown } from "../../src/lib/orderMoney.ts";
 import { loadCheckoutDraft, saveCheckoutDraft, clearCheckoutDraft, CHECKOUT_DRAFT_KEY } from "../../src/lib/checkoutDraft.ts";
 
@@ -20,6 +20,10 @@ ok("delivered is not stale", !isStaleAssignment({ status: "delivered", assigned_
 ok("placed is not stale", !isStaleAssignment({ status: "placed", assigned_at: hoursAgo(8) }, now));
 ok("assigned with no timestamps is not stale", !isStaleAssignment({ status: "assigned" }, now));
 ok("expected time prefers ready_at", assignmentExpectedAt({ status: "ready", assigned_at: hoursAgo(8), ready_at: hoursAgo(1) }) === Date.parse(hoursAgo(1)));
+ok("default window is 180 minutes", STALE_ASSIGNMENT_GRACE_MINUTES_DEFAULT === 180 && staleAssignmentGraceMinutes(null) === 180 && staleAssignmentGraceMinutes(undefined) === 180);
+ok("a 120-minute window treats 2.5h as stale and 1.5h as fresh", isStaleAssignment({ status: "assigned", assigned_at: hoursAgo(2.5) }, now, 120) && !isStaleAssignment({ status: "assigned", assigned_at: hoursAgo(1.5) }, now, 120));
+ok("the same 2.5h job is not stale at the default 180", !isStaleAssignment({ status: "assigned", assigned_at: hoursAgo(2.5) }, now));
+ok("window labels use hours when divisible by 60, else minutes", staleWindowLabel(180, "nl") === "3 uur" && staleWindowLabel(180, "en") === "3 hours" && staleWindowLabel(60, "en") === "1 hour" && staleWindowLabel(90, "nl") === "90 minuten" && staleWindowLabel(90, "en") === "90 minutes");
 
 ok("today in Amsterdam", isTodayAmsterdam("2026-11-20T23:13:59+01:00", now) && amsterdamDay(now) === "2026-11-20");
 ok("yesterday is not today", !isTodayAmsterdam("2026-11-19T23:00:00+01:00", now));

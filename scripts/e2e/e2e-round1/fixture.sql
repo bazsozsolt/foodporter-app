@@ -10,3 +10,10 @@ create table public.orders (
   ready_at timestamptz,
   picked_up_at timestamptz
 );
+
+create table public.settings (
+  id boolean primary key default true,
+  stale_assignment_minutes int not null default 180,
+  constraint settings_stale_assignment_minutes_check check (stale_assignment_minutes between 30 and 1440)
+);
+insert into public.settings(id) values (true);

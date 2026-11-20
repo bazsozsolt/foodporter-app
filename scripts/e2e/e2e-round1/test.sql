@@ -6,10 +6,13 @@ create or replace function public.fp_assignment_stale(
   p_ready_at timestamptz,
   p_now timestamptz default now()
 ) returns boolean
-language sql immutable parallel safe as $$
+language sql stable parallel safe set search_path = public as $$
   select p_status in ('assigned', 'ready')
      and coalesce(p_ready_at, p_assigned_at) is not null
-     and coalesce(p_ready_at, p_assigned_at) < p_now - interval '3 hours';
+     and coalesce(p_ready_at, p_assigned_at) < p_now - make_interval(mins => coalesce(
+       (select stale_assignment_minutes from public.settings limit 1),
+       180
+     ));
 $$;
 
 do $$
@@ -42,6 +45,42 @@ begin
   if not fp_assignment_stale('assigned', timestamptz '2026-10-18 12:00:00+02', null, timestamptz '2026-11-20 23:00:00+01') then
     raise exception 'order 2007 shaped row should be stale in November';
   end if;
+end $$;
+
+
+-- The admin setting shortens or lengthens the window.
+do $$
+declare t0 timestamptz := timestamptz '2026-11-20 22:00:00+01';
+begin
+  update public.settings set stale_assignment_minutes = 120;
+  if not public.fp_assignment_stale('assigned', t0 - interval '150 minutes', null, t0) then
+    raise exception 'at 120 minutes, 2.5h should be stale';
+  end if;
+  if public.fp_assignment_stale('assigned', t0 - interval '90 minutes', null, t0) then
+    raise exception 'at 120 minutes, 1.5h should not be stale';
+  end if;
+  update public.settings set stale_assignment_minutes = 180;
+  if public.fp_assignment_stale('assigned', t0 - interval '150 minutes', null, t0) then
+    raise exception 'after restore to 180, 2.5h should not be stale';
+  end if;
+end $$;
+
+-- Allowed range is 30–1440.
+do $$
+begin
+  update public.settings set stale_assignment_minutes = 30;
+  update public.settings set stale_assignment_minutes = 1440;
+  begin
+    update public.settings set stale_assignment_minutes = 29;
+    raise exception '29 minutes should be rejected';
+  exception when check_violation then null;
+  end;
+  begin
+    update public.settings set stale_assignment_minutes = 1441;
+    raise exception '1441 minutes should be rejected';
+  exception when check_violation then null;
+  end;
+  update public.settings set stale_assignment_minutes = 180;
 end $$;
 
 \echo e2e-round1 sql: all assertions passed

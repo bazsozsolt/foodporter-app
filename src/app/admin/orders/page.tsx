@@ -47,7 +47,7 @@ function OrderDetail({ id }: { id: string }) {
   }, [id, mock.orders, mock.restaurants]);
   const o = q.data?.o;
   const money = o ? orderMoneyBreakdown({ subtotal_cents: Number(o.subtotal_cents), delivery_fee_cents: Number(o.delivery_fee_cents), service_fee_cents: Number(o.service_fee_cents ?? 0), tip_cents: Number(o.tip_cents ?? 0), discount_cents: Number(o.discount_cents ?? 0), credit_cents: Number(o.credit_cents ?? 0) }) : null;
-  const stale = o ? isStaleAssignment({ status: String(o.status), assigned_at: o.assigned_at ? String(o.assigned_at) : null, ready_at: o.ready_at ? String(o.ready_at) : null }) : false;
+  const stale = o ? isStaleAssignment({ status: String(o.status), assigned_at: o.assigned_at ? String(o.assigned_at) : null, ready_at: o.ready_at ? String(o.ready_at) : null }, Date.now(), mock.settings.stale_assignment_minutes) : false;
   async function cancelOrder(oid: string, paid: boolean) {
     if (!confirm(`Cancel order #${oid}?${paid ? " The customer is refunded in full via Mollie." : ""}`)) return;
     const ok = await act((async () => { const { error } = await sb().from("orders").update({ status: "cancelled", cancel_reason: "admin_cancelled" }).eq("id", Number(oid)); if (error) throw new Error(error.message); return true; })(), paid ? "Cancelled · refund started" : "Cancelled");
@@ -121,6 +121,7 @@ function OrderDetail({ id }: { id: string }) {
 }
 
 function OrderList() {
+  const staleMinutes = useStore().settings.stale_assignment_minutes;
   const [range, setRange] = useState<Range>(preset("30d"));
   const [status, setStatus] = useState("");
   const [restaurant, setRestaurant] = useState("");
@@ -166,7 +167,7 @@ function OrderList() {
             <Td>{o.prep_minutes ? `${o.prep_minutes}′${Number(o.prep_extensions) ? ` (+${o.prep_extensions})` : ""}` : "—"}</Td>
             <Td>{o.bid_seconds != null ? `${o.bid_seconds}s${o.fast_bid ? " · fast" : ""}` : "—"}</Td>
             <Td>{o.delivered_at ? (o.on_time ? <span className="font-semibold text-ok">On time</span> : <span className="font-semibold text-danger">+{String(o.minutes_late)} min</span>) : "—"}</Td>
-            <Td><StatusBadge s={String(o.status)} />{isStaleAssignment({ status: String(o.status), assigned_at: o.assigned_at ? String(o.assigned_at) : (o.bid_at ? String(o.bid_at) : null), ready_at: o.ready_at ? String(o.ready_at) : null }) ? <span data-testid="admin-stale" className="ml-1 rounded bg-gold-soft px-1 text-[10px] font-bold text-warn">STALE</span> : null}</Td>
+            <Td><StatusBadge s={String(o.status)} />{isStaleAssignment({ status: String(o.status), assigned_at: o.assigned_at ? String(o.assigned_at) : (o.bid_at ? String(o.bid_at) : null), ready_at: o.ready_at ? String(o.ready_at) : null }, Date.now(), staleMinutes) ? <span data-testid="admin-stale" className="ml-1 rounded bg-gold-soft px-1 text-[10px] font-bold text-warn">STALE</span> : null}</Td>
           </tr>
         ))}
       </Table>

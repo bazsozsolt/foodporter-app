@@ -17,7 +17,7 @@ import { Button, Card, Chips, Empty, Header, Pill, SectionHeader } from "@/compo
 import { eur, hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
 import { riderEarningsCents } from "@/lib/orders";
-import { isStaleAssignment } from "@/lib/staleAssignment";
+import { isStaleAssignment, staleWindowLabel } from "@/lib/staleAssignment";
 import { STATUS_LABEL, STATUS_LABEL_NL, type Order } from "@/lib/types";
 import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap, type MapMarker } from "@/components/LiveMap";
@@ -95,8 +95,9 @@ export default function RiderPage() {
     await act(actions.setOnline(!online), online ? tx("Je bent offline · locatie delen gestopt", "You're offline · location sharing stopped") : tx("Je bent online · locatie wordt gedeeld", "You're online · sharing location"));
   }
   const assignedToMe = orders.filter((o) => ["assigned", "ready", "picked_up"].includes(o.status) && (mode === "mock" || profile?.role === "admin" || (o.rider_id ?? acceptedBid(o)?.rider_id) === profile?.id));
-  const stale = assignedToMe.filter((o) => isStaleAssignment(o));
-  const active = assignedToMe.filter((o) => !isStaleAssignment(o));
+  const staleMinutes = settings.stale_assignment_minutes;
+  const stale = assignedToMe.filter((o) => isStaleAssignment(o, Date.now(), staleMinutes));
+  const active = assignedToMe.filter((o) => !isStaleAssignment(o, Date.now(), staleMinutes));
   const stops = useMyStops(mode === "supabase" ? active.map((o) => `${o.id}:${o.status}`).join(",") : "");
   return (
     <>
@@ -148,7 +149,7 @@ export default function RiderPage() {
         {stale.length > 0 && (
           <section data-testid="stale-jobs" className="mb-3">
             <SectionHeader>{t("Vastgelopen opdrachten", "Stuck assignments")}</SectionHeader>
-            <p className="mb-2 text-[13px] text-muted">{t("Deze bestellingen staan langer dan 3 uur klaar om opgehaald te worden en tellen niet mee op je route of ETA. Neem contact op met support als je ze nog moet afronden.", "These orders have been waiting more than 3 hours to be picked up and no longer count on your route or ETA. Contact support if you still need to finish them.")}</p>
+            <p className="mb-2 text-[13px] text-muted">{t(`Deze bestellingen staan langer dan ${staleWindowLabel(staleMinutes, "nl")} klaar om opgehaald te worden en tellen niet mee op je route of ETA. Neem contact op met support als je ze nog moet afronden.`, `These orders have been waiting more than ${staleWindowLabel(staleMinutes, "en")} to be picked up and no longer count on your route or ETA. Contact support if you still need to finish them.`)}</p>
             {stale.map((o) => (
               <Card key={o.id} data-testid={`stale-job-${o.id}`} className="mb-2">
                 <div className="flex items-center justify-between"><span className="t-label">{t("Vastgelopen", "Stuck")} · #{o.id}</span><Pill>{SL[o.status]}</Pill></div>
