@@ -8,7 +8,7 @@ import { useStore } from "@/lib/store";
 
 type Tab = { href: string; label: [string, string]; icon: ReactNode; match: (p: string) => boolean; testid?: string };
 const CUSTOMER: Tab[] = [
-  { href: "/", label: ["Home", "Home"], icon: <Home size={22} />, match: (p) => p === "/" || p.startsWith("/r") || p.startsWith("/cart") || p.startsWith("/checkout") },
+  { href: "/", label: ["Start", "Home"], icon: <Home size={22} />, match: (p) => p === "/" || p.startsWith("/r") || p.startsWith("/cart") || p.startsWith("/checkout") },
   { href: "/my-orders", label: ["Bestellingen", "Orders"], icon: <ClipboardList size={22} />, match: (p) => p.startsWith("/my-orders") || p.startsWith("/order") },
   { href: "/group", label: ["Samen", "Together"], icon: <Users size={22} />, match: (p) => p.startsWith("/group") },
   { href: "/support", label: ["Hulp", "Help"], icon: <LifeBuoy size={22} />, match: (p) => p.startsWith("/support") },

@@ -8,14 +8,31 @@ import { ErrorNote, Field, inputCls, Panel, RangePicker, SmallBtn, StatusBadge, 
 import { downloadCsv, fmtDateTime, preset, sb, toIso, useAdminQuery, type Range, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
 import { act } from "@/lib/act";
-import { ORDER_COLS } from "@/lib/orders";
+import { ORDER_COLS, orderMoneyBreakdown } from "@/lib/orders";
+import { isStaleAssignment } from "@/lib/staleAssignment";
+import { useStore } from "@/lib/store";
+import { hasSupabase } from "@/lib/supabase";
 import { STATUS_LABEL, type OrderStatus } from "@/lib/types";
 
 const STATUSES: OrderStatus[] = ["awaiting_payment", "payment_failed", "placed", "accepted", "assigned", "ready", "picked_up", "delivered", "cancelled"];
 
 function OrderDetail({ id }: { id: string }) {
   const router = useRouter();
+  const mock = useStore();
   const q = useAdminQuery<{ o: Row; events: Row[]; incidents: Row[] }>(async () => {
+    if (!hasSupabase) {
+      const found = mock.orders.find((x) => String(x.id) === String(id));
+      if (!found) return { data: null, error: { message: `Order #${id} not found` } };
+      const r = mock.restaurants.find((x) => x.id === found.restaurant_id);
+      return {
+        data: {
+          o: { ...found, restaurants: { name: r?.name ?? "" }, order_items: found.lines, customer: { email: "mock.customer@example.com" }, phone: found.phone },
+          events: [],
+          incidents: [],
+        },
+        error: null,
+      };
+    }
     const c = sb();
     const [o, ph, f, ev, inc] = await Promise.all([
       c.from("orders").select(`${ORDER_COLS}, order_items(*), bids(*), restaurants(name)`).eq("id", Number(id)).maybeSingle(),
@@ -27,8 +44,10 @@ function OrderDetail({ id }: { id: string }) {
     if (!o.data) return { data: null, error: o.error ?? { message: `Order #${id} not found` } };
     const cust = await c.from("profiles").select("email, full_name, status").eq("id", String(o.data.customer_id)).maybeSingle();
     return { data: { o: { ...o.data, ...(f.data ?? {}), phone: ph.data ?? "", customer: cust.data }, events: ev.data ?? [], incidents: inc.data ?? [] }, error: null };
-  }, [id]);
+  }, [id, mock.orders, mock.restaurants]);
   const o = q.data?.o;
+  const money = o ? orderMoneyBreakdown({ subtotal_cents: Number(o.subtotal_cents), delivery_fee_cents: Number(o.delivery_fee_cents), service_fee_cents: Number(o.service_fee_cents ?? 0), tip_cents: Number(o.tip_cents ?? 0), discount_cents: Number(o.discount_cents ?? 0), credit_cents: Number(o.credit_cents ?? 0) }) : null;
+  const stale = o ? isStaleAssignment({ status: String(o.status), assigned_at: o.assigned_at ? String(o.assigned_at) : null, ready_at: o.ready_at ? String(o.ready_at) : null }) : false;
   async function cancelOrder(oid: string, paid: boolean) {
     if (!confirm(`Cancel order #${oid}?${paid ? " The customer is refunded in full via Mollie." : ""}`)) return;
     const ok = await act((async () => { const { error } = await sb().from("orders").update({ status: "cancelled", cancel_reason: "admin_cancelled" }).eq("id", Number(oid)); if (error) throw new Error(error.message); return true; })(), paid ? "Cancelled · refund started" : "Cancelled");
@@ -51,21 +70,26 @@ function OrderDetail({ id }: { id: string }) {
       <ErrorNote error={q.error} />
       {o && (
         <div className="grid gap-4 md:grid-cols-2">
-          <Panel title={<>Order #{String(o.id)} <StatusBadge s={String(o.status)} />{o.fulfilment === "pickup" ? <span data-testid="admin-pickup" className="ml-2 rounded bg-brand-soft px-1.5 text-[11px] font-bold text-brand">PICKUP</span> : null}</>} actions={<>
-            {!["delivered", "cancelled"].includes(String(o.status)) && <SmallBtn tone="danger" onClick={() => cancelOrder(String(o.id), Boolean(o.paid_at))}>Cancel{o.paid_at ? " & refund" : ""}</SmallBtn>}
-            {o.refund_status === "failed" && <SmallBtn tone="brand" onClick={() => retryRefund(String(o.id))}>Retry refund</SmallBtn>}
+          <Panel title={<>Order #{String(o.id)} <StatusBadge s={String(o.status)} />{stale ? <span data-testid="admin-stale" className="ml-2 rounded bg-gold-soft px-1.5 text-[11px] font-bold text-warn">STALE ASSIGNMENT</span> : null}{o.fulfilment === "pickup" ? <span data-testid="admin-pickup" className="ml-2 rounded bg-brand-soft px-1.5 text-[11px] font-bold text-brand">PICKUP</span> : null}</>} actions={<>
+            {hasSupabase && !["delivered", "cancelled"].includes(String(o.status)) && <SmallBtn tone="danger" onClick={() => cancelOrder(String(o.id), Boolean(o.paid_at))}>Cancel{o.paid_at ? " & refund" : ""}</SmallBtn>}
+            {hasSupabase && o.refund_status === "failed" && <SmallBtn tone="brand" onClick={() => retryRefund(String(o.id))}>Retry refund</SmallBtn>}
             <SmallBtn onClick={() => window.print()}>Print</SmallBtn></>}>
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
               <dt className="text-muted">Restaurant</dt><dd>{String((o.restaurants as Row)?.name ?? "")}</dd>
               <dt className="text-muted">Customer</dt><dd>{String((o.customer as Row)?.email ?? o.customer_id)}</dd>
               <dt className="text-muted">Address</dt><dd>{String(o.address)}</dd>
               <dt className="text-muted">Phone</dt><dd>{String(o.phone)}</dd>
-              <dt className="text-muted">Food / delivery / service</dt><dd>{eur(Number(o.subtotal_cents))} + {eur(Number(o.delivery_fee_cents))} + {eur(Number(o.service_fee_cents ?? 0))}</dd>
+              <dt className="text-muted">Food</dt><dd data-testid="admin-food">{eur(money!.food_cents)}</dd>
+              <dt className="text-muted">Delivery</dt><dd data-testid="admin-delivery">{eur(money!.delivery_cents)}</dd>
+              <dt className="text-muted">Service</dt><dd data-testid="admin-service">{eur(money!.service_cents)}</dd>
+              <dt className="text-muted">Tip</dt><dd data-testid="admin-tip">{eur(money!.tip_cents)}</dd>
+              {(money!.discount_cents + money!.credit_cents > 0) && <><dt className="text-muted">Discount / credit</dt><dd data-testid="admin-off">−{eur(money!.discount_cents + money!.credit_cents)}</dd></>}
+              <dt className="text-muted">Customer total</dt><dd data-testid="admin-total">{eur(money!.total_cents)}</dd>
               <dt className="text-muted">Rider bonus / company revenue</dt><dd data-testid="admin-revenue">{eur(Number(o.rider_bonus_cents ?? 0))} / {eur(Number(o.company_revenue_cents ?? 0))}</dd>
               <dt className="text-muted">Commission</dt><dd>{eur(Number(o.commission_cents ?? 0))} ({String(o.commission_pct ?? "")}%)</dd>
               <dt className="text-muted">Payment</dt><dd>{String(o.payment_status ?? "—")} {o.mollie_payment_id ? `· ${o.mollie_payment_id}` : ""}</dd>
               <dt className="text-muted">Prep</dt><dd>{o.prep_minutes ? `${o.prep_minutes} min planned` : "—"}{o.actual_prep_minutes != null ? ` · ${o.actual_prep_minutes} min actual` : ""}{Number(o.prep_extensions) ? ` · extended ${o.prep_extensions}×` : ""}</dd>
-              <dt className="text-muted">Rider</dt><dd data-testid="admin-rider">{o.rider_id ? <AdminRider id={Number(o.id)} bidSeconds={o.eta_minutes != null ? Number(o.bid_seconds) : null} /> : "—"}</dd>
+              <dt className="text-muted">Rider</dt><dd data-testid="admin-rider">{o.rider_id ? (hasSupabase ? <AdminRider id={Number(o.id)} bidSeconds={o.eta_minutes != null ? Number(o.bid_seconds) : null} /> : String(o.rider_id)) : "—"}</dd>
               <dt className="text-muted">Distance</dt><dd>{o.distance_km != null ? `${Number(o.distance_km).toFixed(1)} km from centre` : "—"}</dd>
               {o.status === "cancelled" && <><dt className="text-muted">Cancelled</dt><dd>{String(o.cancel_reason ?? "")} · {fmtDateTime(o.cancelled_at)}</dd>
                 <dt className="text-muted">Refund</dt><dd data-testid="admin-refund">{o.refund_status === "simulated" ? "🧪 simulated test payment, nothing charged (auto-closed)" : o.refund_status ? `${o.refund_status}${o.refund_cents ? ` · ${eur(Number(o.refund_cents))}` : ""}${o.refund_id ? ` · ${o.refund_id}` : ""}` : o.paid_at ? "starting…" : "not paid, nothing to refund"}</dd></>}
@@ -76,7 +100,7 @@ function OrderDetail({ id }: { id: string }) {
             <ul className="text-sm">{((o.order_items as Row[]) ?? []).map((l) => <li key={String(l.id)}>{String(l.qty)}× {String(l.name)} · {eur(Number(l.price_cents) * Number(l.qty))}</li>)}</ul>
           </Panel>
           {(o.leave_at_door || o.delivery_photo_path) ? <Panel title="Proof of delivery"><p className="text-sm">{o.leave_at_door ? "Leave at the door" : "In person"}</p>{o.delivery_photo_path ? <DeliveryPhoto path={String(o.delivery_photo_path)} english /> : <p className="text-xs text-muted">No photo yet.</p>}</Panel> : null}
-          <Panel title="Customer contact"><AdminOrderContact orderId={Number(o.id)} /></Panel>
+          {hasSupabase ? <Panel title="Customer contact"><AdminOrderContact orderId={Number(o.id)} /></Panel> : null}
           <Panel title="Timeline">
             <ol className="relative ml-2 border-l-2 border-[#eee] pl-4 text-sm">
               {q.data!.events.map((e) => (
@@ -142,7 +166,7 @@ function OrderList() {
             <Td>{o.prep_minutes ? `${o.prep_minutes}′${Number(o.prep_extensions) ? ` (+${o.prep_extensions})` : ""}` : "—"}</Td>
             <Td>{o.bid_seconds != null ? `${o.bid_seconds}s${o.fast_bid ? " · fast" : ""}` : "—"}</Td>
             <Td>{o.delivered_at ? (o.on_time ? <span className="font-semibold text-ok">On time</span> : <span className="font-semibold text-danger">+{String(o.minutes_late)} min</span>) : "—"}</Td>
-            <Td><StatusBadge s={String(o.status)} /></Td>
+            <Td><StatusBadge s={String(o.status)} />{isStaleAssignment({ status: String(o.status), assigned_at: o.assigned_at ? String(o.assigned_at) : (o.bid_at ? String(o.bid_at) : null), ready_at: o.ready_at ? String(o.ready_at) : null }) ? <span data-testid="admin-stale" className="ml-1 rounded bg-gold-soft px-1 text-[10px] font-bold text-warn">STALE</span> : null}</Td>
           </tr>
         ))}
       </Table>

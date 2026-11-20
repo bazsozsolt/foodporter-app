@@ -21,6 +21,7 @@ import { LiveMap } from "@/components/LiveMap";
 import { useOrderLocation } from "@/lib/location";
 import { OrderChat } from "@/components/OrderChat";
 import { useRiderInfo } from "@/lib/orders";
+import { isTodayAmsterdam } from "@/lib/staleAssignment";
 import { AllergenEditor } from "@/components/AllergenEditor";
 import { SoldOutPanel } from "@/components/SoldOutPanel";
 import { SectionHeader } from "@/components/ui";
@@ -68,6 +69,8 @@ function OrderCard({ o }: { o: Order }) {
           <Countdown from={o.paid_at ?? o.created_at} />
           <Button variant="ghost" onClick={() => { if (confirm(tx(`Bestelling #${o.id} weigeren? De klant krijgt het volledige bedrag terug.`, `Reject order #${o.id}? The customer is refunded in full.`))) void act(actions.rejectOrder(o.id), t("Bestelling geweigerd · klant terugbetaald", "Order rejected · customer refunded")); }}>{t("Weigeren", "Reject")}</Button>
         </>
+      ) : o.status === "delivered" ? (
+        <p data-testid="finished-note" className="mt-3 text-sm text-muted">{t("Bezorgd", "Delivered")}{o.delivered_at ? ` · ${hhmm(new Date(o.delivered_at))}` : ""}</p>
       ) : (
         <>
           <p className="mt-3 text-sm">{tx("Bereidingstijd", "Prep time")} <b>{o.prep_minutes} min</b>{o.ready_at ? <> · {tx("klaar", "ready")} ~<b>{hhmm(new Date(o.ready_at))}</b></> : null} · {o.fulfilment === "pickup" ? <span>{tx("klant haalt op", "customer collects")}</span> : bid ? <span data-testid="assigned-rider">rider <b>{bid.rider_name}</b> {tx("komt eraan", "coming")} · ETA {bid.eta_minutes} min{bid.estimated ? tx(" (geschat)", " (estimated)") : ""}</span> : left != null ? tx(`${o.bids.length} bod/biedingen · rider gekozen over ${mmss(left)}`, `${o.bids.length} bid(s) · rider chosen in ${mmss(left)}`) : tx("wacht op een bod van een rider", "waiting for a rider bid")}</p>
@@ -113,6 +116,7 @@ export default function RestaurantPage() {
     { key: "prep", title: tx("In bereiding", "Preparing"), icon: <ChefHat size={16} aria-hidden />, rows: open.filter((o) => o.status !== "placed") },
     { key: "ready", title: tx("Klaar voor ophalen", "Ready for pickup"), icon: <CircleCheck size={16} aria-hidden />, rows: mine.filter((o) => o.status === "ready") },
   ];
+  const finishedToday = mine.filter((o) => o.status === "delivered" && isTodayAmsterdam(o.delivered_at)).sort((a, b) => (b.delivered_at ?? "").localeCompare(a.delivered_at ?? ""));
   const myName = restaurants.find((r) => r.id === profile?.restaurant_id)?.name;
   const { st: legal, reload: reloadLegal } = useLegalStatus();
   return (
@@ -137,7 +141,8 @@ export default function RestaurantPage() {
             {scheduledLater.map((o) => <Card key={o.id} className="!p-3"><b>#{o.id}</b> · {tx("klant wil het om", "customer wants it at")} <b>{hhmm(new Date(o.scheduled_for!))}</b><div className="text-[13px] text-muted">{tx(`Verschijnt bij Nieuw om ${hhmm(new Date(o.release_at!))}`, `Moves to New at ${hhmm(new Date(o.release_at!))}`)} · {o.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}</div></Card>)}
           </section>
         )}
-        {open.length === 0 && cols[2].rows.length === 0 ? <Empty icon={<ChefHat size={24} />}>{t("Op dit moment geen open bestellingen.", "No open orders right now.")}</Empty> : (
+        {open.length === 0 && cols[2].rows.length === 0 && finishedToday.length === 0 ? <Empty icon={<ChefHat size={24} />}>{t("Op dit moment geen open bestellingen.", "No open orders right now.")}</Empty> : (
+          <>
           <div className="grid gap-4 lg:grid-cols-3" data-testid="order-board">
             {cols.map((c) => (
               <section key={c.key} data-testid={`col-${c.key}`} className="rounded-2xl bg-subtle/70 p-2">
@@ -146,6 +151,14 @@ export default function RestaurantPage() {
               </section>
             ))}
           </div>
+          {finishedToday.length > 0 && (
+            <section data-testid="col-finished" className="mt-4 rounded-2xl bg-subtle/70 p-2">
+              <h2 className="mb-2 flex items-center gap-2 px-1 !font-sans !text-[13px] font-bold uppercase tracking-wide text-muted">{t("Vandaag afgerond", "Finished today")}<span className="ml-auto rounded-full bg-white px-2 text-ink">{finishedToday.length}</span></h2>
+              <p className="mb-2 px-1 text-[13px] text-muted">{t("Bezorgde bestellingen van vandaag. Je kunt de chat hier opnieuw openen.", "Today's delivered orders. You can reopen the chat here.")}</p>
+              {finishedToday.map((o) => <OrderCard key={o.id} o={o} />)}
+            </section>
+          )}
+          </>
         )}
         </>) : (
           profile?.restaurant_id ? <><SoldOutPanel restaurantId={profile.restaurant_id} /><HoursPanel restaurantId={profile.restaurant_id} /><RestaurantPhotos restaurantId={profile.restaurant_id} /><MenuAllergens restaurantId={profile.restaurant_id} /></> : <Empty icon={<ChefHat size={24} />}>{tx("Geen restaurant gekoppeld aan dit account.", "No restaurant linked to this account.")}</Empty>

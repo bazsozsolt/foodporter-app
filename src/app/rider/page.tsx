@@ -16,6 +16,8 @@ import { act } from "@/lib/act";
 import { Button, Card, Chips, Empty, Header, Pill, SectionHeader } from "@/components/ui";
 import { eur, hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
+import { riderEarningsCents } from "@/lib/orders";
+import { isStaleAssignment } from "@/lib/staleAssignment";
 import { STATUS_LABEL, STATUS_LABEL_NL, type Order } from "@/lib/types";
 import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap, type MapMarker } from "@/components/LiveMap";
@@ -72,7 +74,7 @@ function BidCard({ o, activeCount }: { o: Order; activeCount: number }) {
 export default function RiderPage() {
   const t = useT();
   const SL = t("nl", "en") === "nl" ? STATUS_LABEL_NL : STATUS_LABEL;
-  const { orders, profile, mode, restaurants, earnings } = useStore();
+  const { orders, profile, mode, restaurants, earnings, settings } = useStore();
   const open = orders.filter((o) => o.status === "accepted" && o.fulfilment !== "pickup" && !acceptedBid(o));
   useOrderAlerts(open.map((o) => `${o.id}:${o.renotified_at ?? ""}`), tx("Beep-beep! Nieuwe bestelling om op te bieden", "Beep-beep! New order to bid on"), riderBody, "/rider/");
   const [name, setName] = useState<string | null>(null);
@@ -92,7 +94,9 @@ export default function RiderPage() {
     }
     await act(actions.setOnline(!online), online ? tx("Je bent offline · locatie delen gestopt", "You're offline · location sharing stopped") : tx("Je bent online · locatie wordt gedeeld", "You're online · sharing location"));
   }
-  const active = orders.filter((o) => ["assigned", "ready", "picked_up"].includes(o.status) && (mode === "mock" || profile?.role === "admin" || (o.rider_id ?? acceptedBid(o)?.rider_id) === profile?.id));
+  const assignedToMe = orders.filter((o) => ["assigned", "ready", "picked_up"].includes(o.status) && (mode === "mock" || profile?.role === "admin" || (o.rider_id ?? acceptedBid(o)?.rider_id) === profile?.id));
+  const stale = assignedToMe.filter((o) => isStaleAssignment(o));
+  const active = assignedToMe.filter((o) => !isStaleAssignment(o));
   const stops = useMyStops(mode === "supabase" ? active.map((o) => `${o.id}:${o.status}`).join(",") : "");
   return (
     <>
@@ -141,6 +145,20 @@ export default function RiderPage() {
             </ol>
           </Card>
         )}
+        {stale.length > 0 && (
+          <section data-testid="stale-jobs" className="mb-3">
+            <SectionHeader>{t("Vastgelopen opdrachten", "Stuck assignments")}</SectionHeader>
+            <p className="mb-2 text-[13px] text-muted">{t("Deze bestellingen staan langer dan 3 uur klaar om opgehaald te worden en tellen niet mee op je route of ETA. Neem contact op met support als je ze nog moet afronden.", "These orders have been waiting more than 3 hours to be picked up and no longer count on your route or ETA. Contact support if you still need to finish them.")}</p>
+            {stale.map((o) => (
+              <Card key={o.id} data-testid={`stale-job-${o.id}`} className="mb-2">
+                <div className="flex items-center justify-between"><span className="t-label">{t("Vastgelopen", "Stuck")} · #{o.id}</span><Pill>{SL[o.status]}</Pill></div>
+                <p className="mt-1 text-[13px] text-muted">{o.address}</p>
+                <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="rider" side={o.rider_id === profile?.id ? "rider" : "admin"} order={o} /></div>
+                <HelpButton role="rider" orderId={Number(o.id)} label={tx("Probleem melden", "Report a problem")} />
+              </Card>
+            ))}
+          </section>
+        )}
         {active.map((o) => {
           const bid = acceptedBid(o); // null when an admin assigned the rider manually
           const rest = restaurants.find((x) => x.id === o.restaurant_id);
@@ -170,8 +188,8 @@ export default function RiderPage() {
               <div className="mt-3 flex gap-2"><CallButton orderId={Number(o.id)} status={o.status} side="rider" asAdmin={o.rider_id !== profile?.id} /><HelpButton role="rider" orderId={Number(o.id)} label={tx("Probleem melden", "Report a problem")} /></div>
               <div className="mt-2"><OrderChat orderId={Number(o.id)} channel="rider" side={o.rider_id === profile?.id ? "rider" : "admin"} order={o} /></div>
               {o.leave_at_door && <LeaveAtDoorNote />}
-              {o.status === "picked_up" && o.rider_id === profile?.id && <ProofCapture orderId={o.id} hasPhoto={!!o.delivery_photo_path} />}
-              {o.status === "picked_up" && <Button variant="ok" disabled={o.leave_at_door && !o.delivery_photo_path && o.rider_id === profile?.id} className="min-h-14 text-[17px]" onClick={() => act(actions.deliver(o.id), tx(`Bezorgd · ${eur(o.delivery_fee_cents + (o.tip_cents ?? 0))} bij je verdiensten`, `Delivered · ${eur(o.delivery_fee_cents + (o.tip_cents ?? 0))} added to earnings`))}>{t("Bezorgd", "Delivered")}</Button>}
+              {o.leave_at_door && o.status === "picked_up" && o.rider_id === profile?.id && <ProofCapture orderId={o.id} hasPhoto={!!o.delivery_photo_path} />}
+              {o.status === "picked_up" && <Button variant="ok" disabled={o.leave_at_door && !o.delivery_photo_path && o.rider_id === profile?.id} className="min-h-14 text-[17px]" onClick={() => act(actions.deliver(o.id), tx(`Bezorgd · ${eur(riderEarningsCents(o, settings))} bij je verdiensten`, `Delivered · ${eur(riderEarningsCents(o, settings))} added to earnings`))}>{t("Bezorgd", "Delivered")}</Button>}
             </Card>
           );
         })}

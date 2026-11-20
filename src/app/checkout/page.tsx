@@ -2,7 +2,7 @@
 import { useLang, useT } from "@/lib/i18n";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button, Card, Chips, Empty, Header } from "@/components/ui";
 import { act } from "@/lib/act";
 import { eur } from "@/lib/format";
@@ -15,6 +15,7 @@ import { openState } from "@/lib/hours";
 import { PromoBox, SchedulePicker, type Quote } from "@/components/CheckoutExtras";
 import { TestModeCheckoutNote } from "@/components/TestModeBanner";
 import { evaluateMinOrder, minOrderMessage, platformDeliveryMinCents } from "@/lib/minOrder";
+import { loadCheckoutDraft, saveCheckoutDraft, clearCheckoutDraft } from "@/lib/checkoutDraft";
 import { ArrowLeft, Lock, ShoppingBag } from "lucide-react";
 
 export default function CheckoutPage() {
@@ -36,6 +37,27 @@ export default function CheckoutPage() {
   const [pickup, setPickup] = useState(false);
   const [customTip, setCustomTip] = useState("");
   const [method, setMethod] = useState<"iDEAL" | "Card">("iDEAL");
+  const draftReady = useRef(false);
+  useEffect(() => {
+    const d = loadCheckoutDraft(cart.restaurant_id);
+    if (d) {
+      setAddress(d.address);
+      setPhone(d.phone);
+      setTip(d.tip);
+      setCustomTip(d.customTip);
+      setDoor(d.door);
+      setPickup(d.pickup);
+      setMethod(d.method);
+      setWhen(d.when);
+      setQuote(d.quote);
+      setGeo(d.geo);
+    }
+    draftReady.current = true;
+  }, [cart.restaurant_id]);
+  useEffect(() => {
+    if (!draftReady.current) return;
+    saveCheckoutDraft({ restaurant_id: cart.restaurant_id, address, phone, tip, customTip, door, pickup, method, when, quote, geo });
+  }, [cart.restaurant_id, address, phone, tip, customTip, door, pickup, method, when, quote, geo]);
   const outOfZone = !pickup && hasSupabase && (!geo || geo.distance_km > settings.zone_radius_km);
   // v26: distance-based delivery fee (bands from the financial plan) + service fee on delivery orders; the server recomputes both.
   const km = !pickup && geo ? feeKm(geo, rest, settings.fee_distance_basis) : null;
@@ -67,16 +89,16 @@ export default function CheckoutPage() {
   async function pay() {
     if (!signedIn) { router.push("/login?next=/checkout"); return; }
     setBusy(true);
-    const id = pending?.id ?? await act(actions.placeOrder(pickup ? `Afhalen bij ${rest?.name ?? "restaurant"}` : address, phone, pickup ? null : geo, { leaveAtDoor: door, pickup }), hasSupabase ? undefined : `Order placed · Mollie ${method} payment is mocked (no Supabase)`);
+    const id = pending?.id ?? await act(actions.placeOrder(pickup ? `Afhalen bij ${rest?.name ?? "restaurant"}` : address, phone, pickup ? null : geo, { leaveAtDoor: door, pickup, tipCents: TIP, discountCents: quote.q?.discount_cents ?? 0, creditCents: quote.q?.credit_cents ?? 0 }), hasSupabase ? undefined : `Order placed · Mollie ${method} payment is mocked (no Supabase)`);
     if (!id) { setBusy(false); return; }
-    if (!hasSupabase) { setBusy(false); router.push(orderHref(id)); return; }
+    if (!hasSupabase) { clearCheckoutDraft(); setBusy(false); router.push(orderHref(id)); return; }
     // Mollie hosted checkout (iDEAL / card are chosen there). The server computes the amount; if it differs from what is shown, no payment is created.
     const expected = pending?.server ? pending.server.total_cents : TOTAL;
     let changed: PriceBreakdown | null = null;
     const checkoutUrl = await act(actions.startPayment(id, TIP, { promo_code: quote.code || undefined, use_credit: quote.credit, scheduled_for: when, expected_total_cents: expected })
       .catch((e) => { if (e instanceof PriceChangedError) changed = e.breakdown; throw e; }));
     setBusy(false);
-    if (checkoutUrl) window.location.href = checkoutUrl;
+    if (checkoutUrl) { clearCheckoutDraft(); window.location.href = checkoutUrl; }
     else if (changed) setPending({ id, key: attemptKey, server: changed });
     else router.push(orderHref(id)); // order exists unpaid; tracking page offers "Pay now"
   }

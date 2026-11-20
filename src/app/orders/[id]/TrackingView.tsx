@@ -81,10 +81,16 @@ export function TrackingView({ id }: { id: string }) {
         {live && markers.length > 0 && <Card className="p-2"><LiveMap markers={markers} /><p className="mt-1.5 px-1 text-xs text-muted">{loc ? tx(`Locatie rider bijgewerkt ${hhmm(new Date(loc.created_at))}`, `Rider location updated ${hhmm(new Date(loc.created_at))}`) : tx("De locatie van de rider verschijnt zodra die GPS deelt.", "Rider location appears once they share GPS.")}</p></Card>}
         {(mine || profile?.role === "admin") && o.status !== "awaiting_payment" && (
           <Card className="!p-3" data-testid="contact-box">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {mine && <HelpButton role="customer" orderId={Number(o.id)} orderTotalCents={o.paid_at ? paidTotalCents(o) - (o.refund_cents ?? 0) : null} />}
               {o.rider_id && ["placed", "accepted", "assigned", "ready", "picked_up", "delivered"].includes(o.status) && <CallButton orderId={Number(o.id)} status={o.status} side="customer" asAdmin={!mine} />}
             </div>
+            {mine && o.status === "placed" && (
+              <Button data-testid="cancel-order" variant="ghost" className="mt-2 w-full" onClick={() => {
+                if (confirm(tx("Bestelling annuleren? Je krijgt het volledige bedrag terug.", "Cancel this order? You will be refunded in full.")))
+                  void act(actions.cancelOwnOrder(o.id), tx("Bestelling geannuleerd · terugbetaling gestart", "Order cancelled · refund started"));
+              }}>{tr("Annuleren", "Cancel order")}</Button>
+            )}
             {["placed", "accepted", "assigned", "ready", "picked_up", "delivered"].includes(o.status) && <div className="mt-2 space-y-2">
               {o.leave_at_door && <p data-testid="door-chosen" className="mt-2 text-[13px] text-muted">{tr("Je koos: bij de deur zetten (zonder contact).", "You chose: leave at the door (contactless).")}</p>}
               <DeliveryPhoto path={o.delivery_photo_path} english={!mine} />

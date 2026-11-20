@@ -1,7 +1,7 @@
 "use client";
 import { tx } from "@/lib/i18n";
 import { clearFavourites } from "./favourites";
-import { ORDER_COLS } from "./orders";
+import { ORDER_COLS, paidTotalCents } from "./orders";
 import { passwordMeetsPolicy } from "./password";
 // Data layer. With NEXT_PUBLIC_SUPABASE_* set it uses Supabase (auth, queries, realtime);
 // otherwise it falls back to mock data in localStorage so the app always runs.
@@ -324,7 +324,7 @@ export const actions = {
   },
 
   // --- customer ---
-  async placeOrder(address: string, phone: string, geo?: Geo | null, opts: { leaveAtDoor?: boolean; pickup?: boolean } = {}): Promise<string> {
+  async placeOrder(address: string, phone: string, geo?: Geo | null, opts: { leaveAtDoor?: boolean; pickup?: boolean; tipCents?: number; discountCents?: number; creditCents?: number } = {}): Promise<string> {
     const { restaurant_id, qty } = state.cart;
     const lines: OrderLine[] = Object.entries(qty).map(([item_id, q]) => {
       const it = state.menuItems.find((m) => m.id === item_id)!;
@@ -349,8 +349,11 @@ export const actions = {
     const id = String(1040 + state.orders.length);
     const order: Order = {
       id, restaurant_id: restaurant_id!, customer_id: "customer-demo", status: "placed", lines, subtotal_cents: subtotal,
-      delivery_fee_cents: state.settings.delivery_fee_cents, address, phone, prep_minutes: null, ready_at: null, bids: [],
-      created_at: new Date().toISOString(), delivered_at: null, accepted_at: null,
+      delivery_fee_cents: opts.pickup ? 0 : state.settings.delivery_fee_cents, service_fee_cents: opts.pickup && !state.settings.service_fee_on_pickup ? 0 : (state.settings.service_fee_cents ?? 0),
+      tip_cents: opts.tipCents ?? 0, discount_cents: opts.discountCents ?? 0, credit_cents: opts.creditCents ?? 0, leave_at_door: !opts.pickup && Boolean(opts.leaveAtDoor), fulfilment: opts.pickup ? "pickup" : "delivery",
+      rider_bonus_cents: opts.pickup ? 0 : (state.settings.rider_bonus_cents ?? 50),
+      address, phone, prep_minutes: null, ready_at: null, bids: [],
+      created_at: new Date().toISOString(), paid_at: new Date().toISOString(), delivered_at: null, accepted_at: null,
     };
     set((s) => ({ ...s, orders: [...s.orders, order], cart: { restaurant_id: null, qty: {} } }));
     return id;
@@ -396,6 +399,23 @@ export const actions = {
     const sb = getSupabase();
     if (sb) return run(sb.from("orders").update({ status: "cancelled", cancel_reason: "restaurant_rejected" }).eq("id", Number(id)));
     patch(id, { status: "cancelled", cancel_reason: "restaurant_rejected" });
+  },
+  /** Customer cancels only while the order is still 'placed' (before the restaurant accepts). Server RLS enforces the same race. */
+  async cancelOwnOrder(id: string) {
+    const already = tx("Het restaurant heeft de bestelling al geaccepteerd. Annuleren kan niet meer.", "The restaurant has already accepted the order. It can no longer be cancelled.");
+    const sb = getSupabase();
+    if (sb) {
+      const uid = state.profile?.id;
+      if (!uid) throw new Error(tx("Log eerst in", "Please sign in first"));
+      const { data, error } = await sb.from("orders").update({ status: "cancelled", cancel_reason: "customer_cancelled" })
+        .eq("id", Number(id)).eq("status", "placed").eq("customer_id", uid).select("id");
+      if (error) throw new Error(error.message);
+      if (!data?.length) throw new Error(already);
+      return;
+    }
+    const o = state.orders.find((x) => x.id === id);
+    if (!o || o.status !== "placed") throw new Error(already);
+    patch(id, { status: "cancelled", cancel_reason: "customer_cancelled", refund_status: "simulated", refund_cents: paidTotalCents(o) });
   },
   async markReady(id: string) {
     const p = { status: "ready" as OrderStatus, ready_at: new Date().toISOString() };
