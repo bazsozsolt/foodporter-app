@@ -24,6 +24,12 @@ declare
   rest uuid := '88888888-8888-4888-8888-888888888888';
   grp uuid := '99999999-9999-4999-8999-999999999999';
   v_msg text;
+  v_md5_1043 text;
+  v_md5_1046 text;
+  v_sha_1043 text;
+  v_sha_1046 text;
+  v_peer_cents int;
+  v_peer_bonus int;
 begin
   perform assert_true(
     (select prosecdef and exists (
@@ -83,7 +89,9 @@ begin
     (1046, other, null, rest, 'delivered', 'PROTECTED 1046', '0644444444', 1100, 295, 132, 'tr_protected_1046', null, null, null, null, null, now() - interval '1 day', now() - interval '1 day'),
     (2003, active, null, rest, 'picked_up', 'Active street 1', '0622222222', 900, 295, 108, 'tr_active', null, null, null, null, null, null, now()),
     (2004, via_rpc, via_rpc, rest, 'delivered', 'RPC street 9', '0633333333', 1600, 295, 192, 'tr_rpc', 51.5, 5.1, null, '2004/old.jpg', now() - interval '40 days', now() - interval '40 days', now() - interval '40 days'),
-    (3001, other, null, rest, 'awaiting_payment', 'Other street 3', '0644444444', 1000, 295, null, 'tr_other_open', null, null, null, null, null, null, now());
+    (3001, other, null, rest, 'awaiting_payment', 'Other street 3', '0644444444', 2000, 295, null, 'tr_other_open', null, null, null, null, null, null, now()),
+    (3002, other, null, rest, 'awaiting_payment', 'Other street 3', '0644444444', 2000, 295, null, 'tr_peer_erase', null, null, null, null, null, null, now()),
+    (3003, other, null, rest, 'awaiting_payment', 'Other street 3', '0644444444', 2000, 295, null, 'tr_peer_normal', null, null, null, null, null, null, now());
 
   insert into public.order_items(id, order_id, name, guest_name) values
     ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1', 2001, 'Pizza', 'FP TEST erase');
@@ -97,7 +105,53 @@ begin
   insert into public.payouts(id, restaurant_id, amount_cents, reference) values
     ('cccccccc-cccc-4ccc-8ccc-ccccccccccc2', rest, 5000, 'restaurant payout');
   insert into public.customer_credit(customer_id, cents, reason, order_id) values
-    (a, 500, 'refund', 2001);
+    (a, 500, 'refund', 2001),
+    (a, 500, 'referral_friend', null),
+    (a, -200, 'used', 2001),
+    (other, 500, 'referral_friend', null);
+
+  -- Promos admin totals only sum referral_friend and used (see src/app/admin/promos/page.tsx).
+  perform assert_true(
+    (select coalesce(sum(cents), 0) from public.customer_credit where reason = 'referral_friend') = 1000
+    and (select coalesce(sum(-cents), 0) from public.customer_credit where reason = 'used') = 200,
+    'before erasure, Promos totals include this customer''s referral credit');
+
+  select md5((o.*)::text), encode(sha256((o.*)::text::bytea), 'hex')
+    into v_md5_1043, v_sha_1043 from public.orders o where id = 1043;
+  select md5((o.*)::text), encode(sha256((o.*)::text::bytea), 'hex')
+    into v_md5_1046, v_sha_1046 from public.orders o where id = 1046;
+  perform assert_true(v_md5_1043 is not null and v_md5_1046 is not null, '1043/1046 local checksums captured');
+  create temporary table fp_erase_ck (
+    id int primary key,
+    md5 text not null,
+    sha text not null
+  );
+  insert into fp_erase_ck(id, md5, sha) values
+    (1043, v_md5_1043, v_sha_1043),
+    (1046, v_md5_1046, v_sha_1046);
+end $$;
+
+do $$
+declare
+  a uuid := '11111111-1111-4111-8111-111111111111';
+  adm uuid := '22222222-2222-4222-8222-222222222222';
+  prot uuid := '33333333-3333-4333-8333-333333333333';
+  active uuid := '44444444-4444-4444-8444-444444444444';
+  via_rpc uuid := '55555555-5555-4555-8555-555555555555';
+  other uuid := '66666666-6666-4666-8666-666666666666';
+  guest uuid := '77777777-7777-4777-8777-777777777777';
+  rest uuid := '88888888-8888-4888-8888-888888888888';
+  grp uuid := '99999999-9999-4999-8999-999999999999';
+  v_msg text;
+  v_md5_1043 text;
+  v_md5_1046 text;
+  v_sha_1043 text;
+  v_sha_1046 text;
+  v_peer_cents int;
+  v_peer_bonus int;
+begin
+  select md5, sha into v_md5_1043, v_sha_1043 from fp_erase_ck where id = 1043;
+  select md5, sha into v_md5_1046, v_sha_1046 from fp_erase_ck where id = 1046;
   insert into public.bids(id, order_id, rider_id, rider_name) values
     ('dddddddd-dddd-4ddd-8ddd-ddddddddddd1', 2001, a, 'FP TEST erase');
   insert into public.ratings(order_id, customer_id, comment) values
@@ -203,14 +257,41 @@ begin
     'commission trigger stays enabled; erasure only sets a transaction-local flag');
   update public.orders set status = 'placed', paid_at = now() where id = 3001;
   perform assert_true(
-    (select commission_cents = 120 and commission_pct = 12 and rider_bonus_cents = 50 and subtotal_cents = 1000 from public.orders where id = 3001),
-    'a non-erase paid-order update still calculates commission');
+    (select commission_cents = 240 and commission_pct = 12 and rider_bonus_cents = 50 and subtotal_cents = 2000 from public.orders where id = 3001),
+    'a non-erase paid-order update writes 12% commission and the rider bonus');
   perform set_config('fp.erasure', 'on', true);
   update public.orders set subtotal_cents = 4000 where id = 3001;
   perform assert_true(
-    (select commission_cents = 120 and subtotal_cents = 4000 from public.orders where id = 3001),
+    (select commission_cents = 240 and subtotal_cents = 4000 from public.orders where id = 3001),
     'inside the erasure flag, commission is not recalculated');
   perform set_config('fp.erasure', 'off', true);
+
+  update public.orders set status = 'placed', paid_at = now() where id in (3002, 3003);
+  perform assert_true(
+    (select commission_cents = 240 and commission_pct = 12 and rider_bonus_cents = 50 from public.orders where id = 3002)
+    and (select commission_cents = 240 and commission_pct = 12 and rider_bonus_cents = 50 from public.orders where id = 3003),
+    'peer orders also received 12% commission and the rider bonus');
+
+  -- Concurrent session: the peer transaction uses its own order so it is not locked by this DO block.
+  perform dblink_connect('era', format('host=/var/run/postgresql dbname=%s user=postgres', current_database()));
+  perform dblink_exec('era', 'begin');
+  perform dblink_exec('era',
+    'insert into public.orders(id, customer_id, restaurant_id, status, address, phone, subtotal_cents, delivery_fee_cents, fulfilment) values (4001, ''66666666-6666-4666-8666-666666666666'', ''88888888-8888-4888-8888-888888888888'', ''awaiting_payment'', ''Other street 3'', ''0644444444'', 2000, 295, ''delivery'')');
+  perform dblink_exec('era', 'update public.orders set status = ''placed'', paid_at = now() where id = 4001');
+  perform dblink_exec('era', 'update public.orders set subtotal_cents = 9000 where id = 4001 and set_config(''fp.erasure'', ''on'', true) is not null');
+  update public.orders set subtotal_cents = 5000 where id = 3003;
+  perform assert_true(
+    (select commission_cents = 600 and commission_pct = 12 and rider_bonus_cents = 50 and subtotal_cents = 5000 from public.orders where id = 3003),
+    'a session without the flag is unaffected while another transaction runs an erasure');
+  select rec.commission_cents, rec.rider_bonus_cents
+    into v_peer_cents, v_peer_bonus
+  from dblink('era', 'select commission_cents, rider_bonus_cents from public.orders where id = 4001')
+    as rec(commission_cents int, rider_bonus_cents int);
+  perform assert_true(
+    v_peer_cents = 240 and v_peer_bonus = 50,
+    'the erasure session does not recalculate commission on its in-flight update');
+  perform dblink_exec('era', 'commit');
+  perform dblink_disconnect('era');
 
   delete from auth.users where id = a;
 
@@ -270,8 +351,14 @@ begin
     (select restaurant_id = rest and rider_id is null and not anonymised and amount_cents = 5000 from public.payouts where id = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc2'),
     'unrelated restaurant payout unchanged');
   perform assert_true(
-    (select customer_id is null and cents = 500 and reason = 'erased' from public.customer_credit where order_id = 2001),
+    (select customer_id is null and cents = 500 and reason = 'erased' from public.customer_credit where order_id = 2001 and cents = 500),
     'credit ledger kept, detached, and reason scrubbed');
+  perform assert_true(
+    (select count(*) = 3 from public.customer_credit where customer_id is null and reason = 'erased')
+    and (select coalesce(sum(cents), 0) from public.customer_credit where reason = 'referral_friend') = 500
+    and (select coalesce(sum(-cents), 0) from public.customer_credit where reason = 'used') = 0
+    and (select customer_id = other and reason = 'referral_friend' and cents = 500 from public.customer_credit where customer_id = other),
+    'Promos totals drop the erased customer''s referral and used rows; the other customer is unchanged');
   perform assert_true(
     (select rider_id is null and rider_name = 'Verwijderde gebruiker' from public.bids where order_id = 2001),
     'bid kept without the rider name');
@@ -314,14 +401,20 @@ begin
     (select address = 'PROTECTED 1046' and customer_id = other and phone = '0644444444' from public.orders where id = 1046),
     'order 1046 unchanged');
   perform assert_true(
+    (select md5((o.*)::text) from public.orders o where id = 1043) = v_md5_1043
+    and (select encode(sha256((o.*)::text::bytea), 'hex') from public.orders o where id = 1043) = v_sha_1043
+    and (select md5((o.*)::text) from public.orders o where id = 1046) = v_md5_1046
+    and (select encode(sha256((o.*)::text::bytea), 'hex') from public.orders o where id = 1046) = v_sha_1046,
+    '1043/1046 row checksums stay unchanged');
+  perform assert_true(
     exists (select 1 from public.audit_events where type = 'profile_erased' and profile_id is null and to_value = 'deleted'),
     'erasure recorded without a profile link');
 
   perform set_config('fp.test_admin', 'on', true);
   perform set_config('fp.test_uid', adm::text, true);
   perform public.fp_erase_account(via_rpc);
-  perform assert_true(not exists (select 1 from public.profiles where id = via_rpc), 'erase RPC removes the profile');
-  perform assert_true(not exists (select 1 from auth.users where id = via_rpc), 'erase RPC removes the login');
+  perform assert_true(not exists (select 1 from public.profiles where id = via_rpc), 'rider erasure via the RPC removes the profile');
+  perform assert_true(not exists (select 1 from auth.users where id = via_rpc), 'rider erasure via the RPC removes the login');
   perform assert_true(
     (select customer_id is null and delivery_photo_path is null and commission_cents = 192 and mollie_payment_id = 'tr_rpc' and subtotal_cents = 1600 from public.orders where id = 2004),
     'RPC erase anonymises the order and clears an expired photo without rewriting the commission');
