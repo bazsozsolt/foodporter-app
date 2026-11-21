@@ -4,7 +4,18 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-Deno.serve(async () => {
+/** If FP_INTERNAL_SECRET is set, require header x-fp-internal-secret. Unset keeps current behaviour so pg_cron / triggers keep working until the secret is configured and their HTTP headers are updated. */
+function rejectIfSecretMismatch(req: Request): Response | null {
+  const secret = Deno.env.get("FP_INTERNAL_SECRET");
+  if (!secret) return null;
+  const got = req.headers.get("x-fp-internal-secret") ?? "";
+  if (got !== secret) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
+  return null;
+}
+
+Deno.serve(async (req) => {
+  const denied = rejectIfSecretMismatch(req);
+  if (denied) return denied;
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
   const { data, error } = await db.rpc("fp_expired_proofs", { p_limit: 500 });
   if (error) return Response.json({ error: error.message }, { status: 500 });

@@ -13,6 +13,15 @@ const corsFor = (req: Request) => {
   return { "Access-Control-Allow-Origin": ORIGINS.includes(o) ? o : ORIGINS[0], "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS", Vary: "Origin" };
 };
 let CORS: Record<string, string> = {};
+
+/** If FP_INTERNAL_SECRET is set, require header x-fp-internal-secret. Unset keeps current behaviour so pg_cron / triggers keep working until the secret is configured and their HTTP headers are updated. */
+function rejectIfSecretMismatch(req: Request): Response | null {
+  const secret = Deno.env.get("FP_INTERNAL_SECRET");
+  if (!secret) return null;
+  const got = req.headers.get("x-fp-internal-secret") ?? "";
+  if (got !== secret) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
+  return null;
+}
 const ok = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...CORS } });
 
 // deno-lint-ignore no-explicit-any
@@ -68,6 +77,8 @@ Deno.serve(async (req) => {
   const body = await req.json().catch(() => ({}));
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   if (body?.ticket_id) return supportRefund(req, admin, mollieKey, Number(body.ticket_id), Number(body.amount_cents));
+  const denied = rejectIfSecretMismatch(req);
+  if (denied) return denied;
   const id = Number(body?.order_id);
   if (!Number.isInteger(id)) return ok({ skipped: "bad request" });
 

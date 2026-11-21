@@ -49,7 +49,18 @@ async function sendBird(to: string, body: string) {
 
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { "Content-Type": "application/json" } });
 
+/** If FP_INTERNAL_SECRET is set, require header x-fp-internal-secret. Unset keeps current behaviour so pg_cron / triggers keep working until the secret is configured and their HTTP headers are updated. */
+function rejectIfSecretMismatch(req: Request): Response | null {
+  const secret = Deno.env.get("FP_INTERNAL_SECRET");
+  if (!secret) return null;
+  const got = req.headers.get("x-fp-internal-secret") ?? "";
+  if (got !== secret) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
+  return null;
+}
+
 Deno.serve(async (req) => {
+  const denied = rejectIfSecretMismatch(req);
+  if (denied) return denied;
   if (req.method !== "POST") return json({ error: "method not allowed" }, 405);
   let orderId: number, status: Status;
   try { const b = await req.json(); orderId = Number(b.order_id); status = b.status; } catch { return json({ error: "bad request" }, 400); }

@@ -19,8 +19,16 @@ export function FinancePage({ show }: { show: "restaurants" | "riders" }) {
   );
 }
 
-export function useReport(name: string, range: Range) {
-  return useAdminQuery<Row>(async () => sb().rpc(name, toIso(range)), [name, range.from, range.to]);
+export function useReport(name: string, range: Range, real = false) {
+  return useAdminQuery<Row>(async () => sb().rpc(name, { ...toIso(range), p_include_test: !real }), [name, range.from, range.to, real]);
+}
+
+export function RealOnlyToggle({ real, onChange }: { real: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label className="flex items-center gap-1 text-xs">
+      <input type="checkbox" data-testid="real-orders-only" checked={real} onChange={(e) => onChange(e.target.checked)} /> Real orders only
+    </label>
+  );
 }
 
 export function Toolbar({ range, onCsv, title }: { range: Range; onCsv: () => void; title: string }) {
@@ -33,7 +41,8 @@ export function Toolbar({ range, onCsv, title }: { range: Range; onCsv: () => vo
 }
 
 export function Payments({ range, show }: { range: Range; show: "restaurants" | "riders" }) {
-  const q = useReport("report_payments", range);
+  const [real, setReal] = useState(false);
+  const q = useReport("report_payments", range, real);
   const rs = ((q.data?.restaurants as Row[]) ?? []).filter((r) => Number(r.orders) > 0 || Number(r.owed_cents) > 0);
   const rd = (q.data?.riders as Row[]) ?? [];
   async function mark(kind: "rider" | "restaurant", id: string, name: string, owed: number) {
@@ -48,6 +57,7 @@ export function Payments({ range, show }: { range: Range; show: "restaurants" | 
   const pf = (q.data?.platform as Row | undefined) ?? null;
   return (
     <>
+      <div className="mb-2"><RealOnlyToggle real={real} onChange={setReal} /></div>
       {show === "restaurants" && pf && <Panel title={`Food Porter revenue · ${range.from} → ${range.to} (delivered orders)`} actions={<SmallBtn onClick={() => downloadCsv(`company_revenue_${range.from}_${range.to}.csv`, [pf], ["orders", "pickup_orders", "commission_cents", "delivery_fee_cents", "rider_bonus_cents", "service_fee_cents", "company_revenue_cents", "tip_cents"])}>⬇ CSV</SmallBtn>}>
         <div data-testid="company-revenue" className="grid grid-cols-2 gap-2 md:grid-cols-5">
           <Kpi label="Commission" value={eur(Number(pf.commission_cents))} />

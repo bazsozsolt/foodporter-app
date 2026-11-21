@@ -15,6 +15,15 @@ const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SE
 const SUBJECT = "https://app.foodporter.nl/";
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { "Content-Type": "application/json" } });
 
+/** If FP_INTERNAL_SECRET is set, require header x-fp-internal-secret. Unset keeps current behaviour so pg_cron / triggers keep working until the secret is configured and their HTTP headers are updated. */
+function rejectIfSecretMismatch(req: Request): Response | null {
+  const secret = Deno.env.get("FP_INTERNAL_SECRET");
+  if (!secret) return null;
+  const got = req.headers.get("x-fp-internal-secret") ?? "";
+  if (got !== secret) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
+  return null;
+}
+
 let vapidReady = false;
 async function vapid() {
   if (vapidReady) return;
@@ -137,6 +146,8 @@ async function send(p: Push) {
 }
 
 Deno.serve(async (req) => {
+  const denied = rejectIfSecretMismatch(req);
+  if (denied) return denied;
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
   let id = 0, hint: string | undefined, sup = 0, chat = 0;
   try { const b = await req.json(); id = Number(b.order_id); sup = Number(b.support_message_id); chat = Number(b.chat_message_id); hint = typeof b.status === "string" ? b.status : undefined; } catch { /* ignore */ }

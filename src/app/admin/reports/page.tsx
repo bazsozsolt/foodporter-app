@@ -7,7 +7,7 @@ import { toast } from "@/components/Toaster";
 import { act } from "@/lib/act";
 import { downloadCsv, fmtDateTime, preset, sb, toIso, useAdminQuery, type Range, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
-import { Toolbar, useReport } from "@/components/adminFinance";
+import { RealOnlyToggle, Toolbar, useReport } from "@/components/adminFinance";
 
 const TABS = [["key", "Key metric"], ["delivery", "Delivery"], ["quality", "Quality"], ["safety", "Safety"], ["groups", "Groups"], ["support", "Support"]] as const;
 type Tab = (typeof TABS)[number][0];
@@ -16,14 +16,15 @@ const pct = (v: unknown) => (v == null ? "—" : `${v}%`);
 
 
 function Delivery({ range }: { range: Range }) {
-  const q = useReport("report_delivery", range);
+  const [real, setReal] = useState(false);
+  const q = useReport("report_delivery", range, real);
   const d = q.data;
   const late = (d?.late as Row[]) ?? [];
   const summary = d ? [{ metric: "Paid orders", value: d.orders }, { metric: "Delivered", value: d.delivered }, { metric: "Orders with accepted bid", value: d.with_bid },
     { metric: "Avg time to accepted bid (s)", value: d.avg_bid_seconds }, { metric: "% bid within 3 min", value: d.pct_bid_3min }, { metric: "% on time", value: d.pct_on_time },
     { metric: "Key metric % (bid ≤3 min AND on time)", value: d.pct_key_metric }, { metric: "Avg prep planned (min)", value: d.avg_prep_planned }, { metric: "Avg prep actual (min)", value: d.avg_prep_actual }] : [];
   return (
-    <Panel title={`Delivery report · ${range.from} → ${range.to}`} actions={<Toolbar range={range} title="delivery report" onCsv={() => downloadCsv(`delivery_${range.from}_${range.to}.csv`, [...summary, ...late.map((l) => ({ metric: `late #${l.id}`, value: l.minutes_late, restaurant: l.restaurant, rider: l.rider, eta: l.eta, delivered_at: l.delivered_at }))])} />}>
+    <Panel title={`Delivery report · ${range.from} → ${range.to}`} actions={<div className="flex items-center gap-2"><RealOnlyToggle real={real} onChange={setReal} /><Toolbar range={range} title="delivery report" onCsv={() => downloadCsv(`delivery_${range.from}_${range.to}.csv`, [...summary, ...late.map((l) => ({ metric: `late #${l.id}`, value: l.minutes_late, restaurant: l.restaurant, rider: l.rider, eta: l.eta, delivered_at: l.delivered_at }))])} /></div>}>
       <ErrorNote error={q.error} />
       <div className="mb-4 grid grid-cols-2 gap-2.5 md:grid-cols-4">
         <Kpi label="Paid orders" value={String(d?.orders ?? "…")} hint={`${d?.delivered ?? 0} delivered`} />
@@ -137,14 +138,15 @@ function Support({ range }: { range: Range }) {
 }
 
 function Quality({ range }: { range: Range }) {
-  const q = useReport("report_quality", range);
+  const [real, setReal] = useState(false);
+  const q = useReport("report_quality", range, real);
   const d = q.data;
   const byR = ((d?.by_restaurant as Row[]) ?? []).filter((r) => Number(r.orders) > 0 || Number(r.cancelled ?? 0) > 0 || Number(r.incidents) > 0);
   const inc = (d?.incidents_by_type as Record<string, number>) ?? {};
   return (
-    <Panel title={`Quality report · ${range.from} → ${range.to}`} actions={<Toolbar range={range} title="quality report" onCsv={() => downloadCsv(`quality_${range.from}_${range.to}.csv`, [
+    <Panel title={`Quality report · ${range.from} → ${range.to}`} actions={<div className="flex items-center gap-2"><RealOnlyToggle real={real} onChange={setReal} /><Toolbar range={range} title="quality report" onCsv={() => downloadCsv(`quality_${range.from}_${range.to}.csv`, [
       { restaurant: "ALL", orders: d?.orders, cancelled: d?.cancelled, payment_failed: d?.payment_failed, awaiting_payment: d?.awaiting_payment, prep_extensions: d?.prep_extensions, extension_minutes: d?.extension_minutes, refunds: d?.refunds, refund_cents: d?.refund_cents, ratings: d?.ratings, rating: d?.avg_food_rating, rider_rating: d?.avg_rider_rating },
-      ...byR])} />}>
+      ...byR])} /></div>}>
       <ErrorNote error={q.error} />
       <div className="mb-4 grid grid-cols-2 gap-2.5 md:grid-cols-4">
         <Kpi label="Orders created" value={String(d?.orders ?? "…")} />
@@ -172,11 +174,14 @@ const TYPES = ["accident", "harassment", "food_safety", "damaged_goods", "late_d
 
 function Safety({ range }: { range: Range }) {
   const params = useSearchParams();
-  const q = useReport("report_safety", range);
+  const [real, setReal] = useState(false);
+  const q = useReport("report_safety", range, real);
   const list = useAdminQuery<Row[]>(async () => {
     const { p_from, p_to } = toIso(range);
-    return sb().from("incidents").select("*, restaurants(name), rider:profiles!incidents_rider_id_fkey(full_name, email)").gte("occurred_at", p_from).lt("occurred_at", p_to).order("occurred_at", { ascending: false });
-  }, [range.from, range.to]);
+    let query = sb().from("incidents").select("*, restaurants(name), rider:profiles!incidents_rider_id_fkey(full_name, email)").gte("occurred_at", p_from).lt("occurred_at", p_to).order("occurred_at", { ascending: false });
+    if (real) query = query.eq("is_test", false);
+    return query;
+  }, [range.from, range.to, real]);
   const people = useAdminQuery<Row[]>(async () => sb().from("profiles").select("id, full_name, email, role").in("role", ["rider", "admin"]), []);
   const rest = useAdminQuery<Row[]>(async () => sb().from("restaurants").select("id, name").order("name"), []);
   const [form, setForm] = useState({ type: "complaint", severity: "medium", order_id: params.get("order") ?? "", rider_id: "", restaurant_id: "", description: "" });
@@ -195,6 +200,7 @@ function Safety({ range }: { range: Range }) {
   const sev = (d?.by_severity as Record<string, number>) ?? {};
   return (
     <Panel title={`Safety report · ${range.from} → ${range.to}`} actions={<>
+      <RealOnlyToggle real={real} onChange={setReal} />
       <SmallBtn tone="brand" onClick={() => setShow(!show)}>+ Log incident</SmallBtn>
       <Toolbar range={range} title="safety report" onCsv={() => downloadCsv(`incidents_${range.from}_${range.to}.csv`, rows.map((r) => ({ id: r.id, occurred_at: r.occurred_at, type: r.type, severity: r.severity, status: r.status, order_id: r.order_id, rider: (r.rider as Row)?.full_name ?? (r.rider as Row)?.email, restaurant: (r.restaurants as Row)?.name, description: r.description, resolved_at: r.resolved_at })))} /></>}>
       <ErrorNote error={q.error ?? list.error} />
