@@ -156,6 +156,7 @@ create policy "orders visible to parties" on public.orders for select to authent
 );
 
 -- Bidding would otherwise fail (EXISTS on orders is subject to RLS). Use definer helpers.
+-- Pickup orders are not in the bid pool and must also be rejected here so a crafted insert cannot bid on them.
 create or replace function public.fp_bid_order_open(p_order bigint)
 returns boolean
 language sql
@@ -168,6 +169,7 @@ as $$
     where o.id = p_order
       and o.status = 'accepted'
       and o.rider_id is null
+      and o.fulfilment is distinct from 'pickup'
       and (o.bid_window_closes_at is null or o.bid_window_closes_at > now())
   );
 $$;

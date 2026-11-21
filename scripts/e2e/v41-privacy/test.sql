@@ -303,6 +303,8 @@ begin
     open_ok is true and may_ok is true);
   perform pg_temp.ok('fp_bid_order_open is false for an already assigned order',
     fp_bid_order_open(3004) is false);
+  perform pg_temp.ok('fp_bid_order_open is false for a pickup order',
+    fp_bid_order_open(3002) is false);
   begin
     -- The helpers are read-only SQL functions; there is no UPDATE path.
     perform fp_bid_order_open(3001);
@@ -318,6 +320,17 @@ begin
     values (3001, '00000000-0000-0000-0000-000000000006', 15, false);
   perform pg_temp.ok('unassigned rider can insert a bid on an open delivery',
     exists (select 1 from bids where order_id=3001 and rider_id='00000000-0000-0000-0000-000000000006'));
+
+  begin
+    insert into bids(order_id, rider_id, eta_minutes, accepted)
+      values (3002, '00000000-0000-0000-0000-000000000006', 15, false);
+    raise exception 'bid on pickup order succeeded';
+  exception when others then
+    if sqlerrm like 'bid on pickup order succeeded' then raise; end if;
+    perform pg_temp.ok('cannot bid on a pickup order', true);
+  end;
+  perform pg_temp.ok('no pickup bid row was stored',
+    not exists (select 1 from bids where order_id=3002));
 
   begin
     insert into bids(order_id, rider_id, eta_minutes, accepted)
