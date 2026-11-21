@@ -81,6 +81,59 @@ with sync_playwright() as p:
         assigned = pg.locator("[data-testid=assigned-address]")
         ok("assigned job still shows the full street address", assigned.count() >= 1 and "Heuvelstraat" in assigned.first.inner_text())
         pg.screenshot(path=str(SHOT / "rider-bid-and-assigned.png"), full_page=True)
+
+        # Checkout reads fees and the €15 platform minimum from settings (settings_public in live; PLAN_DEFAULTS / store.settings in the mock build).
+        checkout = {
+            "signedIn": "cara@mock",
+            "cart": {"restaurant_id": "11111111-0000-4000-8000-000000000004", "qty": {"22222222-0004-4000-8000-000000000002": 1}},
+            "earnings": [],
+            "orders": [],
+        }
+        pg.evaluate("sessionStorage.removeItem('fp-checkout-draft')")
+        pg.evaluate(f"localStorage.setItem('foodporter-mock-v2', {json.dumps(json.dumps(checkout))})")
+        pg.goto(B + "/checkout/", wait_until="domcontentloaded")
+        pg.wait_for_timeout(1500)
+        fee_ex = pg.locator("[data-testid=fee-explainer]")
+        service = pg.locator("[data-testid=service-line]")
+        fee_line = pg.locator("[data-testid=fee-line]")
+        warn = pg.locator("[data-testid=min-delivery-order-warning]")
+        ok("checkout shows the settings_public service fee (€0,99)", service.count() == 1 and ("0,99" in service.inner_text() or "0.99" in service.inner_text()))
+        ok("checkout shows the settings_public delivery fee band from (€2,49)", fee_line.count() == 1 and ("2,49" in fee_line.inner_text() or "2.49" in fee_line.inner_text()))
+        ok("checkout fee explainer lists the public fee bands and service fee",
+           fee_ex.count() == 1 and all(x in fee_ex.inner_text().replace(".", ",") for x in ("2,49", "3,49", "4,99", "0,99")))
+        ok("checkout warns when food total is under the €15 settings_public minimum",
+           warn.count() == 1 and ("15,00" in warn.inner_text() or "€15" in warn.inner_text()))
+        pg.locator("[data-testid=choose-pickup]").click()
+        pg.wait_for_timeout(300)
+        ok("pickup is exempt from the platform delivery minimum", pg.locator("[data-testid=min-delivery-order-warning]").count() == 0)
+        pg.locator("[data-testid=choose-delivery]").click()
+        pg.wait_for_timeout(300)
+        pg.screenshot(path=str(SHOT / "checkout-fees-min-order.png"), full_page=True)
+
+        # Admin Business model + labour: load and save against the mock settings helpers.
+        pg.evaluate("localStorage.removeItem('foodporter-mock-admin-settings')")
+        pg.evaluate(f"localStorage.setItem('foodporter-mock-v2', {json.dumps(json.dumps({'signedIn': 'ada@mock', 'cart': {'restaurant_id': None, 'qty': {}}, 'earnings': [], 'orders': []}))})")
+        pg.goto(B + "/admin/settings/", wait_until="domcontentloaded")
+        pg.wait_for_timeout(1500)
+        bm = pg.locator("[data-testid=business-model]")
+        ok("admin Business model form loads (commission, min order, labour defaults)",
+           bm.count() == 1 and pg.locator("[data-testid=bm-min-delivery-order]").input_value() in ("15.00", "15,00")
+           and pg.locator("[data-testid=bm-commission_delivery_pct]").input_value() == "25"
+           and pg.locator("[data-testid=wml-21]").input_value() in ("14.99", "14,99")
+           and pg.locator("[data-testid=set-atw_break_after_h]").input_value() == "4.5")
+        pg.locator("[data-testid=bm-min-delivery-order]").fill("20.00")
+        pg.locator("[data-testid=save-business-model]").click()
+        pg.wait_for_timeout(800)
+        pg.locator("[data-testid=wml-21]").fill("15.50")
+        pg.locator("[data-testid=save-pay-settings]").click()
+        pg.wait_for_timeout(800)
+        pg.reload(wait_until="domcontentloaded")
+        pg.wait_for_timeout(1500)
+        ok("admin Business model save persists the new minimum delivery order",
+           pg.locator("[data-testid=bm-min-delivery-order]").input_value() in ("20.00", "20,00"))
+        ok("admin labour save persists the 21+ WML rate",
+           pg.locator("[data-testid=wml-21]").input_value() in ("15.50", "15,5", "15,50"))
+        pg.screenshot(path=str(SHOT / "admin-business-labour.png"), full_page=True)
     b.close()
 
 httpd.shutdown()

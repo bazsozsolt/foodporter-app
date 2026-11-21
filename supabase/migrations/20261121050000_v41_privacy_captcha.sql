@@ -70,10 +70,9 @@ where o.status = 'accepted'
 grant select on public.rider_bid_orders to authenticated;
 revoke all on public.rider_bid_orders from anon, public;
 
-alter table public.rider_bid_orders enable row level security;
--- views: RLS is on the underlying orders table; tighten that next and allow
--- riders to read the view via a policy-friendly security definer wrapper if needed.
--- security_invoker views still apply orders RLS, so we add a definer source.
+-- Cannot ENABLE ROW LEVEL SECURITY on a view (Postgres rejects it). The
+-- intermediate invoker view is dropped next; riders read the bid board through
+-- the SECURITY DEFINER function / view that follows, and orders RLS is tightened.
 
 -- Underlying orders RLS currently lets active riders SELECT every accepted
 -- unassigned order (including address). Replace that with assigned-only access
@@ -238,22 +237,12 @@ drop policy if exists "settings readable" on public.settings;
 create policy "settings admin select" on public.settings for select to authenticated
   using ((select my_role()) = 'admin'::user_role);
 
--- Partner and work views need a definer source because the base table is now admin-only.
-create or replace function public.fp_settings_public()
-returns setof public.settings_public
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select * from public.settings;
-$$;
--- Can't setof a view like that easily if it isn't a real composite. Recreate as SQL views over definer functions.
-
+-- The invoker views above document the intended columns, but they would become
+-- empty for non-admins once the base table is admin-select only. Recreate them
+-- over SECURITY DEFINER functions that return only those columns.
 drop view if exists public.settings_public;
 drop view if exists public.settings_partner;
 drop view if exists public.settings_work;
-drop function if exists public.fp_settings_public();
 
 create or replace function public.fp_settings_public()
 returns table (

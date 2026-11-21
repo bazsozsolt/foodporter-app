@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ErrorNote, Field, inputCls, Panel, SmallBtn } from "@/components/admin";
 import { act } from "@/lib/act";
-import { sb, useAdminQuery, type Row } from "@/lib/admin";
+import { loadAdminSettings, saveAdminSettings, useAdminQuery, type Row } from "@/lib/admin";
 import { actions } from "@/lib/store";
 import { BusinessModelSettings } from "@/components/adminBusiness";
 
@@ -47,7 +47,7 @@ function PaySettings({ data, reload }: { data: Row | null; reload: () => void })
     p.cao = cao;
     for (const [k] of TEXTS) p[k] = texts[k] || null;
     for (const [k] of OPT_NUMS) p[k] = texts[k] ? Number(texts[k].replace(",", ".")) : null;
-    const ok = await act((async () => { const { error } = await sb().from("settings").update(p).eq("id", true); if (error) throw new Error(/check/.test(error.message) ? "Out of the legal range (WML incl. a 21+ rate, holiday pay ≥ 8%, ATW maxima, rest ≥ 11 h, call-in ≥ 3 h, notice ≥ 4 days)" : error.message); return true; })(), "Pay & working-time settings saved");
+    const ok = await act((async () => { const { error } = await saveAdminSettings(p); if (error) throw new Error(/check/.test(error.message) ? "Out of the legal range (WML incl. a 21+ rate, holiday pay ≥ 8%, ATW maxima, rest ≥ 11 h, call-in ≥ 3 h, notice ≥ 4 days)" : error.message); return true; })(), "Pay & working-time settings saved");
     if (ok !== undefined) reload();
   }
   function preset(c: string) {
@@ -70,13 +70,13 @@ function PaySettings({ data, reload }: { data: Row | null; reload: () => void })
         {NUMS.map(([k, l]) => <Field key={k} label={l}><input data-testid={`set-${k}`} className={inputCls} inputMode="decimal" value={nums[k] ?? ""} onChange={(e) => setNums({ ...nums, [k]: e.target.value })} /></Field>)}
         {[...TEXTS, ...OPT_NUMS].map(([k, l]) => <Field key={k} label={l}><input data-testid={`set-${k}`} className={inputCls} value={texts[k] ?? ""} onChange={(e) => setTexts({ ...texts, [k]: e.target.value })} /></Field>)}
       </div>
-      <div className="mt-3"><SmallBtn tone="brand" onClick={save}>Save pay settings</SmallBtn></div>
+      <div className="mt-3"><SmallBtn tone="brand" data-testid="save-pay-settings" onClick={save}>Save pay settings</SmallBtn></div>
     </Panel>
   );
 }
 
 export default function SettingsAdmin() {
-  const q = useAdminQuery<Row>(async () => sb().from("settings").select("*").maybeSingle(), []);
+  const q = useAdminQuery<Row>(async () => loadAdminSettings(), []);
   const [windowS, setWindowS] = useState("180");
   const [acceptMin, setAcceptMin] = useState("5");
   const [maxActive, setMaxActive] = useState("2");
@@ -96,7 +96,7 @@ export default function SettingsAdmin() {
   }, [q.data]);
   async function save() {
     const p = { bid_window_seconds: Number(windowS), restaurant_accept_minutes: Number(acceptMin), auction_seconds: Number(auction), max_active_orders: Number(maxActive), no_bid_alert_minutes: Number(noBidMin), unpaid_expiry_minutes: Number(expiryMin), updated_at: new Date().toISOString() };
-    const ok = await act((async () => { const { error } = await sb().from("settings").update(p).eq("id", true); if (error) throw new Error(error.message); return true; })(), "Settings saved");
+    const ok = await act((async () => { const { error } = await saveAdminSettings(p); if (error) throw new Error(error.message); return true; })(), "Settings saved");
     if (ok !== undefined) { q.reload(); actions.reloadCatalog(); }
   }
   return (<>
