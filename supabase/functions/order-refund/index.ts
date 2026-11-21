@@ -14,13 +14,27 @@ const corsFor = (req: Request) => {
 };
 let CORS: Record<string, string> = {};
 
-/** If FP_INTERNAL_SECRET is set, require header x-fp-internal-secret. Unset keeps current behaviour so pg_cron / triggers keep working until the secret is configured and their HTTP headers are updated. */
-function rejectIfSecretMismatch(req: Request): Response | null {
+/** If FP_INTERNAL_SECRET is set, the { order_id } path requires header x-fp-internal-secret OR a verified admin JWT (admin order-page retry refund). Unset keeps current behaviour so pg_cron / triggers keep working until the secret and callers are configured. The { ticket_id } support path has its own admin JWT check and does not use this helper. */
+function headerMatchesSecret(req: Request): boolean {
   const secret = Deno.env.get("FP_INTERNAL_SECRET");
-  if (!secret) return null;
+  if (!secret) return true;
   const got = req.headers.get("x-fp-internal-secret") ?? "";
-  if (got !== secret) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
-  return null;
+  if (got.length !== secret.length) return false;
+  let diff = 0;
+  for (let i = 0; i < secret.length; i++) diff |= got.charCodeAt(i) ^ secret.charCodeAt(i);
+  return diff === 0;
+}
+function unauthorized(): Response {
+  return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { "Content-Type": "application/json", ...CORS } });
+}
+// deno-lint-ignore no-explicit-any
+async function isAdminJwt(req: Request, db: any): Promise<boolean> {
+  const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+  if (!token) return false;
+  const { data: u } = await db.auth.getUser(token);
+  if (!u?.user) return false;
+  const { data: me } = await db.from("profiles").select("role").eq("id", u.user.id).maybeSingle();
+  return me?.role === "admin";
 }
 const ok = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...CORS } });
 
@@ -77,8 +91,7 @@ Deno.serve(async (req) => {
   const body = await req.json().catch(() => ({}));
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   if (body?.ticket_id) return supportRefund(req, admin, mollieKey, Number(body.ticket_id), Number(body.amount_cents));
-  const denied = rejectIfSecretMismatch(req);
-  if (denied) return denied;
+  if (!headerMatchesSecret(req) && !await isAdminJwt(req, admin)) return unauthorized();
   const id = Number(body?.order_id);
   if (!Number.isInteger(id)) return ok({ skipped: "bad request" });
 

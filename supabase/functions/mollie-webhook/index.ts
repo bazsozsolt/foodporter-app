@@ -75,7 +75,10 @@ Deno.serve(async (req) => {
 
   if (refundLate) {
     await admin.from("ops_alerts").insert({ kind: "late_payment", order_id: order.id, message: "Payment arrived after the order was cancelled: refunding automatically." });
-    await fetch(`${url}/functions/v1/order-refund`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ order_id: order.id }) });
+    const refundHeaders: Record<string, string> = { "Content-Type": "application/json" };
+    const internal = Deno.env.get("FP_INTERNAL_SECRET");
+    if (internal) refundHeaders["x-fp-internal-secret"] = internal;
+    await fetch(`${url}/functions/v1/order-refund`, { method: "POST", headers: refundHeaders, body: JSON.stringify({ order_id: order.id }) });
   }
   return new Response("ok");
 });

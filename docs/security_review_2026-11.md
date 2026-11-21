@@ -145,3 +145,15 @@ No class **(c)** findings that required a code change in the database functions.
 4. **Hide labour/payroll fields in `settings` from anon?** Fees need to be public; CAO/pension rates do not strictly need to be.
 5. **Drop or lock down leftover `posts`/`comments`?**
 6. **Turn on hCaptcha** for sign-up / recovery?
+
+## Go-live notes (v40 / v40b)
+
+Internal callers of `order-refund`, `order-push`, `order-sms`, and `purge-retention`:
+
+- DB triggers `notify_order_refund`, `notify_order_push`, `notify_chat_push`, `notify_support_push`, `notify_order_sms` send `x-fp-internal-secret` from Vault via `private.fp_edge_headers()` (migration `20261121033000_v40_internal_callers`).
+- Cron job 8 `fp-purge-proofs` now runs `select public.fp_invoke_purge_retention()`, which uses the same helper. The secret is never stored in `cron.job.command`.
+- `mollie-webhook` (late-payment auto-refund) forwards `FP_INTERNAL_SECRET` from its environment when set.
+- Admin support refunds (`{ ticket_id, amount_cents }` + user JWT) are unchanged and do not need the internal secret.
+- Admin order-page "Retry refund" (`{ order_id }` + admin JWT) is accepted as an admin JWT path once the secret is set; unauthenticated `{ order_id }` calls are rejected.
+
+Safe apply order: deploy the edge functions while the secret is still unset; apply v40 + v40b; create the Vault secret and then the Edge Function secret; then verify 401 without the header.
