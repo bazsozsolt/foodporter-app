@@ -11,6 +11,8 @@ import { act } from "@/lib/act";
 import { hasSupabase } from "@/lib/supabase";
 import { safeNext } from "@/lib/safeNext";
 import { actions, passwordProblem, useStore } from "@/lib/store";
+import { Captcha } from "@/components/Captcha";
+import { captchaEnabled } from "@/lib/captcha";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,6 +28,8 @@ export default function LoginPage() {
   const [sentTo, setSentTo] = useState<string | null>(null); // "check your email" screen after sign-up
   const [unconfirmed, setUnconfirmed] = useState(false);
   const [providers, setProviders] = useState<{ google?: boolean; apple?: boolean }>({});
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const needCaptcha = captchaEnabled();
   useEffect(() => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     if (!hasSupabase || !url || !key) return;
@@ -106,8 +110,9 @@ export default function LoginPage() {
         <Card>
           <input className={input} placeholder={tx("jij@voorbeeld.nl", "you@example.com")} aria-label={tx("E-mailadres", "Email address")} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           {mode === "main" && <><input className={input} placeholder={tx("Wachtwoord", "Password")} aria-label={tx("Wachtwoord", "Password")} type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <Button disabled={busy || !email || !password} onClick={() => { setUnconfirmed(false); go(actions.signInWithPassword(email, password).catch((e: Error) => { if (/bevestig eerst|confirm your email/i.test(e.message)) setUnconfirmed(true); throw e; }), afterAuth); }}><T nl="Inloggen" en="Sign in" /></Button>
-          <Button variant="ghost" disabled={busy || !email || !!passwordProblem(password)} onClick={() => go(actions.signUp(email, password), (m) => { if (m.startsWith("✉️")) { setSentTo(email.trim()); setPassword(""); } else goNext(); })}>{tx("Account aanmaken", "Create account")}</Button>
+          <Captcha onToken={setCaptchaToken} />
+          <Button disabled={busy || !email || !password || (needCaptcha && !captchaToken)} onClick={() => { setUnconfirmed(false); go(actions.signInWithPassword(email, password, captchaToken ?? undefined).catch((e: Error) => { if (/bevestig eerst|confirm your email/i.test(e.message)) setUnconfirmed(true); throw e; }), afterAuth); }}><T nl="Inloggen" en="Sign in" /></Button>
+          <Button variant="ghost" disabled={busy || !email || !!passwordProblem(password) || (needCaptcha && !captchaToken)} onClick={() => go(actions.signUp(email, password, captchaToken ?? undefined), (m) => { if (m.startsWith("✉️")) { setSentTo(email.trim()); setPassword(""); } else goNext(); })}>{tx("Account aanmaken", "Create account")}</Button>
           {unconfirmed && <div data-testid="unconfirmed" className="mb-2 rounded-xl border border-gold bg-gold-soft p-3 text-sm">
             <p className="mb-2">{tx("Je e-mailadres is nog niet bevestigd. Open de link in de e-mail die we je stuurden (kijk ook in spam).", "Your email address isn't confirmed yet. Open the link in the email we sent you (check spam too).")}</p>
             <button data-testid="resend-confirmation" className="font-semibold text-brand disabled:opacity-50" disabled={busy} onClick={() => go(actions.resendConfirmation(email))}>{tx("Stuur de bevestigingsmail opnieuw", "Resend confirmation email")}</button>

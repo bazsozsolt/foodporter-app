@@ -64,6 +64,12 @@ function persist() {
 }
 function set(fn: (s: State) => State) { state = fn(state); persist(); emit(); }
 
+let riderPoll: ReturnType<typeof setInterval> | null = null;
+function setRiderBoardPoll(on: boolean) {
+  if (riderPoll) { clearInterval(riderPoll); riderPoll = null; }
+  if (on) riderPoll = setInterval(() => { void loadUserData(); }, 5000);
+}
+
 function start() {
   if (started || typeof window === "undefined") return;
   started = true;
@@ -99,12 +105,12 @@ function mapOrder(o: Row): Order {
     guest_name: (l.guest_name as string) ?? null, line_id: (l.id as string) ?? undefined,
   }));
   return {
-    id: String(o.id), restaurant_id: o.restaurant_id as string, customer_id: o.customer_id as string, status: o.status as OrderStatus,
+    id: String(o.id), restaurant_id: o.restaurant_id as string, customer_id: o.address_hidden ? "" : ((o.customer_id as string) ?? ""), status: o.status as OrderStatus,
     lines, group_order_id: (o.group_order_id as string) ?? null, subtotal_cents: o.subtotal_cents as number, delivery_fee_cents: o.delivery_fee_cents as number, service_fee_cents: Number(o.service_fee_cents ?? 0), tip_cents: Number(o.tip_cents ?? 0), leave_at_door: Boolean(o.leave_at_door), fulfilment: (o.fulfilment as "delivery" | "pickup") ?? "delivery", scheduled_for: (o.scheduled_for as string) ?? null, release_at: (o.release_at as string) ?? null, discount_cents: Number(o.discount_cents ?? 0), credit_cents: Number(o.credit_cents ?? 0), delivery_photo_path: (o.delivery_photo_path as string) ?? null,
-    address: o.address as string, phone: (o.phone as string) ?? "", prep_minutes: (o.prep_minutes as number) ?? null,
+    address: o.address_hidden ? "" : ((o.address as string) ?? ""), phone: o.address_hidden ? "" : ((o.phone as string) ?? ""), neighbourhood: (o.neighbourhood as string) ?? null, address_hidden: Boolean(o.address_hidden), prep_minutes: (o.prep_minutes as number) ?? null,
     ready_at: (o.ready_at as string) ?? null, bids, created_at: o.created_at as string, delivered_at: (o.delivered_at as string) ?? null,
     accepted_at: (o.accepted_at as string) ?? null, paid_at: (o.paid_at as string) ?? null,
-    lat: (o.lat as number) ?? null, lng: (o.lng as number) ?? null, distance_km: o.distance_km == null ? null : Number(o.distance_km), commission_cents: o.commission_cents == null ? null : Number(o.commission_cents), commission_pct: o.commission_pct == null ? null : Number(o.commission_pct), fee_km: o.fee_km == null ? null : Number(o.fee_km), rider_bonus_cents: o.rider_bonus_cents == null ? null : Number(o.rider_bonus_cents),
+    lat: o.address_hidden ? null : ((o.lat as number) ?? null), lng: o.address_hidden ? null : ((o.lng as number) ?? null), distance_km: o.distance_km == null ? null : Number(o.distance_km), commission_cents: o.commission_cents == null ? null : Number(o.commission_cents), commission_pct: o.commission_pct == null ? null : Number(o.commission_pct), fee_km: o.fee_km == null ? null : Number(o.fee_km), rider_bonus_cents: o.rider_bonus_cents == null ? null : Number(o.rider_bonus_cents),
     cancel_reason: (o.cancel_reason as string) ?? null, refund_status: (o.refund_status as string) ?? null,
     refund_cents: (o.refund_cents as number) ?? null, renotified_at: (o.renotified_at as string) ?? null,
     assigned_at: (o.assigned_at as string) ?? null, bid_window_closes_at: (o.bid_window_closes_at as string) ?? null,
@@ -126,7 +132,7 @@ async function loadCatalog() {
       }
       return { data: all };
     })(),
-    sb.from("settings").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds, max_active_orders, service_fee_cents, delivery_fee_bands, service_fee_on_pickup, fee_distance_basis, commission_delivery_pct, commission_intro_pct, commission_intro_months, commission_pickup_pct, default_contract_kind, minmax_default_min_h, minmax_default_max_h, rider_bonus_cents, min_delivery_order_cents, stale_assignment_minutes").maybeSingle(),
+    sb.from("settings_public").select("delivery_fee_cents, zone_radius_km, bid_window_seconds, restaurant_accept_minutes, zone_center_lat, zone_center_lng, auction_seconds, max_active_orders, service_fee_cents, delivery_fee_bands, service_fee_on_pickup, fee_distance_basis, rider_bonus_cents, min_delivery_order_cents, stale_assignment_minutes").maybeSingle(),
   ]);
   set((s) => ({
     ...s, restaurants: (r.data as Restaurant[]) ?? [], menuItems: (m.data as MenuItem[]) ?? [],
@@ -137,20 +143,43 @@ async function loadCatalog() {
 async function loadUserData() {
   const sb = getSupabase()!;
   const { data: { user } } = await sb.auth.getUser();
-  if (!user) { set((s) => ({ ...s, signedIn: null, profile: null, orders: [], earnings: [], ready: true })); return; }
+  if (!user) { setRiderBoardPoll(false); set((s) => ({ ...s, signedIn: null, profile: null, orders: [], earnings: [], ready: true })); return; }
   const { data: p } = await sb.from("profiles").select("id, role, full_name, restaurant_id, online, location_consent_at").eq("id", user.id).maybeSingle();
   const profile: Profile = { id: user.id, email: user.email ?? null, role: (p?.role as Role) ?? "customer", full_name: p?.full_name ?? null, restaurant_id: p?.restaurant_id ?? null, online: Boolean(p?.online), location_consent_at: p?.location_consent_at ?? null };
-  const [o, e] = await Promise.all([
+  if (profile.role === "admin" || profile.role === "restaurant") {
+    const { data: partner } = await sb.from("settings_partner").select("commission_delivery_pct, commission_intro_pct, commission_intro_months, commission_pickup_pct").maybeSingle();
+    if (partner) set((s) => ({ ...s, settings: { ...s.settings, ...partner } }));
+  }
+  if (profile.role === "admin") {
+    const { data: labour } = await sb.from("settings").select("default_contract_kind, minmax_default_min_h, minmax_default_max_h").maybeSingle();
+    if (labour) set((s) => ({ ...s, settings: { ...s.settings, ...labour } }));
+  }
+  const [o, e, board] = await Promise.all([
     sb.from("orders").select(`${ORDER_COLS}, order_items(*), bids(*)`).order("id", { ascending: false }).limit(200),
     sb.from("earnings").select("*, orders(restaurant_id)").order("earned_at", { ascending: true }),
+    profile.role === "rider" ? sb.from("rider_bid_orders").select("*") : Promise.resolve({ data: [] as Row[] }),
   ]);
+  const boardRows = ((board.data as Row[]) ?? []);
+  let boardBids: Row[] = [];
+  if (boardRows.length) {
+    const ids = boardRows.map((x) => x.id);
+    const bq = await sb.from("bids").select("*").in("order_id", ids);
+    boardBids = (bq.data as Row[]) ?? [];
+  }
+  const seen = new Set(((o.data as Row[]) ?? []).map((x) => x.id));
+  const extra = boardRows.filter((x) => !seen.has(x.id)).map((x) => ({
+    ...x, address_hidden: true, customer_id: null, address: null, phone: null, lat: null, lng: null,
+    bids: boardBids.filter((b) => b.order_id === x.id), order_items: [],
+  }));
   const names = new Map(state.restaurants.map((r) => [r.id, r.name.replace(" (example)", "")]));
   const earnings: Earning[] = ((e.data as Row[]) ?? []).map((x) => ({
     id: x.id as string, rider_id: x.rider_id as string, order_id: String(x.order_id), amount_cents: x.amount_cents as number, tip_cents: Number(x.tip_cents ?? 0),
     earned_at: x.earned_at as string, payout_id: (x.payout_id as string) ?? null,
     restaurant_name: names.get((x.orders as Row | null)?.restaurant_id as string) ?? "Order #" + x.order_id,
   }));
-  set((s) => ({ ...s, signedIn: user.email ?? "account", profile, orders: ((o.data as Row[]) ?? []).map(mapOrder).reverse(), earnings, ready: true }));
+  const orders = ([...((o.data as Row[]) ?? []), ...extra]).map(mapOrder).reverse();
+  set((s) => ({ ...s, signedIn: user.email ?? "account", profile, orders, earnings, ready: true }));
+  setRiderBoardPoll(profile.role === "rider");
 }
 
 let refetchTimer: ReturnType<typeof setTimeout> | undefined;
@@ -231,19 +260,19 @@ const authRedirect = () => window.location.origin + (process.env.NEXT_PUBLIC_BAS
 // ---------------- Actions (async in both modes) ----------------
 export const actions = {
   // --- auth ---
-  async signInWithPassword(email: string, password: string) {
+  async signInWithPassword(email: string, password: string, captchaToken?: string) {
     const sb = getSupabase();
     if (!sb) { set((s) => ({ ...s, signedIn: email || "email" })); return "Signed in (mock)"; }
-    const { error } = await sb.auth.signInWithPassword({ email, password });
+    const { error } = await sb.auth.signInWithPassword({ email, password, options: captchaToken ? { captchaToken } : undefined });
     if (error) throw new Error(authError(error.message));
     await loadUserData();
     return "Signed in";
   },
-  async signUp(email: string, password: string) {
+  async signUp(email: string, password: string, captchaToken?: string) {
     const sb = getSupabase();
     { const p = passwordProblem(password); if (p) throw new Error(p); }
     if (!sb) { set((s) => ({ ...s, signedIn: email || "email" })); return "Account created (mock)"; }
-    const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: authRedirect() } });
+    const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: authRedirect(), ...(captchaToken ? { captchaToken } : {}) } });
     if (error) throw new Error(authError(error.message));
     // Email confirmation is on: no session yet. Supabase answers the same for existing addresses (no enumeration).
     if (!data.session) return "✉️ " + tx("Kijk in je e-mail (ook in spam) en klik op de bevestigingslink.", "Check your email (and spam) and click the confirmation link.");

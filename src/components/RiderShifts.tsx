@@ -51,7 +51,7 @@ export function RiderShifts({ riderId, online, compact = false }: { riderId: str
     void sb.from("rider_availability").select("id, starts_at, ends_at").eq("rider_id", riderId).gt("ends_at", new Date().toISOString()).order("starts_at").limit(30).then(({ data }) => setSlots((data ?? []) as Slot[]));
     void sb.from("work_sessions").select("clock_in, clock_out").eq("rider_id", riderId).gt("clock_in", since).then(({ data }) => setSess((data ?? []) as Sess[]));
     void sb.from("rider_shifts").select("id, starts_at, ends_at, status, created_at").eq("rider_id", riderId).gt("ends_at", new Date().toISOString()).order("starts_at").limit(20).then(({ data }) => setCalls((data ?? []) as CallIn[]));
-    void sb.from("settings").select("atw_break_after_h, call_notice_days").maybeSingle().then(({ data }) => { if (data) { setBrkMin(Number(data.atw_break_after_h) * 60); setNoticeDays(Number(data.call_notice_days)); } });
+    void sb.from("settings_work").select("atw_break_after_h, call_notice_days").maybeSingle().then(({ data }) => { if (data) { setBrkMin(Number(data.atw_break_after_h) * 60); setNoticeDays(Number(data.call_notice_days)); } });
   }, [riderId, online, rev]);
   const { today, stretch } = workStats(sess, now);
   async function add() {
