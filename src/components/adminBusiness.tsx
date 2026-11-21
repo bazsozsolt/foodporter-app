@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Field, inputCls, Panel, SmallBtn } from "@/components/admin";
 import { act } from "@/lib/act";
-import { sb, type Row } from "@/lib/admin";
+import { saveAdminSettings, type Row } from "@/lib/admin";
 import { eur } from "@/lib/format";
 import { PLAN_DEFAULTS, type FeeBand } from "@/lib/pricing";
 import { actions } from "@/lib/store";
@@ -47,7 +47,7 @@ export function BusinessModelSettings({ data, reload }: { data: Row | null; relo
     const p = payload(x);
     if (Object.values(p).some((v) => typeof v === "number" && !Number.isFinite(v))) return act(Promise.reject(new Error("Fill in every field with a number")));
     const ok = await act((async () => {
-      const { error } = await sb().from("settings").update(p).eq("id", true);
+      const { error } = await saveAdminSettings(p);
       if (error) throw new Error(/check/.test(error.message) ? "Out of range: commission 5–35% (pickup 0–35%), founding period 0–12 months, fee bands 1–6 rows with increasing km (0.5–20) and €1.00–€9.99, service fee €0–€3, rider bonus €0–€2, delivery minimum €0–€100, stuck assignment window 30–1440 minutes, zone 5–10 km, min-max hours 0 < min ≤ max ≤ 40" : error.message);
       return true;
     })(), msg);
@@ -103,7 +103,7 @@ export function BusinessModelSettings({ data, reload }: { data: Row | null; relo
           <Field label={`Min h/week (plan: ${P.minmax_default_min_h})`}><input data-testid="bm-min-h" className={inputCls} inputMode="decimal" value={f.minmax_default_min_h} onChange={(e) => set("minmax_default_min_h", e.target.value)} /></Field>
           <Field label={`Max h/week (plan: ${P.minmax_default_max_h})`}><input data-testid="bm-max-h" className={inputCls} inputMode="decimal" value={f.minmax_default_max_h} onChange={(e) => set("minmax_default_max_h", e.target.value)} /></Field>
         </div>
-        <div className="flex flex-wrap gap-2"><SmallBtn tone="brand" onClick={() => void save(f)}>Save business model</SmallBtn><SmallBtn onClick={reset}>Reset to plan defaults</SmallBtn></div>
+        <div className="flex flex-wrap gap-2"><SmallBtn tone="brand" data-testid="save-business-model" onClick={() => void save(f)}>Save business model</SmallBtn><SmallBtn onClick={reset}>Reset to plan defaults</SmallBtn></div>
       </div>
     </Panel>
   );

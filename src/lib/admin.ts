@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getSupabase } from "./supabase";
+import { getSupabase, hasSupabase } from "./supabase";
+import { PLAN_DEFAULTS } from "./pricing";
 
 export type Row = Record<string, unknown>;
 
@@ -80,3 +81,68 @@ export function downloadCsv(filename: string, rows: Row[], columns?: string[]) {
 
 export const fmtDateTime = (iso?: unknown) =>
   iso ? new Date(String(iso)).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—";
+
+
+const MOCK_SETTINGS_KEY = "foodporter-mock-admin-settings";
+
+/** Labour / CAO defaults used only in the mock PWA so the admin Business model and pay forms can load and save without Supabase. */
+const MOCK_LABOUR: Row = {
+  wml_cents: { "16": 750, "17": 839, "18": 944, "19": 1079, "20": 1244, "21": 1499 },
+  wml_effective: "2026-01-01",
+  cao: "bgv",
+  holiday_pay_pct: 8,
+  holiday_hours_pct: 10.58,
+  atw_max_shift_h: 12,
+  atw_max_shift_youth_h: 9,
+  atw_break_after_h: 4.5,
+  atw_week_max_h: 60,
+  atw_week_max_youth_h: 45,
+  atw_break_after_youth_h: 4.5,
+  rest_min_h: 12,
+  surcharge_sat_pct: 50,
+  surcharge_sun_pct: 100,
+  surcharge_holiday_pct: 100,
+  surcharge_night_pct: 19,
+  night_from: "21:00",
+  night_to: "05:00",
+  overtime_pct: 30,
+  overtime_week_h: 40,
+  cao_scale_cents: 1471,
+  cao_avv_until: "2027-01-01",
+  min_call_hours: 3,
+  call_notice_days: 4,
+  pension_fund: "",
+  payroll_provider: "",
+  pension_employee_pct: null,
+  pension_employer_pct: null,
+  no_bid_alert_minutes: 10,
+  unpaid_expiry_minutes: 30,
+};
+
+function readMockAdminSettings(): Row {
+  let stored: Row = {};
+  try {
+    if (typeof localStorage !== "undefined") stored = JSON.parse(localStorage.getItem(MOCK_SETTINGS_KEY) || "{}") as Row;
+  } catch { /* ignore */ }
+  return { id: true, ...PLAN_DEFAULTS, ...MOCK_LABOUR, delivery_fee_cents: PLAN_DEFAULTS.delivery_fee_bands[0]?.fee_cents ?? 249, ...stored };
+}
+
+/** Load the settings row: the live table for admins, or a persisted mock row when no keys are configured. */
+export async function loadAdminSettings(): Promise<{ data: Row | null; error: { message: string } | null }> {
+  if (!hasSupabase) return { data: readMockAdminSettings(), error: null };
+  return sb().from("settings").select("*").maybeSingle();
+}
+
+/** Update the settings row (admin RLS on the live table; localStorage in the mock PWA). */
+export async function saveAdminSettings(p: Row): Promise<{ error: { message: string } | null }> {
+  if (!hasSupabase) {
+    try {
+      const next = { ...readMockAdminSettings(), ...p };
+      localStorage.setItem(MOCK_SETTINGS_KEY, JSON.stringify(next));
+    } catch (e) {
+      return { error: { message: e instanceof Error ? e.message : String(e) } };
+    }
+    return { error: null };
+  }
+  return sb().from("settings").update(p).eq("id", true);
+}

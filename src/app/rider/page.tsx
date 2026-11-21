@@ -18,6 +18,7 @@ import { eur, hhmm } from "@/lib/format";
 import { acceptedBid, actions, useStore } from "@/lib/store";
 import { riderEarningsCents } from "@/lib/orders";
 import { isStaleAssignment, staleWindowLabel } from "@/lib/staleAssignment";
+import { hideAddressFromRider, neighbourhoodFromAddress } from "@/lib/neighbourhood";
 import { STATUS_LABEL, STATUS_LABEL_NL, type Order } from "@/lib/types";
 import { mmss, useSecondsLeft } from "@/components/Countdown";
 import { LiveMap, type MapMarker } from "@/components/LiveMap";
@@ -52,8 +53,8 @@ function BidCard({ o, activeCount }: { o: Order; activeCount: number }) {
   return (
     <Card>
       <div className="flex items-center justify-between"><b className="text-[16px]">{r?.name}</b><Pill tone="ok"><span data-testid="rider-bonus">{tx("Bezorgbonus", "Delivery bonus")} {eur(o.rider_bonus_cents ?? o.delivery_fee_cents)}{o.tip_cents ? ` + ${tx("fooi", "tip")} ${eur(o.tip_cents)}` : ""}</span></Pill></div>
-      <div className="my-1.5 text-[13px] text-muted">{tx("Klaar over ~", "Ready in ~")}{prep} min{o.ready_at ? ` (~${hhmm(new Date(o.ready_at))})` : ""} · {o.address}</div>
-      {r?.lat && o.lat ? <div data-testid="dropoff" className="flex items-center gap-1.5 text-[13px] font-semibold"><Bike size={14} aria-hidden />{distanceKm({ lat: r.lat, lng: r.lng! }, { lat: o.lat, lng: o.lng! }).toFixed(1)} km {tx("naar de klant vanaf", "drop-off from")} {r.area}</div> : null}
+      <div className="my-1.5 text-[13px] text-muted">{tx("Klaar over ~", "Ready in ~")}{prep} min{o.ready_at ? ` (~${hhmm(new Date(o.ready_at))})` : ""} · <span data-testid="bid-area">{o.neighbourhood || neighbourhoodFromAddress(o.address, o.distance_km)}</span></div>
+      {(o.distance_km != null || (r?.lat && o.lat && !o.address_hidden)) ? <div data-testid="dropoff" className="flex items-center gap-1.5 text-[13px] font-semibold"><Bike size={14} aria-hidden />{(o.distance_km != null ? Number(o.distance_km) : distanceKm({ lat: r!.lat!, lng: r!.lng! }, { lat: o.lat!, lng: o.lng! })).toFixed(1)} km {tx("in de buurt van", "near")} {r?.area ?? "Tilburg"}</div> : null}
       {o.renotified_at && <div className="mt-1 text-[13px] font-semibold text-brand"><AlarmClock size={14} className="mr-1 inline" aria-hidden />{tx("Wacht nog op een rider — bied nu", "Still waiting for a rider — bid now")}</div>}
       {left != null && <p data-testid="auction" className="mt-2 flex items-center gap-1.5 text-[13px] font-semibold"><Timer size={14} aria-hidden />{tx("Bieden sluit over", "Bidding closes in")} {mmss(left)}{left === 0 ? tx(" · winnaar wordt gekozen…", " · choosing the winner…") : ""}</p>}
       {activeCount > 0 && !mine && (reason === null
@@ -75,7 +76,10 @@ export default function RiderPage() {
   const t = useT();
   const SL = t("nl", "en") === "nl" ? STATUS_LABEL_NL : STATUS_LABEL;
   const { orders, profile, mode, restaurants, earnings, settings } = useStore();
-  const open = orders.filter((o) => o.status === "accepted" && o.fulfilment !== "pickup" && !acceptedBid(o));
+  const open = orders.filter((o) => o.status === "accepted" && o.fulfilment !== "pickup" && !acceptedBid(o)).map((o) => {
+    if (!hideAddressFromRider(o, profile?.id) && !o.address_hidden) return o;
+    return { ...o, address: "", phone: "", lat: null, lng: null, customer_id: "", address_hidden: true, neighbourhood: o.neighbourhood || neighbourhoodFromAddress(o.address, o.distance_km) };
+  });
   useOrderAlerts(open.map((o) => `${o.id}:${o.renotified_at ?? ""}`), tx("Beep-beep! Nieuwe bestelling om op te bieden", "Beep-beep! New order to bid on"), riderBody, "/rider/");
   const [name, setName] = useState<string | null>(null);
   const job = mode === "supabase" ? orders.find((o) => ["assigned", "ready", "picked_up"].includes(o.status) && o.rider_id === profile?.id) : undefined;
@@ -176,7 +180,7 @@ export default function RiderPage() {
               <div className="flex items-center justify-between"><span className="t-label">{t("Huidige opdracht", "Current job")} · #{o.id}</span><Pill>{SL[o.status]}</Pill></div>
               <ol className="mt-3 space-y-2" data-testid="job-steps">
                 <li className={`flex items-start gap-3 rounded-xl p-2.5 ${o.status !== "picked_up" ? "bg-brand-soft" : "opacity-60"}`}><ChefHat size={20} className="mt-0.5 shrink-0 text-brand" aria-hidden /><span><b className="block">1. {tx("Ophalen", "Pickup")}: {rest?.name}</b><span className="text-[13px] text-muted">{tx("Eten klaar", "Food ready")} ~{o.ready_at ? hhmm(new Date(o.ready_at)) : "?"}</span></span></li>
-                <li className={`flex items-start gap-3 rounded-xl p-2.5 ${o.status === "picked_up" ? "bg-brand-soft" : ""}`}><House size={20} className="mt-0.5 shrink-0 text-brand" aria-hidden /><span><b className="block">2. {tx("Afleveren", "Drop-off")}</b><span className="text-[13px] text-muted">{o.address}</span></span></li>
+                <li className={`flex items-start gap-3 rounded-xl p-2.5 ${o.status === "picked_up" ? "bg-brand-soft" : ""}`}><House size={20} className="mt-0.5 shrink-0 text-brand" aria-hidden /><span><b className="block">2. {tx("Afleveren", "Drop-off")}</b><span className="text-[13px] text-muted" data-testid="assigned-address">{o.address}</span></span></li>
               </ol>
               <p className="mt-1 text-[13px] text-muted">{tx("Jouw tijd", "Your ETA")} {bid?.eta_minutes != null ? `${bid.eta_minutes} min` : tx("handmatig toegewezen", "assigned by ops")} · {tx("eten klaar", "food ready")} ~{o.ready_at ? hhmm(new Date(o.ready_at)) : "?"} ({o.prep_minutes} min {tx("bereiding", "prep")}) · {tx("naar", "to")} {o.address}</p>
               {markers.length > 0 && active.length === 1 && <div className="mt-2"><LiveMap markers={markers} /></div>}
